@@ -10,6 +10,8 @@
     "@types/node": "^16.18.25",
     "@types/react": "^18.2.0",
     "@types/react-dom": "^18.2.1",
+    "josh_js_util": "^0.1.11",
+    "josh_react_util": "^1.0.18",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-scripts": "5.0.1",
