@@ -1,14 +1,59 @@
 .list-view {
-  border: 1px solid red;
-  list-style: none;
-  padding: 0;
-  margin: 0;
+  border: 3px solid black;
+  padding: 0rem;
+  margin: 0rem;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
 }
+.list-view > .list-item {
+  padding:0;
+  margin:0;
+  border: 3px solid black;
+  border-width: 0 3px 3px 0px;
+}
 
 
+.palette-color {
+  border: 3px solid black;
+}
+.palette-color.selected {
+  border-color: white;
+}
 .hbox.align-top {
   align-items: flex-start;
+}
+.toolbar {
+  border: 1px solid black;
+}
+
+.tile-preview {
+  border: 3px solid black;
+  border-width: 0 3px 3px 0px;
+  margin:0;
+  padding: 0;
+  background: magenta;
+  image-rendering: pixelated;
+}
+.tile-preview.selected {
+  border-color: white;
+}
+
+button {
+  border: 1px solid #333;
+  background: #ddd;
+  color: #333;
+}
+button:hover {
+  background: #fff;
+}
+button.selected {
+  background: aqua;
+  color: #333;
+}
+button.selected:hover {
+  background: aquamarine;
+}
+button.selected:active {
+  background: #fff;
 }

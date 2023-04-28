@@ -92,6 +92,23 @@ export class EditableImage extends Observable {
     }
 }
 
-function log(...args: any) {
+export class EditableSheet extends Observable {
+    private sprites: EditableImage[];
+    constructor() {
+        super();
+        this.sprites = new Array<EditableImage>()
+    }
+
+    addImage(img: EditableImage) {
+        this.sprites.push(img)
+        this.fire('change',{})
+    }
+
+    getImages() {
+        return this.sprites.slice()
+    }
+}
+
+export function log(...args: any) {
     console.log(...args)
 }

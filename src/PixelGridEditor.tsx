@@ -1,7 +1,7 @@
-import {EditableImage, ImagePalette} from "./common";
+import {EditableImage, ImagePalette, log} from "./common";
 import React, {MouseEvent, useEffect, useRef, useState} from "react";
 import {Point} from "josh_js_util";
-import {HBox} from "josh_react_util";
+import {HBox, toClass} from "josh_react_util";
 
 
 export function PixelGridEditor(props: {
@@ -37,6 +37,8 @@ export function PixelGridEditor(props: {
         redraw()
     },[down,grid])
     useEffect(() => {
+        log("image changed")
+        redraw()
         let hand = () => redraw()
         image.addEventListener('change', hand)
         return () => image.removeEventListener('change', hand)
@@ -52,8 +54,10 @@ export function PixelGridEditor(props: {
 
 
     return <div>
-        <HBox>
-            <button onClick={()=>setGrid(!grid)}>grid</button>
+        <HBox className={'hbox toolbar'}>
+            <button className={toClass({
+                selected:grid,
+            })} onClick={()=>setGrid(!grid)}>grid</button>
             <button>fill once</button>
         </HBox>
         <canvas ref={ref}
