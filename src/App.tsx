@@ -4,9 +4,9 @@ import './App.css';
 import {
     Changed,
     EditableDocument,
-    EditableImage,
-    EditableSheet,
-    ImagePalette,
+    EditableSprite,
+    EditableSheet, fileToJson,
+    ImagePalette, log, make_doc_from_json,
     Observable,
     PICO8
 } from "./common";
@@ -32,12 +32,12 @@ function PaletteColorRenderer(props:{value:string, selected:any, setSelected:(va
     }> </div>
 }
 
-function TilePreviewRenderer(props:{value:EditableImage, selected:any, setSelected:(value:any)=>void}) {
+function TilePreviewRenderer(props:{value:EditableSprite, selected:any, setSelected:(value:any)=>void}) {
     const image = props.value
+    const scale = 4
     const ref = useRef<HTMLCanvasElement>(null)
     const redraw = () => {
         if (ref.current) {
-            console.log('drawing tile preview')
             let canvas = ref.current
             let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.fillStyle = 'red'
@@ -66,8 +66,8 @@ function TilePreviewRenderer(props:{value:EditableImage, selected:any, setSelect
         'tile-preview':true,
         selected:props.selected === props.value
     })} style={{
-        width: `${image.width()*8}px`,
-        height: `${image.height()*8}px`,
+        width: `${image.width()*scale}px`,
+        height: `${image.height()*scale}px`,
     }}
     width={image.width()}
     height={image.height()}
@@ -83,17 +83,8 @@ function SheetNameRenderer(props:{value:EditableSheet, selected:any, setSelected
     </div>
 }
 
-const doc = new EditableDocument()
-const sheet = new EditableSheet()
-const img = new EditableImage()
-const img2 = new EditableImage()
-sheet.addImage(img)
-sheet.addImage(img2)
-doc.addSheet(sheet)
-doc.addSheet(new EditableSheet())
 
-
-function TileProperties(props: { tile: EditableImage }) {
+function TileProperties(props: { tile: EditableSprite }) {
     return <div className={'tile-properties'}>
         <h3>foo</h3>
         <ul>
@@ -102,16 +93,47 @@ function TileProperties(props: { tile: EditableImage }) {
     </div>
 }
 
+const EMPTY_DOC = new EditableDocument()
+const sheet = new EditableSheet()
+const img = new EditableSprite(10,10)
+const img2 = new EditableSprite(10,10)
+sheet.addSprite(img)
+sheet.addSprite(img2)
+EMPTY_DOC.addSheet(sheet)
+
 function App() {
+    const [doc, setDoc] = useState<EditableDocument>(EMPTY_DOC)
     const [drawColor, setDrawColor] = useState<string>(palette[0])
     const [sheet, setSheet] = useState<EditableSheet|null>(null)
-    const [tile, setTile] = useState<EditableImage|null>(null)
+    const [tile, setTile] = useState<EditableSprite|null>(null)
+    const load_file = () => {
+        console.log("trying to load")
+        let input_element = document.createElement('input')
+        input_element.setAttribute('type','file')
+        input_element.style.display = 'none'
+        document.body.appendChild(input_element)
+        input_element.addEventListener('change',() => {
+            console.log("user picked a file, we hope");
+            let files = input_element.files;
+            if(!files || files.length <= 0) return;
+            let file = files[0]
+            console.log(file)
+            fileToJson(file).then(data => {
+                log("got the data",data)
+                let doc = make_doc_from_json(data)
+                log('doc iss',doc)
+                // doc.reset_from_json(data)
+                setDoc(doc)
+            })
+        })
+        input_element.click()
+        }
   return (
     <VBox>
       <HBox >
         <button>new</button>
         <button>save</button>
-        <button>load</button>
+        <button onClick={load_file}>load</button>
       </HBox>
         <div className={'main'}>
             <div className={'pane'}>

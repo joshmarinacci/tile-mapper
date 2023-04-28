@@ -1,11 +1,11 @@
-import {Changed, EditableImage, ImagePalette, log} from "./common";
 import React, {MouseEvent, useEffect, useRef, useState} from "react";
 import {Point} from "josh_js_util";
 import {HBox, toClass} from "josh_react_util";
+import {Changed, EditableSprite, ImagePalette, log} from "./common";
 
 
 export function PixelGridEditor(props: {
-    image: EditableImage,
+    image: EditableSprite,
     selectedColor: number,
     palette: ImagePalette
 }) {

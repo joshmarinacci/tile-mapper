@@ -1,4 +1,4 @@
-import {Point} from "josh_js_util";
+import {genId, Point} from "josh_js_util";
 
 export const PICO8 = [
     '#000000',
@@ -58,20 +58,31 @@ export type JSONSprite = {
     palette?: string[]
 }
 
+export type JSONSheet = {
+    id:string,
+    name:string,
+    sprites:JSONSprite[]
+}
+export type JSONDoc = {
+    color_palette:string[]
+    sheets:JSONSheet[],
+    version:number,
+    name:string
+}
 export const Changed = 'changed'
 
-export class EditableImage extends Observable {
+export class EditableSprite extends Observable {
     private w: number;
     private h: number;
-    private data: number[];
+    data: number[];
     private id:string
     private name:string;
-    constructor() {
+    constructor(w:number, h:number) {
         super();
         this.name = 'unnamed'
-        this.id = ''
-        this.w = 10
-        this.h = 10
+        this.id = genId('tile')
+        this.w = w
+        this.h = h
         this.data = []
         for (let k = 0; k < this.w * this.h; k++) {
             this.data[k] = 0
@@ -101,16 +112,16 @@ export class EditableImage extends Observable {
 }
 
 export class EditableSheet extends Observable {
-    private sprites: EditableImage[];
-    private id:string
+    private sprites: EditableSprite[];
+    id:string
     private name:string;
     constructor() {
         super();
         this.sprites = []
         this.name = 'unnamed sheet'
-        this.id = ''
+        this.id = genId('sheet')
     }
-    addImage(img: EditableImage) {
+    addSprite(img: EditableSprite) {
         this.sprites.push(img)
         this.fire(Changed,this)
     }
@@ -119,6 +130,10 @@ export class EditableSheet extends Observable {
     }
     getName() {
         return this.name
+    }
+    setName(name: string) {
+        this.name = name
+        this.fire(Changed,this)
     }
 }
 
@@ -148,6 +163,41 @@ export class EditableDocument extends Observable {
         this.fire(Changed,this)
     }
 }
+
+export function make_doc_from_json(raw_data: any) {
+    if(raw_data['version'] !== 3) throw new Error("we cannot load this document")
+    let json = raw_data as JSONDoc
+    let doc = new EditableDocument()
+    doc.setName(json.name)
+    doc.setPalette(json.color_palette)
+    json.sheets.forEach(json_sheet => {
+        log(json_sheet)
+        let sheet = new EditableSheet()
+        sheet.id = json_sheet.id
+        sheet.setName(json_sheet.name)
+        doc.addSheet(sheet)
+        json_sheet.sprites.forEach(json_sprite => {
+            log("sprite",json_sprite)
+            let sprite = new EditableSprite(json_sprite.w,json_sprite.h)
+            sprite.setName(json_sprite.name)
+            sprite.data = json_sprite.data
+            sheet.addSprite(sprite)
+        })
+    })
+    return doc
+}
+
+
 export function log(...args: any) {
     console.log(...args)
+}
+
+export function fileToJson(file:File) {
+    return new Promise((resolve, reject) => {
+        const fileReader = new FileReader()
+        // @ts-ignore
+        fileReader.onload = event => resolve(JSON.parse(event.target.result))
+        fileReader.onerror = error => reject(error)
+        fileReader.readAsText(file)
+    })
 }
