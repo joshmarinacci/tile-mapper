@@ -1,3 +1,7 @@
+body {
+  --selected-background-color:  cyan;
+  --selected-border-color: white;
+}
 /* general */
 .list-view {
   border: 0px solid black;
@@ -12,8 +16,8 @@
 .list-view > .list-item {
   padding:0;
   margin:0;
-  border: 3px solid black;
-  border-width: 0 3px 3px 0px;
+  border: 1px solid black;
+  /*border-width: 0 3px 3px 0px;*/
   display: flex;
   flex-direction: row;
 }
@@ -23,7 +27,8 @@
   color: black;
 }
 .list-item.selected {
-  background-color: cyan;
+  background-color: var(--selected-background-color);
+  border-color: var(--selected-border-color);
   color: black;
 }
 
@@ -37,12 +42,13 @@ button {
   border: 1px solid #333;
   background: #ddd;
   color: #333;
+  padding: 0.25rem 0.5rem;
 }
 button:hover {
   background: #fff;
 }
 button.selected {
-  background: aqua;
+  background: var(--selected-background-color);
   color: #333;
 }
 button.selected:hover {
@@ -52,6 +58,28 @@ button.selected:active {
   background: #fff;
 }
 
+
+.props-sheet {
+  border: 0px solid red;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+.props-sheet li {
+  padding: 0.5rem;
+}
+.props-sheet li b {
+  padding-right: 1rem;
+}
+.props-sheet li input {
+  background-color: #dddddd;
+  border: 1px solid black;
+  border-radius: 5px;
+  padding: 0.25rem;
+}
+.props-sheet li input:focus {
+  background-color: white;
+}
 
 .pane {
   border: 1px solid black;
@@ -80,7 +108,7 @@ button.selected:active {
   border: 5px solid cyan;
 }
 .palette-color.selected {
-  border-color: white;
+  border-color: var(--selected-border-color)
 }
 
 .tile-preview {

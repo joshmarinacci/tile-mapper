@@ -91,10 +91,22 @@ function SheetNameRenderer(props:{value:EditableSheet, selected:any, setSelected
 
 
 function TileProperties(props: { tile: EditableSprite }) {
+    const tile = props.tile
+    const [name, setName] = useState(tile.getName())
+    useEffect(() => {
+        setName(tile.getName())
+        let hand = () => setName(tile.getName())
+        tile.addEventListener(Changed, hand)
+        return () => tile.removeEventListener(Changed, hand)
+    },[tile]);
     return <div className={'tile-properties'}>
-        <h3>foo</h3>
-        <ul>
-            <li><b>name</b><i>{props.tile.getName()}</i></li>
+        <ul className={'props-sheet'}>
+            <li>
+                <b>name</b>
+                <input type={'text'} value={name} onChange={(e)=>{
+                    props.tile.setName(e.target.value)
+                }}/>
+            </li>
         </ul>
     </div>
 }
@@ -110,13 +122,23 @@ const EMPTY_DOC = new EditableDocument()
 }
 
 function SheetView(props:{sheet:EditableSheet, tile:EditableSprite, setTile:(tile:EditableSprite)=>void}) {
+    const sheet = props.sheet
+    const [name, setName] = useState(sheet.getName())
+    useEffect(() => {
+        setName(sheet.getName())
+        let hand = () => setName(sheet.getName())
+        sheet.addEventListener(Changed, hand)
+        return () => sheet.removeEventListener(Changed, hand)
+    },[sheet]);
     return <>
-        <VBox>
-            <HBox>
+        <ul className={'props-sheet'}>
+            <li>
                 <b>name</b>
-                <i>{props.sheet.getName()}</i>
-            </HBox>
-        </VBox>
+                <input type={'text'} value={name} onChange={(e)=>{
+                    sheet.setName(e.target.value)
+                }}/>
+            </li>
+        </ul>
         <ListView className={'tile-list'} selected={props.tile}
               setSelected={props.setTile}
               renderer={TilePreviewRenderer}
@@ -129,7 +151,7 @@ function App() {
     const [doc, setDoc] = useState<EditableDocument>(EMPTY_DOC)
     const [drawColor, setDrawColor] = useState<string>(palette[0])
     const [sheets, setSheets] = useState<EditableSheet[]>(EMPTY_DOC.getSheets())
-    const [sheet, setSheet] = useState<EditableSheet|null>(null)
+    const [sheet, setSheet] = useState<EditableSheet|null>(EMPTY_DOC.getSheets()[0])
     const [tile, setTile] = useState<EditableSprite>(EMPTY_DOC.getSheets()[0].getImages()[0])
     const load_file = () => {
         let input_element = document.createElement('input')
@@ -195,7 +217,7 @@ function App() {
                 {sheet&&<SheetView sheet={sheet} tile={tile} setTile={(t:EditableSprite)=> setTile(t)}/>}
             </div>
             <div className={'pane'}>
-                <header>properties</header>
+                <header>Tile Info</header>
                 {tile && <TileProperties tile={tile}/>}
             </div>
             <div className={'pane'}>
