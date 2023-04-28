@@ -1,7 +1,15 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {HBox, toClass, VBox} from "josh_react_util";
 import './App.css';
-import {Changed, EditableImage, EditableSheet, ImagePalette, Observable, PICO8} from "./common";
+import {
+    Changed,
+    EditableDocument,
+    EditableImage,
+    EditableSheet,
+    ImagePalette,
+    Observable,
+    PICO8
+} from "./common";
 import {PixelGridEditor} from "./PixelGridEditor";
 import {Point} from "josh_js_util";
 import {ListView} from "./ListView";
@@ -69,11 +77,20 @@ function TilePreviewRenderer(props:{value:EditableImage, selected:any, setSelect
                    }></canvas>
 }
 
+function SheetNameRenderer(props:{value:EditableSheet, selected:any, setSelected:(value:any)=>void}) {
+    return <div onClick={() => props.setSelected(props.value)}>
+        {props.value.getName()}
+    </div>
+}
+
+const doc = new EditableDocument()
 const sheet = new EditableSheet()
 const img = new EditableImage()
 const img2 = new EditableImage()
 sheet.addImage(img)
 sheet.addImage(img2)
+doc.addSheet(sheet)
+doc.addSheet(new EditableSheet())
 
 
 function TileProperties(props: { tile: EditableImage }) {
@@ -87,6 +104,7 @@ function TileProperties(props: { tile: EditableImage }) {
 
 function App() {
     const [drawColor, setDrawColor] = useState<string>(palette[0])
+    const [sheet, setSheet] = useState<EditableSheet|null>(null)
     const [tile, setTile] = useState<EditableImage|null>(null)
   return (
     <VBox>
@@ -98,16 +116,22 @@ function App() {
         <div className={'main'}>
             <div className={'pane'}>
                 <header>sheets</header>
-                <div className={'sheet-list'}>sheet list</div>
+                <ListView selected={sheet}
+                          setSelected={setSheet}
+                          renderer={SheetNameRenderer}
+                          data={doc.getSheets()}
+                          style={{}}
+                          className={'sheet-list'}/>
             </div>
             <div className={'pane'}>
                 <header>tiles</header>
+                {sheet&&
                 <ListView className={'tile-list'} selected={tile}
                           setSelected={setTile}
                           renderer={TilePreviewRenderer}
                           data={sheet.getImages()}
                           style={{}}
-                />
+                />}
             </div>
             <div className={'pane'}>
                 <header>properties</header>

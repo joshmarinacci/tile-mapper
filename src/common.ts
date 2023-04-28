@@ -64,10 +64,12 @@ export class EditableImage extends Observable {
     private w: number;
     private h: number;
     private data: number[];
-    private name: string;
+    private id:string
+    private name:string;
     constructor() {
         super();
         this.name = 'unnamed'
+        this.id = ''
         this.w = 10
         this.h = 10
         this.data = []
@@ -100,9 +102,13 @@ export class EditableImage extends Observable {
 
 export class EditableSheet extends Observable {
     private sprites: EditableImage[];
+    private id:string
+    private name:string;
     constructor() {
         super();
         this.sprites = []
+        this.name = 'unnamed sheet'
+        this.id = ''
     }
     addImage(img: EditableImage) {
         this.sprites.push(img)
@@ -110,6 +116,9 @@ export class EditableSheet extends Observable {
     }
     getImages() {
         return this.sprites.slice()
+    }
+    getName() {
+        return this.name
     }
 }
 

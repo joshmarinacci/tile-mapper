@@ -86,6 +86,13 @@ button.selected:active {
 .sheet-list {
   width: 15rem;
   height: 200px;
+  flex-direction: column;
+  border: 1px solid red;
+  align-content: stretch;
+  align-items: stretch;
+}
+.sheet-list .list-item {
+  border: 1px solid blue;
 }
 .tile-list {
   width: 15rem;
