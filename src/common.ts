@@ -58,12 +58,13 @@ export type JSONSprite = {
     palette?: string[]
 }
 
+export const Changed = 'changed'
+
 export class EditableImage extends Observable {
     private w: number;
     private h: number;
     private data: number[];
     private name: string;
-
     constructor() {
         super();
         this.name = 'unnamed'
@@ -74,27 +75,26 @@ export class EditableImage extends Observable {
             this.data[k] = 0
         }
     }
-
     setPixel(number: number, point: Point) {
         let n = point.x + point.y * this.w
         this.data[point.x + point.y * this.w] = number
-        this.fire('change', {})
+        this.fire(Changed,this)
     }
-
     width() {
         return this.w
     }
-
     height() {
         return this.h
     }
-
     getPixel(point: Point) {
         return this.data[point.x + point.y * this.w]
     }
-
     getName() {
         return this.name
+    }
+    setName(name:string) {
+        this.name = name
+        this.fire(Changed,this)
     }
 }
 
@@ -102,19 +102,43 @@ export class EditableSheet extends Observable {
     private sprites: EditableImage[];
     constructor() {
         super();
-        this.sprites = new Array<EditableImage>()
+        this.sprites = []
     }
-
     addImage(img: EditableImage) {
         this.sprites.push(img)
-        this.fire('change',{})
+        this.fire(Changed,this)
     }
-
     getImages() {
         return this.sprites.slice()
     }
 }
 
+export class EditableDocument extends Observable {
+    private palette:ImagePalette
+    private sheets:EditableSheet[]
+    private name:string
+    constructor() {
+        super();
+        this.palette = []
+        this.sheets = []
+        this.name = 'unnamed'
+    }
+    setName(name:string) {
+        this.name = name
+        this.fire(Changed,this)
+    }
+    addSheet(sheet:EditableSheet) {
+        this.sheets.push(sheet)
+        this.fire(Changed,this)
+    }
+    getSheets() {
+        return this.sheets.slice()
+    }
+    setPalette(palette:ImagePalette) {
+        this.palette = palette
+        this.fire(Changed,this)
+    }
+}
 export function log(...args: any) {
     console.log(...args)
 }

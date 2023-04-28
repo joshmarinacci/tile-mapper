@@ -1,4 +1,4 @@
-import {EditableImage, ImagePalette, log} from "./common";
+import {Changed, EditableImage, ImagePalette, log} from "./common";
 import React, {MouseEvent, useEffect, useRef, useState} from "react";
 import {Point} from "josh_js_util";
 import {HBox, toClass} from "josh_react_util";
@@ -37,11 +37,10 @@ export function PixelGridEditor(props: {
         redraw()
     },[down,grid])
     useEffect(() => {
-        log("image changed")
         redraw()
         let hand = () => redraw()
-        image.addEventListener('change', hand)
-        return () => image.removeEventListener('change', hand)
+        image.addEventListener(Changed, hand)
+        return () => image.removeEventListener(Changed, hand)
     },[image]);
 
     const canvasToImage = (e:MouseEvent<HTMLCanvasElement>) => {

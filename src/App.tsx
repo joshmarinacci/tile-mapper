@@ -1,7 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {HBox, toClass, VBox} from "josh_react_util";
 import './App.css';
-import {EditableImage, EditableSheet, ImagePalette, Observable, PICO8} from "./common";
+import {Changed, EditableImage, EditableSheet, ImagePalette, Observable, PICO8} from "./common";
 import {PixelGridEditor} from "./PixelGridEditor";
 import {Point} from "josh_js_util";
 import {ListView} from "./ListView";
@@ -50,8 +50,8 @@ function TilePreviewRenderer(props:{value:EditableImage, selected:any, setSelect
 
     useEffect(() => {
         let hand = () => redraw()
-        image.addEventListener('change', hand)
-        return () => image.removeEventListener('change', hand)
+        image.addEventListener(Changed, hand)
+        return () => image.removeEventListener(Changed, hand)
     },[image]);
 
     return <canvas ref={ref} className={toClass({
