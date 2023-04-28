@@ -1,13 +1,17 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {HBox, toClass, VBox} from "josh_react_util";
+import {forceDownloadBlob} from "josh_web_util";
 import './App.css';
 import {
     Changed,
     EditableDocument,
+    EditableSheet,
     EditableSprite,
-    EditableSheet, fileToJson,
-    ImagePalette, log, make_doc_from_json,
-    Observable,
+    fileToJson,
+    ImagePalette,
+    jsonObjToBlob,
+    log,
+    make_doc_from_json,
     PICO8
 } from "./common";
 import {PixelGridEditor} from "./PixelGridEditor";
@@ -17,17 +21,19 @@ import {ListView} from "./ListView";
 const palette:ImagePalette = PICO8
 
 function PaletteColorRenderer(props:{value:string, selected:any, setSelected:(value:any)=>void}) {
+    const color = props.value
     return <div
     className={toClass({
         'palette-color':true,
-        selected: props.selected===props.value
+        selected: props.selected===props.value,
+        transparent:color==='transparent',
     })}
         style={{
-        backgroundColor:props.value,
+        backgroundColor:color==='transparent'?'magenta':color,
         width: '32px',
         height: '32px',
     }} onClick={()=>{
-        props.setSelected(props.value)
+        props.setSelected(color)
     }
     }> </div>
 }
@@ -107,7 +113,6 @@ function App() {
     const [sheet, setSheet] = useState<EditableSheet|null>(null)
     const [tile, setTile] = useState<EditableSprite|null>(null)
     const load_file = () => {
-        console.log("trying to load")
         let input_element = document.createElement('input')
         input_element.setAttribute('type','file')
         input_element.style.display = 'none'
@@ -122,18 +127,24 @@ function App() {
                 log("got the data",data)
                 let doc = make_doc_from_json(data)
                 log('doc iss',doc)
-                // doc.reset_from_json(data)
                 setDoc(doc)
+                setSheet(doc.getSheets()[0])
+                setTile(doc.getSheets()[0].getImages()[0])
             })
         })
         input_element.click()
         }
+    const save_file = () => {
+        let blob = jsonObjToBlob(doc.toJSONDoc())
+        forceDownloadBlob(`${doc.getName()}.json`,blob)
+    }
   return (
     <VBox>
       <HBox >
         <button>new</button>
-        <button>save</button>
+        <button onClick={save_file}>save</button>
         <button onClick={load_file}>load</button>
+          <label>{doc.getName()}</label>
       </HBox>
         <div className={'main'}>
             <div className={'pane'}>

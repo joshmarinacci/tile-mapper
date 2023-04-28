@@ -62,6 +62,9 @@ button.selected:active {
 .palette-color {
   border: 1px solid transparent;
 }
+.palette-color.transparent {
+  border: 5px solid cyan;
+}
 .palette-color.selected {
   border-color: white;
 }

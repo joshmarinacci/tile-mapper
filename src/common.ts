@@ -109,6 +109,15 @@ export class EditableSprite extends Observable {
         this.name = name
         this.fire(Changed,this)
     }
+
+    toJSONSprite():JSONSprite {
+        return {
+            name:this.name,
+            w: this.w,
+            h: this.h,
+            data: this.data.slice()
+        }
+    }
 }
 
 export class EditableSheet extends Observable {
@@ -134,6 +143,14 @@ export class EditableSheet extends Observable {
     setName(name: string) {
         this.name = name
         this.fire(Changed,this)
+    }
+
+    toJSONSheet():JSONSheet {
+        return {
+            name:this.name,
+            id:this.id,
+            sprites: this.sprites.map(sp => sp.toJSONSprite())
+        }
     }
 }
 
@@ -161,6 +178,20 @@ export class EditableDocument extends Observable {
     setPalette(palette:ImagePalette) {
         this.palette = palette
         this.fire(Changed,this)
+    }
+
+    getName() {
+        return this.name
+    }
+
+    toJSONDoc():JSONDoc {
+        let doc:JSONDoc = {
+            name:this.getName(),
+            color_palette: this.palette,
+            version: 3,
+            sheets: this.sheets.map(sh => sh.toJSONSheet())
+        }
+        return doc
     }
 }
 
@@ -200,4 +231,9 @@ export function fileToJson(file:File) {
         fileReader.onerror = error => reject(error)
         fileReader.readAsText(file)
     })
+}
+
+export function jsonObjToBlob(toJsonObj: any) {
+    let str = JSON.stringify(toJsonObj, null, '   ');
+    return new Blob([str]);
 }
