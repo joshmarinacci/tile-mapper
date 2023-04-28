@@ -53,7 +53,8 @@ export function PixelGridEditor(props: {
     }
 
 
-    return <div>
+    return <div className={'pane'}>
+        <header>Edit</header>
         <HBox className={'hbox toolbar'}>
             <button className={toClass({
                 selected:grid,

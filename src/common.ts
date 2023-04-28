@@ -62,9 +62,11 @@ export class EditableImage extends Observable {
     private w: number;
     private h: number;
     private data: number[];
+    private name: string;
 
     constructor() {
         super();
+        this.name = 'unnamed'
         this.w = 10
         this.h = 10
         this.data = []
@@ -89,6 +91,10 @@ export class EditableImage extends Observable {
 
     getPixel(point: Point) {
         return this.data[point.x + point.y * this.w]
+    }
+
+    getName() {
+        return this.name
     }
 }
 

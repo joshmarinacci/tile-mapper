@@ -1,21 +1,12 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {HBox, VBox, toClass} from "josh_react_util";
+import {HBox, toClass, VBox} from "josh_react_util";
 import './App.css';
-import {EditableImage, EditableSheet, ImagePalette, PICO8} from "./common";
+import {EditableImage, EditableSheet, ImagePalette, Observable, PICO8} from "./common";
 import {PixelGridEditor} from "./PixelGridEditor";
 import {Point} from "josh_js_util";
+import {ListView} from "./ListView";
 
 const palette:ImagePalette = PICO8
-function ListView<T>(props: { selected:T, setSelected:(v:T)=>void, renderer: any, data: any[], style:object }) {
-    const Cell = props.renderer
-    return <div className={'list-view'} style={props.style} >
-        {props.data.map((v,i) => {
-            return <div className={'list-item'} key={i}>
-                <Cell value={v} selected={props.selected} setSelected={props.setSelected}/>
-            </div>
-        })}
-    </div>
-}
 
 function PaletteColorRenderer(props:{value:string, selected:any, setSelected:(value:any)=>void}) {
     return <div
@@ -83,6 +74,17 @@ const img = new EditableImage()
 const img2 = new EditableImage()
 sheet.addImage(img)
 sheet.addImage(img2)
+
+
+function TileProperties(props: { tile: EditableImage }) {
+    return <div className={'tile-properties'}>
+        <h3>foo</h3>
+        <ul>
+            <li><b>name</b><i>{props.tile.getName()}</i></li>
+        </ul>
+    </div>
+}
+
 function App() {
     const [drawColor, setDrawColor] = useState<string>(palette[0])
     const [tile, setTile] = useState<EditableImage|null>(null)
@@ -93,21 +95,35 @@ function App() {
         <button>save</button>
         <button>load</button>
       </HBox>
-        <HBox className={'hbox align-top'}>
-            <div>sheet list</div>
-            <ListView data={palette}
-                      renderer={PaletteColorRenderer}
-                      selected={drawColor}
-                      setSelected={setDrawColor}
-                      style={{ maxWidth:'300px' }}/>
-            {tile && <PixelGridEditor selectedColor={palette.indexOf(drawColor)} image={tile} palette={palette}/>}
-            {!tile && <div>no tile selected</div>}
-            <ListView selected={tile}
-                      setSelected={setTile}
-                      renderer={TilePreviewRenderer}
-                      data={sheet.getImages()}
-                      style={{maxWidth:'1800px'}}/>
-        </HBox>
+        <div className={'main'}>
+            <div className={'pane'}>
+                <header>sheets</header>
+                <div className={'sheet-list'}>sheet list</div>
+            </div>
+            <div className={'pane'}>
+                <header>tiles</header>
+                <ListView className={'tile-list'} selected={tile}
+                          setSelected={setTile}
+                          renderer={TilePreviewRenderer}
+                          data={sheet.getImages()}
+                          style={{}}
+                />
+            </div>
+            <div className={'pane'}>
+                <header>properties</header>
+                {tile && <TileProperties tile={tile}/>}
+            </div>
+            <div className={'pane'}>
+                <header>Palette</header>
+                <ListView className={'palette'} data={palette}
+                          renderer={PaletteColorRenderer}
+                          selected={drawColor}
+                          setSelected={setDrawColor}
+                          style={{ maxWidth:'300px' }}/>
+            </div>
+                {tile && <PixelGridEditor selectedColor={palette.indexOf(drawColor)} image={tile} palette={palette}/>}
+                {!tile && <div>no tile selected</div>}
+        </div>
     </VBox>
   );
 }

@@ -1,43 +1,27 @@
+/* general */
 .list-view {
-  border: 3px solid black;
+  border: 0px solid black;
   padding: 0rem;
   margin: 0rem;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  align-items: flex-start;
+  align-content: flex-start;
 }
 .list-view > .list-item {
   padding:0;
   margin:0;
   border: 3px solid black;
   border-width: 0 3px 3px 0px;
+  display: flex;
+  flex-direction: row;
 }
 
-
-.palette-color {
-  border: 3px solid black;
-}
-.palette-color.selected {
-  border-color: white;
-}
-.hbox.align-top {
-  align-items: flex-start;
-}
 .toolbar {
   border: 1px solid black;
 }
 
-.tile-preview {
-  border: 3px solid black;
-  border-width: 0 3px 3px 0px;
-  margin:0;
-  padding: 0;
-  background: magenta;
-  image-rendering: pixelated;
-}
-.tile-preview.selected {
-  border-color: white;
-}
 
 button {
   border: 1px solid #333;
@@ -56,4 +40,58 @@ button.selected:hover {
 }
 button.selected:active {
   background: #fff;
+}
+
+
+.pane {
+  border: 1px solid black;
+  border-width: 0 1px 1px 0;
+  display: flex;
+  flex-direction: column;
+}
+.pane header {
+  background-color: #333333;
+  color: white;
+  padding: 0.5rem;
+}
+
+
+.palette {
+  background-color: black;
+}
+.palette-color {
+  border: 1px solid transparent;
+}
+.palette-color.selected {
+  border-color: white;
+}
+
+.tile-preview {
+  border: 1px solid transparent;
+  margin:0;
+  padding: 0;
+  background: black;
+  image-rendering: pixelated;
+}
+.tile-preview.selected {
+  border-color: white;
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.sheet-list {
+  width: 15rem;
+  height: 200px;
+}
+.tile-list {
+  width: 15rem;
+  height: 200px;
+}
+
+.tile-properties {
+  min-width: 10rem;
 }
