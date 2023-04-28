@@ -18,6 +18,16 @@
   flex-direction: row;
 }
 
+.list-item {
+  background-color: #dddddd;
+  color: black;
+}
+.list-item.selected {
+  background-color: cyan;
+  color: black;
+}
+
+
 .toolbar {
   border: 1px solid black;
 }
@@ -55,6 +65,10 @@ button.selected:active {
   padding: 0.5rem;
 }
 
+
+.sheet-list .list-item div {
+  width: 100%;
+}
 
 .palette {
   background-color: black;
@@ -94,9 +108,7 @@ button.selected:active {
   align-content: stretch;
   align-items: stretch;
 }
-.sheet-list .list-item {
-  border: 1px solid blue;
-}
+
 .tile-list {
   width: 15rem;
   height: 200px;

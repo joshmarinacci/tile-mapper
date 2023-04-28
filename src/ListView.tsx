@@ -1,4 +1,5 @@
 import React from "react";
+import {toClass} from "josh_react_util";
 
 export function ListView<T>(props: {
     selected: T,
@@ -11,7 +12,10 @@ export function ListView<T>(props: {
     const Cell = props.renderer
     return <div className={`list-view ${props.className}`} style={props.style}>
         {props.data.map((v, i) => {
-            return <div className={'list-item'} key={i}>
+            return <div className={toClass({
+                'list-item':true,
+                selected:props.selected === v
+            })} key={i}>
                 <Cell value={v} selected={props.selected} setSelected={props.setSelected}/>
             </div>
         })}

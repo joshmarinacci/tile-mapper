@@ -100,18 +100,37 @@ function TileProperties(props: { tile: EditableSprite }) {
 }
 
 const EMPTY_DOC = new EditableDocument()
-const sheet = new EditableSheet()
-const img = new EditableSprite(10,10)
-const img2 = new EditableSprite(10,10)
-sheet.addSprite(img)
-sheet.addSprite(img2)
-EMPTY_DOC.addSheet(sheet)
+{
+    const sheet = new EditableSheet()
+    const img = new EditableSprite(10, 10)
+    const img2 = new EditableSprite(10, 10)
+    sheet.addSprite(img)
+    sheet.addSprite(img2)
+    EMPTY_DOC.addSheet(sheet)
+}
+
+function SheetView(props:{sheet:EditableSheet, tile:EditableSprite, setTile:(tile:EditableSprite)=>void}) {
+    return <>
+        <VBox>
+            <HBox>
+                <b>name</b>
+                <i>{props.sheet.getName()}</i>
+            </HBox>
+        </VBox>
+        <ListView className={'tile-list'} selected={props.tile}
+              setSelected={props.setTile}
+              renderer={TilePreviewRenderer}
+              data={props.sheet.getImages()}
+              style={{}}
+    /></>
+}
 
 function App() {
     const [doc, setDoc] = useState<EditableDocument>(EMPTY_DOC)
     const [drawColor, setDrawColor] = useState<string>(palette[0])
+    const [sheets, setSheets] = useState<EditableSheet[]>(EMPTY_DOC.getSheets())
     const [sheet, setSheet] = useState<EditableSheet|null>(null)
-    const [tile, setTile] = useState<EditableSprite|null>(null)
+    const [tile, setTile] = useState<EditableSprite>(EMPTY_DOC.getSheets()[0].getImages()[0])
     const load_file = () => {
         let input_element = document.createElement('input')
         input_element.setAttribute('type','file')
@@ -128,6 +147,7 @@ function App() {
                 let doc = make_doc_from_json(data)
                 log('doc iss',doc)
                 setDoc(doc)
+                setSheets(doc.getSheets())
                 setSheet(doc.getSheets()[0])
                 setTile(doc.getSheets()[0].getImages()[0])
             })
@@ -138,6 +158,17 @@ function App() {
         let blob = jsonObjToBlob(doc.toJSONDoc())
         forceDownloadBlob(`${doc.getName()}.json`,blob)
     }
+    const add_sheet = () => {
+        let sheet = new EditableSheet()
+        doc.addSheet(sheet)
+    }
+    useEffect(() => {
+        let hand = () => {
+            setSheets(doc.getSheets())
+        }
+        doc.addEventListener(Changed, hand)
+        return () => doc.removeEventListener(Changed, hand)
+    },[doc]);
   return (
     <VBox>
       <HBox >
@@ -149,22 +180,19 @@ function App() {
         <div className={'main'}>
             <div className={'pane'}>
                 <header>sheets</header>
+                <div className={'toolbar'}>
+                    <button onClick={add_sheet}>add sheet</button>
+                </div>
                 <ListView selected={sheet}
                           setSelected={setSheet}
                           renderer={SheetNameRenderer}
-                          data={doc.getSheets()}
+                          data={sheets}
                           style={{}}
                           className={'sheet-list'}/>
             </div>
             <div className={'pane'}>
-                <header>tiles</header>
-                {sheet&&
-                <ListView className={'tile-list'} selected={tile}
-                          setSelected={setTile}
-                          renderer={TilePreviewRenderer}
-                          data={sheet.getImages()}
-                          style={{}}
-                />}
+                <header>Tile Sheet</header>
+                {sheet&&<SheetView sheet={sheet} tile={tile} setTile={(t:EditableSprite)=> setTile(t)}/>}
             </div>
             <div className={'pane'}>
                 <header>properties</header>
