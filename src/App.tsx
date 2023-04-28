@@ -122,27 +122,37 @@ const EMPTY_DOC = new EditableDocument()
 }
 
 function SheetView(props:{sheet:EditableSheet, tile:EditableSprite, setTile:(tile:EditableSprite)=>void}) {
-    const sheet = props.sheet
+    const {sheet, tile} = props
+    const [tiles, setTiles] = useState(sheet.getImages())
     const [name, setName] = useState(sheet.getName())
+    const add_tile = () => {
+        let new_tile = new EditableSprite(tile.width(),tile.height())
+        sheet.addSprite(new_tile)
+    }
     useEffect(() => {
         setName(sheet.getName())
-        let hand = () => setName(sheet.getName())
+        setTiles(sheet.getImages())
+        let hand = () => {
+            setName(sheet.getName())
+            setTiles(sheet.getImages())
+        }
         sheet.addEventListener(Changed, hand)
         return () => sheet.removeEventListener(Changed, hand)
     },[sheet]);
     return <>
         <ul className={'props-sheet'}>
             <li>
-                <b>name</b>
-                <input type={'text'} value={name} onChange={(e)=>{
-                    sheet.setName(e.target.value)
-                }}/>
+                <b>Name</b>
+                <input type={'text'} value={name} onChange={(e)=> sheet.setName(e.target.value)}/>
             </li>
         </ul>
-        <ListView className={'tile-list'} selected={props.tile}
+        <div className={'toolbar'}>
+            <button onClick={add_tile}>add tile</button>
+        </div>
+        <ListView className={'tile-list'} selected={tile}
               setSelected={props.setTile}
               renderer={TilePreviewRenderer}
-              data={props.sheet.getImages()}
+              data={tiles}
               style={{}}
     /></>
 }
