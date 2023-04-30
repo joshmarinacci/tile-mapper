@@ -77,7 +77,8 @@ export class EditableSprite extends Observable {
     data: number[];
     private id:string
     private name:string;
-    constructor(w:number, h:number) {
+    pallete:ImagePalette;
+    constructor(w:number, h:number, pallete:ImagePalette) {
         super();
         this.name = 'unnamed'
         this.id = genId('tile')
@@ -87,6 +88,7 @@ export class EditableSprite extends Observable {
         for (let k = 0; k < this.w * this.h; k++) {
             this.data[k] = 0
         }
+        this.pallete = pallete
     }
     setPixel(number: number, point: Point) {
         let n = point.x + point.y * this.w
@@ -197,11 +199,11 @@ export class EditableDocument extends Observable {
 
 export function make_doc_from_json(raw_data: any) {
     if(raw_data['version'] !== 3) throw new Error("we cannot load this document")
-    let json = raw_data as JSONDoc
+    let json_doc = raw_data as JSONDoc
     let doc = new EditableDocument()
-    doc.setName(json.name)
-    doc.setPalette(json.color_palette)
-    json.sheets.forEach(json_sheet => {
+    doc.setName(json_doc.name)
+    doc.setPalette(json_doc.color_palette)
+    json_doc.sheets.forEach(json_sheet => {
         log(json_sheet)
         let sheet = new EditableSheet()
         sheet.id = json_sheet.id
@@ -209,7 +211,7 @@ export function make_doc_from_json(raw_data: any) {
         doc.addSheet(sheet)
         json_sheet.sprites.forEach(json_sprite => {
             log("sprite",json_sprite)
-            let sprite = new EditableSprite(json_sprite.w,json_sprite.h)
+            let sprite = new EditableSprite(json_sprite.w,json_sprite.h,json_doc.color_palette)
             sprite.setName(json_sprite.name)
             sprite.data = json_sprite.data
             sheet.addSprite(sprite)
@@ -236,4 +238,14 @@ export function fileToJson(file:File) {
 export function jsonObjToBlob(toJsonObj: any) {
     let str = JSON.stringify(toJsonObj, null, '   ');
     return new Blob([str]);
+}
+
+export function drawEditableSprite(ctx: CanvasRenderingContext2D, scale: number, image: EditableSprite) {
+    for (let i = 0; i < image.width(); i++) {
+        for (let j = 0; j < image.height(); j++) {
+            let v: number = image.getPixel(new Point(i, j))
+            ctx.fillStyle = image.pallete[v]
+            ctx.fillRect(i * scale, j * scale, scale, scale)
+        }
+    }
 }
