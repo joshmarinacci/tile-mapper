@@ -238,7 +238,10 @@ function App() {
                           setSelected={setDrawColor}
                           style={{ maxWidth:'300px' }}/>
             </div>
-                {tile && <PixelGridEditor selectedColor={palette.indexOf(drawColor)} image={tile} palette={palette}/>}
+                {tile && <PixelGridEditor
+                    selectedColor={palette.indexOf(drawColor)}
+                    setSelectedColor={(n)=> setDrawColor(palette[n])}
+                    image={tile} palette={palette}/>}
                 {!tile && <div>no tile selected</div>}
         </div>
     </VBox>

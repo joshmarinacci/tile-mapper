@@ -121,7 +121,7 @@ export class EditableSprite extends Observable {
 }
 
 export class EditableSheet extends Observable {
-    private sprites: EditableSprite[];
+    sprites: EditableSprite[];
     id:string
     private name:string;
     constructor() {
