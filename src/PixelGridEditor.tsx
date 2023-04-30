@@ -4,6 +4,28 @@ import {HBox, toClass} from "josh_react_util";
 import {Changed, EditableSprite, ImagePalette, log} from "./common";
 
 
+function calculateDirections() {
+    return [
+        new Point(-1,0),
+        new Point(1,0),
+        new Point(0,-1),
+        new Point(0,1)
+    ]
+}
+
+function bucketFill(tile: EditableSprite, target: number, replace:number, at: Point, ) {
+    if(target === replace) return
+    let v = tile.getPixel(at)
+    if(v !== target) return
+    if(v === target) {
+        tile.setPixel(replace,at)
+        calculateDirections().forEach(dir => {
+            let pt = at.add(dir)
+            if(tile.isValidIndex(pt)) bucketFill(tile,target,replace,pt)
+        })
+    }
+}
+
 export function PixelGridEditor(props: {
     image: EditableSprite,
     selectedColor: number,
@@ -13,6 +35,7 @@ export function PixelGridEditor(props: {
     const {selectedColor, palette, image} = props
     const [down, setDown] = useState<boolean>(false)
     const [grid, setGrid] = useState<boolean>(false)
+    const [fillOnce, setFillOnce] = useState<boolean>(false)
     let scale = 25
     const ref = useRef<HTMLCanvasElement>(null)
     const redraw = () => {
@@ -54,8 +77,14 @@ export function PixelGridEditor(props: {
     return <div className={'pane'}>
         <header>Edit</header>
         <HBox className={'hbox toolbar'}>
-            <button className={toClass({ selected: grid, })} onClick={() => setGrid(!grid)}>grid</button>
-            <button>fill once</button>
+            <button
+                className={toClass({ selected: grid, })}
+                onClick={() => setGrid(!grid)}
+            >grid</button>
+            <button
+                className={toClass({ selected:fillOnce })}
+                onClick={()=>setFillOnce(true)}
+            >fill once</button>
         </HBox>
         <canvas ref={ref}
                 style={{
@@ -71,6 +100,13 @@ export function PixelGridEditor(props: {
                         props.setSelectedColor(image.getPixel(canvasToImage(e)))
                         e.stopPropagation()
                         e.preventDefault()
+                        return
+                    }
+                    if(fillOnce) {
+                        let pt = canvasToImage(e)
+                        let current_color = image.getPixel(pt)
+                        bucketFill(image,current_color,selectedColor,pt)
+                        setFillOnce(false)
                         return
                     }
                     setDown(true)

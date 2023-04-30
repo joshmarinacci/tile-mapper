@@ -120,6 +120,14 @@ export class EditableSprite extends Observable {
             data: this.data.slice()
         }
     }
+
+    isValidIndex(pt: Point) {
+        if(pt.x < 0) return false
+        if(pt.y < 0) return false
+        if(pt.x >= this.w) return false
+        if(pt.y >= this.h) return false
+        return true
+    }
 }
 
 export class EditableSheet extends Observable {
