@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {MouseEvent, useEffect, useRef, useState} from 'react';
 import {HBox, toClass, VBox} from "josh_react_util";
 import {forceDownloadBlob} from "josh_web_util";
 import './App.css';
@@ -15,7 +15,7 @@ import {
     PICO8
 } from "./common";
 import {PixelGridEditor} from "./PixelGridEditor";
-import {Point} from "josh_js_util";
+import {ArrayGrid, Point} from "josh_js_util";
 import {ListView} from "./ListView";
 
 const palette:ImagePalette = PICO8
@@ -38,6 +38,16 @@ function PaletteColorRenderer(props:{value:string, selected:any, setSelected:(va
     }> </div>
 }
 
+function drawImage(ctx:CanvasRenderingContext2D, scale:number, image:EditableSprite) {
+    for (let i = 0; i < image.width(); i++) {
+        for (let j = 0; j < image.height(); j++) {
+            let v: number = image.getPixel(new Point(i, j))
+            ctx.fillStyle = palette[v]
+            ctx.fillRect(i * scale, j * scale, scale, scale)
+        }
+    }
+}
+
 function TilePreviewRenderer(props:{value:EditableSprite, selected:any, setSelected:(value:any)=>void}) {
     const image = props.value
     const scale = 4
@@ -48,26 +58,15 @@ function TilePreviewRenderer(props:{value:EditableSprite, selected:any, setSelec
             let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.fillStyle = 'red'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
-            const scale = 1
-            for (let i = 0; i < image.width(); i++) {
-                for (let j = 0; j < image.height(); j++) {
-                    let v: number = image.getPixel(new Point(i, j))
-                    ctx.fillStyle = palette[v]
-                    ctx.fillRect(i * scale, j * scale, scale, scale)
-                }
-            }
+            drawImage(ctx,1,image)
         }
     }
-    useEffect(() => {
-        redraw()
-    },[image])
-
+    useEffect(() => redraw(),[image])
     useEffect(() => {
         let hand = () => redraw()
         image.addEventListener(Changed, hand)
         return () => image.removeEventListener(Changed, hand)
     },[image]);
-
     return <canvas ref={ref} className={toClass({
         'tile-preview':true,
         selected:props.selected === props.value
@@ -77,10 +76,8 @@ function TilePreviewRenderer(props:{value:EditableSprite, selected:any, setSelec
     }}
     width={image.width()}
     height={image.height()}
-                   onClick={()=>{
-        props.setSelected(props.value)
-    }
-                   }></canvas>
+    onClick={()=> props.setSelected(props.value)}
+    ></canvas>
 }
 
 function SheetNameRenderer(props:{value:EditableSheet, selected:any, setSelected:(value:any)=>void}) {
@@ -88,7 +85,6 @@ function SheetNameRenderer(props:{value:EditableSheet, selected:any, setSelected
         {props.value.getName()}
     </div>
 }
-
 
 function TileProperties(props: { tile: EditableSprite }) {
     const tile = props.tile
@@ -103,9 +99,7 @@ function TileProperties(props: { tile: EditableSprite }) {
         <ul className={'props-sheet'}>
             <li>
                 <b>name</b>
-                <input type={'text'} value={name} onChange={(e)=>{
-                    props.tile.setName(e.target.value)
-                }}/>
+                <input type={'text'} value={name} onChange={(e)=> props.tile.setName(e.target.value)}/>
             </li>
         </ul>
     </div>
@@ -155,6 +149,78 @@ function SheetView(props:{sheet:EditableSheet, tile:EditableSprite, setTile:(til
               data={tiles}
               style={{}}
     /></>
+}
+
+const maparray = new ArrayGrid<EditableSprite>(20,20)
+
+function TestMap(props: { tile: EditableSprite }) {
+    const {tile} = props
+    const ref = useRef<HTMLCanvasElement>(null)
+    const [down, setDown] = useState<boolean>(false)
+    const [grid, setGrid] = useState<boolean>(false)
+    const [count, setCount] = useState(0)
+
+    const scale = 4
+    const redraw = () => {
+        if (ref.current) {
+            let canvas = ref.current
+            let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+            ctx.fillStyle = 'red'
+            ctx.fillRect(0, 0, canvas.width, canvas.height)
+            maparray.forEach((v,n)=>{
+                if(v) {
+                    ctx.save()
+                    ctx.translate(n.x*tile.width()*scale,n.y*tile.height()*scale)
+                    drawImage(ctx, scale, v)
+                    if(grid) {
+                        ctx.strokeStyle = 'gray'
+                        ctx.strokeRect(0, 0, tile.width() * scale, tile.height() * scale)
+                    }
+                    ctx.restore()
+                }
+            })
+        }
+    }
+    useEffect(()=>{
+        redraw()
+    },[grid,count])
+
+    useEffect(() => {
+        redraw()
+        let hand = () => redraw()
+        tile.addEventListener(Changed, hand)
+        return () => tile.removeEventListener(Changed, hand)
+    }, [tile]);
+
+    const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
+        let rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
+        return new Point(e.clientX, e.clientY)
+            .subtract(new Point(rect.left, rect.top))
+            .scale(1 / scale)
+            .scale(1 / tile.width())
+            .floor()
+    }
+    return <div>
+        <div className={'toolbar'}>
+            <button onClick={()=>setGrid(!grid)}>grid</button>
+        </div>
+        <canvas ref={ref} width={300} height={300}
+           onMouseDown={(e) => {
+               setDown(true)
+               maparray.set(canvasToImage(e),tile)
+               setCount(count+1)
+               redraw()
+           }}
+           onMouseMove={(e) => {
+               if (down) {
+                   maparray.set(canvasToImage(e),tile)
+                   redraw()
+               }
+           }}
+           onMouseUp={(e) => setDown(false)}
+    />
+    </div>
+
 }
 
 function App() {
@@ -238,11 +304,15 @@ function App() {
                           setSelected={setDrawColor}
                           style={{ maxWidth:'300px' }}/>
             </div>
-                {tile && <PixelGridEditor
-                    selectedColor={palette.indexOf(drawColor)}
-                    setSelectedColor={(n)=> setDrawColor(palette[n])}
-                    image={tile} palette={palette}/>}
-                {!tile && <div>no tile selected</div>}
+            {tile && <PixelGridEditor
+                selectedColor={palette.indexOf(drawColor)}
+                setSelectedColor={(n)=> setDrawColor(palette[n])}
+                image={tile} palette={palette}/>}
+            {!tile && <div>no tile selected</div>}
+            <div className={'pane'}>
+                <header>Test</header>
+                <TestMap tile={tile}/>
+            </div>
         </div>
     </VBox>
   );

@@ -34,9 +34,7 @@ export function PixelGridEditor(props: {
             }
         }
     }
-    useEffect(() => {
-        redraw()
-    }, [down, grid])
+    useEffect(() => redraw(), [down, grid])
     useEffect(() => {
         redraw()
         let hand = () => redraw()
@@ -69,7 +67,6 @@ export function PixelGridEditor(props: {
                     e.preventDefault()
                 }}
                 onMouseDown={(e) => {
-                    log("button",e.button);
                     if(e.button === 2) {
                         props.setSelectedColor(image.getPixel(canvasToImage(e)))
                         e.stopPropagation()
