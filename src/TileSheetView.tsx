@@ -44,12 +44,18 @@ export function TileSheetView(props: {
     tile: EditableSprite,
     setTile: (tile: EditableSprite) => void
 }) {
-    const {sheet, tile} = props
+    const {sheet, tile, setTile} = props
     const [tiles, setTiles] = useState(sheet.getImages())
     const [name, setName] = useState(sheet.getName())
     const add_tile = () => {
         let new_tile = new EditableSprite(tile.width(), tile.height(), PICO8)
         sheet.addSprite(new_tile)
+        setTile(new_tile)
+    }
+    const dup_tile = () => {
+        let new_tile = tile.clone()
+        sheet.addSprite(new_tile)
+        setTile(new_tile)
     }
     useEffect(() => {
         setName(sheet.getName())
@@ -70,9 +76,10 @@ export function TileSheetView(props: {
         </ul>
         <div className={'toolbar'}>
             <button onClick={add_tile}>add tile</button>
+            <button onClick={dup_tile}>dup tile</button>
         </div>
         <ListView className={'tile-list'} selected={tile}
-                  setSelected={props.setTile}
+                  setSelected={setTile}
                   renderer={TilePreviewRenderer}
                   data={tiles}
                   style={{}}

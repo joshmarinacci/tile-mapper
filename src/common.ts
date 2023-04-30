@@ -77,18 +77,18 @@ export class EditableSprite extends Observable {
     data: number[];
     private id:string
     private name:string;
-    pallete:ImagePalette;
+    palette:ImagePalette;
     constructor(w:number, h:number, pallete:ImagePalette) {
         super();
         this.name = 'unnamed'
         this.id = genId('tile')
+        this.palette = pallete
         this.w = w
         this.h = h
         this.data = []
         for (let k = 0; k < this.w * this.h; k++) {
             this.data[k] = 0
         }
-        this.pallete = pallete
     }
     setPixel(number: number, point: Point) {
         let n = point.x + point.y * this.w
@@ -127,6 +127,12 @@ export class EditableSprite extends Observable {
         if(pt.x >= this.w) return false
         if(pt.y >= this.h) return false
         return true
+    }
+
+    clone() {
+        let new_tile = new EditableSprite(this.width(),this.height(),this.palette)
+        new_tile.data = this.data.slice()
+        return new_tile
     }
 }
 
@@ -252,7 +258,7 @@ export function drawEditableSprite(ctx: CanvasRenderingContext2D, scale: number,
     for (let i = 0; i < image.width(); i++) {
         for (let j = 0; j < image.height(); j++) {
             let v: number = image.getPixel(new Point(i, j))
-            ctx.fillStyle = image.pallete[v]
+            ctx.fillStyle = image.palette[v]
             ctx.fillRect(i * scale, j * scale, scale, scale)
         }
     }
