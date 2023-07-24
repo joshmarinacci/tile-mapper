@@ -1,7 +1,16 @@
-import {Changed, drawEditableSprite, EditableSheet, EditableSprite, PICO8} from "./common";
+import {
+    canvas_to_bmp,
+    Changed,
+    drawEditableSprite,
+    EditableSheet,
+    EditableSprite, ImagePalette,
+    PICO8,
+    sheet_to_canvas
+} from "./common";
 import React, {useEffect, useRef, useState} from "react";
 import {ListView} from "./ListView";
 import {toClass} from "josh_react_util";
+import {forceDownloadBlob} from "josh_web_util";
 
 function TilePreviewRenderer(props: {
     value: EditableSprite,
@@ -42,9 +51,10 @@ function TilePreviewRenderer(props: {
 export function TileSheetView(props: {
     sheet: EditableSheet,
     tile: EditableSprite,
-    setTile: (tile: EditableSprite) => void
+    setTile: (tile: EditableSprite) => void,
+    palette: ImagePalette
 }) {
-    const {sheet, tile, setTile} = props
+    const {sheet, tile, setTile, palette} = props
     const [tiles, setTiles] = useState(sheet.getImages())
     const [name, setName] = useState(sheet.getName())
     const add_tile = () => {
@@ -56,6 +66,12 @@ export function TileSheetView(props: {
         let new_tile = tile.clone()
         sheet.addSprite(new_tile)
         setTile(new_tile)
+    }
+    const export_bmp = () => {
+        const canvas = sheet_to_canvas(sheet)
+        const rawData = canvas_to_bmp(canvas, palette)
+        let blob = new Blob([rawData.data], {type:'image/bmp'})
+        forceDownloadBlob(`${sheet.getName()}.bmp`,blob)
     }
     useEffect(() => {
         setName(sheet.getName())
@@ -83,5 +99,9 @@ export function TileSheetView(props: {
                   renderer={TilePreviewRenderer}
                   data={tiles}
                   style={{}}
-        /></>
+        />
+        <div className={'toolbar'}>
+            <button onClick={export_bmp}>to BMP</button>
+        </div>
+    </>
 }

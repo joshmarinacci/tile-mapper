@@ -107,7 +107,7 @@ function App() {
             <SheetList sheet={sheet} setSheet={setSheet} doc={doc}/>
             <div className={'pane'}>
                 <header>Tile Sheet</header>
-                {sheet&&<TileSheetView sheet={sheet} tile={tile} setTile={(t:EditableSprite)=> setTile(t)}/>}
+                {sheet&&<TileSheetView sheet={sheet} tile={tile} setTile={(t:EditableSprite)=> setTile(t)} palette={palette}/>}
             </div>
             <div className={'pane'}>
                 <header>Tile Info</header>
