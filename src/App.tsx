@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {HBox, VBox} from "josh_react_util";
-import {forceDownloadBlob} from "josh_web_util";
+import {canvas_to_blob, forceDownloadBlob} from "josh_web_util";
 import './App.css';
 import {
+    canvas_to_bmp,
     Changed,
     EditableDocument,
     EditableSheet,
@@ -12,7 +13,8 @@ import {
     jsonObjToBlob,
     log,
     make_doc_from_json,
-    PICO8
+    PICO8,
+    sheet_to_canvas
 } from "./common";
 import {PixelGridEditor} from "./PixelGridEditor";
 import {ArrayGrid} from "josh_js_util";
@@ -33,6 +35,7 @@ const EMPTY_DOC = new EditableDocument()
     sheet.addSprite(img2)
     EMPTY_DOC.addSheet(sheet)
 }
+EMPTY_DOC.setPalette(PICO8)
 
 const maparray = new ArrayGrid<EditableSprite>(20,20)
 
@@ -69,6 +72,20 @@ function App() {
         let blob = jsonObjToBlob(doc.toJSONDoc())
         forceDownloadBlob(`${doc.getName()}.json`,blob)
     }
+    const export_png = async () => {
+        for(let sheet of doc.getSheets()) {
+            const can = sheet_to_canvas(sheet)
+            let blob = await canvas_to_blob(can)
+            forceDownloadBlob(`${doc.getName()}.${sheet.getName()}.png`,blob)
+        }
+    }
+    const export_bmp = async () => {
+        const sheet = doc.getSheets()[0]
+        const canvas = sheet_to_canvas(sheet)
+        const rawData = canvas_to_bmp(canvas, doc.getPalette())
+        let blob = new Blob([rawData.data], {type:'image/bmp'})
+        forceDownloadBlob(`${sheet.getName()}.bmp`,blob)
+    }
     useEffect(() => {
         let hand = () => {
             setSheets(doc.getSheets())
@@ -82,6 +99,8 @@ function App() {
         <button>new</button>
         <button onClick={save_file}>save</button>
         <button onClick={load_file}>load</button>
+          <button onClick={export_png}>to PNG</button>
+          <button onClick={export_bmp}>to BMP</button>
           <label>{doc.getName()}</label>
       </HBox>
         <div className={'main'}>

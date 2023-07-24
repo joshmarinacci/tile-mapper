@@ -1,4 +1,5 @@
 import {genId, Point} from "josh_js_util";
+import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts";
 
 export const PICO8 = [
     '#000000',
@@ -188,7 +189,7 @@ export class EditableDocument extends Observable {
         this.sheets.push(sheet)
         this.fire(Changed,this)
     }
-    getSheets() {
+    getSheets():EditableSheet[] {
         return this.sheets.slice()
     }
     setPalette(palette:ImagePalette) {
@@ -208,6 +209,10 @@ export class EditableDocument extends Observable {
             sheets: this.sheets.map(sh => sh.toJSONSheet())
         }
         return doc
+    }
+
+    getPalette() {
+        return this.palette
     }
 }
 
@@ -262,4 +267,72 @@ export function drawEditableSprite(ctx: CanvasRenderingContext2D, scale: number,
             ctx.fillRect(i * scale, j * scale, scale, scale)
         }
     }
+}
+
+export function sheet_to_canvas(sheet: EditableSheet) {
+    let sprite = sheet.getImages()[0]
+    const canvas = document.createElement('canvas')
+    canvas.width = sprite.width() * sheet.getImages().length
+    canvas.height = sprite.height()
+    let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+    sheet.getImages().forEach((img, i) => {
+        ctx.save()
+        ctx.translate(i * sprite.width(), 0)
+        drawEditableSprite(ctx, 1, img)
+        ctx.restore()
+    })
+    return canvas
+}
+
+export function canvas_to_bmp(canvas: HTMLCanvasElement, palette1: string[]) {
+    //get ImageData from the canvas
+    let id = (canvas.getContext('2d') as CanvasRenderingContext2D).getImageData(0, 0, canvas.width, canvas.height)
+
+    function swizzle_data(id: ImageData) {
+        for (let i = 0; i < id.width; i++) {
+            for (let j = 0; j < id.height; j++) {
+                let n = (i + id.width * j) * 4
+
+                let R = id.data[n + 0]
+                let G = id.data[n + 1]
+                let B = id.data[n + 2]
+                let A = id.data[n + 3]
+
+
+                id.data[n + 0] = 255
+                id.data[n + 1] = B
+                id.data[n + 2] = G
+                id.data[n + 3] = R
+            }
+        }
+    }
+
+    swizzle_data(id)
+
+    function strToRGBObj(str: string) {
+        let num = parseInt(str.substring(1), 16)
+        let red = (num & 0xFF0000) >> 16
+        let green = (num & 0x00FF00) >> 8
+        let blue = (num & 0x0000FF) >> 0
+        return {
+            red: red,
+            green: green,
+            blue: blue,
+            quad: 255,
+        }
+    }
+
+    let palette = palette1.map(str => strToRGBObj(str))
+    while (palette.length < 128) {
+        palette.push({red: 0, green: 255, blue: 0, quad: 255})
+    }
+
+    const bmpData: IImage = {
+        data: id.data as unknown as Uint8Array,
+        bitPP: 8 as BitsPerPixel,
+        width: canvas.width,
+        height: canvas.height,
+        palette: palette,
+    }
+    return bmp.encode(bmpData)
 }
