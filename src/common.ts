@@ -147,9 +147,18 @@ export class EditableSheet extends Observable {
         this.name = 'unnamed sheet'
         this.id = genId('sheet')
     }
-    addSprite(img: EditableSprite) {
-        this.sprites.push(img)
+    addSprite(sprite: EditableSprite) {
+        this.sprites.push(sprite)
         this.fire(Changed,this)
+    }
+    removeSprite(sprite: EditableSprite) {
+        let n = this.sprites.indexOf(sprite)
+        if(n >= 0) {
+            this.sprites.splice(n,1)
+            this.fire(Changed,this)
+        } else {
+            console.warn("cannot delete sprite")
+        }
     }
     getImages() {
         return this.sprites.slice()
@@ -169,6 +178,7 @@ export class EditableSheet extends Observable {
             sprites: this.sprites.map(sp => sp.toJSONSprite())
         }
     }
+
 }
 
 export class EditableDocument extends Observable {

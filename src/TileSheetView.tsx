@@ -71,6 +71,12 @@ export function TileSheetView(props: {
         sheet.addSprite(new_tile)
         setTile(new_tile)
     }
+    const delete_tile = () => {
+        sheet.removeSprite(tile)
+        if(sheet.getImages().length > 0) {
+            setTile(sheet.getImages()[0])
+        }
+    }
     const export_bmp = () => {
         const canvas = sheet_to_canvas(sheet)
         const rawData = canvas_to_bmp(canvas, palette)
@@ -97,6 +103,7 @@ export function TileSheetView(props: {
         <div className={'toolbar'}>
             <button onClick={add_tile}>add tile</button>
             <button onClick={dup_tile}>dup tile</button>
+            <button onClick={delete_tile}>del tile</button>
         </div>
         <ListView className={'tile-list'} selected={tile}
                   setSelected={setTile}
