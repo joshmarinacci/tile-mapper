@@ -21,11 +21,17 @@ export function SheetList(props: {
     const add_sheet = () => {
         let sheet = new EditableSheet()
         doc.addSheet(sheet)
+        props.setSheet(sheet)
+    }
+    const delete_sheet = () => {
+        doc.removeSheet(props.sheet)
+        if(doc.getSheets().length > 0)  props.setSheet(doc.getSheets()[0])
     }
     return <div className={'pane'}>
         <header>sheets</header>
         <div className={'toolbar'}>
             <button onClick={add_sheet}>add sheet</button>
+            <button onClick={delete_sheet}>del sheet</button>
         </div>
         <ListView selected={sheet}
                   setSelected={setSheet}

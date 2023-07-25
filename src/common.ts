@@ -189,6 +189,15 @@ export class EditableDocument extends Observable {
         this.sheets.push(sheet)
         this.fire(Changed,this)
     }
+    removeSheet(sheet:EditableSheet) {
+        let n = this.sheets.indexOf(sheet)
+        if(n < 0) {
+            console.warn("cannot remove this sheet")
+        } else {
+            this.sheets.splice(n,1)
+            this.fire(Changed,this)
+        }
+    }
     getSheets():EditableSheet[] {
         return this.sheets.slice()
     }
