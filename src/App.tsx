@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {
     DialogContainer,
     DialogContext,
@@ -48,12 +48,45 @@ EMPTY_DOC.setPalette(PICO8)
 
 const maparray = new ArrayGrid<EditableSprite>(20,20)
 
+function make_new_doc(width: number, height: number) {
+    const pal = PICO8
+    const doc = new EditableDocument()
+    const sheet = new EditableSheet()
+    const img = new EditableSprite(width,height,pal)
+    sheet.addSprite(img)
+    doc.addSheet(sheet)
+    return doc
+}
+
+function NewDocDialog(props:{onComplete:(doc: EditableDocument)=>void}) {
+    const [width, setWidth] = useState(10)
+    const [height, setHeight] = useState(10)
+    const dc = useContext(DialogContext)
+    const create = () => {
+        let doc = make_new_doc(width,height)
+        props.onComplete(doc)
+        dc.hide()
+    }
+    return <div className={'dialog'}>
+        <header>new document</header>
+        <section>
+            <label>width</label> <input type={'number'} value={width} onChange={(e) => setWidth(parseInt(e.target.value))}/>
+            <label>height</label> <input type={'number'} value={height} onChange={(e) => setHeight(parseInt(e.target.value))}/>
+        </section>
+        <footer>
+            <button onClick={()=>dc.hide()}>cancel</button>
+            <button className={'primary'} onClick={create}>create</button>
+        </footer>
+    </div>
+}
+
 function Main() {
     const [doc, setDoc] = useState<EditableDocument>(EMPTY_DOC)
     const [drawColor, setDrawColor] = useState<string>(palette[0])
     const [sheets, setSheets] = useState<EditableSheet[]>(EMPTY_DOC.getSheets())
     const [sheet, setSheet] = useState<EditableSheet>(EMPTY_DOC.getSheets()[0])
     const [tile, setTile] = useState<EditableSprite>(EMPTY_DOC.getSheets()[0].getImages()[0])
+    const dc = useContext(DialogContext)
     const load_file = () => {
         let input_element = document.createElement('input')
         input_element.setAttribute('type','file')
@@ -81,6 +114,13 @@ function Main() {
         let blob = jsonObjToBlob(doc.toJSONDoc())
         forceDownloadBlob(`${doc.getName()}.json`,blob)
     }
+    const new_doc = () => {
+        dc.show(<NewDocDialog onComplete={(doc) => {
+            setDoc(doc)
+            setSheets(doc.getSheets())
+            setSheet(doc.getSheets()[0])
+        }}/>)
+    }
     const export_png = async () => {
         for(let sheet of doc.getSheets()) {
             const can = sheet_to_canvas(sheet)
@@ -96,9 +136,7 @@ function Main() {
         forceDownloadBlob(`${sheet.getName()}.bmp`,blob)
     }
     useEffect(() => {
-        let hand = () => {
-            setSheets(doc.getSheets())
-        }
+        let hand = () => setSheets(doc.getSheets())
         doc.addEventListener(Changed, hand)
         return () => doc.removeEventListener(Changed, hand)
     },[doc]);
@@ -106,7 +144,7 @@ function Main() {
     return (
         <VBox>
             <HBox >
-                <button>new</button>
+                <button onClick={new_doc}>new</button>
                 <button onClick={save_file}>save</button>
                 <button onClick={load_file}>load</button>
                 <button onClick={export_png}>to PNG</button>
