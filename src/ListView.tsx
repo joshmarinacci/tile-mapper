@@ -16,7 +16,7 @@ export function ListView<T>(props: {
                 'list-item':true,
                 selected:props.selected === v
             })} key={i}>
-                <Cell value={v} selected={props.selected} setSelected={props.setSelected}/>
+                <Cell value={v} index={i} selected={props.selected} setSelected={props.setSelected}/>
             </div>
         })}
     </div>

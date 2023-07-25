@@ -14,6 +14,7 @@ import {forceDownloadBlob} from "josh_web_util";
 
 function TilePreviewRenderer(props: {
     value: EditableSprite,
+    index: number,
     selected: any,
     setSelected: (value: any) => void
 }) {
@@ -35,7 +36,8 @@ function TilePreviewRenderer(props: {
         image.addEventListener(Changed, hand)
         return () => image.removeEventListener(Changed, hand)
     }, [image]);
-    return <canvas ref={ref} className={toClass({
+    return <div className={'tile-preview-wrapper'}>
+        <canvas ref={ref} className={toClass({
         'tile-preview': true,
         selected: props.selected === props.value
     })} style={{
@@ -46,6 +48,8 @@ function TilePreviewRenderer(props: {
                    height={image.height()}
                    onClick={() => props.setSelected(props.value)}
     ></canvas>
+        <b>{props.index}</b>
+    </div>
 }
 
 export function TileSheetView(props: {
