@@ -5,6 +5,7 @@ body {
 /* general */
 .list-view {
   border: 0px solid black;
+  width: 100%;
   padding: 0rem;
   margin: 0rem;
   display: flex;
@@ -12,6 +13,7 @@ body {
   flex-wrap: wrap;
   align-items: flex-start;
   align-content: flex-start;
+  overflow-y: scroll;
 }
 .list-view > .list-item {
   padding:0;
@@ -154,7 +156,7 @@ button.selected:active {
 }
 
 .tile-list {
-  width: 15rem;
+  width: 20rem;
   height: 200px;
 }
 

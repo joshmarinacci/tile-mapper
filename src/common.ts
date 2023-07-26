@@ -238,6 +238,9 @@ export class EditableDocument extends Observable {
 export function make_doc_from_json(raw_data: any) {
     if(raw_data['version'] !== 3) throw new Error("we cannot load this document")
     let json_doc = raw_data as JSONDoc
+    if(json_doc.color_palette.length === 0) {
+        json_doc.color_palette = PICO8
+    }
     let doc = new EditableDocument()
     doc.setName(json_doc.name)
     doc.setPalette(json_doc.color_palette)
