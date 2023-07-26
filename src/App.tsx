@@ -80,6 +80,25 @@ function NewDocDialog(props:{onComplete:(doc: EditableDocument)=>void}) {
     </div>
 }
 
+function EditableLabel(props: { onChange: (str: string) => void, value: string }) {
+    const [editing, setEditing] = useState(false)
+    const [value, setValue] = useState(props.value)
+    if(editing) {
+        return <input type={'text'} value={value}
+                      onChange={(e) => setValue(e.target.value)}
+                      onKeyDown={e => {
+                          if(e.key === 'Enter') {
+                              props.onChange(value)
+                              setEditing(false)
+                          }
+                      }}
+        />
+    } else {
+        return <label
+            onDoubleClick={e => setEditing(true)}>{props.value}</label>
+    }
+}
+
 function Main() {
     const [doc, setDoc] = useState<EditableDocument>(EMPTY_DOC)
     const [drawColor, setDrawColor] = useState<string>(palette[0])
@@ -149,7 +168,9 @@ function Main() {
                 <button onClick={load_file}>load</button>
                 <button onClick={export_png}>to PNG</button>
                 <button onClick={export_bmp}>to BMP</button>
-                <label>{doc.getName()}</label>
+                <EditableLabel value={doc.getName()} onChange={(str:string)=>{
+                    doc.setName(str)
+                }}/>
             </HBox>
             <div className={'main'}>
                 <SheetList sheet={sheet} setSheet={setSheet} doc={doc}/>
