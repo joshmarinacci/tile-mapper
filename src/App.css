@@ -163,3 +163,15 @@ button.selected:active {
 .tile-properties {
   min-width: 10rem;
 }
+
+.standard-form {
+  border: 0px solid red;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  justify-content: center;
+  align-items: baseline;
+}
+.standard-form label {
+  justify-self: end;
+  padding-right: 1rem;
+}

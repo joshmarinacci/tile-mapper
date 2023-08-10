@@ -32,6 +32,7 @@ import {TileSheetView} from "./TileSheetView";
 import {TestMap} from "./TestMap";
 import {SheetList} from "./SheetList";
 import {TileProperties} from "./TileProperties";
+import {NewDocDialog} from "./NewDocDialog";
 
 const palette:ImagePalette = PICO8
 
@@ -47,38 +48,6 @@ const EMPTY_DOC = new EditableDocument()
 EMPTY_DOC.setPalette(PICO8)
 
 const maparray = new ArrayGrid<EditableSprite>(20,20)
-
-function make_new_doc(width: number, height: number) {
-    const pal = PICO8
-    const doc = new EditableDocument()
-    const sheet = new EditableSheet()
-    const img = new EditableSprite(width,height,pal)
-    sheet.addSprite(img)
-    doc.addSheet(sheet)
-    return doc
-}
-
-function NewDocDialog(props:{onComplete:(doc: EditableDocument)=>void}) {
-    const [width, setWidth] = useState(10)
-    const [height, setHeight] = useState(10)
-    const dc = useContext(DialogContext)
-    const create = () => {
-        let doc = make_new_doc(width,height)
-        props.onComplete(doc)
-        dc.hide()
-    }
-    return <div className={'dialog'}>
-        <header>new document</header>
-        <section>
-            <label>width</label> <input type={'number'} value={width} onChange={(e) => setWidth(parseInt(e.target.value))}/>
-            <label>height</label> <input type={'number'} value={height} onChange={(e) => setHeight(parseInt(e.target.value))}/>
-        </section>
-        <footer>
-            <button onClick={()=>dc.hide()}>cancel</button>
-            <button className={'primary'} onClick={create}>create</button>
-        </footer>
-    </div>
-}
 
 function EditableLabel(props: { onChange: (str: string) => void, value: string }) {
     const [editing, setEditing] = useState(false)
@@ -138,6 +107,7 @@ function Main() {
             setDoc(doc)
             setSheets(doc.getSheets())
             setSheet(doc.getSheets()[0])
+            setTile(doc.getSheets()[0].getImages()[0])
         }}/>)
     }
     const export_png = async () => {
