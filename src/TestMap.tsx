@@ -43,11 +43,12 @@ export function TestMap(props: { tile: EditableSprite, mapArray: ArrayGrid<Edita
 
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
         let rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
-        return new Point(e.clientX, e.clientY)
+        let pt = new Point(e.clientX, e.clientY)
             .subtract(new Point(rect.left, rect.top))
             .scale(1 / scale)
-            .scale(1 / tile.width())
+        pt = new Point(pt.x / tile.width(), pt.y / tile.height())
             .floor()
+        return pt
     }
     return <div>
         <div className={'toolbar'}>
