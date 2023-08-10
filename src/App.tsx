@@ -34,8 +34,6 @@ import {SheetList} from "./SheetList";
 import {TileProperties} from "./TileProperties";
 import {NewDocDialog} from "./NewDocDialog";
 
-const palette:ImagePalette = PICO8
-
 const EMPTY_DOC = new EditableDocument()
 {
     const sheet = new EditableSheet()
@@ -70,7 +68,7 @@ function EditableLabel(props: { onChange: (str: string) => void, value: string }
 
 function Main() {
     const [doc, setDoc] = useState<EditableDocument>(EMPTY_DOC)
-    const [drawColor, setDrawColor] = useState<string>(palette[0])
+    const [drawColor, setDrawColor] = useState<string>(doc.getPalette()[0])
     const [sheets, setSheets] = useState<EditableSheet[]>(EMPTY_DOC.getSheets())
     const [sheet, setSheet] = useState<EditableSheet>(EMPTY_DOC.getSheets()[0])
     const [tile, setTile] = useState<EditableSprite>(EMPTY_DOC.getSheets()[0].getImages()[0])
@@ -146,17 +144,17 @@ function Main() {
                 <SheetList sheet={sheet} setSheet={setSheet} doc={doc}/>
                 <div className={'pane'}>
                     <header>Tile Sheet</header>
-                    {sheet&&<TileSheetView sheet={sheet} tile={tile} setTile={(t:EditableSprite)=> setTile(t)} palette={palette}/>}
+                    {sheet&&<TileSheetView sheet={sheet} tile={tile} setTile={(t:EditableSprite)=> setTile(t)} palette={doc.getPalette()}/>}
                 </div>
                 <div className={'pane'}>
                     <header>Tile Info</header>
                     {tile && <TileProperties tile={tile}/>}
                 </div>
-                <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor} palette={palette}/>
+                <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor} palette={doc.getPalette()}/>
                 {tile && <PixelGridEditor
-                    selectedColor={palette.indexOf(drawColor)}
-                    setSelectedColor={(n)=> setDrawColor(palette[n])}
-                    image={tile} palette={palette}/>}
+                    selectedColor={doc.getPalette().indexOf(drawColor)}
+                    setSelectedColor={(n)=> setDrawColor(doc.getPalette()[n])}
+                    image={tile} palette={doc.getPalette()}/>}
                 {!tile && <div>no tile selected</div>}
                 <div className={'pane'}>
                     <header>Test</header>

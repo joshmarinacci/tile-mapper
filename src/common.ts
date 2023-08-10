@@ -1,7 +1,8 @@
 import {genId, Point} from "josh_js_util";
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts";
 
-export const PICO8 = [
+export type ImagePalette = string[]
+export const PICO8:ImagePalette = [
     '#000000',
     '#1D2B53',
     '#7E2553',
@@ -20,7 +21,25 @@ export const PICO8 = [
     '#FFCCAA',
     'transparent',
 ]
-export type ImagePalette = string[]
+export const MINECRAFT:ImagePalette = [
+    '#ffffff',
+    '#999999',
+    '#4c4c4c',
+    '#191919',
+    '#664c33',
+    '#993333',
+    '#d87f33',
+    '#e5e533',
+    '#7fcc19',
+    '#667f33',
+    '#4c7f99',
+    '#6699d8',
+    '#334cb2',
+    '#7f3fb2',
+    '#b24cd8',
+    '#f27fa5',
+]
+
 type Etype = string
 type ObservableListener = (type: Etype) => void
 
