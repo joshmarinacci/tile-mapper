@@ -15,7 +15,8 @@ function SheetNameRenderer(props: {
 export function SheetList(props: {
     doc: EditableDocument,
     sheet: EditableSheet,
-    setSheet: (s: EditableSheet) => void
+    setSheet: (s: EditableSheet) => void,
+    editable: boolean
 }) {
     const {doc, sheet, setSheet} = props
     const add_sheet = () => {
@@ -29,10 +30,11 @@ export function SheetList(props: {
     }
     return <div className={'pane'}>
         <header>sheets</header>
+        {props.editable &&
         <div className={'toolbar'}>
             <button onClick={add_sheet}>add sheet</button>
             <button onClick={delete_sheet}>del sheet</button>
-        </div>
+        </div>}
         <ListView selected={sheet}
                   setSelected={setSheet}
                   renderer={SheetNameRenderer}

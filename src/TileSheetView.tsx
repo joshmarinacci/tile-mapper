@@ -56,9 +56,10 @@ export function TileSheetView(props: {
     sheet: EditableSheet,
     tile: EditableSprite,
     setTile: (tile: EditableSprite) => void,
-    palette: ImagePalette
+    palette: ImagePalette,
+    editable:boolean,
 }) {
-    const {sheet, tile, setTile, palette} = props
+    const {sheet, tile, setTile, palette, editable} = props
     const [tiles, setTiles] = useState(sheet.getImages())
     const [name, setName] = useState(sheet.getName())
     const add_tile = () => {
@@ -94,25 +95,28 @@ export function TileSheetView(props: {
         return () => sheet.removeEventListener(Changed, hand)
     }, [sheet]);
     return <>
-        <ul className={'props-sheet'}>
-            <li>
-                <b>Name</b>
-                <input type={'text'} value={name} onChange={(e) => sheet.setName(e.target.value)}/>
-            </li>
-        </ul>
-        <div className={'toolbar'}>
-            <button onClick={add_tile}>add tile</button>
-            <button onClick={dup_tile}>dup tile</button>
-            <button onClick={delete_tile}>del tile</button>
-        </div>
+        {editable &&
+            <ul className={'props-sheet'}>
+                <li>
+                    <b>Name</b>
+                    <input type={'text'} value={name} onChange={(e) => sheet.setName(e.target.value)}/>
+                </li>
+            </ul>}
+        {editable &&
+            <div className={'toolbar'}>
+                <button onClick={add_tile}>add tile</button>
+                <button onClick={dup_tile}>dup tile</button>
+                <button onClick={delete_tile}>del tile</button>
+            </div>}
         <ListView className={'tile-list'} selected={tile}
                   setSelected={setTile}
                   renderer={TilePreviewRenderer}
                   data={tiles}
                   style={{}}
         />
+        {editable &&
         <div className={'toolbar'}>
             <button onClick={export_bmp}>to BMP</button>
-        </div>
+        </div>}
     </>
 }
