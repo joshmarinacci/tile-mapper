@@ -1,6 +1,7 @@
 body {
   --selected-background-color:  cyan;
   --selected-border-color: white;
+  --pane-border: green;
 }
 /* general */
 .list-view {
@@ -62,7 +63,7 @@ button.selected:active {
 
 
 .props-sheet {
-  border: 0px solid red;
+  border: 1px solid var(--pane-border);
   padding: 0;
   margin: 0;
   list-style: none;
@@ -84,7 +85,7 @@ button.selected:active {
 }
 
 .pane {
-  border: 1px solid black;
+  border: 1px solid var(--pane-border);
   border-width: 0 1px 1px 0;
   display: flex;
   flex-direction: column;
@@ -150,7 +151,7 @@ button.selected:active {
   width: 15rem;
   height: 200px;
   flex-direction: column;
-  border: 1px solid red;
+  border: 1px solid var(--pane-border);
   align-content: stretch;
   align-items: stretch;
 }

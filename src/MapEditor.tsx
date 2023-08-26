@@ -7,6 +7,7 @@ import {
 } from "./model";
 import React, {MouseEvent, useEffect, useRef, useState} from "react";
 import {Point, Size} from "josh_js_util";
+import "./MapEditor.css"
 
 
 export function MapEditor(props: {
