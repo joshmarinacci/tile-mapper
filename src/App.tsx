@@ -24,16 +24,10 @@ import {
     PICO8,
     sheet_to_canvas
 } from "./common";
-import {PixelGridEditor} from "./PixelGridEditor";
-import {ArrayGrid} from "josh_js_util";
-import {PaletteColorPickerPane} from "./Palette";
-import {TileSheetView} from "./TileSheetView";
-import {TestMap} from "./TestMap";
-import {SheetList} from "./SheetList";
-import {TileProperties} from "./TileProperties";
 import {NewDocDialog} from "./NewDocDialog";
 import {MapModeView} from "./MapModeView";
 import {EditableLabel} from "./common-components";
+import {TileModeView} from "./TileModeView";
 
 const EMPTY_DOC = new EditableDocument()
 {
@@ -46,42 +40,6 @@ const EMPTY_DOC = new EditableDocument()
 }
 EMPTY_DOC.setPalette(PICO8)
 
-const maparray = new ArrayGrid<EditableSprite>(20,20)
-
-function TileModeView(props:{doc: EditableDocument}) {
-    const {doc} = props
-    const [sheets, setSheets] = useState<EditableSheet[]>(doc.getSheets())
-    const [drawColor, setDrawColor] = useState<string>(doc.getPalette()[0])
-    const [sheet, setSheet] = useState<EditableSheet>(doc.getSheets()[0])
-    const [tile, setTile] = useState<EditableSprite>(doc.getSheets()[0].getImages()[0])
-
-    return (<div className={'main'}>
-        <SheetList editable={true} sheet={sheet} setSheet={setSheet} doc={doc}/>
-        <div className={'pane'}>
-            <header>Tile Sheet</header>
-            {sheet&&<TileSheetView
-                editable={true}
-                sheet={sheet}
-                tile={tile}
-                setTile={(t:EditableSprite)=> setTile(t)}
-                palette={doc.getPalette()}/>}
-        </div>
-        <div className={'pane'}>
-            <header>Tile Info</header>
-            {tile && <TileProperties tile={tile}/>}
-        </div>
-        <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor} palette={doc.getPalette()}/>
-        {tile && <PixelGridEditor
-            selectedColor={doc.getPalette().indexOf(drawColor)}
-            setSelectedColor={(n)=> setDrawColor(doc.getPalette()[n])}
-            image={tile} palette={doc.getPalette()}/>}
-        {!tile && <div>no tile selected</div>}
-        <div className={'pane'}>
-            <header>Test</header>
-            <TestMap tile={tile} mapArray={maparray}/>
-        </div>
-    </div>)
-}
 
 const export_png = async (doc:EditableDocument) => {
     for(let sheet of doc.getSheets()) {

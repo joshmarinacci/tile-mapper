@@ -1,4 +1,4 @@
-import {genId, Point} from "josh_js_util";
+import {ArrayGrid, genId, Point} from "josh_js_util";
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts";
 
 export type ImagePalette = string[]
@@ -83,9 +83,15 @@ export type JSONSheet = {
     name:string,
     sprites:JSONSprite[]
 }
+export type JSONMap = {
+    id:string,
+    name:string,
+    cells:any[],
+}
 export type JSONDoc = {
     color_palette:string[]
     sheets:JSONSheet[],
+    maps: JSONMap[],
     version:number,
     name:string
 }
@@ -189,7 +195,6 @@ export class EditableSheet extends Observable {
         this.name = name
         this.fire(Changed,this)
     }
-
     toJSONSheet():JSONSheet {
         return {
             name:this.name,
@@ -197,17 +202,45 @@ export class EditableSheet extends Observable {
             sprites: this.sprites.map(sp => sp.toJSONSprite())
         }
     }
+}
 
+export class EditableMap extends Observable {
+    id:string
+    private name:string;
+    private cells: ArrayGrid<EditableSprite>;
+    constructor() {
+        super();
+        this.name = 'unnamed map'
+        this.id = genId('map')
+        this.cells = new ArrayGrid<EditableSprite>(20,20)
+    }
+    getName() {
+        return this.name
+    }
+    setName(name: string) {
+        this.name = name
+        this.fire(Changed,this)
+    }
+    toJSONMap():JSONMap {
+        return {
+            name: this.name,
+            id:this.id,
+            cells:this.cells.data
+        }
+
+    }
 }
 
 export class EditableDocument extends Observable {
     private palette:ImagePalette
     private sheets:EditableSheet[]
+    private maps:EditableMap[]
     private name:string
     constructor() {
         super();
         this.palette = []
         this.sheets = []
+        this.maps = []
         this.name = 'unnamed'
     }
     setName(name:string) {
@@ -230,6 +263,23 @@ export class EditableDocument extends Observable {
     getSheets():EditableSheet[] {
         return this.sheets.slice()
     }
+    addMap(map:EditableMap){
+        this.maps.push(map)
+        this.fire(Changed,this)
+    }
+    removeMap(map:EditableMap) {
+        let n = this.maps.indexOf(map)
+        if(n < 0) {
+            console.warn("cannot remove this map")
+        } else {
+            this.maps.splice(n,1)
+            this.fire(Changed,this)
+        }
+    }
+    getMaps():EditableMap[] {
+        return this.maps.slice()
+    }
+
     setPalette(palette:ImagePalette) {
         this.palette = palette
         this.fire(Changed,this)
@@ -243,8 +293,9 @@ export class EditableDocument extends Observable {
         let doc:JSONDoc = {
             name:this.getName(),
             color_palette: this.palette,
-            version: 3,
-            sheets: this.sheets.map(sh => sh.toJSONSheet())
+            version: 4,
+            sheets: this.sheets.map(sh => sh.toJSONSheet()),
+            maps: this.maps.map(mp => mp.toJSONMap()),
         }
         return doc
     }

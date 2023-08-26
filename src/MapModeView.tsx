@@ -1,4 +1,4 @@
-import {EditableDocument, EditableSheet, EditableSprite} from "./common";
+import {EditableDocument, EditableMap, EditableSheet, EditableSprite} from "./common";
 import React, {useState} from "react";
 import {MapEditor, MapList, MapProps} from "./MapList";
 import {SheetList} from "./SheetList";
@@ -6,12 +6,12 @@ import {TileSheetView} from "./TileSheetView";
 
 export function MapModeView(props: { doc: EditableDocument }) {
     const {doc} = props
-    const [selectedMap, setSelectedMap] = useState<EditableSheet>(doc.getSheets()[0])
+    const [selectedMap, setSelectedMap] = useState<EditableMap>(doc.getMaps()[0])
     const [selectedSheet, setSelectedSheet] = useState<EditableSheet>(doc.getSheets()[0])
     const [selectedTile, setSelectedTile] = useState<EditableSprite>(doc.getSheets()[0].getImages()[0])
 
     return <div className={'main'}>
-        <MapList map={selectedMap} setMap={setSelectedMap} doc={doc}/>
+        <MapList map={selectedMap} setMap={setSelectedMap} doc={doc} editable={true}/>
         <MapProps doc={doc} map={selectedMap}/>
         <SheetList
             editable={false}
