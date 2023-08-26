@@ -5,7 +5,9 @@ import {SheetList} from "./SheetList";
 import {TileSheetView} from "./TileSheetView";
 import {MapEditor} from "./MapEditor";
 
-export function MapModeView(props: { doc: EditableDocument }) {
+export function MapModeView(props: {
+    doc: EditableDocument
+}) {
     const {doc} = props
     const [selectedMap, setSelectedMap] = useState<EditableMap>(doc.getMaps()[0])
     const [selectedSheet, setSelectedSheet] = useState<EditableSheet>(doc.getSheets()[0])
@@ -29,6 +31,10 @@ export function MapModeView(props: { doc: EditableDocument }) {
                 setTile={(t: EditableSprite) => setSelectedTile(t)}
                 palette={doc.getPalette()}/>}
         </div>
-        <MapEditor map={selectedMap} sheet={selectedSheet} tile={selectedTile}/>
+        <MapEditor
+            doc={doc}
+            map={selectedMap}
+            sheet={selectedSheet}
+            tile={selectedTile}/>
     </div>
 }

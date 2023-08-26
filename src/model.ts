@@ -71,6 +71,7 @@ export class Observable {
 }
 
 export type JSONSprite = {
+    id:string
     name: string
     w: number,
     h: number,
@@ -83,10 +84,13 @@ export type JSONSheet = {
     name:string,
     sprites:JSONSprite[]
 }
+export type JSONMapCell = {
+    tile:string,
+}
 export type JSONMap = {
     id:string,
     name:string,
-    cells:any[],
+    cells:JSONMapCell[],
 }
 export type JSONDoc = {
     color_palette:string[]
@@ -102,7 +106,7 @@ export class EditableSprite extends Observable {
     private w: number;
     private h: number;
     data: number[];
-    private id:string
+    id:string
     private name:string;
     palette:ImagePalette;
     constructor(w:number, h:number, pallete:ImagePalette) {
@@ -141,6 +145,7 @@ export class EditableSprite extends Observable {
 
     toJSONSprite():JSONSprite {
         return {
+            id:this.id,
             name:this.name,
             w: this.w,
             h: this.h,
@@ -205,15 +210,19 @@ export class EditableSheet extends Observable {
     }
 }
 
+export type EditableMapCell = {
+    tile:string, //id of the sprite used to draw this
+}
 export class EditableMap extends Observable {
     id:string
     private name:string;
-    cells: ArrayGrid<EditableSprite>;
+    cells: ArrayGrid<EditableMapCell>;
     constructor() {
         super();
         this.name = 'unnamed map'
         this.id = genId('map')
-        this.cells = new ArrayGrid<EditableSprite>(20,10)
+        this.cells = new ArrayGrid<EditableMapCell>(20,10)
+        this.cells.fill(()=>({tile:"nothin"}))
     }
     getName() {
         return this.name
@@ -230,11 +239,9 @@ export class EditableMap extends Observable {
         }
 
     }
-
     width() {
         return this.cells.w
     }
-
     height() {
         return this.cells.h
     }
@@ -312,6 +319,15 @@ export class EditableDocument extends Observable {
     getPalette() {
         return this.palette
     }
+
+    lookup_sprite(id: string) {
+        for(const sheet of this.sheets) {
+            for(const sprite of sheet.sprites) {
+                if(sprite.id === id) return sprite
+            }
+        }
+        return null
+    }
 }
 
 export function make_doc_from_json(raw_data: any) {
@@ -327,7 +343,7 @@ export function make_doc_from_json(raw_data: any) {
     doc.setName(json_doc.name)
     doc.setPalette(json_doc.color_palette)
     json_doc.sheets.forEach(json_sheet => {
-        log(json_sheet)
+        log('sheet',json_sheet)
         let sheet = new EditableSheet()
         sheet.id = json_sheet.id
         sheet.setName(json_sheet.name)
@@ -335,10 +351,20 @@ export function make_doc_from_json(raw_data: any) {
         json_sheet.sprites.forEach(json_sprite => {
             log("sprite",json_sprite)
             let sprite = new EditableSprite(json_sprite.w,json_sprite.h,json_doc.color_palette)
+            sprite.id = json_sprite.id || genId('sprite')
             sprite.setName(json_sprite.name)
             sprite.data = json_sprite.data
             sheet.addSprite(sprite)
         })
+    })
+    json_doc.maps.forEach(json_map => {
+        log('map',json_map)
+        let map = new EditableMap()
+        map.id = json_map.id
+        map.setName(json_map.name)
+        map.cells.set_from_list(json_map.cells)
+        console.log("final map is",map)
+        doc.addMap(map)
     })
     return doc
 }

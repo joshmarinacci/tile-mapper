@@ -1,8 +1,16 @@
-import {drawEditableSprite, EditableMap, EditableSheet, EditableSprite} from "./model";
+import {
+    drawEditableSprite,
+    EditableDocument,
+    EditableMap,
+    EditableSheet,
+    EditableSprite
+} from "./model";
 import React, {MouseEvent, useEffect, useRef, useState} from "react";
 import {Point, Size} from "josh_js_util";
 
+
 export function MapEditor(props: {
+    doc: EditableDocument,
     map: EditableMap,
     sheet: EditableSheet,
     tile: EditableSprite,
@@ -28,7 +36,8 @@ export function MapEditor(props: {
                 if (v) {
                     ctx.save()
                     ctx.translate(n.x * size.w * scale, n.y * size.h * scale)
-                    drawEditableSprite(ctx, scale, v)
+                    let tile = props.doc.lookup_sprite(v.tile)
+                    if(tile) drawEditableSprite(ctx, scale, tile)
                     if (grid) {
                         ctx.strokeStyle = 'gray'
                         ctx.strokeRect(0, 0, size.w * scale-1, size.h * scale-1)
@@ -59,13 +68,13 @@ export function MapEditor(props: {
                 height={map.cells.h*scale*tile.height()}
                 onMouseDown={(e) => {
                     setDown(true)
-                    if(map) map.cells.set(canvasToImage(e),tile)
+                    if(map) map.cells.set(canvasToImage(e),{tile:tile.id})
                     // setCount(count + 1)
                     redraw()
                 }}
                 onMouseMove={(e) => {
                     if (down) {
-                        if(map) map.cells.set(canvasToImage(e), tile)
+                        if(map) map.cells.set(canvasToImage(e), {tile:tile.id})
                         redraw()
                     }
                 }}
