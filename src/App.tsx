@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {
     DialogContainer,
     DialogContext,
@@ -7,18 +7,17 @@ import {
     PopupContainer,
     PopupContext,
     PopupContextImpl,
+    Spacer,
     VBox
 } from "josh_react_util";
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util";
 import './App.css';
 import {
     canvas_to_bmp,
-    Changed,
     EditableDocument,
     EditableSheet,
     EditableSprite,
     fileToJson,
-    ImagePalette,
     jsonObjToBlob,
     log,
     make_doc_from_json,
@@ -33,6 +32,8 @@ import {TestMap} from "./TestMap";
 import {SheetList} from "./SheetList";
 import {TileProperties} from "./TileProperties";
 import {NewDocDialog} from "./NewDocDialog";
+import {MapModeView} from "./MapModeView";
+import {EditableLabel} from "./common-components";
 
 const EMPTY_DOC = new EditableDocument()
 {
@@ -47,37 +48,63 @@ EMPTY_DOC.setPalette(PICO8)
 
 const maparray = new ArrayGrid<EditableSprite>(20,20)
 
-function EditableLabel(props: { onChange: (str: string) => void, value: string }) {
-    const [editing, setEditing] = useState(false)
-    const [value, setValue] = useState(props.value)
-    if(editing) {
-        return <input type={'text'} value={value}
-                      onChange={(e) => setValue(e.target.value)}
-                      onKeyDown={e => {
-                          if(e.key === 'Enter') {
-                              props.onChange(value)
-                              setEditing(false)
-                          }
-                      }}
-        />
-    } else {
-        return <label
-            onDoubleClick={e => setEditing(true)}>{props.value}</label>
+function TileModeView(props:{doc: EditableDocument}) {
+    const {doc} = props
+    const [sheets, setSheets] = useState<EditableSheet[]>(doc.getSheets())
+    const [drawColor, setDrawColor] = useState<string>(doc.getPalette()[0])
+    const [sheet, setSheet] = useState<EditableSheet>(doc.getSheets()[0])
+    const [tile, setTile] = useState<EditableSprite>(doc.getSheets()[0].getImages()[0])
+
+    return (<div className={'main'}>
+        <SheetList editable={true} sheet={sheet} setSheet={setSheet} doc={doc}/>
+        <div className={'pane'}>
+            <header>Tile Sheet</header>
+            {sheet&&<TileSheetView
+                editable={true}
+                sheet={sheet}
+                tile={tile}
+                setTile={(t:EditableSprite)=> setTile(t)}
+                palette={doc.getPalette()}/>}
+        </div>
+        <div className={'pane'}>
+            <header>Tile Info</header>
+            {tile && <TileProperties tile={tile}/>}
+        </div>
+        <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor} palette={doc.getPalette()}/>
+        {tile && <PixelGridEditor
+            selectedColor={doc.getPalette().indexOf(drawColor)}
+            setSelectedColor={(n)=> setDrawColor(doc.getPalette()[n])}
+            image={tile} palette={doc.getPalette()}/>}
+        {!tile && <div>no tile selected</div>}
+        <div className={'pane'}>
+            <header>Test</header>
+            <TestMap tile={tile} mapArray={maparray}/>
+        </div>
+    </div>)
+}
+
+const export_png = async (doc:EditableDocument) => {
+    for(let sheet of doc.getSheets()) {
+        const can = sheet_to_canvas(sheet)
+        let blob = await canvas_to_blob(can)
+        forceDownloadBlob(`${doc.getName()}.${sheet.getName()}.png`,blob)
     }
 }
 
-function Main() {
-    const [doc, setDoc] = useState<EditableDocument>(EMPTY_DOC)
-    const [drawColor, setDrawColor] = useState<string>(doc.getPalette()[0])
-    const [sheets, setSheets] = useState<EditableSheet[]>(EMPTY_DOC.getSheets())
-    const [sheet, setSheet] = useState<EditableSheet>(EMPTY_DOC.getSheets()[0])
-    const [tile, setTile] = useState<EditableSprite>(EMPTY_DOC.getSheets()[0].getImages()[0])
-    const dc = useContext(DialogContext)
-    const load_file = () => {
-        let input_element = document.createElement('input')
-        input_element.setAttribute('type','file')
-        input_element.style.display = 'none'
-        document.body.appendChild(input_element)
+const export_bmp = async (doc:EditableDocument) => {
+    const sheet = doc.getSheets()[0]
+    const canvas = sheet_to_canvas(sheet)
+    const rawData = canvas_to_bmp(canvas, doc.getPalette())
+    let blob = new Blob([rawData.data], {type:'image/bmp'})
+    forceDownloadBlob(`${sheet.getName()}.bmp`,blob)
+}
+
+const load_file = async ():Promise<EditableDocument> => {
+    let input_element = document.createElement('input')
+    input_element.setAttribute('type','file')
+    input_element.style.display = 'none'
+    document.body.appendChild(input_element)
+    return new Promise((res,rej)=>{
         input_element.addEventListener('change',() => {
             console.log("user picked a file, we hope");
             let files = input_element.files;
@@ -88,79 +115,42 @@ function Main() {
                 log("got the data",data)
                 let doc = make_doc_from_json(data)
                 log('doc iss',doc)
-                setDoc(doc)
-                setSheets(doc.getSheets())
-                setSheet(doc.getSheets()[0])
-                setTile(doc.getSheets()[0].getImages()[0])
+                res(doc)
             })
         })
         input_element.click()
-    }
+    })
+}
+
+function Main() {
+    const [doc, setDoc] = useState<EditableDocument>(EMPTY_DOC)
+    const [mode, setMode ]= useState('tiles')
+    const dc = useContext(DialogContext)
     const save_file = () => {
         let blob = jsonObjToBlob(doc.toJSONDoc())
         forceDownloadBlob(`${doc.getName()}.json`,blob)
     }
     const new_doc = () => {
-        dc.show(<NewDocDialog onComplete={(doc) => {
-            setDoc(doc)
-            setSheets(doc.getSheets())
-            setSheet(doc.getSheets()[0])
-            setTile(doc.getSheets()[0].getImages()[0])
-        }}/>)
+        dc.show(<NewDocDialog onComplete={(doc) => setDoc(doc)}/>)
     }
-    const export_png = async () => {
-        for(let sheet of doc.getSheets()) {
-            const can = sheet_to_canvas(sheet)
-            let blob = await canvas_to_blob(can)
-            forceDownloadBlob(`${doc.getName()}.${sheet.getName()}.png`,blob)
-        }
-    }
-    const export_bmp = async () => {
-        const sheet = doc.getSheets()[0]
-        const canvas = sheet_to_canvas(sheet)
-        const rawData = canvas_to_bmp(canvas, doc.getPalette())
-        let blob = new Blob([rawData.data], {type:'image/bmp'})
-        forceDownloadBlob(`${sheet.getName()}.bmp`,blob)
-    }
-    useEffect(() => {
-        let hand = () => setSheets(doc.getSheets())
-        doc.addEventListener(Changed, hand)
-        return () => doc.removeEventListener(Changed, hand)
-    },[doc]);
-
     return (
         <VBox>
             <HBox >
                 <button onClick={new_doc}>new</button>
                 <button onClick={save_file}>save</button>
-                <button onClick={load_file}>load</button>
-                <button onClick={export_png}>to PNG</button>
-                <button onClick={export_bmp}>to BMP</button>
-                <EditableLabel value={doc.getName()} onChange={(str:string)=>{
-                    doc.setName(str)
-                }}/>
+                <button onClick={async ()=> {
+                    let doc = await load_file()
+                    setDoc(doc)
+                }}>load</button>
+                <button onClick={async () => await export_png(doc)}>to PNG</button>
+                <button onClick={async () => await export_bmp(doc)}>to BMP</button>
+                <EditableLabel value={doc.getName()} onChange={(str:string)=> doc.setName(str)}/>
+                <Spacer/>
+                <button onClick={()=>setMode('tiles')}>tiles</button>
+                <button onClick={()=>setMode('maps')}>maps</button>
             </HBox>
-            <div className={'main'}>
-                <SheetList sheet={sheet} setSheet={setSheet} doc={doc}/>
-                <div className={'pane'}>
-                    <header>Tile Sheet</header>
-                    {sheet&&<TileSheetView sheet={sheet} tile={tile} setTile={(t:EditableSprite)=> setTile(t)} palette={doc.getPalette()}/>}
-                </div>
-                <div className={'pane'}>
-                    <header>Tile Info</header>
-                    {tile && <TileProperties tile={tile}/>}
-                </div>
-                <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor} palette={doc.getPalette()}/>
-                {tile && <PixelGridEditor
-                    selectedColor={doc.getPalette().indexOf(drawColor)}
-                    setSelectedColor={(n)=> setDrawColor(doc.getPalette()[n])}
-                    image={tile} palette={doc.getPalette()}/>}
-                {!tile && <div>no tile selected</div>}
-                <div className={'pane'}>
-                    <header>Test</header>
-                    <TestMap tile={tile} mapArray={maparray}/>
-                </div>
-            </div>
+            {mode === 'tiles' && <TileModeView doc={doc}/>}
+            {mode === 'maps' && <MapModeView doc={doc}/>}
         </VBox>
     );
 }
