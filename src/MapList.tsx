@@ -1,6 +1,7 @@
-import {EditableDocument, EditableMap, EditableSheet, EditableSprite} from "./model";
+import {Changed, EditableDocument, EditableMap} from "./model";
 import {ListView} from "./ListView";
-import React from "react";
+import React, {useEffect, useState} from "react";
+import {HBox} from "josh_react_util";
 
 function MapNameRenderer(props: {
     value: EditableMap,
@@ -48,15 +49,33 @@ export function MapProps(props: {
     doc: EditableDocument,
     map: EditableMap,
 }) {
-    return  <div className={'pane'}>
+    const {map} = props
+    const [name, setName] = useState(map.getName())
+    useEffect(() => {
+        setName(map.getName())
+        let hand = () => setName(map.getName())
+        map.addEventListener(Changed, hand)
+        return () => map.removeEventListener(Changed, hand)
+    }, [map]);
+
+    return <div className={'pane'}>
         <header>map props</header>
+        <ul className={'props-sheet'}>
+            <li>
+                <b>width</b>
+                <label>{map.width()}</label>
+            </li>
+            <li>
+                <b>height</b>
+                <label>{map.height()}</label>
+            </li>
+            <li>
+                <b>name</b>
+                <input type={'text'}
+                       value={name}
+                       onChange={(e) => props.map.setName(e.target.value)}/>
+            </li>
+        </ul>
     </div>
 }
 
-export function MapEditor(props:{
-    map:EditableMap,
-    sheet:EditableSheet,
-    tile:EditableSprite,
-}) {
-    return <div>map editor</div>
-}

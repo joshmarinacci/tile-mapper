@@ -95,6 +95,7 @@ export type JSONDoc = {
     version:number,
     name:string
 }
+const CURRENT_VERSION = 4
 export const Changed = 'changed'
 
 export class EditableSprite extends Observable {
@@ -207,12 +208,12 @@ export class EditableSheet extends Observable {
 export class EditableMap extends Observable {
     id:string
     private name:string;
-    private cells: ArrayGrid<EditableSprite>;
+    cells: ArrayGrid<EditableSprite>;
     constructor() {
         super();
         this.name = 'unnamed map'
         this.id = genId('map')
-        this.cells = new ArrayGrid<EditableSprite>(20,20)
+        this.cells = new ArrayGrid<EditableSprite>(20,10)
     }
     getName() {
         return this.name
@@ -228,6 +229,14 @@ export class EditableMap extends Observable {
             cells:this.cells.data
         }
 
+    }
+
+    width() {
+        return this.cells.w
+    }
+
+    height() {
+        return this.cells.h
     }
 }
 
@@ -293,7 +302,7 @@ export class EditableDocument extends Observable {
         let doc:JSONDoc = {
             name:this.getName(),
             color_palette: this.palette,
-            version: 4,
+            version: CURRENT_VERSION,
             sheets: this.sheets.map(sh => sh.toJSONSheet()),
             maps: this.maps.map(mp => mp.toJSONMap()),
         }
@@ -306,7 +315,10 @@ export class EditableDocument extends Observable {
 }
 
 export function make_doc_from_json(raw_data: any) {
-    if(raw_data['version'] !== 3) throw new Error("we cannot load this document")
+    if(raw_data['version'] < 3) throw new Error("we cannot load this document")
+    if(raw_data['version'] < 4) {
+        raw_data.maps = []
+    }
     let json_doc = raw_data as JSONDoc
     if(json_doc.color_palette.length === 0) {
         json_doc.color_palette = PICO8
@@ -347,6 +359,7 @@ export function fileToJson(file:File) {
 }
 
 export function jsonObjToBlob(toJsonObj: any) {
+    console.log('saving out',toJsonObj)
     let str = JSON.stringify(toJsonObj, null, '   ');
     return new Blob([str]);
 }

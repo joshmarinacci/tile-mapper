@@ -1,8 +1,9 @@
 import {EditableDocument, EditableMap, EditableSheet, EditableSprite} from "./model";
 import React, {useState} from "react";
-import {MapEditor, MapList, MapProps} from "./MapList";
+import {MapList, MapProps} from "./MapList";
 import {SheetList} from "./SheetList";
 import {TileSheetView} from "./TileSheetView";
+import {MapEditor} from "./MapEditor";
 
 export function MapModeView(props: { doc: EditableDocument }) {
     const {doc} = props
@@ -12,7 +13,8 @@ export function MapModeView(props: { doc: EditableDocument }) {
 
     return <div className={'main'}>
         <MapList map={selectedMap} setMap={setSelectedMap} doc={doc} editable={true}/>
-        <MapProps doc={doc} map={selectedMap}/>
+        {!selectedMap && <div>no map selected</div>}
+        {selectedMap && <MapProps doc={doc} map={selectedMap}/>}
         <SheetList
             editable={false}
             sheet={selectedSheet}
