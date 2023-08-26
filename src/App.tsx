@@ -23,7 +23,7 @@ import {
     make_doc_from_json,
     PICO8,
     sheet_to_canvas
-} from "./common";
+} from "./model";
 import {NewDocDialog} from "./NewDocDialog";
 import {MapModeView} from "./MapModeView";
 import {EditableLabel} from "./common-components";

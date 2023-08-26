@@ -1,4 +1,4 @@
-import {EditableDocument, EditableMap, EditableSheet, EditableSprite} from "./common";
+import {EditableDocument, EditableMap, EditableSheet, EditableSprite} from "./model";
 import React, {useState} from "react";
 import {MapEditor, MapList, MapProps} from "./MapList";
 import {SheetList} from "./SheetList";

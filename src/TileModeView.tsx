@@ -1,4 +1,4 @@
-import {EditableDocument, EditableSheet, EditableSprite} from "./common";
+import {EditableDocument, EditableSheet, EditableSprite} from "./model";
 import React, {useState} from "react";
 import {ArrayGrid} from "josh_js_util";
 import {SheetList} from "./SheetList";

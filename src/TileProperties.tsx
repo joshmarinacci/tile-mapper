@@ -1,4 +1,4 @@
-import {Changed, EditableSprite} from "./common";
+import {Changed, EditableSprite} from "./model";
 import React, {useEffect, useState} from "react";
 
 export function TileProperties(props: { tile: EditableSprite }) {

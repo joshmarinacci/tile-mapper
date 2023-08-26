@@ -1,4 +1,4 @@
-import {Changed, drawEditableSprite, EditableSprite} from "./common";
+import {Changed, drawEditableSprite, EditableSprite} from "./model";
 import {ArrayGrid, Point} from "josh_js_util";
 import React, {MouseEvent, useEffect, useRef, useState} from "react";
 

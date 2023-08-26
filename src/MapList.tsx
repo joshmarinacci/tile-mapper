@@ -1,4 +1,4 @@
-import {EditableDocument, EditableMap, EditableSheet, EditableSprite} from "./common";
+import {EditableDocument, EditableMap, EditableSheet, EditableSprite} from "./model";
 import {ListView} from "./ListView";
 import React from "react";
 

@@ -5,7 +5,7 @@ import {
     ImagePalette,
     MINECRAFT,
     PICO8
-} from "./common";
+} from "./model";
 import React, {useContext, useState} from "react";
 import {DialogContext} from "josh_react_util";
 

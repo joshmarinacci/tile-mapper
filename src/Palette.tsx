@@ -1,7 +1,7 @@
 import {toClass} from "josh_react_util";
 import React from "react";
 import {ListView} from "./ListView";
-import {ImagePalette} from "./common";
+import {ImagePalette} from "./model";
 
 function PaletteColorRenderer(props: {
     value: string,

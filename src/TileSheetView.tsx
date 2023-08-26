@@ -6,7 +6,7 @@ import {
     EditableSprite, ImagePalette,
     PICO8,
     sheet_to_canvas
-} from "./common";
+} from "./model";
 import React, {useEffect, useRef, useState} from "react";
 import {ListView} from "./ListView";
 import {toClass} from "josh_react_util";
