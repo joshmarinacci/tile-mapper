@@ -90,6 +90,8 @@ export type JSONMapCell = {
 export type JSONMap = {
     id:string,
     name:string,
+    width:number,
+    height:number,
     cells:JSONMapCell[],
 }
 export type JSONDoc = {
@@ -217,11 +219,11 @@ export class EditableMap extends Observable {
     id:string
     private name:string;
     cells: ArrayGrid<EditableMapCell>;
-    constructor() {
+    constructor(width:number, height:number) {
         super();
         this.name = 'unnamed map'
         this.id = genId('map')
-        this.cells = new ArrayGrid<EditableMapCell>(20,10)
+        this.cells = new ArrayGrid<EditableMapCell>(width, height)
         this.cells.fill(()=>({tile:"nothin"}))
     }
     getName() {
@@ -235,9 +237,10 @@ export class EditableMap extends Observable {
         return {
             name: this.name,
             id:this.id,
+            width:this.cells.w,
+            height:this.cells.h,
             cells:this.cells.data
         }
-
     }
     width() {
         return this.cells.w
@@ -359,7 +362,7 @@ export function make_doc_from_json(raw_data: any) {
     })
     json_doc.maps.forEach(json_map => {
         log('map',json_map)
-        let map = new EditableMap()
+        let map = new EditableMap(json_map.width,json_map.height)
         map.id = json_map.id
         map.setName(json_map.name)
         map.cells.set_from_list(json_map.cells)

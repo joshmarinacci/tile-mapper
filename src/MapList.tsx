@@ -1,7 +1,8 @@
 import {Changed, EditableDocument, EditableMap} from "./model";
 import {ListView} from "./ListView";
-import React, {useEffect, useState} from "react";
-import {HBox} from "josh_react_util";
+import React, {useContext, useEffect, useState} from "react";
+import {DialogContext, HBox} from "josh_react_util";
+import {NewMapDialog} from "./NewMapDialog";
 
 function MapNameRenderer(props: {
     value: EditableMap,
@@ -20,10 +21,12 @@ export function MapList(props:{
     setMap: (s: EditableMap) => void
 }) {
     const {doc, map, setMap} = props
+    const dc = useContext(DialogContext)
     const add_map = () => {
-        let map = new EditableMap()
-        doc.addMap(map)
-        setMap(map)
+        dc.show(<NewMapDialog onComplete={(map) => {
+            doc.addMap(map)
+            setMap(map)
+        }}/>)
     }
     const delete_map = () => {
         doc.removeMap(map)

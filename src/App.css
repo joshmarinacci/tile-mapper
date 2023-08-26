@@ -1,7 +1,7 @@
 body {
   --selected-background-color:  cyan;
   --selected-border-color: white;
-  --pane-border: green;
+  --pane-border: #444;
 }
 /* general */
 .list-view {
