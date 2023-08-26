@@ -8,6 +8,30 @@ import {
 import React, {MouseEvent, useEffect, useRef, useState} from "react";
 import {Point, Size} from "josh_js_util";
 import "./MapEditor.css"
+import {toClass} from "josh_react_util";
+
+function calculateDirections() {
+    return [
+        new Point(-1,0),
+        new Point(1,0),
+        new Point(0,-1),
+        new Point(0,1)
+    ]
+}
+
+function bucketFill(map: EditableMap, target: string, replace:string, at: Point, ) {
+    if(target === replace) return
+    let v = map.cells.get(at)
+    if(v.tile !== target) return
+    if(v.tile === target) {
+        map.cells.set(at,{tile:replace})
+        calculateDirections().forEach(dir => {
+            let pt = at.add(dir)
+            // @ts-ignore
+            if(map.cells.isValidIndex(pt)) bucketFill(map,target,replace,pt)
+        })
+    }
+}
 
 
 export function MapEditor(props: {
@@ -15,6 +39,7 @@ export function MapEditor(props: {
     map: EditableMap,
     sheet: EditableSheet,
     tile: EditableSprite,
+    setSelectedTile:any,
 }) {
     const {map, tile} = props
     const [grid, setGrid] = useState<boolean>(false)
@@ -57,17 +82,41 @@ export function MapEditor(props: {
             .floor()
         return pt
     }
+    const [fillOnce, setFillOnce] = useState<boolean>(false)
 
     if(!map)  return <div>select a map</div>
-    return <div>
+    return <div className={'map-editor'}>
         <div className={'toolbar'}>
             <button onClick={() => setGrid(!grid)}>grid</button>
+            <button onClick={() => setFillOnce(true)}
+                    className={toClass({ selected:fillOnce })}
+            >fill</button>
         </div>
         <div className={'map-editor-canvas-wrapper'}>
         <canvas ref={ref}
                 width={map.cells.w*scale*tile.width()}
                 height={map.cells.h*scale*tile.height()}
+                onContextMenu={(e) => {
+                    e.preventDefault()
+                }}
                 onMouseDown={(e) => {
+                    if(e.button === 2) {
+                        let cell = map.cells.get(canvasToImage(e))
+                        let tile = props.doc.lookup_sprite(cell.tile)
+                        if(tile) props.setSelectedTile(tile)
+                        e.stopPropagation()
+                        e.preventDefault()
+                        return
+                    }
+                    if(fillOnce) {
+                        let pt = canvasToImage(e)
+                        let cell = map.cells.get(pt)
+                        bucketFill(map,cell.tile,tile.id,pt)
+                        setFillOnce(false)
+                        redraw()
+                        return
+                    }
+
                     setDown(true)
                     if(map) map.cells.set(canvasToImage(e),{tile:tile.id})
                     // setCount(count + 1)

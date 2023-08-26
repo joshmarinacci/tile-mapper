@@ -35,6 +35,8 @@ export function MapModeView(props: {
             doc={doc}
             map={selectedMap}
             sheet={selectedSheet}
-            tile={selectedTile}/>
+            tile={selectedTile}
+            setSelectedTile={setSelectedTile}
+        />
     </div>
 }

@@ -1,6 +1,16 @@
 import {ArrayGrid, genId, Point} from "josh_js_util";
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts";
 
+// @ts-ignore
+ArrayGrid.prototype.isValidIndex = function(pt: Point) {
+    if(pt.x < 0) return false
+    if(pt.y < 0) return false
+    if(pt.x >= this.w) return false
+    if(pt.y >= this.h) return false
+    return true
+}
+
+
 export type ImagePalette = string[]
 export const PICO8:ImagePalette = [
     '#000000',
@@ -366,7 +376,6 @@ export function make_doc_from_json(raw_data: any) {
         map.id = json_map.id
         map.setName(json_map.name)
         map.cells.set_from_list(json_map.cells)
-        console.log("final map is",map)
         doc.addMap(map)
     })
     return doc
