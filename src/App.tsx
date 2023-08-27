@@ -92,8 +92,8 @@ function Main() {
         dc.show(<NewDocDialog onComplete={(doc) => setDoc(doc)}/>)
     }
     return (
-        <VBox>
-            <HBox >
+        <>
+            <div className={'toolbar'}>
                 <button onClick={new_doc}>new</button>
                 <button onClick={save_file}>save</button>
                 <button onClick={async ()=> {
@@ -106,10 +106,10 @@ function Main() {
                 <Spacer/>
                 <button onClick={()=>setMode('tiles')}>tiles</button>
                 <button onClick={()=>setMode('maps')}>maps</button>
-            </HBox>
+            </div>
             {mode === 'tiles' && <TileModeView doc={doc}/>}
             {mode === 'maps' && <MapModeView doc={doc}/>}
-        </VBox>
+        </>
     );
 }
 

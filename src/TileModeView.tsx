@@ -7,6 +7,7 @@ import {TileProperties} from "./TileProperties";
 import {PaletteColorPickerPane} from "./Palette";
 import {PixelGridEditor} from "./PixelGridEditor";
 import {TestMap} from "./TestMap";
+import {HBox} from "josh_react_util";
 
 export function TileModeView(props: { doc: EditableDocument }) {
     const {doc} = props
@@ -16,31 +17,35 @@ export function TileModeView(props: { doc: EditableDocument }) {
     const [tile, setTile] = useState<EditableSprite>(doc.getSheets()[0].getImages()[0])
     const [maparray] = useState(() => new ArrayGrid<EditableSprite>(20, 20))
 
-    return (<div className={'main'}>
-        <SheetList editable={true} sheet={sheet} setSheet={setSheet} doc={doc}/>
-        <div className={'pane'}>
-            <header>Tile Sheet</header>
-            {sheet && <TileSheetView
-                editable={true}
-                sheet={sheet}
-                tile={tile}
-                setTile={(t: EditableSprite) => setTile(t)}
-                palette={doc.getPalette()}/>}
-        </div>
-        <div className={'pane'}>
-            <header>Tile Info</header>
-            {tile && <TileProperties tile={tile}/>}
-        </div>
-        <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor}
-                                palette={doc.getPalette()}/>
-        {tile && <PixelGridEditor
-            selectedColor={doc.getPalette().indexOf(drawColor)}
-            setSelectedColor={(n) => setDrawColor(doc.getPalette()[n])}
-            image={tile} palette={doc.getPalette()}/>}
-        {!tile && <div>no tile selected</div>}
-        <div className={'pane'}>
-            <header>Test</header>
-            <TestMap tile={tile} mapArray={maparray}/>
-        </div>
-    </div>)
+    return (<>
+        <HBox>
+            <SheetList editable={true} sheet={sheet} setSheet={setSheet} doc={doc}/>
+            <div className={'pane'}>
+                <header>Tile Sheet</header>
+                {sheet && <TileSheetView
+                    editable={true}
+                    sheet={sheet}
+                    tile={tile}
+                    setTile={(t: EditableSprite) => setTile(t)}
+                    palette={doc.getPalette()}/>}
+            </div>
+            <div className={'pane'}>
+                <header>Tile Info</header>
+                {tile && <TileProperties tile={tile}/>}
+            </div>
+        </HBox>
+        <HBox>
+            <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor}
+                                    palette={doc.getPalette()}/>
+            {tile && <PixelGridEditor
+                selectedColor={doc.getPalette().indexOf(drawColor)}
+                setSelectedColor={(n) => setDrawColor(doc.getPalette()[n])}
+                image={tile} palette={doc.getPalette()}/>}
+            {!tile && <div>no tile selected</div>}
+            <div className={'pane'}>
+                <header>Test</header>
+                <TestMap tile={tile} mapArray={maparray}/>
+            </div>
+        </HBox>
+    </>)
 }

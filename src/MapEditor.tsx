@@ -62,6 +62,8 @@ export function MapEditor(props: {
             if(!map) return
             map.cells.forEach((v, n) => {
                 if (v) {
+                    let x = n.x*size.w*scale
+                    let y = n.y*size.w*scale
                     let tile = props.doc.lookup_sprite(v.tile)
                     if(tile) {
                         if(tile.cache_canvas) {
@@ -69,8 +71,8 @@ export function MapEditor(props: {
                                 //src
                                 0,0,tile.cache_canvas.width,tile.cache_canvas.height,
                                 //dst
-                                n.x*size.w*scale,
-                                n.y*size.w*scale,
+                                x,
+                                y,
                                 size.w*scale,size.h*scale
                                 )
                         } else {
@@ -79,7 +81,7 @@ export function MapEditor(props: {
                     }
                     if (grid) {
                         ctx.strokeStyle = 'gray'
-                        ctx.strokeRect(0, 0, size.w * scale-1, size.h * scale-1)
+                        ctx.strokeRect(x, y, size.w * scale-1, size.h * scale-1)
                     }
                 }
             })
@@ -100,7 +102,7 @@ export function MapEditor(props: {
         redraw()
     },[zoom])
     if(!map)  return <div>select a map</div>
-    return <div className={'map-editor'}>
+    return <>
         <div className={'toolbar'}>
             <button onClick={() => setGrid(!grid)}>grid</button>
             <button onClick={() => setFillOnce(true)}
@@ -148,6 +150,6 @@ export function MapEditor(props: {
                 onMouseUp={(e) => setDown(false)}
         />
         </div>
-    </div>
+    </>
 
 }

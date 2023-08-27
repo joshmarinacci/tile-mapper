@@ -1,8 +1,19 @@
 body {
-  --selected-background-color:  cyan;
+  --selected-background-color: cyan;
   --selected-border-color: white;
   --pane-border: #444;
 }
+
+#root {
+  border: 0px solid red;
+  box-sizing: border-box;
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
 /* general */
 .list-view {
   border: 0px solid black;
@@ -144,8 +155,6 @@ button.selected:active {
 }
 
 .sheet-list, .map-list {
-  width: 15rem;
-  height: 200px;
   flex-direction: column;
   border: 1px solid var(--pane-border);
   align-content: stretch;

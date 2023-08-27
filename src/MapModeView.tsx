@@ -14,7 +14,7 @@ export function MapModeView(props: {
     const [selectedSheet, setSelectedSheet] = useState<EditableSheet>(doc.getSheets()[0])
     const [selectedTile, setSelectedTile] = useState<EditableSprite>(doc.getSheets()[0].getImages()[0])
 
-    return <div className={'map-mode-view'}>
+    return <>
         <HBox>
             <MapList map={selectedMap} setMap={setSelectedMap} doc={doc} editable={true}/>
             {!selectedMap && <div>no map selected</div>}
@@ -41,5 +41,5 @@ export function MapModeView(props: {
             tile={selectedTile}
             setSelectedTile={setSelectedTile}
         />
-    </div>
+    </>
 }
