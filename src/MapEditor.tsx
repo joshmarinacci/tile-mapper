@@ -51,7 +51,6 @@ export function MapEditor(props: {
 
     const [zoom, setZoom] = useState(2)
     const scale = Math.pow(2,zoom)
-    console.log("zoom is",zoom,scale)
     const redraw = () => {
         if (ref.current) {
             let canvas = ref.current
@@ -63,13 +62,16 @@ export function MapEditor(props: {
             if(!map) return
             map.cells.forEach((v, n) => {
                 if (v) {
-                    ctx.save()
-                    ctx.translate(n.x * size.w * scale, n.y * size.h * scale)
                     let tile = props.doc.lookup_sprite(v.tile)
                     if(tile) {
                         if(tile.cache_canvas) {
-                            ctx.drawImage(tile.cache_canvas,0,0,tile.cache_canvas.width,tile.cache_canvas.height,
-                                0,0,size.w*scale-1,size.h*scale-1
+                            ctx.drawImage(tile.cache_canvas,
+                                //src
+                                0,0,tile.cache_canvas.width,tile.cache_canvas.height,
+                                //dst
+                                n.x*size.w*scale,
+                                n.y*size.w*scale,
+                                size.w*scale,size.h*scale
                                 )
                         } else {
                             drawEditableSprite(ctx, scale, tile)
@@ -79,7 +81,6 @@ export function MapEditor(props: {
                         ctx.strokeStyle = 'gray'
                         ctx.strokeRect(0, 0, size.w * scale-1, size.h * scale-1)
                     }
-                    ctx.restore()
                 }
             })
         }

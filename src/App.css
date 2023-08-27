@@ -38,6 +38,8 @@ body {
 
 .toolbar {
   border: 1px solid black;
+  display: flex;
+  flex-direction: row;
 }
 
 
@@ -139,12 +141,6 @@ button.selected:active {
   bottom:0.5rem;
   font-size: 10px;
   text-shadow: 1px 1px black, -1px -1px black;
-}
-
-.main {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
 }
 
 .sheet-list, .map-list {
