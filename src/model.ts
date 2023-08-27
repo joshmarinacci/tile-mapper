@@ -121,6 +121,7 @@ export class EditableSprite extends Observable {
     id:string
     private name:string;
     palette:ImagePalette;
+    cache_canvas: HTMLCanvasElement | null
     constructor(w:number, h:number, pallete:ImagePalette) {
         super();
         this.name = 'unnamed'
@@ -132,10 +133,13 @@ export class EditableSprite extends Observable {
         for (let k = 0; k < this.w * this.h; k++) {
             this.data[k] = 0
         }
+        this.cache_canvas = null
+        this.rebuild_cache()
     }
     setPixel(number: number, point: Point) {
         let n = point.x + point.y * this.w
         this.data[point.x + point.y * this.w] = number
+        this.rebuild_cache()
         this.fire(Changed,this)
     }
     width() {
@@ -176,7 +180,17 @@ export class EditableSprite extends Observable {
     clone() {
         let new_tile = new EditableSprite(this.width(),this.height(),this.palette)
         new_tile.data = this.data.slice()
+        new_tile.rebuild_cache()
         return new_tile
+    }
+
+    rebuild_cache() {
+        this.cache_canvas = document.createElement('canvas')
+        this.cache_canvas.width = this.width()
+        this.cache_canvas.height = this.height()
+        let ctx = this.cache_canvas.getContext('2d') as CanvasRenderingContext2D
+        drawEditableSprite(ctx,1,this)
+        console.log("rebuild",this.name)
     }
 }
 
@@ -265,12 +279,14 @@ export class EditableDocument extends Observable {
     private sheets:EditableSheet[]
     private maps:EditableMap[]
     private name:string
+    private sprite_lookup:Map<string,EditableSprite>
     constructor() {
         super();
         this.palette = []
         this.sheets = []
         this.maps = []
         this.name = 'unnamed'
+        this.sprite_lookup = new Map()
     }
     setName(name:string) {
         this.name = name
@@ -334,9 +350,14 @@ export class EditableDocument extends Observable {
     }
 
     lookup_sprite(id: string) {
+        if(this.sprite_lookup.has(id)) return this.sprite_lookup.get(id)
         for(const sheet of this.sheets) {
             for(const sprite of sheet.sprites) {
-                if(sprite.id === id) return sprite
+                if(sprite.id === id) {
+                    console.log("missed the cache",sprite.id)
+                    this.sprite_lookup.set(sprite.id,sprite)
+                    return sprite
+                }
             }
         }
         return null
@@ -367,6 +388,7 @@ export function make_doc_from_json(raw_data: any) {
             sprite.id = json_sprite.id || genId('sprite')
             sprite.setName(json_sprite.name)
             sprite.data = json_sprite.data
+            sprite.rebuild_cache()
             sheet.addSprite(sprite)
         })
     })

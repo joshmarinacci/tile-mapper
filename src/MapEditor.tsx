@@ -49,11 +49,14 @@ export function MapEditor(props: {
         redraw()
     }, [grid, map])
 
-    const scale = 4
+    const [zoom, setZoom] = useState(2)
+    const scale = Math.pow(2,zoom)
+    console.log("zoom is",zoom,scale)
     const redraw = () => {
         if (ref.current) {
             let canvas = ref.current
             let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+            ctx.imageSmoothingEnabled = false
             ctx.fillStyle = 'red'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             let size = new Size(tile.width(),tile.height())
@@ -63,7 +66,15 @@ export function MapEditor(props: {
                     ctx.save()
                     ctx.translate(n.x * size.w * scale, n.y * size.h * scale)
                     let tile = props.doc.lookup_sprite(v.tile)
-                    if(tile) drawEditableSprite(ctx, scale, tile)
+                    if(tile) {
+                        if(tile.cache_canvas) {
+                            ctx.drawImage(tile.cache_canvas,0,0,tile.cache_canvas.width,tile.cache_canvas.height,
+                                0,0,size.w*scale-1,size.h*scale-1
+                                )
+                        } else {
+                            drawEditableSprite(ctx, scale, tile)
+                        }
+                    }
                     if (grid) {
                         ctx.strokeStyle = 'gray'
                         ctx.strokeRect(0, 0, size.w * scale-1, size.h * scale-1)
@@ -84,6 +95,9 @@ export function MapEditor(props: {
     }
     const [fillOnce, setFillOnce] = useState<boolean>(false)
 
+    useEffect(() => {
+        redraw()
+    },[zoom])
     if(!map)  return <div>select a map</div>
     return <div className={'map-editor'}>
         <div className={'toolbar'}>
@@ -91,6 +105,8 @@ export function MapEditor(props: {
             <button onClick={() => setFillOnce(true)}
                     className={toClass({ selected:fillOnce })}
             >fill</button>
+            <button onClick={()=>setZoom(zoom+1)}>+</button>
+            <button onClick={()=>setZoom(zoom-1)}>-</button>
         </div>
         <div className={'map-editor-canvas-wrapper'}>
         <canvas ref={ref}
