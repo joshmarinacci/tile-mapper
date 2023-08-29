@@ -9,6 +9,7 @@ import React, {MouseEvent, useEffect, useRef, useState} from "react";
 import {Point, Size} from "josh_js_util";
 import "./MapEditor.css"
 import {toClass} from "josh_react_util";
+import {canvas_to_blob, forceDownloadBlob} from "josh_web_util";
 
 function calculateDirections() {
     return [
@@ -34,6 +35,43 @@ function bucketFill(map: EditableMap, target: string, replace:string, at: Point,
 }
 
 
+function map_to_canvas(map: EditableMap, tile: EditableSprite, doc: EditableDocument, scale: number):HTMLCanvasElement {
+    const canvas = document.createElement('canvas')
+    canvas.width = map.width()*scale*tile.width()
+    canvas.height = map.height()*scale*tile.height()
+    let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+    ctx.imageSmoothingEnabled = false
+    let size = new Size(tile.width(),tile.height())
+    map.cells.forEach((v, n) => {
+        if (v) {
+            let x = n.x*size.w*scale
+            let y = n.y*size.w*scale
+            let tile = doc.lookup_sprite(v.tile)
+            if(tile) {
+                if(tile.cache_canvas) {
+                    ctx.drawImage(tile.cache_canvas,
+                        //src
+                        0,0,tile.cache_canvas.width,tile.cache_canvas.height,
+                        //dst
+                        x,
+                        y,
+                        size.w*scale,size.h*scale
+                    )
+                } else {
+                    drawEditableSprite(ctx, scale, tile)
+                }
+            }
+        }
+    })
+    return canvas
+}
+
+async function exportPNG(doc:EditableDocument, map: EditableMap,tile:EditableSprite, scale: number) {
+    const can = map_to_canvas(map,tile, doc,scale)
+    let blob = await canvas_to_blob(can)
+    forceDownloadBlob(`${map.getName()}.${scale}x.png`, blob)
+}
+
 export function MapEditor(props: {
     doc: EditableDocument,
     map: EditableMap,
@@ -41,7 +79,7 @@ export function MapEditor(props: {
     tile: EditableSprite,
     setSelectedTile:any,
 }) {
-    const {map, tile} = props
+    const {map, tile, doc} = props
     const [grid, setGrid] = useState<boolean>(false)
     const ref = useRef<HTMLCanvasElement>(null)
     const [down, setDown] = useState<boolean>(false)
@@ -105,11 +143,12 @@ export function MapEditor(props: {
     return <>
         <div className={'toolbar'}>
             <button onClick={() => setGrid(!grid)}>grid</button>
-            <button onClick={() => setFillOnce(true)}
-                    className={toClass({ selected:fillOnce })}
-            >fill</button>
+            <button onClick={() => setFillOnce(true)} className={toClass({ selected:fillOnce })}>fill</button>
             <button onClick={()=>setZoom(zoom+1)}>+</button>
             <button onClick={()=>setZoom(zoom-1)}>-</button>
+            <button onClick={()=>exportPNG(doc, map,tile,1)}>png 1x</button>
+            <button onClick={()=>exportPNG(doc, map,tile,2)}>png 2x</button>
+            <button onClick={()=>exportPNG(doc, map,tile,4)}>png 4x</button>
         </div>
         <div className={'map-editor-canvas-wrapper'}>
         <canvas ref={ref}
