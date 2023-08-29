@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState} from "react"
 
 export function EditableLabel(props: { onChange: (str: string) => void, value: string }) {
     const [editing, setEditing] = useState(false)

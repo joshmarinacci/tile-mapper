@@ -1,7 +1,8 @@
-import React, {MouseEvent, useEffect, useRef, useState} from "react";
-import {Point} from "josh_js_util";
-import {HBox, toClass} from "josh_react_util";
-import {Changed, EditableSprite, ImagePalette, log} from "./model";
+import {Point} from "josh_js_util"
+import {HBox, toClass} from "josh_react_util"
+import React, {MouseEvent, useEffect, useRef, useState} from "react"
+
+import {Changed, EditableSprite, ImagePalette, log} from "./model"
 
 
 function calculateDirections() {
@@ -15,12 +16,12 @@ function calculateDirections() {
 
 function bucketFill(tile: EditableSprite, target: number, replace:number, at: Point, ) {
     if(target === replace) return
-    let v = tile.getPixel(at)
+    const v = tile.getPixel(at)
     if(v !== target) return
     if(v === target) {
         tile.setPixel(replace,at)
         calculateDirections().forEach(dir => {
-            let pt = at.add(dir)
+            const pt = at.add(dir)
             if(tile.isValidIndex(pt)) bucketFill(tile,target,replace,pt)
         })
     }
@@ -36,17 +37,17 @@ export function PixelGridEditor(props: {
     const [down, setDown] = useState<boolean>(false)
     const [grid, setGrid] = useState<boolean>(false)
     const [fillOnce, setFillOnce] = useState<boolean>(false)
-    let scale = 25
+    const scale = 25
     const ref = useRef<HTMLCanvasElement>(null)
     const redraw = () => {
         if (ref.current) {
-            let canvas = ref.current
-            let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+            const canvas = ref.current
+            const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.fillStyle = 'red'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             for (let i = 0; i < image.width(); i++) {
                 for (let j = 0; j < image.height(); j++) {
-                    let v: number = image.getPixel(new Point(i, j))
+                    const v: number = image.getPixel(new Point(i, j))
                     ctx.fillStyle = palette[v]
                     ctx.fillRect(i * scale, j * scale, scale, scale)
                     if (grid) {
@@ -60,13 +61,13 @@ export function PixelGridEditor(props: {
     useEffect(() => redraw(), [down, grid])
     useEffect(() => {
         redraw()
-        let hand = () => redraw()
+        const hand = () => redraw()
         image.addEventListener(Changed, hand)
         return () => image.removeEventListener(Changed, hand)
-    }, [image]);
+    }, [image])
 
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
-        let rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
+        const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
         return new Point(e.clientX, e.clientY)
             .subtract(new Point(rect.left, rect.top))
             .scale(1 / scale)
@@ -103,8 +104,8 @@ export function PixelGridEditor(props: {
                         return
                     }
                     if(fillOnce) {
-                        let pt = canvasToImage(e)
-                        let current_color = image.getPixel(pt)
+                        const pt = canvasToImage(e)
+                        const current_color = image.getPixel(pt)
                         bucketFill(image,current_color,selectedColor,pt)
                         setFillOnce(false)
                         return

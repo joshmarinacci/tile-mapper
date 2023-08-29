@@ -1,8 +1,9 @@
-import {Changed, EditableDocument, EditableMap} from "./model";
-import {ListView} from "./ListView";
-import React, {useContext, useEffect, useState} from "react";
-import {DialogContext, HBox} from "josh_react_util";
-import {NewMapDialog} from "./NewMapDialog";
+import {DialogContext, HBox} from "josh_react_util"
+import React, {useContext, useEffect, useState} from "react"
+
+import {ListView} from "./ListView"
+import {Changed, EditableDocument, EditableMap} from "./model"
+import {NewMapDialog} from "./NewMapDialog"
 
 function MapNameRenderer(props: {
     value: EditableMap,
@@ -56,10 +57,10 @@ export function MapProps(props: {
     const [name, setName] = useState(map.getName())
     useEffect(() => {
         setName(map.getName())
-        let hand = () => setName(map.getName())
+        const hand = () => setName(map.getName())
         map.addEventListener(Changed, hand)
         return () => map.removeEventListener(Changed, hand)
-    }, [map]);
+    }, [map])
 
     return <div className={'pane'}>
         <header>map props</header>

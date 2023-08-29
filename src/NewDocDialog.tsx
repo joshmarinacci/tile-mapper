@@ -1,3 +1,6 @@
+import {DialogContext} from "josh_react_util"
+import React, {useContext, useState} from "react"
+
 import {
     EditableDocument,
     EditableSheet,
@@ -5,9 +8,7 @@ import {
     ImagePalette,
     MINECRAFT,
     PICO8
-} from "./model";
-import React, {useContext, useState} from "react";
-import {DialogContext} from "josh_react_util";
+} from "./model"
 
 function make_new_doc(width: number, height: number, palette:ImagePalette) {
     const doc = new EditableDocument()
@@ -32,7 +33,7 @@ const PALS:Pal[] = [
         name:'Minecraft 16',
         pal:MINECRAFT,
     }
-];
+]
 
 export function NewDocDialog(props: { onComplete: (doc: EditableDocument) => void }) {
     const [width, setWidth] = useState(10)
@@ -40,7 +41,7 @@ export function NewDocDialog(props: { onComplete: (doc: EditableDocument) => voi
     const [pal, setPal] = useState(PALS[0])
     const dc = useContext(DialogContext)
     const create = () => {
-        let doc = make_new_doc(width, height, pal.pal)
+        const doc = make_new_doc(width, height, pal.pal)
         props.onComplete(doc)
         dc.hide()
     }
@@ -54,7 +55,7 @@ export function NewDocDialog(props: { onComplete: (doc: EditableDocument) => voi
             <label>palette</label>
             <select value={pal.name} onChange={e => {
                 console.log("new val is",e.target.value)
-                let pp = PALS.find(p => p.name === e.target.value) as Pal
+                const pp = PALS.find(p => p.name === e.target.value) as Pal
                 setPal(pp)
             }}>
                 {PALS.map(pal => {

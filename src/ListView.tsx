@@ -1,5 +1,5 @@
-import React from "react";
-import {toClass} from "josh_react_util";
+import {toClass} from "josh_react_util"
+import React from "react"
 
 export function ListView<T>(props: {
     selected: T,

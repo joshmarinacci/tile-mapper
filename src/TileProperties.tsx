@@ -1,15 +1,16 @@
-import {Changed, EditableSprite} from "./model";
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState} from "react"
+
+import {Changed, EditableSprite} from "./model"
 
 export function TileProperties(props: { tile: EditableSprite }) {
     const tile = props.tile
     const [name, setName] = useState(tile.getName())
     useEffect(() => {
         setName(tile.getName())
-        let hand = () => setName(tile.getName())
+        const hand = () => setName(tile.getName())
         tile.addEventListener(Changed, hand)
         return () => tile.removeEventListener(Changed, hand)
-    }, [tile]);
+    }, [tile])
     return <div className={'tile-properties'}>
         <ul className={'props-sheet'}>
             <li>

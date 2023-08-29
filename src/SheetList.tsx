@@ -1,6 +1,7 @@
-import {EditableDocument, EditableSheet} from "./model";
-import {ListView} from "./ListView";
-import React from "react";
+import React from "react"
+
+import {ListView} from "./ListView"
+import {EditableDocument, EditableSheet} from "./model"
 
 function SheetNameRenderer(props: {
     value: EditableSheet,
@@ -20,7 +21,7 @@ export function SheetList(props: {
 }) {
     const {doc, sheet, setSheet} = props
     const add_sheet = () => {
-        let sheet = new EditableSheet()
+        const sheet = new EditableSheet()
         doc.addSheet(sheet)
         props.setSheet(sheet)
     }

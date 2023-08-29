@@ -1,13 +1,14 @@
-import {EditableDocument, EditableSheet, EditableSprite} from "./model";
-import React, {useState} from "react";
-import {ArrayGrid} from "josh_js_util";
-import {SheetList} from "./SheetList";
-import {TileSheetView} from "./TileSheetView";
-import {TileProperties} from "./TileProperties";
-import {PaletteColorPickerPane} from "./Palette";
-import {PixelGridEditor} from "./PixelGridEditor";
-import {TestMap} from "./TestMap";
-import {HBox} from "josh_react_util";
+import {ArrayGrid} from "josh_js_util"
+import {HBox} from "josh_react_util"
+import React, {useState} from "react"
+
+import {EditableDocument, EditableSheet, EditableSprite} from "./model"
+import {PaletteColorPickerPane} from "./Palette"
+import {PixelGridEditor} from "./PixelGridEditor"
+import {SheetList} from "./SheetList"
+import {TestMap} from "./TestMap"
+import {TileProperties} from "./TileProperties"
+import {TileSheetView} from "./TileSheetView"
 
 export function TileModeView(props: { doc: EditableDocument }) {
     const {doc} = props

@@ -1,6 +1,7 @@
-import {EditableMap} from "./model";
-import React, {useContext, useState} from "react";
-import {DialogContext} from "josh_react_util";
+import {DialogContext} from "josh_react_util"
+import React, {useContext, useState} from "react"
+
+import {EditableMap} from "./model"
 
 export function NewMapDialog(props: { onComplete: (map: EditableMap) => void }) {
     const [width, setWidth] = useState(10)

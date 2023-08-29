@@ -1,3 +1,8 @@
+import {toClass} from "josh_react_util"
+import {forceDownloadBlob} from "josh_web_util"
+import React, {useEffect, useRef, useState} from "react"
+
+import {ListView} from "./ListView"
 import {
     canvas_to_bmp,
     Changed,
@@ -6,11 +11,7 @@ import {
     EditableSprite, ImagePalette,
     PICO8,
     sheet_to_canvas
-} from "./model";
-import React, {useEffect, useRef, useState} from "react";
-import {ListView} from "./ListView";
-import {toClass} from "josh_react_util";
-import {forceDownloadBlob} from "josh_web_util";
+} from "./model"
 
 function TilePreviewRenderer(props: {
     value: EditableSprite,
@@ -23,8 +24,8 @@ function TilePreviewRenderer(props: {
     const ref = useRef<HTMLCanvasElement>(null)
     const redraw = () => {
         if (ref.current) {
-            let canvas = ref.current
-            let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+            const canvas = ref.current
+            const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.fillStyle = 'red'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             drawEditableSprite(ctx, 1, image)
@@ -32,10 +33,10 @@ function TilePreviewRenderer(props: {
     }
     useEffect(() => redraw(), [image])
     useEffect(() => {
-        let hand = () => redraw()
+        const hand = () => redraw()
         image.addEventListener(Changed, hand)
         return () => image.removeEventListener(Changed, hand)
-    }, [image]);
+    }, [image])
     return <div className={'tile-preview-wrapper'}>
         <canvas ref={ref} className={toClass({
         'tile-preview': true,
@@ -63,12 +64,12 @@ export function TileSheetView(props: {
     const [tiles, setTiles] = useState(sheet.getImages())
     const [name, setName] = useState(sheet.getName())
     const add_tile = () => {
-        let new_tile = new EditableSprite(tile.width(), tile.height(), PICO8)
+        const new_tile = new EditableSprite(tile.width(), tile.height(), PICO8)
         sheet.addSprite(new_tile)
         setTile(new_tile)
     }
     const dup_tile = () => {
-        let new_tile = tile.clone()
+        const new_tile = tile.clone()
         sheet.addSprite(new_tile)
         setTile(new_tile)
     }
@@ -81,19 +82,19 @@ export function TileSheetView(props: {
     const export_bmp = () => {
         const canvas = sheet_to_canvas(sheet)
         const rawData = canvas_to_bmp(canvas, palette)
-        let blob = new Blob([rawData.data], {type:'image/bmp'})
+        const blob = new Blob([rawData.data], {type:'image/bmp'})
         forceDownloadBlob(`${sheet.getName()}.bmp`,blob)
     }
     useEffect(() => {
         setName(sheet.getName())
         setTiles(sheet.getImages())
-        let hand = () => {
+        const hand = () => {
             setName(sheet.getName())
             setTiles(sheet.getImages())
         }
         sheet.addEventListener(Changed, hand)
         return () => sheet.removeEventListener(Changed, hand)
-    }, [sheet]);
+    }, [sheet])
     return <>
         {editable &&
             <ul className={'props-sheet'}>

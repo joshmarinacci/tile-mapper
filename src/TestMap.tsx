@@ -1,6 +1,7 @@
-import {Changed, drawEditableSprite, EditableSprite} from "./model";
-import {ArrayGrid, Point} from "josh_js_util";
-import React, {MouseEvent, useEffect, useRef, useState} from "react";
+import {ArrayGrid, Point} from "josh_js_util"
+import React, {MouseEvent, useEffect, useRef, useState} from "react"
+
+import {Changed, drawEditableSprite, EditableSprite} from "./model"
 
 export function TestMap(props: { tile: EditableSprite, mapArray: ArrayGrid<EditableSprite> }) {
     const {tile, mapArray} = props
@@ -12,8 +13,8 @@ export function TestMap(props: { tile: EditableSprite, mapArray: ArrayGrid<Edita
     const scale = 4
     const redraw = () => {
         if (ref.current) {
-            let canvas = ref.current
-            let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+            const canvas = ref.current
+            const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.fillStyle = 'red'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             mapArray.forEach((v, n) => {
@@ -36,13 +37,13 @@ export function TestMap(props: { tile: EditableSprite, mapArray: ArrayGrid<Edita
 
     useEffect(() => {
         redraw()
-        let hand = () => redraw()
+        const hand = () => redraw()
         tile.addEventListener(Changed, hand)
         return () => tile.removeEventListener(Changed, hand)
-    }, [tile]);
+    }, [tile])
 
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
-        let rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
+        const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
         let pt = new Point(e.clientX, e.clientY)
             .subtract(new Point(rect.left, rect.top))
             .scale(1 / scale)

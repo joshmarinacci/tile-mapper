@@ -1,10 +1,11 @@
-import {EditableDocument, EditableMap, EditableSheet, EditableSprite} from "./model";
-import React, {useState} from "react";
-import {MapList, MapProps} from "./MapList";
-import {SheetList} from "./SheetList";
-import {TileSheetView} from "./TileSheetView";
-import {MapEditor} from "./MapEditor";
-import {HBox} from "josh_react_util";
+import {HBox} from "josh_react_util"
+import React, {useState} from "react"
+
+import {MapEditor} from "./MapEditor"
+import {MapList, MapProps} from "./MapList"
+import {EditableDocument, EditableMap, EditableSheet, EditableSprite} from "./model"
+import {SheetList} from "./SheetList"
+import {TileSheetView} from "./TileSheetView"
 
 export function MapModeView(props: {
     doc: EditableDocument

@@ -1,5 +1,5 @@
-import {ArrayGrid, genId, Point} from "josh_js_util";
-import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts";
+import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
+import {ArrayGrid, genId, Point} from "josh_js_util"
 
 // @ts-ignore
 ArrayGrid.prototype.isValidIndex = function(pt: Point) {
@@ -57,7 +57,7 @@ export class Observable {
     private listeners: Map<Etype, Array<ObservableListener>>
 
     constructor() {
-        this.listeners = new Map<Etype, Array<ObservableListener>>();
+        this.listeners = new Map<Etype, Array<ObservableListener>>()
     }
 
     protected _get_listeners(type: Etype): ObservableListener[] {
@@ -115,15 +115,15 @@ const CURRENT_VERSION = 4
 export const Changed = 'changed'
 
 export class EditableSprite extends Observable {
-    private w: number;
-    private h: number;
-    data: number[];
+    private w: number
+    private h: number
+    data: number[]
     id:string
-    private name:string;
-    palette:ImagePalette;
+    private name:string
+    palette:ImagePalette
     cache_canvas: HTMLCanvasElement | null
     constructor(w:number, h:number, pallete:ImagePalette) {
-        super();
+        super()
         this.name = 'unnamed'
         this.id = genId('tile')
         this.palette = pallete
@@ -137,7 +137,7 @@ export class EditableSprite extends Observable {
         this.rebuild_cache()
     }
     setPixel(number: number, point: Point) {
-        let n = point.x + point.y * this.w
+        const n = point.x + point.y * this.w
         this.data[point.x + point.y * this.w] = number
         this.rebuild_cache()
         this.fire(Changed,this)
@@ -178,7 +178,7 @@ export class EditableSprite extends Observable {
     }
 
     clone() {
-        let new_tile = new EditableSprite(this.width(),this.height(),this.palette)
+        const new_tile = new EditableSprite(this.width(),this.height(),this.palette)
         new_tile.data = this.data.slice()
         new_tile.rebuild_cache()
         return new_tile
@@ -188,18 +188,18 @@ export class EditableSprite extends Observable {
         this.cache_canvas = document.createElement('canvas')
         this.cache_canvas.width = this.width()
         this.cache_canvas.height = this.height()
-        let ctx = this.cache_canvas.getContext('2d') as CanvasRenderingContext2D
+        const ctx = this.cache_canvas.getContext('2d') as CanvasRenderingContext2D
         drawEditableSprite(ctx,1,this)
         console.log("rebuild",this.name)
     }
 }
 
 export class EditableSheet extends Observable {
-    sprites: EditableSprite[];
+    sprites: EditableSprite[]
     id:string
-    private name:string;
+    private name:string
     constructor() {
-        super();
+        super()
         this.sprites = []
         this.name = 'unnamed sheet'
         this.id = genId('sheet')
@@ -209,7 +209,7 @@ export class EditableSheet extends Observable {
         this.fire(Changed,this)
     }
     removeSprite(sprite: EditableSprite) {
-        let n = this.sprites.indexOf(sprite)
+        const n = this.sprites.indexOf(sprite)
         if(n >= 0) {
             this.sprites.splice(n,1)
             this.fire(Changed,this)
@@ -241,10 +241,10 @@ export type EditableMapCell = {
 }
 export class EditableMap extends Observable {
     id:string
-    private name:string;
-    cells: ArrayGrid<EditableMapCell>;
+    private name:string
+    cells: ArrayGrid<EditableMapCell>
     constructor(width:number, height:number) {
-        super();
+        super()
         this.name = 'unnamed map'
         this.id = genId('map')
         this.cells = new ArrayGrid<EditableMapCell>(width, height)
@@ -281,7 +281,7 @@ export class EditableDocument extends Observable {
     private name:string
     private sprite_lookup:Map<string,EditableSprite>
     constructor() {
-        super();
+        super()
         this.palette = []
         this.sheets = []
         this.maps = []
@@ -297,7 +297,7 @@ export class EditableDocument extends Observable {
         this.fire(Changed,this)
     }
     removeSheet(sheet:EditableSheet) {
-        let n = this.sheets.indexOf(sheet)
+        const n = this.sheets.indexOf(sheet)
         if(n < 0) {
             console.warn("cannot remove this sheet")
         } else {
@@ -313,7 +313,7 @@ export class EditableDocument extends Observable {
         this.fire(Changed,this)
     }
     removeMap(map:EditableMap) {
-        let n = this.maps.indexOf(map)
+        const n = this.maps.indexOf(map)
         if(n < 0) {
             console.warn("cannot remove this map")
         } else {
@@ -335,7 +335,7 @@ export class EditableDocument extends Observable {
     }
 
     toJSONDoc():JSONDoc {
-        let doc:JSONDoc = {
+        const doc:JSONDoc = {
             name:this.getName(),
             color_palette: this.palette,
             version: CURRENT_VERSION,
@@ -369,22 +369,22 @@ export function make_doc_from_json(raw_data: any) {
     if(raw_data['version'] < 4) {
         raw_data.maps = []
     }
-    let json_doc = raw_data as JSONDoc
+    const json_doc = raw_data as JSONDoc
     if(json_doc.color_palette.length === 0) {
         json_doc.color_palette = PICO8
     }
-    let doc = new EditableDocument()
+    const doc = new EditableDocument()
     doc.setName(json_doc.name)
     doc.setPalette(json_doc.color_palette)
     json_doc.sheets.forEach(json_sheet => {
         log('sheet',json_sheet)
-        let sheet = new EditableSheet()
+        const sheet = new EditableSheet()
         sheet.id = json_sheet.id
         sheet.setName(json_sheet.name)
         doc.addSheet(sheet)
         json_sheet.sprites.forEach(json_sprite => {
             log("sprite",json_sprite)
-            let sprite = new EditableSprite(json_sprite.w,json_sprite.h,json_doc.color_palette)
+            const sprite = new EditableSprite(json_sprite.w,json_sprite.h,json_doc.color_palette)
             sprite.id = json_sprite.id || genId('sprite')
             sprite.setName(json_sprite.name)
             sprite.data = json_sprite.data
@@ -394,7 +394,7 @@ export function make_doc_from_json(raw_data: any) {
     })
     json_doc.maps.forEach(json_map => {
         log('map',json_map)
-        let map = new EditableMap(json_map.width,json_map.height)
+        const map = new EditableMap(json_map.width,json_map.height)
         map.id = json_map.id
         map.setName(json_map.name)
         map.cells.set_from_list(json_map.cells)
@@ -420,14 +420,14 @@ export function fileToJson(file:File) {
 
 export function jsonObjToBlob(toJsonObj: any) {
     console.log('saving out',toJsonObj)
-    let str = JSON.stringify(toJsonObj, null, '   ');
-    return new Blob([str]);
+    const str = JSON.stringify(toJsonObj, null, '   ')
+    return new Blob([str])
 }
 
 export function drawEditableSprite(ctx: CanvasRenderingContext2D, scale: number, image: EditableSprite) {
     for (let i = 0; i < image.width(); i++) {
         for (let j = 0; j < image.height(); j++) {
-            let v: number = image.getPixel(new Point(i, j))
+            const v: number = image.getPixel(new Point(i, j))
             ctx.fillStyle = image.palette[v]
             ctx.fillRect(i * scale, j * scale, scale, scale)
         }
@@ -435,11 +435,11 @@ export function drawEditableSprite(ctx: CanvasRenderingContext2D, scale: number,
 }
 
 export function sheet_to_canvas(sheet: EditableSheet) {
-    let sprite = sheet.getImages()[0]
+    const sprite = sheet.getImages()[0]
     const canvas = document.createElement('canvas')
     canvas.width = sprite.width() * sheet.getImages().length
     canvas.height = sprite.height()
-    let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     sheet.getImages().forEach((img, i) => {
         ctx.save()
         ctx.translate(i * sprite.width(), 0)
@@ -451,17 +451,17 @@ export function sheet_to_canvas(sheet: EditableSheet) {
 
 export function canvas_to_bmp(canvas: HTMLCanvasElement, palette1: string[]) {
     //get ImageData from the canvas
-    let id = (canvas.getContext('2d') as CanvasRenderingContext2D).getImageData(0, 0, canvas.width, canvas.height)
+    const id = (canvas.getContext('2d') as CanvasRenderingContext2D).getImageData(0, 0, canvas.width, canvas.height)
 
     function swizzle_data(id: ImageData) {
         for (let i = 0; i < id.width; i++) {
             for (let j = 0; j < id.height; j++) {
-                let n = (i + id.width * j) * 4
+                const n = (i + id.width * j) * 4
 
-                let R = id.data[n + 0]
-                let G = id.data[n + 1]
-                let B = id.data[n + 2]
-                let A = id.data[n + 3]
+                const R = id.data[n + 0]
+                const G = id.data[n + 1]
+                const B = id.data[n + 2]
+                const A = id.data[n + 3]
 
 
                 id.data[n + 0] = 255
@@ -475,10 +475,10 @@ export function canvas_to_bmp(canvas: HTMLCanvasElement, palette1: string[]) {
     swizzle_data(id)
 
     function strToRGBObj(str: string) {
-        let num = parseInt(str.substring(1), 16)
-        let red = (num & 0xFF0000) >> 16
-        let green = (num & 0x00FF00) >> 8
-        let blue = (num & 0x0000FF) >> 0
+        const num = parseInt(str.substring(1), 16)
+        const red = (num & 0xFF0000) >> 16
+        const green = (num & 0x00FF00) >> 8
+        const blue = (num & 0x0000FF) >> 0
         return {
             red: red,
             green: green,
@@ -487,7 +487,7 @@ export function canvas_to_bmp(canvas: HTMLCanvasElement, palette1: string[]) {
         }
     }
 
-    let palette = palette1.map(str => strToRGBObj(str))
+    const palette = palette1.map(str => strToRGBObj(str))
     while (palette.length < 128) {
         palette.push({red: 0, green: 255, blue: 0, quad: 255})
     }

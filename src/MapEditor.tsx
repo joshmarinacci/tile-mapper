@@ -1,15 +1,17 @@
+import "./MapEditor.css"
+
+import {Point, Size} from "josh_js_util"
+import {toClass} from "josh_react_util"
+import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
+import React, {MouseEvent, useEffect, useRef, useState} from "react"
+
 import {
     drawEditableSprite,
     EditableDocument,
     EditableMap,
     EditableSheet,
     EditableSprite
-} from "./model";
-import React, {MouseEvent, useEffect, useRef, useState} from "react";
-import {Point, Size} from "josh_js_util";
-import "./MapEditor.css"
-import {toClass} from "josh_react_util";
-import {canvas_to_blob, forceDownloadBlob} from "josh_web_util";
+} from "./model"
 
 function calculateDirections() {
     return [
@@ -22,12 +24,12 @@ function calculateDirections() {
 
 function bucketFill(map: EditableMap, target: string, replace:string, at: Point, ) {
     if(target === replace) return
-    let v = map.cells.get(at)
+    const v = map.cells.get(at)
     if(v.tile !== target) return
     if(v.tile === target) {
         map.cells.set(at,{tile:replace})
         calculateDirections().forEach(dir => {
-            let pt = at.add(dir)
+            const pt = at.add(dir)
             // @ts-ignore
             if(map.cells.isValidIndex(pt)) bucketFill(map,target,replace,pt)
         })
@@ -39,14 +41,14 @@ function map_to_canvas(map: EditableMap, tile: EditableSprite, doc: EditableDocu
     const canvas = document.createElement('canvas')
     canvas.width = map.width()*scale*tile.width()
     canvas.height = map.height()*scale*tile.height()
-    let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     ctx.imageSmoothingEnabled = false
-    let size = new Size(tile.width(),tile.height())
+    const size = new Size(tile.width(),tile.height())
     map.cells.forEach((v, n) => {
         if (v) {
-            let x = n.x*size.w*scale
-            let y = n.y*size.w*scale
-            let tile = doc.lookup_sprite(v.tile)
+            const x = n.x*size.w*scale
+            const y = n.y*size.w*scale
+            const tile = doc.lookup_sprite(v.tile)
             if(tile) {
                 if(tile.cache_canvas) {
                     ctx.drawImage(tile.cache_canvas,
@@ -68,7 +70,7 @@ function map_to_canvas(map: EditableMap, tile: EditableSprite, doc: EditableDocu
 
 async function exportPNG(doc:EditableDocument, map: EditableMap,tile:EditableSprite, scale: number) {
     const can = map_to_canvas(map,tile, doc,scale)
-    let blob = await canvas_to_blob(can)
+    const blob = await canvas_to_blob(can)
     forceDownloadBlob(`${map.getName()}.${scale}x.png`, blob)
 }
 
@@ -91,18 +93,18 @@ export function MapEditor(props: {
     const scale = Math.pow(2,zoom)
     const redraw = () => {
         if (ref.current) {
-            let canvas = ref.current
-            let ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+            const canvas = ref.current
+            const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.imageSmoothingEnabled = false
             ctx.fillStyle = 'red'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
-            let size = new Size(tile.width(),tile.height())
+            const size = new Size(tile.width(),tile.height())
             if(!map) return
             map.cells.forEach((v, n) => {
                 if (v) {
-                    let x = n.x*size.w*scale
-                    let y = n.y*size.w*scale
-                    let tile = props.doc.lookup_sprite(v.tile)
+                    const x = n.x*size.w*scale
+                    const y = n.y*size.w*scale
+                    const tile = props.doc.lookup_sprite(v.tile)
                     if(tile) {
                         if(tile.cache_canvas) {
                             ctx.drawImage(tile.cache_canvas,
@@ -126,7 +128,7 @@ export function MapEditor(props: {
         }
     }
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
-        let rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
+        const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
         let pt = new Point(e.clientX, e.clientY)
             .subtract(new Point(rect.left, rect.top))
             .scale(1 / scale)
@@ -159,16 +161,16 @@ export function MapEditor(props: {
                 }}
                 onMouseDown={(e) => {
                     if(e.button === 2) {
-                        let cell = map.cells.get(canvasToImage(e))
-                        let tile = props.doc.lookup_sprite(cell.tile)
+                        const cell = map.cells.get(canvasToImage(e))
+                        const tile = props.doc.lookup_sprite(cell.tile)
                         if(tile) props.setSelectedTile(tile)
                         e.stopPropagation()
                         e.preventDefault()
                         return
                     }
                     if(fillOnce) {
-                        let pt = canvasToImage(e)
-                        let cell = map.cells.get(pt)
+                        const pt = canvasToImage(e)
+                        const cell = map.cells.get(pt)
                         bucketFill(map,cell.tile,tile.id,pt)
                         setFillOnce(false)
                         redraw()
