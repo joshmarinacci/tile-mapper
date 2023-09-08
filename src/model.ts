@@ -1,5 +1,5 @@
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
-import {ArrayGrid, genId, Point} from "josh_js_util"
+import {ArrayGrid, genId, Point, Size} from "josh_js_util"
 
 // @ts-ignore
 ArrayGrid.prototype.isValidIndex = function(pt: Point) {
@@ -274,10 +274,30 @@ export class EditableMap extends Observable {
     }
 }
 
+export class EditableTest extends Observable {
+    id:string
+    map:EditableMap|undefined
+    viewport:Size
+    name:string
+    constructor() {
+        super()
+        this.name = "unnamed test"
+        this.id = genId('test')
+        this.viewport = new Size(10,10)
+    }
+    getName() {
+        return this.name
+    }
+    setName(name: string) {
+        this.name = name
+        this.fire(Changed,this)
+    }
+}
 export class EditableDocument extends Observable {
     private palette:ImagePalette
     private sheets:EditableSheet[]
     private maps:EditableMap[]
+    private tests:EditableTest[]
     private name:string
     private sprite_lookup:Map<string,EditableSprite>
     constructor() {
@@ -287,9 +307,11 @@ export class EditableDocument extends Observable {
         this.maps = []
         this.name = 'unnamed'
         this.sprite_lookup = new Map()
+        this.tests = []
     }
     setName(name:string) {
         this.name = name
+        console.log("set the name to",name)
         this.fire(Changed,this)
     }
     addSheet(sheet:EditableSheet) {
@@ -323,6 +345,22 @@ export class EditableDocument extends Observable {
     }
     getMaps():EditableMap[] {
         return this.maps.slice()
+    }
+    addTest(test:EditableTest) {
+        this.tests.push(test)
+        this.fire(Changed,this)
+    }
+    removeTest(test:EditableTest) {
+        const n = this.tests.indexOf(test)
+        if(n < 0) {
+            console.warn("cannot remove this map")
+        } else {
+            this.tests.splice(n,1)
+            this.fire(Changed,this)
+        }
+    }
+    getTests():EditableTest[] {
+        return this.tests.slice()
     }
 
     setPalette(palette:ImagePalette) {

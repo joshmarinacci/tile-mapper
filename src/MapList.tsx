@@ -1,6 +1,7 @@
 import {DialogContext, HBox} from "josh_react_util"
 import React, {useContext, useEffect, useState} from "react"
 
+import {useObservableChange} from "./common-components"
 import {ListView} from "./ListView"
 import {Changed, EditableDocument, EditableMap} from "./model"
 import {NewMapDialog} from "./NewMapDialog"
@@ -55,12 +56,13 @@ export function MapProps(props: {
 }) {
     const {map} = props
     const [name, setName] = useState(map.getName())
-    useEffect(() => {
-        setName(map.getName())
-        const hand = () => setName(map.getName())
-        map.addEventListener(Changed, hand)
-        return () => map.removeEventListener(Changed, hand)
-    }, [map])
+    // useEffect(() => {
+    //     setName(map.getName())
+    //     const hand = () => setName(map.getName())
+    //     map.addEventListener(Changed, hand)
+    //     return () => map.removeEventListener(Changed, hand)
+    // }, [map])
+    useObservableChange(map,Changed)
 
     return <div className={'pane'}>
         <header>map props</header>
@@ -76,7 +78,7 @@ export function MapProps(props: {
             <li>
                 <b>name</b>
                 <input type={'text'}
-                       value={name}
+                       value={props.map.getName()}
                        onChange={(e) => props.map.setName(e.target.value)}/>
             </li>
         </ul>

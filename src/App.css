@@ -154,7 +154,7 @@ button.selected:active {
   text-shadow: 1px 1px black, -1px -1px black;
 }
 
-.sheet-list, .map-list {
+.sheet-list, .map-list, .test-list {
   flex-direction: column;
   border: 1px solid var(--pane-border);
   align-content: stretch;

@@ -12,10 +12,11 @@ import {
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {useContext, useState} from 'react'
 
-import {EditableLabel} from "./common-components"
+import {EditableLabel, useObservableChange} from "./common-components"
 import {MapModeView} from "./MapModeView"
 import {
     canvas_to_bmp,
+    Changed,
     EditableDocument,
     EditableSheet,
     EditableSprite,
@@ -27,6 +28,7 @@ import {
     sheet_to_canvas
 } from "./model"
 import {NewDocDialog} from "./NewDocDialog"
+import {TestModeView} from "./TestModeView"
 import {TileModeView} from "./TileModeView"
 
 const EMPTY_DOC = new EditableDocument()
@@ -80,9 +82,10 @@ const load_file = async ():Promise<EditableDocument> => {
     })
 }
 
+type Mode = "tiles" | "maps" | "tests"
 function Main() {
     const [doc, setDoc] = useState<EditableDocument>(EMPTY_DOC)
-    const [mode, setMode ]= useState('tiles')
+    const [mode, setMode ]= useState<Mode>('tiles')
     const dc = useContext(DialogContext)
     const save_file = () => {
         const blob = jsonObjToBlob(doc.toJSONDoc())
@@ -91,6 +94,7 @@ function Main() {
     const new_doc = () => {
         dc.show(<NewDocDialog onComplete={(doc) => setDoc(doc)}/>)
     }
+    useObservableChange(doc,Changed)
     return (
         <>
             <div className={'toolbar'}>
@@ -106,9 +110,11 @@ function Main() {
                 <Spacer/>
                 <button onClick={()=>setMode('tiles')}>tiles</button>
                 <button onClick={()=>setMode('maps')}>maps</button>
+                <button onClick={()=>setMode('tests')}>tests</button>
             </div>
             {mode === 'tiles' && <TileModeView doc={doc}/>}
             {mode === 'maps' && <MapModeView doc={doc}/>}
+            {mode === 'tests' && <TestModeView doc={doc}/>}
         </>
     )
 }

@@ -1,4 +1,6 @@
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
+
+import {Observable} from "./model"
 
 export function EditableLabel(props: { onChange: (str: string) => void, value: string }) {
     const [editing, setEditing] = useState(false)
@@ -17,4 +19,18 @@ export function EditableLabel(props: { onChange: (str: string) => void, value: s
         return <label
             onDoubleClick={e => setEditing(true)}>{props.value}</label>
     }
+}
+
+export function useObservableChange(ob: Observable | undefined, eventType: string) {
+    const [count, setCount] = useState(0)
+    return useEffect(() => {
+        const hand = () => {
+            setCount(count + 1)
+        }
+        if (ob) ob.addEventListener(eventType, hand)
+        return () => {
+            if (ob) ob.removeEventListener(eventType, hand)
+        }
+
+    }, [ob, count])
 }
