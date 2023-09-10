@@ -2,7 +2,7 @@ import {toClass} from "josh_react_util"
 import React from "react"
 
 export function ListView<T>(props: {
-    selected: T,
+    selected: T|undefined,
     setSelected: (v: T) => void,
     renderer: any,
     data: any[],

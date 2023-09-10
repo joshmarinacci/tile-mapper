@@ -104,10 +104,20 @@ export type JSONMap = {
     height:number,
     cells:JSONMapCell[],
 }
+export type JSONTest = {
+    id:string,
+    name:string,
+    map_id:string,
+    viewport:{
+        width:number,
+        height:number,
+    }
+}
 export type JSONDoc = {
     color_palette:string[]
     sheets:JSONSheet[],
     maps: JSONMap[],
+    tests: JSONTest[],
     version:number,
     name:string
 }
@@ -276,9 +286,9 @@ export class EditableMap extends Observable {
 
 export class EditableTest extends Observable {
     id:string
+    name:string
     map:EditableMap|undefined
     viewport:Size
-    name:string
     constructor() {
         super()
         this.name = "unnamed test"
@@ -291,6 +301,18 @@ export class EditableTest extends Observable {
     setName(name: string) {
         this.name = name
         this.fire(Changed,this)
+    }
+    toJSONTest():JSONTest {
+        console.log('this.map is',this.map)
+        return {
+            id:this.id,
+            name: this.name,
+            viewport: {
+                width:this.viewport.w,
+                height:this.viewport.h,
+            },
+            map_id:(this.map?this.map.id:"")
+        }
     }
 }
 export class EditableDocument extends Observable {
@@ -379,6 +401,7 @@ export class EditableDocument extends Observable {
             version: CURRENT_VERSION,
             sheets: this.sheets.map(sh => sh.toJSONSheet()),
             maps: this.maps.map(mp => mp.toJSONMap()),
+            tests: this.tests.map(tst => tst.toJSONTest())
         }
         return doc
     }
@@ -437,6 +460,15 @@ export function make_doc_from_json(raw_data: any) {
         map.setName(json_map.name)
         map.cells.set_from_list(json_map.cells)
         doc.addMap(map)
+    })
+    json_doc.tests.forEach(json_test => {
+        log("test",json_test)
+        const test = new EditableTest()
+        test.viewport.w = json_test.viewport.width
+        test.viewport.h = json_test.viewport.height
+        test.id = json_test.id
+        test.setName(json_test.name)
+        doc.addTest(test)
     })
     return doc
 }

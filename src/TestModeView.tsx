@@ -18,7 +18,7 @@ function TestNameRenderer(props: {
     </div>
 }
 
-function TestList(props: { test: EditableTest, setTest: (value: (((prevState: (EditableTest | undefined)) => (EditableTest | undefined)) | EditableTest | undefined)) => void, editable: boolean, doc: EditableDocument }) {
+function TestList(props: { test: EditableTest|undefined, setTest: (value:EditableTest) => void, editable: boolean, doc: EditableDocument }) {
     const {doc, test, setTest, editable} = props
     const add_test = () => {
         const test = new EditableTest()
