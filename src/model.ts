@@ -200,7 +200,6 @@ export class EditableSprite extends Observable {
         this.cache_canvas.height = this.height()
         const ctx = this.cache_canvas.getContext('2d') as CanvasRenderingContext2D
         drawEditableSprite(ctx,1,this)
-        console.log("rebuild",this.name)
     }
 }
 
@@ -333,7 +332,6 @@ export class EditableDocument extends Observable {
     }
     setName(name:string) {
         this.name = name
-        console.log("set the name to",name)
         this.fire(Changed,this)
     }
     addSheet(sheet:EditableSheet) {
@@ -415,7 +413,7 @@ export class EditableDocument extends Observable {
         for(const sheet of this.sheets) {
             for(const sprite of sheet.sprites) {
                 if(sprite.id === id) {
-                    console.log("missed the cache",sprite.id)
+                    // console.log("missed the cache",sprite.id)
                     this.sprite_lookup.set(sprite.id,sprite)
                     return sprite
                 }
@@ -438,13 +436,13 @@ export function make_doc_from_json(raw_data: any) {
     doc.setName(json_doc.name)
     doc.setPalette(json_doc.color_palette)
     json_doc.sheets.forEach(json_sheet => {
-        log('sheet',json_sheet)
+        // log('sheet',json_sheet)
         const sheet = new EditableSheet()
         sheet.id = json_sheet.id
         sheet.setName(json_sheet.name)
         doc.addSheet(sheet)
         json_sheet.sprites.forEach(json_sprite => {
-            log("sprite",json_sprite)
+            // log("sprite",json_sprite)
             const sprite = new EditableSprite(json_sprite.w,json_sprite.h,json_doc.color_palette)
             sprite.id = json_sprite.id || genId('sprite')
             sprite.setName(json_sprite.name)
@@ -454,7 +452,7 @@ export function make_doc_from_json(raw_data: any) {
         })
     })
     json_doc.maps.forEach(json_map => {
-        log('map',json_map)
+        // log('map',json_map)
         const map = new EditableMap(json_map.width,json_map.height)
         map.id = json_map.id
         map.setName(json_map.name)
@@ -462,7 +460,7 @@ export function make_doc_from_json(raw_data: any) {
         doc.addMap(map)
     })
     json_doc.tests.forEach(json_test => {
-        log("test",json_test)
+        // log("test",json_test)
         const test = new EditableTest()
         test.viewport.w = json_test.viewport.width
         test.viewport.h = json_test.viewport.height
