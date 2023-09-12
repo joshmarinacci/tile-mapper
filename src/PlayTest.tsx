@@ -4,7 +4,7 @@ import React, {useEffect, useRef} from "react"
 import {
     drawEditableSprite,
     EditableDocument,
-    EditableMap,
+    EditableMap, EditableTest,
     make_doc_from_json
 } from "./model"
 import PT from "./playtest.json"
@@ -362,14 +362,12 @@ export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: 
 
 
 let anim:Animator|null = null
-export function PlayTest() {
+export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:EditableMap, test:EditableTest}) {
+    const {doc, map} = props
     const ref = useRef(null)
     useEffect(() => {
-        if(ref.current && anim == null) {
-            console.log("starting the canvas")
+        if (ref.current) {
             const canvas = ref.current as HTMLCanvasElement
-            canvas.focus()
-            const doc = make_doc_from_json(PT)
             const sprite = doc.getSheets()[0].getImages()[0]
             const size = new Size(sprite.width(), sprite.height())
             const player: Player = {
@@ -377,16 +375,24 @@ export function PlayTest() {
                 velocity: new Point(0, 0),
                 standing: false
             }
-            const map = doc.getMaps()[0]
-            anim = new Animator(() => {
+            if (props.playing) {
+                canvas.focus()
+                // const doc = make_doc_from_json(PT)
+                // const map = doc.getMaps()[0]
+                anim = new Animator(() => {
+                    drawViewport(canvas, map, doc, player, keyManager)
+                    updatePlayer(doc, map, player, keyManager, canvas)
+                    keyManager.update()
+                })
+                anim.start()
+            } else {
+                if(anim) anim.stop()
                 drawViewport(canvas, map, doc, player, keyManager)
-                updatePlayer(doc, map, player, keyManager, canvas)
-                keyManager.update()
-            })
-            anim.start()
+            }
         }
-    }, [])
+    }, [props.playing])
     return <canvas ref={ref} width={640} height={480} autoFocus={true}
+               className={'play-canvas'}
                tabIndex={0}
                style={{
                    alignSelf:'start'

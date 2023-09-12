@@ -12,32 +12,13 @@ export function TestMapPlayer(props: {
 }) {
     const {test, map, doc} = props
     const [playing, setPlaying] = useState(false)
-    const startPlaying = () => {
-        // if(ref.current) {
-        //     const canvas = ref.current as HTMLCanvasElement
-        //     setPlaying(true)
-        //     const player:Player = {
-        //         bounds: new Bounds(10,10,10,10),
-        //         velocity: new Point(0,0),
-        //         falling:true
-        //     }
-        //     anim = new Animator(()=> {
-        //         // updatePlayer(doc,map,player,keyManager)
-        //         // drawViewport(canvas,test,map,doc,player, keyManager)
-        //         keyManager.update()
-        //     })
-        //     anim.start()
-        // }
-    }
-    const stopPlaying = () => {
-        setPlaying(false)
-        if(anim) anim.stop()
+    const togglePlaying = () => {
+        setPlaying(!playing)
     }
     return <>
         <div className={'toolbar'}>
-            <button onClick={()=>startPlaying()}>start</button>
-            <button onClick={() => stopPlaying()}>stop</button>
+            <button onClick={()=>togglePlaying()}>{playing?"pause":"play"}</button>
         </div>
-        <PlayTest/>
+        <PlayTest playing={playing} doc={doc} map={map} test={test}/>
     </>
 }
