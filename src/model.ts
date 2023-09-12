@@ -313,6 +313,15 @@ export class EditableTest extends Observable {
             map_id:(this.map?this.map.id:"")
         }
     }
+
+    setWidth(w: number) {
+        this.viewport = new Size(w,this.viewport.h)
+        this.fire(Changed,this)
+    }
+    setHeight(h: number) {
+        this.viewport = new Size(this.viewport.w,h)
+        this.fire(Changed,this)
+    }
 }
 export class EditableDocument extends Observable {
     private palette:ImagePalette

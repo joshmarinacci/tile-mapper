@@ -54,11 +54,15 @@ function TestDetails(props: { test: EditableTest, doc: EditableDocument }) {
         <ul className={'props-sheet'}>
             <li>
                 <b>width</b>
-                <label>{test.viewport.w}</label>
+                <input type={"number"} value={test.viewport.w} onChange={(e) => {
+                    test.setWidth(parseInt(e.target.value))
+                }}/>
             </li>
             <li>
                 <b>height</b>
-                <label>{test.viewport.h}</label>
+                <input type={"number"} value={test.viewport.h} onChange={(e) => {
+                    test.setHeight(parseInt(e.target.value))
+                }}/>
             </li>
             <li>
                 <b>name</b>

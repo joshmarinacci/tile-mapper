@@ -1,13 +1,13 @@
 import {Bounds, Point, Size} from "josh_js_util"
 import React, {useEffect, useRef} from "react"
 
+import {useObservableChange} from "./common-components"
 import {
+    Changed,
     drawEditableSprite,
     EditableDocument,
-    EditableMap, EditableTest,
-    make_doc_from_json
+    EditableMap, EditableSprite, EditableTest,
 } from "./model"
-import PT from "./playtest.json"
 
 export type Player = {
     bounds: Bounds
@@ -94,14 +94,14 @@ const keyManager = new KeyManager()
 const JUMP = new Point(0, -4)
 const GRAVITY = new Point(0, 0.2)
 const MOVE = new Point(0.1, 0)
-const SCALE = 4
+const SCALE = 2
 const MAX_FALL_SPEED = 2.0
 const FRICTION = 0.9
 const EPSILON = 0.01
 
-function isBlockingTile(name: string) {
-    if(name === 'background') return false
-    if(name === 'block') return true
+function isBlockingTile(sprite:EditableSprite) {
+    if(sprite.getName() === 'background') return false
+    if(sprite.getName() === 'block') return true
     console.log(`unknown tile type '${name}'`)
 }
 
@@ -183,7 +183,7 @@ export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Pl
             const tile = doc.lookup_sprite(cell.tile)
             if (tile) {
                 // debugText(`tile ${tile.getName()}`)
-                const blocking = isBlockingTile(tile.getName())
+                const blocking = isBlockingTile(tile)
                 // debugText(`blocking ${blocking}`)
                 if (blocking) {
                     return ({blocking:true, index:index})
@@ -363,15 +363,18 @@ export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: 
 
 let anim:Animator|null = null
 export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:EditableMap, test:EditableTest}) {
-    const {doc, map} = props
+    const {doc, map, test} = props
     const ref = useRef(null)
+    const sprite = doc.getSheets()[0].getImages()[0]
+    const tileSize = new Size(sprite.width(), sprite.height())
+    useObservableChange(test,Changed)
+    console.log("redrawing")
     useEffect(() => {
         if (ref.current) {
+            console.log('redrawing')
             const canvas = ref.current as HTMLCanvasElement
-            const sprite = doc.getSheets()[0].getImages()[0]
-            const size = new Size(sprite.width(), sprite.height())
             const player: Player = {
-                bounds: new Bounds(30, 30, size.w, size.h),
+                bounds: new Bounds(30, 30, tileSize.w, tileSize.h),
                 velocity: new Point(0, 0),
                 standing: false
             }
@@ -390,8 +393,11 @@ export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:Edita
                 drawViewport(canvas, map, doc, player, keyManager)
             }
         }
-    }, [props.playing])
-    return <canvas ref={ref} width={640} height={480} autoFocus={true}
+    }, [props.playing, test.viewport])
+    return <canvas ref={ref}
+                   width={test.viewport.w*tileSize.w*SCALE}
+                   height={test.viewport.h*tileSize.h*SCALE}
+                   autoFocus={true}
                className={'play-canvas'}
                tabIndex={0}
                style={{
