@@ -30,6 +30,7 @@
                "name": "sky",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   12,
                   12,
@@ -294,6 +295,7 @@
                "name": "ground",
                "w": 16,
                "h": 16,
+               "blocking": true,
                "data": [
                   4,
                   15,
@@ -558,6 +560,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   12,
                   12,
@@ -822,6 +825,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   3,
                   3,
@@ -1086,6 +1090,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   3,
                   3,
@@ -1350,6 +1355,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   0,
                   12,
@@ -1614,6 +1620,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   12,
                   12,
@@ -1878,6 +1885,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   12,
                   12,
@@ -2142,6 +2150,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   12,
                   12,
@@ -2406,6 +2415,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   12,
                   12,
@@ -2681,6 +2691,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": true,
                "data": [
                   12,
                   4,
@@ -2945,6 +2956,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": true,
                "data": [
                   15,
                   15,
@@ -3209,6 +3221,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": true,
                "data": [
                   12,
                   12,
@@ -3473,6 +3486,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": true,
                "data": [
                   3,
                   3,
@@ -3738,6 +3752,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": true,
                "data": [
                   0,
                   0,
@@ -4002,6 +4017,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": true,
                "data": [
                   0,
                   0,
@@ -4273,6 +4289,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   12,
                   12,
@@ -4537,6 +4554,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   0,
                   0,
@@ -4801,6 +4819,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   12,
                   12,
@@ -5065,6 +5084,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   7,
                   12,
@@ -5329,6 +5349,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   0,
                   0,
@@ -5593,6 +5614,7 @@
                "name": "unnamed",
                "w": 16,
                "h": 16,
+               "blocking": false,
                "data": [
                   7,
                   12,
@@ -10665,5 +10687,15 @@
          ]
       }
    ],
-   "tests": []
+   "tests": [
+      {
+         "id": "test_961807",
+         "name": "unnamed test",
+         "viewport": {
+            "width": 18,
+            "height": 14
+         },
+         "map_id": ""
+      }
+   ]
 }

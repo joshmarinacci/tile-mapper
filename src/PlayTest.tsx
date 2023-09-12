@@ -94,34 +94,20 @@ const keyManager = new KeyManager()
 const JUMP = new Point(0, -4)
 const GRAVITY = new Point(0, 0.2)
 const MOVE = new Point(0.1, 0)
-const SCALE = 2
+const SCALE = 3
 const MAX_FALL_SPEED = 2.0
 const FRICTION = 0.9
 const EPSILON = 0.01
 
 function isBlockingTile(sprite:EditableSprite) {
-    if(sprite.getName() === 'background') return false
-    if(sprite.getName() === 'block') return true
-    console.log(`unknown tile type '${name}'`)
+    if(sprite.isBlocking()) return true
+    return false
 }
 
-const TS = new Size(10,10)
 
-function cell_index_to_game_bounds(pt: Point) {
-    return new Bounds(
-        pt.x * TS.w,
-        pt.y * TS.h,
-        TS.w,
-        TS.h)
-}
 
-export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Player, keys: KeyManager, canvas: HTMLCanvasElement) {
+export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Player, keys: KeyManager, canvas: HTMLCanvasElement, TS: Size) {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-    function debugPoint(point: Point) {
-        ctx.fillStyle = 'red'
-        point = point.scale(SCALE)
-        ctx.fillRect(point.x-5,point.y-5,10,10)
-    }
     let debug_y = 200
     function debugText(text:string) {
         ctx.fillStyle = 'black'
@@ -143,6 +129,13 @@ export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Pl
         ctx.stroke()
     }
     drawGrid()
+    function cell_index_to_game_bounds(pt: Point) {
+        return new Bounds(
+            pt.x * TS.w,
+            pt.y * TS.h,
+            TS.w,
+            TS.h)
+    }
 
     if (keys.justPressed('Space') && player.standing) {
         player.velocity = player.velocity.add(JUMP)
@@ -312,19 +305,18 @@ export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Pl
             }
         }
     }
-    handle_vertical()
     handle_horizontal()
+    handle_vertical()
     player.bounds = player.bounds.add(player.velocity)
     // console.log("pos",player.bounds.position().y)
 }
-export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: EditableDocument, player: Player, keys: KeyManager) {
+export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: EditableDocument, player: Player, keys: KeyManager, TS: Size) {
     const ctx = current.getContext('2d') as CanvasRenderingContext2D
     ctx.imageSmoothingEnabled = false
     ctx.fillStyle = '#f0f0f0'
     ctx.fillRect(0, 0, current.width, current.height)
-    const size = new Size(10, 10)
     map.cells.forEach((v, n) => {
-        const pos = n.scale(size.w).scale(SCALE)
+        const pos = n.scale(TS.w).scale(SCALE)
         const tile = doc.lookup_sprite(v.tile)
         if (tile) {
             if (tile.cache_canvas) {
@@ -334,7 +326,7 @@ export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: 
                     //dst
                     pos.x,
                     pos.y,
-                    size.w * SCALE, size.h * SCALE
+                    TS.w * SCALE, TS.h * SCALE
                 )
             } else {
                 drawEditableSprite(ctx, SCALE, tile)
@@ -347,6 +339,7 @@ export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: 
 
     ctx.fillStyle = 'magenta'
     const rect = player.bounds.scale(SCALE)
+    console.log(rect)
     ctx.fillRect(rect.x, rect.y, rect.w, rect.h)
     ctx.fillStyle = 'black'
     const debugs = [
@@ -368,7 +361,7 @@ export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:Edita
     const sprite = doc.getSheets()[0].getImages()[0]
     const tileSize = new Size(sprite.width(), sprite.height())
     useObservableChange(test,Changed)
-    console.log("redrawing")
+    console.log("redrawing", tileSize)
     useEffect(() => {
         if (ref.current) {
             console.log('redrawing')
@@ -380,17 +373,15 @@ export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:Edita
             }
             if (props.playing) {
                 canvas.focus()
-                // const doc = make_doc_from_json(PT)
-                // const map = doc.getMaps()[0]
                 anim = new Animator(() => {
-                    drawViewport(canvas, map, doc, player, keyManager)
-                    updatePlayer(doc, map, player, keyManager, canvas)
+                    drawViewport(canvas, map, doc, player, keyManager, tileSize)
+                    updatePlayer(doc, map, player, keyManager, canvas, tileSize)
                     keyManager.update()
                 })
                 anim.start()
             } else {
                 if(anim) anim.stop()
-                drawViewport(canvas, map, doc, player, keyManager)
+                drawViewport(canvas, map, doc, player, keyManager, tileSize)
             }
         }
     }, [props.playing, test.viewport])
@@ -398,12 +389,12 @@ export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:Edita
                    width={test.viewport.w*tileSize.w*SCALE}
                    height={test.viewport.h*tileSize.h*SCALE}
                    autoFocus={true}
-               className={'play-canvas'}
-               tabIndex={0}
-               style={{
-                   alignSelf:'start'
-               }}
-               onKeyDown={(e)=> keyManager.down(e)}
-               onKeyUp={(e) => keyManager.up(e)}
+                   className={'play-canvas'}
+                   tabIndex={0}
+                   style={{
+                       alignSelf:'start'
+                   }}
+                   onKeyDown={(e)=> keyManager.down(e)}
+                   onKeyUp={(e) => keyManager.up(e)}
     ></canvas>
 }

@@ -1,5 +1,6 @@
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
 import {ArrayGrid, genId, Point, Size} from "josh_js_util"
+import {f} from "vitest/dist/reporters-2ff87305"
 
 // @ts-ignore
 ArrayGrid.prototype.isValidIndex = function(pt: Point) {
@@ -87,6 +88,7 @@ export type JSONSprite = {
     h: number,
     data: number[]
     palette?: string[]
+    blocking:boolean,
 }
 
 export type JSONSheet = {
@@ -132,6 +134,7 @@ export class EditableSprite extends Observable {
     private name:string
     palette:ImagePalette
     cache_canvas: HTMLCanvasElement | null
+    blocking: boolean
     constructor(w:number, h:number, pallete:ImagePalette) {
         super()
         this.name = 'unnamed'
@@ -140,6 +143,7 @@ export class EditableSprite extends Observable {
         this.w = w
         this.h = h
         this.data = []
+        this.blocking = false
         for (let k = 0; k < this.w * this.h; k++) {
             this.data[k] = 0
         }
@@ -175,6 +179,7 @@ export class EditableSprite extends Observable {
             name:this.name,
             w: this.w,
             h: this.h,
+            blocking: this.blocking,
             data: this.data.slice()
         }
     }
@@ -190,6 +195,7 @@ export class EditableSprite extends Observable {
     clone() {
         const new_tile = new EditableSprite(this.width(),this.height(),this.palette)
         new_tile.data = this.data.slice()
+        new_tile.blocking = this.blocking
         new_tile.rebuild_cache()
         return new_tile
     }
@@ -200,6 +206,15 @@ export class EditableSprite extends Observable {
         this.cache_canvas.height = this.height()
         const ctx = this.cache_canvas.getContext('2d') as CanvasRenderingContext2D
         drawEditableSprite(ctx,1,this)
+    }
+
+    isBlocking() {
+        return this.blocking
+    }
+
+    setBlocking(checked: boolean) {
+        this.blocking = checked
+        this.fire(Changed,this)
     }
 }
 
@@ -455,6 +470,7 @@ export function make_doc_from_json(raw_data: any) {
             const sprite = new EditableSprite(json_sprite.w,json_sprite.h,json_doc.color_palette)
             sprite.id = json_sprite.id || genId('sprite')
             sprite.setName(json_sprite.name)
+            sprite.blocking = json_sprite.blocking
             sprite.data = json_sprite.data
             sprite.rebuild_cache()
             sheet.addSprite(sprite)
