@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from "react"
+import {toClass} from "josh_react_util"
+import React, {ReactNode, useEffect, useState} from "react"
 
 import {Observable} from "./model"
 
@@ -33,4 +34,30 @@ export function useObservableChange(ob: Observable | undefined, eventType: strin
         }
 
     }, [ob, count])
+}
+
+function ToggleButton<T>(props: {
+    value: T,
+    selected: T,
+    children: ReactNode,
+    onSelect: (value: T) => void
+}) {
+    return <button className={toClass({
+        selected: props.value === props.selected
+    })}
+                   onClick={() => props.onSelect(props.value)}
+    >{props.children}</button>
+}
+
+export function ToggleButtonSet<T>(props: {
+    values: T[],
+    selected: T,
+    onSelect: (mode: T) => void
+}) {
+    return <>
+        {props.values.map(val => {
+            return <ToggleButton value={val} selected={props.selected}
+                                 onSelect={props.onSelect}>{""+val}</ToggleButton>
+        })}
+    </>
 }

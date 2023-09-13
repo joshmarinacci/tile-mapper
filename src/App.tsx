@@ -12,7 +12,7 @@ import {
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {useContext, useState} from 'react'
 
-import {EditableLabel, useObservableChange} from "./common-components"
+import {EditableLabel, ToggleButtonSet, useObservableChange} from "./common-components"
 import {MapModeView} from "./MapModeView"
 import {
     canvas_to_bmp,
@@ -83,6 +83,7 @@ const load_file = async ():Promise<EditableDocument> => {
 }
 
 type Mode = "tiles" | "maps" | "tests"
+
 function Main() {
     const [doc, setDoc] = useState<EditableDocument>(EMPTY_DOC)
     const [mode, setMode ]= useState<Mode>('tiles')
@@ -108,9 +109,10 @@ function Main() {
                 <button onClick={async () => await export_bmp(doc)}>to BMP</button>
                 <EditableLabel value={doc.getName()} onChange={(str:string)=> doc.setName(str)}/>
                 <Spacer/>
-                <button onClick={()=>setMode('tiles')}>tiles</button>
-                <button onClick={()=>setMode('maps')}>maps</button>
-                <button onClick={()=>setMode('tests')}>tests</button>
+                <ToggleButtonSet values={['tiles','maps','tests']}
+                                 selected={mode}
+                                 onSelect={setMode}
+                />
             </div>
             {mode === 'tiles' && <TileModeView doc={doc}/>}
             {mode === 'maps' && <MapModeView doc={doc}/>}
