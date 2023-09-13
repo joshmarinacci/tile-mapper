@@ -1,0 +1,14 @@
+.prop-sheet {
+    border: 1px solid red;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    max-width: 20em;
+    padding: 0.5rem;
+}
+
+.prop-sheet label {
+    grid-column-start: 1;
+}
+.prop-sheet input {
+    grid-column-start: 2;
+}

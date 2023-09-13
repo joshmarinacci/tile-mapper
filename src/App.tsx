@@ -28,6 +28,7 @@ import {
     sheet_to_canvas
 } from "./model"
 import {NewDocDialog} from "./NewDocDialog"
+import {PropSheet, TestImpl} from "./propsheet"
 import {TestModeView} from "./TestModeView"
 import {TileModeView} from "./TileModeView"
 
@@ -121,10 +122,15 @@ function Main() {
     )
 }
 
+const obj = TestImpl.make()
+function PropSheetTest() {
+    return <PropSheet target={obj}/>
+}
 function App() {
     return <DialogContext.Provider value={new DialogContextImpl()}>
         <PopupContext.Provider value={new PopupContextImpl()}>
-            <Main/>
+            {/*<Main/>*/}
+            <PropSheetTest/>
             <PopupContainer/>
             <DialogContainer/>
         </PopupContext.Provider>
