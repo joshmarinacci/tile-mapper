@@ -13,6 +13,7 @@ export type Player = {
     bounds: Bounds
     velocity: Point,
     standing: boolean,
+    scroll: Point,
 }
 
 export class Animator {
@@ -91,10 +92,10 @@ export class KeyManager {
 
 const keyManager = new KeyManager()
 
-const JUMP = new Point(0, -4)
+const JUMP = new Point(0, -5.5)
 const GRAVITY = new Point(0, 0.2)
 const MOVE = new Point(0.1, 0)
-const MAX_FALL_SPEED = 2.0
+const MAX_FALL_SPEED = 3.0
 const FRICTION = 0.9
 const EPSILON = 0.01
 
@@ -136,8 +137,8 @@ export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Pl
         ctx.strokeStyle = '#a6f110'
         ctx.lineWidth = 2
         const bds = new Bounds(
-            index.x*SCALE*TS.w,
-            index.y*SCALE*TS.h,
+            index.x*SCALE*TS.w + player.scroll.x*SCALE,
+            index.y*SCALE*TS.h + player.scroll.y*SCALE,
             TS.w*SCALE,TS.h*SCALE
         )
         ctx.strokeRect(bds.x,bds.y,bds.w,bds.h)
@@ -310,22 +311,20 @@ export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: 
                     //src
                     0, 0, tile.cache_canvas.width, tile.cache_canvas.height,
                     //dst
-                    pos.x,
-                    pos.y,
+                    pos.x + player.scroll.x*SCALE,
+                    pos.y + player.scroll.y*SCALE,
                     TS.w * SCALE, TS.h * SCALE
                 )
             } else {
                 drawEditableSprite(ctx, SCALE, tile)
             }
         }
-        // ctx.strokeStyle = 'gray'
-        // ctx.strokeRect(pos.x, pos.y, size.w * scale-1, size.h * scale-1)
     })
     ctx.font = '12pt sans-serif'
 
     ctx.fillStyle = 'magenta'
     const rect = player.bounds.scale(SCALE)
-    ctx.fillRect(rect.x, rect.y, rect.w, rect.h)
+    ctx.fillRect(rect.x+player.scroll.x*SCALE, rect.y+player.scroll.y*SCALE, rect.w, rect.h)
     ctx.fillStyle = 'black'
     const debugs = [
         `space=${keys.isPressed('Space')}`,
@@ -353,6 +352,7 @@ export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:Edita
         const ctx = current.getContext('2d') as CanvasRenderingContext2D
         ctx.strokeStyle = 'red'
         ctx.lineWidth = 1
+        ctx.save()
         ctx.beginPath()
         for(let i=0; i<map.width(); i++) {
             ctx.moveTo(i*zoom*TS.w,0)
@@ -363,6 +363,7 @@ export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:Edita
             ctx.lineTo(map.width()*zoom*TS.h,i*zoom*TS.w)
         }
         ctx.stroke()
+        ctx.restore()
     }
 
     useEffect(() => {
@@ -371,11 +372,13 @@ export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:Edita
             const player: Player = {
                 bounds: new Bounds(30, 30, tileSize.w, tileSize.h),
                 velocity: new Point(0, 0),
-                standing: false
+                standing: false,
+                scroll: new Point(0,0),
             }
             if (props.playing) {
                 canvas.focus()
                 anim = new Animator(() => {
+                    player.scroll.x = -player.bounds.x + 100
                     drawViewport(canvas, map, doc, player, keyManager, tileSize, zoom)
                     updatePlayer(doc, map, player, keyManager, canvas, tileSize, zoom)
                     if(grid) drawGrid(canvas,zoom,tileSize)
