@@ -94,7 +94,6 @@ const keyManager = new KeyManager()
 const JUMP = new Point(0, -4)
 const GRAVITY = new Point(0, 0.2)
 const MOVE = new Point(0.1, 0)
-const SCALE = 3
 const MAX_FALL_SPEED = 2.0
 const FRICTION = 0.9
 const EPSILON = 0.01
@@ -106,7 +105,7 @@ function isBlockingTile(sprite:EditableSprite) {
 
 
 
-export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Player, keys: KeyManager, canvas: HTMLCanvasElement, TS: Size) {
+export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Player, keys: KeyManager, canvas: HTMLCanvasElement, TS: Size, SCALE:number) {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     let debug_y = 200
     function debugText(text:string) {
@@ -114,21 +113,6 @@ export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Pl
         ctx.fillText(text,canvas.width-200,debug_y)
         debug_y += 20
     }
-    function drawGrid() {
-        ctx.strokeStyle = 'red'
-        ctx.lineWidth = 1
-        ctx.beginPath()
-        for(let i=0; i<map.width(); i++) {
-            ctx.moveTo(i*SCALE*TS.w,0)
-            ctx.lineTo(i*SCALE*TS.w,map.height()*SCALE*TS.h)
-        }
-        for(let i=0; i<map.height(); i++) {
-            ctx.moveTo(0,i*SCALE*TS.h)
-            ctx.lineTo(map.width()*SCALE*TS.h,i*SCALE*TS.w)
-        }
-        ctx.stroke()
-    }
-    drawGrid()
     function cell_index_to_game_bounds(pt: Point) {
         return new Bounds(
             pt.x * TS.w,
@@ -310,7 +294,9 @@ export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Pl
     player.bounds = player.bounds.add(player.velocity)
     // console.log("pos",player.bounds.position().y)
 }
-export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: EditableDocument, player: Player, keys: KeyManager, TS: Size) {
+export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: EditableDocument, player: Player, keys: KeyManager, TS: Size,
+                             SCALE:number
+                             ) {
     const ctx = current.getContext('2d') as CanvasRenderingContext2D
     ctx.imageSmoothingEnabled = false
     ctx.fillStyle = '#f0f0f0'
@@ -339,7 +325,6 @@ export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: 
 
     ctx.fillStyle = 'magenta'
     const rect = player.bounds.scale(SCALE)
-    console.log(rect)
     ctx.fillRect(rect.x, rect.y, rect.w, rect.h)
     ctx.fillStyle = 'black'
     const debugs = [
@@ -355,16 +340,33 @@ export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: 
 
 
 let anim:Animator|null = null
-export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:EditableMap, test:EditableTest}) {
-    const {doc, map, test} = props
+export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:EditableMap, test:EditableTest,
+    zoom:number,
+    grid:boolean,
+}) {
+    const {doc, map, test, zoom, grid} = props
     const ref = useRef(null)
     const sprite = doc.getSheets()[0].getImages()[0]
     const tileSize = new Size(sprite.width(), sprite.height())
     useObservableChange(test,Changed)
-    console.log("redrawing", tileSize)
+    function drawGrid(current:HTMLCanvasElement, zoom:number, TS:Size) {
+        const ctx = current.getContext('2d') as CanvasRenderingContext2D
+        ctx.strokeStyle = 'red'
+        ctx.lineWidth = 1
+        ctx.beginPath()
+        for(let i=0; i<map.width(); i++) {
+            ctx.moveTo(i*zoom*TS.w,0)
+            ctx.lineTo(i*zoom*TS.w,map.height()*zoom*TS.h)
+        }
+        for(let i=0; i<map.height(); i++) {
+            ctx.moveTo(0,i*zoom*TS.h)
+            ctx.lineTo(map.width()*zoom*TS.h,i*zoom*TS.w)
+        }
+        ctx.stroke()
+    }
+
     useEffect(() => {
         if (ref.current) {
-            console.log('redrawing')
             const canvas = ref.current as HTMLCanvasElement
             const player: Player = {
                 bounds: new Bounds(30, 30, tileSize.w, tileSize.h),
@@ -374,20 +376,22 @@ export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:Edita
             if (props.playing) {
                 canvas.focus()
                 anim = new Animator(() => {
-                    drawViewport(canvas, map, doc, player, keyManager, tileSize)
-                    updatePlayer(doc, map, player, keyManager, canvas, tileSize)
+                    drawViewport(canvas, map, doc, player, keyManager, tileSize, zoom)
+                    updatePlayer(doc, map, player, keyManager, canvas, tileSize, zoom)
+                    if(grid) drawGrid(canvas,zoom,tileSize)
                     keyManager.update()
                 })
                 anim.start()
             } else {
                 if(anim) anim.stop()
-                drawViewport(canvas, map, doc, player, keyManager, tileSize)
+                drawViewport(canvas, map, doc, player, keyManager, tileSize, zoom)
+                if(grid) drawGrid(canvas,zoom,tileSize)
             }
         }
-    }, [props.playing, test.viewport])
+    }, [props.playing, test.viewport, zoom, grid])
     return <canvas ref={ref}
-                   width={test.viewport.w*tileSize.w*SCALE}
-                   height={test.viewport.h*tileSize.h*SCALE}
+                   width={test.viewport.w*tileSize.w*zoom}
+                   height={test.viewport.h*tileSize.h*zoom}
                    autoFocus={true}
                    className={'play-canvas'}
                    tabIndex={0}
