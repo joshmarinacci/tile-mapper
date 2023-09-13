@@ -316,6 +316,14 @@ export class EditableTest extends Observable {
         this.name = name
         this.fire(Changed,this)
     }
+    setWidth(w: number) {
+        this.viewport = new Size(w,this.viewport.h)
+        this.fire(Changed,this)
+    }
+    setHeight(h: number) {
+        this.viewport = new Size(this.viewport.w,h)
+        this.fire(Changed,this)
+    }
     toJSONTest():JSONTest {
         console.log('this.map is',this.map)
         return {
@@ -328,14 +336,13 @@ export class EditableTest extends Observable {
             map_id:(this.map?this.map.id:"")
         }
     }
-
-    setWidth(w: number) {
-        this.viewport = new Size(w,this.viewport.h)
-        this.fire(Changed,this)
-    }
-    setHeight(h: number) {
-        this.viewport = new Size(this.viewport.w,h)
-        this.fire(Changed,this)
+    static fromJSONTest(json:JSONTest) {
+        const test = new EditableTest()
+        test.viewport.w = json.viewport.width
+        test.viewport.h = json.viewport.height
+        test.id = json.id
+        test.setName(json.name)
+        return test
     }
 }
 export class EditableDocument extends Observable {
@@ -485,13 +492,7 @@ export function make_doc_from_json(raw_data: any) {
         doc.addMap(map)
     })
     json_doc.tests.forEach(json_test => {
-        // log("test",json_test)
-        const test = new EditableTest()
-        test.viewport.w = json_test.viewport.width
-        test.viewport.h = json_test.viewport.height
-        test.id = json_test.id
-        test.setName(json_test.name)
-        doc.addTest(test)
+        doc.addTest(EditableTest.fromJSONTest(json_test))
     })
     return doc
 }
