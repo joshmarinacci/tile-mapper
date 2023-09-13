@@ -141,7 +141,7 @@ export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Pl
             index.y*SCALE*TS.h + player.scroll.y*SCALE,
             TS.w*SCALE,TS.h*SCALE
         )
-        ctx.strokeRect(bds.x,bds.y,bds.w,bds.h)
+        ctx.strokeRect(Math.floor(bds.x),Math.floor(bds.y),bds.w,bds.h)
     }
 
     //add gravity
@@ -290,8 +290,8 @@ export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Pl
             }
         }
     }
-    handle_horizontal()
     handle_vertical()
+    handle_horizontal()
     player.bounds = player.bounds.add(player.velocity)
     // console.log("pos",player.bounds.position().y)
 }
@@ -311,8 +311,8 @@ export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: 
                     //src
                     0, 0, tile.cache_canvas.width, tile.cache_canvas.height,
                     //dst
-                    pos.x + player.scroll.x*SCALE,
-                    pos.y + player.scroll.y*SCALE,
+                    Math.floor(pos.x + player.scroll.x*SCALE),
+                    Math.floor(pos.y + player.scroll.y*SCALE),
                     TS.w * SCALE, TS.h * SCALE
                 )
             } else {
