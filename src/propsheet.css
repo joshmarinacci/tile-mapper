@@ -9,6 +9,6 @@
 .prop-sheet label {
     grid-column-start: 1;
 }
-.prop-sheet input {
+.prop-sheet input, .prop-sheet .value {
     grid-column-start: 2;
 }

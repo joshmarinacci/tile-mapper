@@ -3,8 +3,9 @@ import React, {useState} from "react"
 
 import {MapImpl} from "./defs"
 import {MapEditor} from "./MapEditor"
-import {MapList, MapProps} from "./MapList"
+import {MapList} from "./MapList"
 import {EditableDocument,  EditableSheet, EditableSprite} from "./model"
+import {PropSheet} from "./propsheet"
 import {SheetList} from "./SheetList"
 import {TileSheetView} from "./TileSheetView"
 
@@ -20,7 +21,10 @@ export function MapModeView(props: {
         <HBox>
             <MapList map={selectedMap} setMap={setSelectedMap} doc={doc} editable={true}/>
             {!selectedMap && <div>no map selected</div>}
-            {selectedMap && <MapProps doc={doc} map={selectedMap}/>}
+            {selectedMap &&<div className={'pane'}>
+                <header>map props</header>
+                <PropSheet target={selectedMap}/>
+            </div>}
             <SheetList
                 editable={false}
                 sheet={selectedSheet}

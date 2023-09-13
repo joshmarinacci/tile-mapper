@@ -4,7 +4,7 @@ import {Size} from "josh_js_util"
 import React, {useEffect, useState} from "react"
 
 import {PropDef} from "./base"
-import {TestImpl} from "./defs"
+import {PropsBase, TestImpl} from "./defs"
 
 /*
  Doc is
@@ -83,7 +83,8 @@ MapCell is:
 
 
 
-function PropEditor(props: { target: TestImpl, name:string, def:PropDef}) {
+function PropEditor(props: { target: PropsBase, name:string, def:PropDef}) {
+    const {target, def, name} = props
     const [count, setCount] = useState(0)
     const new_val = props.target.getPropValue(props.name)
     useEffect(() => {
@@ -91,22 +92,27 @@ function PropEditor(props: { target: TestImpl, name:string, def:PropDef}) {
         props.target.addEventListener('changed',hand)
         return () => props.target.removeEventListener('changed', hand)
     })
+    if(!props.def.editable) {
+        return <span key={`value_${name}`} className={'value'}><b>{props.def.toString()}</b></span>
+    }
     if(props.def.type === 'string') {
-        return <input type={'text'}
+        return <input key={`editor_${name}`} type={'text'}
                       value={new_val+""}
                       onChange={(e)=>{
                           props.target.setPropValue(props.name,e.target.value)
                       }}/>
     }
     if(props.def.type === 'integer') {
-        return <input type={'number'}
+        return <input  key={`editor_${name}`}
+                       type={'number'}
                       value={Math.floor(new_val as number)}
                       onChange={(e)=>{
                           props.target.setPropValue(props.name,parseInt(e.target.value))
                       }}/>
     }
     if(props.def.type === 'float') {
-        return <input type={'number'}
+        return <input  key={`editor_${name}`}
+                       type={'number'}
                       value={(new_val as number).toFixed(2)}
                       onChange={(e)=>{
                           props.target.setPropValue(props.name,parseFloat(e.target.value))
@@ -136,7 +142,7 @@ function PropEditor(props: { target: TestImpl, name:string, def:PropDef}) {
     return <label>no editor for it</label>
 }
 
-export function PropSheet(props: { target: TestImpl }) {
+export function PropSheet(props: { target: PropsBase }) {
     console.log("PropSheet",props.target)
     return <div className={'prop-sheet'}>
         {Array.from(props.target.props()).map(([name,def]) => {
@@ -148,8 +154,8 @@ export function PropSheet(props: { target: TestImpl }) {
                             def={def}/>
             </>
         })}
-        <div key={'toolbar'} className={'toolbar'}>
-            <button onClick={() => console.log(props.target.toJSON())}>save</button>
-        </div>
+        {/*<div key={'toolbar'} className={'toolbar'}>*/}
+        {/*    <button onClick={() => console.log(props.target.toJSON())}>save</button>*/}
+        {/*</div>*/}
     </div>
 }

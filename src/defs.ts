@@ -48,7 +48,7 @@ const TestDef:ObjDef = {
     },
 }
 
-class PropsBase extends ObservableBase {
+export class PropsBase extends ObservableBase {
     _props: Map<string,PropDef<unknown>>
     _values: Map<string, unknown>
     constructor(def:ObjDef) {
@@ -115,7 +115,7 @@ const MapDef:ObjDef = {
     },
     'size':{
         type:'Size',
-        editable:true,
+        editable:false,
         default: () => new Size(10,10),
         toJSON: (v:Size) => v.toJSON(),
     },

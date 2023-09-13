@@ -1,11 +1,9 @@
-import {Size} from "josh_js_util"
-import {DialogContext, HBox} from "josh_react_util"
-import React, {useContext, useEffect, useState} from "react"
+import {DialogContext} from "josh_react_util"
+import React, {useContext} from "react"
 
-import {useObservableChange} from "./base"
 import {MapImpl} from "./defs"
 import {ListView} from "./ListView"
-import {Changed, EditableDocument} from "./model"
+import {EditableDocument} from "./model"
 import {NewMapDialog} from "./NewMapDialog"
 
 function MapNameRenderer(props: {
@@ -49,41 +47,6 @@ export function MapList(props:{
                   data={doc.getMaps()}
                   style={{}}
                   className={'map-list'}/>
-    </div>
-}
-
-export function MapProps(props: {
-    doc: EditableDocument,
-    map: MapImpl,
-}) {
-    const {map} = props
-    const [name, setName] = useState(map.getPropValue('name'))
-    // useEffect(() => {
-    //     setName(map.getName())
-    //     const hand = () => setName(map.getName())
-    //     map.addEventListener(Changed, hand)
-    //     return () => map.removeEventListener(Changed, hand)
-    // }, [map])
-    useObservableChange(map,Changed)
-
-    return <div className={'pane'}>
-        <header>map props</header>
-        <ul className={'props-sheet'}>
-            <li>
-                <b>width</b>
-                <label>{(map.getPropValue('size') as Size).w}</label>
-            </li>
-            <li>
-                <b>height</b>
-                <label>{(map.getPropValue('size') as Size).h}</label>
-            </li>
-            <li>
-                <b>name</b>
-                <input type={'text'}
-                       value={props.map.getPropValue('name') as string}
-                       onChange={(e) => props.map.setPropValue('name',e.target.value)}/>
-            </li>
-        </ul>
     </div>
 }
 
