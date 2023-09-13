@@ -1,13 +1,14 @@
 import {Bounds, Point, Size} from "josh_js_util"
 import React, {useEffect, useRef} from "react"
 
+import {useObservableChange} from "./base"
+import {MapImpl, TestImpl} from "./defs"
 import {
     Changed,
     drawEditableSprite,
     EditableDocument,
-    EditableMap, EditableSprite,
+    EditableSprite,
 } from "./model"
-import {TestImpl, useObservableChange} from "./propsheet"
 
 export type Player = {
     bounds: Bounds
@@ -106,7 +107,7 @@ function isBlockingTile(sprite:EditableSprite) {
 
 
 
-export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Player, keys: KeyManager, canvas: HTMLCanvasElement, TS: Size, SCALE:number) {
+export function updatePlayer(doc: EditableDocument, map: MapImpl, player: Player, keys: KeyManager, canvas: HTMLCanvasElement, TS: Size, SCALE:number) {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     let debug_y = 200
     function debugText(text:string) {
@@ -295,7 +296,7 @@ export function updatePlayer(doc: EditableDocument, map: EditableMap, player: Pl
     player.bounds = player.bounds.add(player.velocity)
     // console.log("pos",player.bounds.position().y)
 }
-export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: EditableDocument, player: Player, keys: KeyManager, TS: Size,
+export function drawViewport(current: HTMLCanvasElement, map: MapImpl, doc: EditableDocument, player: Player, keys: KeyManager, TS: Size,
                              SCALE:number
                              ) {
     const ctx = current.getContext('2d') as CanvasRenderingContext2D
@@ -339,7 +340,7 @@ export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: 
 
 
 let anim:Animator|null = null
-export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:EditableMap, test:TestImpl,
+export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:MapImpl, test:TestImpl,
     zoom:number,
     grid:boolean,
 }) {
@@ -354,13 +355,14 @@ export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:Edita
         ctx.lineWidth = 1
         ctx.save()
         ctx.beginPath()
-        for(let i=0; i<map.width(); i++) {
+        const size = map.getPropValue('size') as Size
+        for(let i=0; i<size.w; i++) {
             ctx.moveTo(i*zoom*TS.w,0)
-            ctx.lineTo(i*zoom*TS.w,map.height()*zoom*TS.h)
+            ctx.lineTo(i*zoom*TS.w,size.h*zoom*TS.h)
         }
-        for(let i=0; i<map.height(); i++) {
+        for(let i=0; i<size.h; i++) {
             ctx.moveTo(0,i*zoom*TS.h)
-            ctx.lineTo(map.width()*zoom*TS.h,i*zoom*TS.w)
+            ctx.lineTo(size.w*zoom*TS.h,i*zoom*TS.w)
         }
         ctx.stroke()
         ctx.restore()

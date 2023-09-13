@@ -1,26 +1,28 @@
+import {Size} from "josh_js_util"
 import {DialogContext, HBox} from "josh_react_util"
 import React, {useContext, useEffect, useState} from "react"
 
-import {useObservableChange} from "./common-components"
+import {useObservableChange} from "./base"
+import {MapImpl} from "./defs"
 import {ListView} from "./ListView"
-import {Changed, EditableDocument, EditableMap} from "./model"
+import {Changed, EditableDocument} from "./model"
 import {NewMapDialog} from "./NewMapDialog"
 
 function MapNameRenderer(props: {
-    value: EditableMap,
-    selected: any,
-    setSelected: (value: any) => void
+    value: MapImpl,
+    selected: MapImpl,
+    setSelected: (value: MapImpl) => void
 }) {
     return <div onClick={() => props.setSelected(props.value)}>
-        {props.value.getName()}
+        {props.value.getPropValue('name') as string}
     </div>
 }
 
 export function MapList(props:{
     editable: boolean,
     doc: EditableDocument,
-    map: EditableMap,
-    setMap: (s: EditableMap) => void
+    map: MapImpl,
+    setMap: (s: MapImpl) => void
 }) {
     const {doc, map, setMap} = props
     const dc = useContext(DialogContext)
@@ -52,10 +54,10 @@ export function MapList(props:{
 
 export function MapProps(props: {
     doc: EditableDocument,
-    map: EditableMap,
+    map: MapImpl,
 }) {
     const {map} = props
-    const [name, setName] = useState(map.getName())
+    const [name, setName] = useState(map.getPropValue('name'))
     // useEffect(() => {
     //     setName(map.getName())
     //     const hand = () => setName(map.getName())
@@ -69,17 +71,17 @@ export function MapProps(props: {
         <ul className={'props-sheet'}>
             <li>
                 <b>width</b>
-                <label>{map.width()}</label>
+                <label>{(map.getPropValue('size') as Size).w}</label>
             </li>
             <li>
                 <b>height</b>
-                <label>{map.height()}</label>
+                <label>{(map.getPropValue('size') as Size).h}</label>
             </li>
             <li>
                 <b>name</b>
                 <input type={'text'}
-                       value={props.map.getName()}
-                       onChange={(e) => props.map.setName(e.target.value)}/>
+                       value={props.map.getPropValue('name') as string}
+                       onChange={(e) => props.map.setPropValue('name',e.target.value)}/>
             </li>
         </ul>
     </div>

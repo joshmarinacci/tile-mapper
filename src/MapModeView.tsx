@@ -1,9 +1,10 @@
 import {HBox} from "josh_react_util"
 import React, {useState} from "react"
 
+import {MapImpl} from "./defs"
 import {MapEditor} from "./MapEditor"
 import {MapList, MapProps} from "./MapList"
-import {EditableDocument, EditableMap, EditableSheet, EditableSprite} from "./model"
+import {EditableDocument,  EditableSheet, EditableSprite} from "./model"
 import {SheetList} from "./SheetList"
 import {TileSheetView} from "./TileSheetView"
 
@@ -11,7 +12,7 @@ export function MapModeView(props: {
     doc: EditableDocument
 }) {
     const {doc} = props
-    const [selectedMap, setSelectedMap] = useState<EditableMap>(doc.getMaps()[0])
+    const [selectedMap, setSelectedMap] = useState<MapImpl>(doc.getMaps()[0])
     const [selectedSheet, setSelectedSheet] = useState<EditableSheet>(doc.getSheets()[0])
     const [selectedTile, setSelectedTile] = useState<EditableSprite>(doc.getSheets()[0].getImages()[0])
 

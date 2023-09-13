@@ -1,15 +1,13 @@
 import React, {useState} from "react"
 
-import {Changed, EditableDocument, EditableMap} from "./model"
-import {Animator, KeyManager, PlayTest} from "./PlayTest"
-import {TestImpl, useObservableChange} from "./propsheet"
-
-const anim:Animator|null = null
-
+import {useObservableChange} from "./base"
+import {MapImpl, TestImpl} from "./defs"
+import {Changed, EditableDocument} from "./model"
+import {PlayTest} from "./PlayTest"
 export function TestMapPlayer(props: {
     test: TestImpl,
     doc: EditableDocument,
-    map: EditableMap
+    map: MapImpl
 }) {
     const {test, map, doc} = props
     const [playing, setPlaying] = useState(false)

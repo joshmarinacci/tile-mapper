@@ -3,11 +3,11 @@ import "./TestView.css"
 import {HBox} from "josh_react_util"
 import React, {useState} from "react"
 
-import {useObservableChange} from "./common-components"
+import {MapImpl, TestImpl} from "./defs"
 import {ListView} from "./ListView"
 import {MapList} from "./MapList"
-import {Changed, EditableDocument, EditableMap, EditableTest} from "./model"
-import {PropSheet, TestImpl} from "./propsheet"
+import {EditableDocument} from "./model"
+import {PropSheet} from "./propsheet"
 import {TestMapPlayer} from "./TestMapPlayer"
 
 
@@ -51,8 +51,8 @@ export function TestModeView(props: {
     doc: EditableDocument
 }) {
     const {doc} = props
-    const [test,setTest] = useState<EditableTest>()
-    const [map, setMap] = useState<EditableMap>(props.doc.getMaps()[0])
+    const [test,setTest] = useState<TestImpl>()
+    const [map, setMap] = useState<MapImpl>(props.doc.getMaps()[0])
 
     return <>
         <HBox>

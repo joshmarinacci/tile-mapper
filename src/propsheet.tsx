@@ -1,12 +1,10 @@
 import "./propsheet.css"
 
-import {genId, Point, Size} from "josh_js_util"
+import {Size} from "josh_js_util"
 import React, {useEffect, useState} from "react"
 
-// export type PropDef = {
-//     type:'number' | 'point',
-// }
-// export type Props = Record<string, PropDef>
+import {PropDef} from "./base"
+import {TestImpl} from "./defs"
 
 /*
  Doc is
@@ -83,157 +81,6 @@ MapCell is:
 //     },
 // }
 
-export type Getter<T> = () => T;
-export type ToJSONner<T> = (v:T) => object;
-
-export type PropDef<T> = {
-    type:'string'|'integer'|'float'|'Size'|'Point',
-    editable: boolean,
-    default: Getter<T>,
-    toJSON: ToJSONner<T>
-}
-
-export type UUID = string
-export type Etype = string
-export type ObservableListener = (type: Etype) => void
-export type JSONObj = {
-    class:string,
-    id:UUID,
-    props:Record<string, unknown>
-}
-export type ObjDef = Record<string, PropDef>;
-
-export class ObservableBase {
-    private _listeners: Map<Etype, Array<ObservableListener>>
-    constructor() {
-        this._listeners = new Map<Etype, Array<ObservableListener>>()
-    }
-    protected _get_listeners(type: Etype): ObservableListener[] {
-        if (!this._listeners.has(type)) this._listeners.set(type, new Array<ObservableListener>())
-        return this._listeners.get(type) as ObservableListener[]
-    }
-    public addEventListener(type: Etype, cb: ObservableListener) {
-        this._get_listeners(type).push(cb)
-    }
-    public removeEventListener(type: Etype, cb: ObservableListener) {
-        let list = this._get_listeners(type)
-        list = list.filter(l => l !== cb)
-        this._listeners.set(type, list)
-    }
-    protected fire(type: Etype, payload: unknown) {
-        this._get_listeners(type).forEach(cb => cb(payload))
-    }
-}
-
-export function useObservableChange(ob: ObservableBase | undefined, eventType: string) {
-    const [count, setCount] = useState(0)
-    return useEffect(() => {
-        const hand = () => {
-            setCount(count + 1)
-        }
-        if (ob) ob.addEventListener(eventType, hand)
-        return () => {
-            if (ob) ob.removeEventListener(eventType, hand)
-        }
-
-    }, [ob, count])
-}
-
-const TestDef:ObjDef = {
-    'name':{
-        type:'string',
-        editable:true,
-        default: () => 'new test',
-        toJSON: (v:string) => v,
-    },
-    'viewport':{
-        type:'Size',
-        editable:true,
-        default: () => new Size(10,10),
-        toJSON: (v:Size) => v.toJSON(),
-    },
-    'jump_power':{
-        type:'float',
-        editable:true,
-        default: () => 0.0,
-        toJSON: (v:number) => v,
-    },
-    'gravity':{
-        type:'Point',
-        editable:true,
-        default: () => new Point(0,0.1),
-        toJSON: (v:Point) => v.toJSON(),
-    },
-    'move_speed':{
-        type:'float',
-        editable:true,
-        default: () => 0.5,
-        toJSON: (v:number) => v,
-    },
-    'max_fall_speed':{
-        type:'float',
-        editable:true,
-        default: () => 0.5,
-        toJSON: (v:number) => v,
-    },
-    'friction':{
-        type:'float',
-        editable:true,
-        default: () => 0.99,
-        toJSON: (v:number) => v,
-    },
-}
-
-export class TestImpl extends ObservableBase {
-    _props: Map<string,PropDef<unknown>>
-    private _values: Map<string, unknown>
-    private _id: string
-    constructor(def:ObjDef) {
-        super()
-        this._id = genId('TestImpl'),
-        this._props = new Map<string,PropDef<unknown>>
-        Object.keys(def).forEach(key => {
-            this._props.set(key, def[key])
-        })
-        this._values = new Map<string,unknown>
-        for(const key of this._props.keys()) {
-            this._values.set(key,this._props.get(key)?.default())
-        }
-    }
-    static make():TestImpl {
-        return new TestImpl(TestDef)
-    }
-    props() {
-        return this._props.entries()
-    }
-    getPropValue(name:string) {
-        return this._values.get(name)
-    }
-    setPropValue(name:string, value:unknown) {
-        this._values.set(name,value)
-        this.fire('changed',{})
-    }
-    toJSON():JSONObj {
-        const json:JSONObj = {
-            'class':'TestImpl',
-            id: this._id,
-            props:{}
-        }
-        for(const [k,v] of this._props.entries()) {
-            json.props[k] = v.toJSON(this._values.get(k))
-        }
-        return json
-    }
-    static fromJSON(json:object):TestImpl {
-        console.log("loading from json",json)
-        if(!json) throw new Error("null json obj")
-        const test = TestImpl.make()
-        if('id' in json) test._id = json.id as UUID
-        if('name' in json) test._values.set('name',json.name)
-        if('viewport' in json) test._values.set('viewport',Size.fromJSON(json.viewport))
-        return test
-    }
-}
 
 
 function PropEditor(props: { target: TestImpl, name:string, def:PropDef}) {

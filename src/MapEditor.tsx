@@ -5,10 +5,10 @@ import {toClass} from "josh_react_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
+import {MapImpl} from "./defs"
 import {
     drawEditableSprite,
     EditableDocument,
-    EditableMap,
     EditableSheet,
     EditableSprite
 } from "./model"
@@ -22,7 +22,7 @@ function calculateDirections() {
     ]
 }
 
-function bucketFill(map: EditableMap, target: string, replace:string, at: Point, ) {
+function bucketFill(map: MapImpl, target: string, replace:string, at: Point, ) {
     if(target === replace) return
     const v = map.cells.get(at)
     if(v.tile !== target) return
@@ -37,10 +37,11 @@ function bucketFill(map: EditableMap, target: string, replace:string, at: Point,
 }
 
 
-function map_to_canvas(map: EditableMap, tile: EditableSprite, doc: EditableDocument, scale: number):HTMLCanvasElement {
+function map_to_canvas(map: MapImpl, tile: EditableSprite, doc: EditableDocument, scale: number):HTMLCanvasElement {
     const canvas = document.createElement('canvas')
-    canvas.width = map.width()*scale*tile.width()
-    canvas.height = map.height()*scale*tile.height()
+    const mapSize = map.getPropValue('size') as Size
+    canvas.width = mapSize.w*scale*tile.width()
+    canvas.height = mapSize.h*scale*tile.height()
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     ctx.imageSmoothingEnabled = false
     const size = new Size(tile.width(),tile.height())
@@ -68,15 +69,15 @@ function map_to_canvas(map: EditableMap, tile: EditableSprite, doc: EditableDocu
     return canvas
 }
 
-async function exportPNG(doc:EditableDocument, map: EditableMap,tile:EditableSprite, scale: number) {
+async function exportPNG(doc:EditableDocument, map: MapImpl,tile:EditableSprite, scale: number) {
     const can = map_to_canvas(map,tile, doc,scale)
     const blob = await canvas_to_blob(can)
-    forceDownloadBlob(`${map.getName()}.${scale}x.png`, blob)
+    forceDownloadBlob(`${map.getPropValue('name') as string}.${scale}x.png`, blob)
 }
 
 export function MapEditor(props: {
     doc: EditableDocument,
-    map: EditableMap,
+    map: MapImpl,
     sheet: EditableSheet,
     tile: EditableSprite,
     setSelectedTile:any,

@@ -1,7 +1,8 @@
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
 import {ArrayGrid, genId, Point, Size} from "josh_js_util"
 
-import {JSONObj, TestImpl} from "./propsheet"
+import {JSONObj} from "./base"
+import {MapImpl, TestImpl} from "./defs"
 
 // @ts-ignore
 ArrayGrid.prototype.isValidIndex = function(pt: Point) {
@@ -97,20 +98,10 @@ export type JSONSheet = {
     name:string,
     sprites:JSONSprite[]
 }
-export type JSONMapCell = {
-    tile:string,
-}
-export type JSONMap = {
-    id:string,
-    name:string,
-    width:number,
-    height:number,
-    cells:JSONMapCell[],
-}
 export type JSONDoc = {
     color_palette:string[]
     sheets:JSONSheet[],
-    maps: JSONMap[],
+    maps: JSONObj[],
     tests: JSONObj[],
     version:number,
     name:string
@@ -255,45 +246,11 @@ export class EditableSheet extends Observable {
 export type EditableMapCell = {
     tile:string, //id of the sprite used to draw this
 }
-export class EditableMap extends Observable {
-    id:string
-    private name:string
-    cells: ArrayGrid<EditableMapCell>
-    constructor(width:number, height:number) {
-        super()
-        this.name = 'unnamed map'
-        this.id = genId('map')
-        this.cells = new ArrayGrid<EditableMapCell>(width, height)
-        this.cells.fill(()=>({tile:"nothin"}))
-    }
-    getName() {
-        return this.name
-    }
-    setName(name: string) {
-        this.name = name
-        this.fire(Changed,this)
-    }
-    toJSONMap():JSONMap {
-        return {
-            name: this.name,
-            id:this.id,
-            width:this.cells.w,
-            height:this.cells.h,
-            cells:this.cells.data
-        }
-    }
-    width() {
-        return this.cells.w
-    }
-    height() {
-        return this.cells.h
-    }
-}
 
 export class EditableDocument extends Observable {
     private palette:ImagePalette
     private sheets:EditableSheet[]
-    private maps:EditableMap[]
+    private maps:MapImpl[]
     private tests:TestImpl[]
     private name:string
     private sprite_lookup:Map<string,EditableSprite>
@@ -326,11 +283,11 @@ export class EditableDocument extends Observable {
     getSheets():EditableSheet[] {
         return this.sheets.slice()
     }
-    addMap(map:EditableMap){
+    addMap(map:MapImpl){
         this.maps.push(map)
         this.fire(Changed,this)
     }
-    removeMap(map:EditableMap) {
+    removeMap(map:MapImpl) {
         const n = this.maps.indexOf(map)
         if(n < 0) {
             console.warn("cannot remove this map")
@@ -339,7 +296,7 @@ export class EditableDocument extends Observable {
             this.fire(Changed,this)
         }
     }
-    getMaps():EditableMap[] {
+    getMaps():MapImpl[] {
         return this.maps.slice()
     }
     addTest(test:TestImpl) {
@@ -374,7 +331,7 @@ export class EditableDocument extends Observable {
             color_palette: this.palette,
             version: CURRENT_VERSION,
             sheets: this.sheets.map(sh => sh.toJSONSheet()),
-            maps: this.maps.map(mp => mp.toJSONMap()),
+            maps: this.maps.map(mp => mp.toJSON()),
             tests: this.tests.map(tst => tst.toJSON())
         }
         return doc
@@ -430,10 +387,7 @@ export function make_doc_from_json(raw_data: any) {
     })
     json_doc.maps.forEach(json_map => {
         // log('map',json_map)
-        const map = new EditableMap(json_map.width,json_map.height)
-        map.id = json_map.id
-        map.setName(json_map.name)
-        map.cells.set_from_list(json_map.cells)
+        const map = MapImpl.fromJSON(json_map)
         doc.addMap(map)
     })
     json_doc.tests.forEach(json_test => {
