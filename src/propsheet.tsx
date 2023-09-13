@@ -1,6 +1,6 @@
 import "./propsheet.css"
 
-import {Size} from "josh_js_util"
+import {genId, Point, Size} from "josh_js_util"
 import React, {useEffect, useState} from "react"
 
 // export type PropDef = {
@@ -83,23 +83,27 @@ MapCell is:
 //     },
 // }
 
-type Getter = () => unknown;
+export type Getter<T> = () => T;
+export type ToJSONner<T> = (v:T) => object;
 
-type PropDef = {
-    type:'string'|'integer'|'float'|'Size',
+export type PropDef<T> = {
+    type:'string'|'integer'|'float'|'Size'|'Point',
     editable: boolean,
-    default: Getter,
+    default: Getter<T>,
+    toJSON: ToJSONner<T>
 }
 
-type Etype = string
-type ObservableListener = (type: Etype) => void
-type JSONObj = {
+export type UUID = string
+export type Etype = string
+export type ObservableListener = (type: Etype) => void
+export type JSONObj = {
     class:string,
+    id:UUID,
     props:Record<string, unknown>
 }
-type ObjDef = Record<string, PropDef>;
+export type ObjDef = Record<string, PropDef>;
 
-export class ObjBase {
+export class ObservableBase {
     private _listeners: Map<Etype, Array<ObservableListener>>
     constructor() {
         this._listeners = new Map<Etype, Array<ObservableListener>>()
@@ -116,40 +120,78 @@ export class ObjBase {
         list = list.filter(l => l !== cb)
         this._listeners.set(type, list)
     }
-    protected fire(type: Etype, payload: any) {
+    protected fire(type: Etype, payload: unknown) {
         this._get_listeners(type).forEach(cb => cb(payload))
     }
+}
+
+export function useObservableChange(ob: ObservableBase | undefined, eventType: string) {
+    const [count, setCount] = useState(0)
+    return useEffect(() => {
+        const hand = () => {
+            setCount(count + 1)
+        }
+        if (ob) ob.addEventListener(eventType, hand)
+        return () => {
+            if (ob) ob.removeEventListener(eventType, hand)
+        }
+
+    }, [ob, count])
 }
 
 const TestDef:ObjDef = {
     'name':{
         type:'string',
         editable:true,
-        default: () => 'new test'
-    },
-    'width': {
-        type:'integer',
-        editable:true,
-        default: () => 0,
+        default: () => 'new test',
+        toJSON: (v:string) => v,
     },
     'viewport':{
         type:'Size',
         editable:true,
         default: () => new Size(10,10),
+        toJSON: (v:Size) => v.toJSON(),
     },
     'jump_power':{
         type:'float',
         editable:true,
         default: () => 0.0,
-    }
+        toJSON: (v:number) => v,
+    },
+    'gravity':{
+        type:'Point',
+        editable:true,
+        default: () => new Point(0,0.1),
+        toJSON: (v:Point) => v.toJSON(),
+    },
+    'move_speed':{
+        type:'float',
+        editable:true,
+        default: () => 0.5,
+        toJSON: (v:number) => v,
+    },
+    'max_fall_speed':{
+        type:'float',
+        editable:true,
+        default: () => 0.5,
+        toJSON: (v:number) => v,
+    },
+    'friction':{
+        type:'float',
+        editable:true,
+        default: () => 0.99,
+        toJSON: (v:number) => v,
+    },
 }
 
-export class TestImpl extends ObjBase {
-    _props: Map<string,PropDef>
+export class TestImpl extends ObservableBase {
+    _props: Map<string,PropDef<unknown>>
     private _values: Map<string, unknown>
+    private _id: string
     constructor(def:ObjDef) {
         super()
-        this._props = new Map<string,PropDef>
+        this._id = genId('TestImpl'),
+        this._props = new Map<string,PropDef<unknown>>
         Object.keys(def).forEach(key => {
             this._props.set(key, def[key])
         })
@@ -174,12 +216,22 @@ export class TestImpl extends ObjBase {
     toJSON():JSONObj {
         const json:JSONObj = {
             'class':'TestImpl',
+            id: this._id,
             props:{}
         }
         for(const [k,v] of this._props.entries()) {
-            json.props[k] = this._values.get(k)
+            json.props[k] = v.toJSON(this._values.get(k))
         }
         return json
+    }
+    static fromJSON(json:object):TestImpl {
+        console.log("loading from json",json)
+        if(!json) throw new Error("null json obj")
+        const test = TestImpl.make()
+        if('id' in json) test._id = json.id as UUID
+        if('name' in json) test._values.set('name',json.name)
+        if('viewport' in json) test._values.set('viewport',Size.fromJSON(json.viewport))
+        return test
     }
 }
 
@@ -217,7 +269,7 @@ function PropEditor(props: { target: TestImpl, name:string, def:PropDef}) {
         const val = new_val as Size
         return <>
             <label>w</label>
-            return <input type={'number'}
+            <input type={'number'}
                           value={val.w}
                           onChange={(e)=>{
                               const v = parseInt(e.target.value)
@@ -225,7 +277,7 @@ function PropEditor(props: { target: TestImpl, name:string, def:PropDef}) {
                               props.target.setPropValue(props.name,size)
                           }}/>
             <label>h</label>
-            return <input type={'number'}
+            <input type={'number'}
                           value={val.h}
                           onChange={(e)=>{
                               const v = parseInt(e.target.value)
@@ -238,6 +290,7 @@ function PropEditor(props: { target: TestImpl, name:string, def:PropDef}) {
 }
 
 export function PropSheet(props: { target: TestImpl }) {
+    console.log("PropSheet",props.target)
     return <div className={'prop-sheet'}>
         {Array.from(props.target.props()).map(([name,def]) => {
             return <>
@@ -248,21 +301,8 @@ export function PropSheet(props: { target: TestImpl }) {
                             def={def}/>
             </>
         })}
-        <div className={'toolbar'}>
+        <div key={'toolbar'} className={'toolbar'}>
             <button onClick={() => console.log(props.target.toJSON())}>save</button>
         </div>
     </div>
 }
-
-// function doit() {
-//     const map  = MapDef.make()
-//     const test = TestDef.make()
-//     test.setValue('name','a cool new name')
-//     test.setValue('map_id',map.getValue('id'))
-//     test.setValue('viewport', new Size(20,20))
-//     test.addEventListener('changed',(e) => {
-//         // (test.prop === 'name')
-//     })
-//
-//     const propSheet = <PropSheet target={test}/>
-// }

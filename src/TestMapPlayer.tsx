@@ -1,13 +1,13 @@
 import React, {useState} from "react"
 
-import {useObservableChange} from "./common-components"
-import {Changed, EditableDocument, EditableMap, EditableTest} from "./model"
+import {Changed, EditableDocument, EditableMap} from "./model"
 import {Animator, KeyManager, PlayTest} from "./PlayTest"
+import {TestImpl, useObservableChange} from "./propsheet"
 
 const anim:Animator|null = null
 
 export function TestMapPlayer(props: {
-    test: EditableTest,
+    test: TestImpl,
     doc: EditableDocument,
     map: EditableMap
 }) {
@@ -22,7 +22,7 @@ export function TestMapPlayer(props: {
     return <>
         <div className={'toolbar'}>
             <button onClick={()=>togglePlaying()}>{playing?"pause":"play"}</button>
-            <label>{test.getName()}</label>
+            <label>{test.getPropValue('name') as string}</label>
             <button onClick={()=>setZoom(zoom+1)}>+</button>
             <label>{zoom}</label>
             <button onClick={()=>setZoom(zoom-1)}>-</button>

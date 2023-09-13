@@ -1,6 +1,7 @@
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
 import {ArrayGrid, genId, Point, Size} from "josh_js_util"
-import {f} from "vitest/dist/reporters-2ff87305"
+
+import {JSONObj, TestImpl} from "./propsheet"
 
 // @ts-ignore
 ArrayGrid.prototype.isValidIndex = function(pt: Point) {
@@ -106,20 +107,11 @@ export type JSONMap = {
     height:number,
     cells:JSONMapCell[],
 }
-export type JSONTest = {
-    id:string,
-    name:string,
-    map_id:string,
-    viewport:{
-        width:number,
-        height:number,
-    }
-}
 export type JSONDoc = {
     color_palette:string[]
     sheets:JSONSheet[],
     maps: JSONMap[],
-    tests: JSONTest[],
+    tests: JSONObj[],
     version:number,
     name:string
 }
@@ -298,58 +290,11 @@ export class EditableMap extends Observable {
     }
 }
 
-export class EditableTest extends Observable {
-    id:string
-    name:string
-    map:EditableMap|undefined
-    viewport:Size
-    constructor() {
-        super()
-        this.name = "unnamed test"
-        this.id = genId('test')
-        this.viewport = new Size(10,10)
-    }
-    getName() {
-        return this.name
-    }
-    setName(name: string) {
-        this.name = name
-        this.fire(Changed,this)
-    }
-    setWidth(w: number) {
-        this.viewport = new Size(w,this.viewport.h)
-        this.fire(Changed,this)
-    }
-    setHeight(h: number) {
-        this.viewport = new Size(this.viewport.w,h)
-        this.fire(Changed,this)
-    }
-    toJSONTest():JSONTest {
-        console.log('this.map is',this.map)
-        return {
-            id:this.id,
-            name: this.name,
-            viewport: {
-                width:this.viewport.w,
-                height:this.viewport.h,
-            },
-            map_id:(this.map?this.map.id:"")
-        }
-    }
-    static fromJSONTest(json:JSONTest) {
-        const test = new EditableTest()
-        test.viewport.w = json.viewport.width
-        test.viewport.h = json.viewport.height
-        test.id = json.id
-        test.setName(json.name)
-        return test
-    }
-}
 export class EditableDocument extends Observable {
     private palette:ImagePalette
     private sheets:EditableSheet[]
     private maps:EditableMap[]
-    private tests:EditableTest[]
+    private tests:TestImpl[]
     private name:string
     private sprite_lookup:Map<string,EditableSprite>
     constructor() {
@@ -397,11 +342,11 @@ export class EditableDocument extends Observable {
     getMaps():EditableMap[] {
         return this.maps.slice()
     }
-    addTest(test:EditableTest) {
+    addTest(test:TestImpl) {
         this.tests.push(test)
         this.fire(Changed,this)
     }
-    removeTest(test:EditableTest) {
+    removeTest(test:TestImpl) {
         const n = this.tests.indexOf(test)
         if(n < 0) {
             console.warn("cannot remove this map")
@@ -410,7 +355,7 @@ export class EditableDocument extends Observable {
             this.fire(Changed,this)
         }
     }
-    getTests():EditableTest[] {
+    getTests():TestImpl[] {
         return this.tests.slice()
     }
 
@@ -430,7 +375,7 @@ export class EditableDocument extends Observable {
             version: CURRENT_VERSION,
             sheets: this.sheets.map(sh => sh.toJSONSheet()),
             maps: this.maps.map(mp => mp.toJSONMap()),
-            tests: this.tests.map(tst => tst.toJSONTest())
+            tests: this.tests.map(tst => tst.toJSON())
         }
         return doc
     }
@@ -492,7 +437,7 @@ export function make_doc_from_json(raw_data: any) {
         doc.addMap(map)
     })
     json_doc.tests.forEach(json_test => {
-        doc.addTest(EditableTest.fromJSONTest(json_test))
+        doc.addTest(TestImpl.fromJSON(json_test))
     })
     return doc
 }

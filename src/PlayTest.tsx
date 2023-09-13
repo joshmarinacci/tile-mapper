@@ -1,13 +1,13 @@
 import {Bounds, Point, Size} from "josh_js_util"
 import React, {useEffect, useRef} from "react"
 
-import {useObservableChange} from "./common-components"
 import {
     Changed,
     drawEditableSprite,
     EditableDocument,
-    EditableMap, EditableSprite, EditableTest,
+    EditableMap, EditableSprite,
 } from "./model"
+import {TestImpl, useObservableChange} from "./propsheet"
 
 export type Player = {
     bounds: Bounds
@@ -339,7 +339,7 @@ export function drawViewport(current: HTMLCanvasElement, map: EditableMap, doc: 
 
 
 let anim:Animator|null = null
-export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:EditableMap, test:EditableTest,
+export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:EditableMap, test:TestImpl,
     zoom:number,
     grid:boolean,
 }) {
@@ -391,10 +391,11 @@ export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:Edita
                 if(grid) drawGrid(canvas,zoom,tileSize)
             }
         }
-    }, [props.playing, test.viewport, zoom, grid])
+    }, [props.playing, test.getPropValue('viewport'), zoom, grid])
+    const viewport = test.getPropValue('viewport') as Size
     return <canvas ref={ref}
-                   width={test.viewport.w*tileSize.w*zoom}
-                   height={test.viewport.h*tileSize.h*zoom}
+                   width={viewport.w*tileSize.w*zoom}
+                   height={viewport.h*tileSize.h*zoom}
                    autoFocus={true}
                    className={'play-canvas'}
                    tabIndex={0}

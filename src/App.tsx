@@ -122,15 +122,10 @@ function Main() {
     )
 }
 
-const obj = TestImpl.make()
-function PropSheetTest() {
-    return <PropSheet target={obj}/>
-}
 function App() {
     return <DialogContext.Provider value={new DialogContextImpl()}>
         <PopupContext.Provider value={new PopupContextImpl()}>
-            {/*<Main/>*/}
-            <PropSheetTest/>
+            <Main/>
             <PopupContainer/>
             <DialogContainer/>
         </PopupContext.Provider>

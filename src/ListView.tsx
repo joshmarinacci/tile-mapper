@@ -1,11 +1,13 @@
 import {toClass} from "josh_react_util"
 import React from "react"
 
+export type ListViewRenderer = (v:T) => JSX.Element;
+
 export function ListView<T>(props: {
     selected: T|undefined,
     setSelected: (v: T) => void,
-    renderer: any,
-    data: any[],
+    renderer: ListViewRenderer,
+    data: T[],
     style: object
     className:string
 }) {

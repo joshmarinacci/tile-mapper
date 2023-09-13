@@ -7,28 +7,29 @@ import {useObservableChange} from "./common-components"
 import {ListView} from "./ListView"
 import {MapList} from "./MapList"
 import {Changed, EditableDocument, EditableMap, EditableTest} from "./model"
+import {PropSheet, TestImpl} from "./propsheet"
 import {TestMapPlayer} from "./TestMapPlayer"
 
 
 function TestNameRenderer(props: {
-    value: EditableTest,
-    selected: any,
-    setSelected: (value: any) => void
+    value: TestImpl,
+    selected: TestImpl,
+    setSelected: (value: T) => void
 }) {
     return <div onClick={() => props.setSelected(props.value)}>
-        {props.value.getName()}
+        {props.value.getPropValue('name')+""}
     </div>
 }
 
-function TestList(props: { test: EditableTest|undefined, setTest: (value:EditableTest) => void, editable: boolean, doc: EditableDocument }) {
+function TestList(props: { test: TestImpl|undefined, setTest: (value:TestImpl) => void, editable: boolean, doc: EditableDocument }) {
     const {doc, test, setTest, editable} = props
     const add_test = () => {
-        const test = new EditableTest()
+        const test = TestImpl.make()
         doc.addTest(test)
         setTest(test)
     }
     const del_test = () => {
-        doc.removeTest(test)
+        if(test) doc.removeTest(test)
         if(doc.getTests().length > 0) setTest(doc.getTests()[0])
     }
     return <div className={'pane'}>
@@ -46,34 +47,6 @@ function TestList(props: { test: EditableTest|undefined, setTest: (value:Editabl
     </div>
 }
 
-function TestDetails(props: { test: EditableTest, doc: EditableDocument }) {
-    const {test} = props
-    useObservableChange(test,Changed)
-    return <div className={'pane'}>
-        <header>Test Details</header>
-        <ul className={'props-sheet'}>
-            <li>
-                <b>width</b>
-                <input type={"number"} value={test.viewport.w} onChange={(e) => {
-                    test.setWidth(parseInt(e.target.value))
-                }}/>
-            </li>
-            <li>
-                <b>height</b>
-                <input type={"number"} value={test.viewport.h} onChange={(e) => {
-                    test.setHeight(parseInt(e.target.value))
-                }}/>
-            </li>
-            <li>
-                <b>name</b>
-                <input type={'text'}
-                       value={test.getName()}
-                       onChange={(e) => test.setName(e.target.value)}/>
-            </li>
-        </ul>
-    </div>
-}
-
 export function TestModeView(props: {
     doc: EditableDocument
 }) {
@@ -85,7 +58,7 @@ export function TestModeView(props: {
         <HBox>
             <MapList map={map} setMap={setMap} doc={props.doc} editable={false}/>
             <TestList test={test} setTest={setTest} doc={props.doc} editable={true}/>
-            {test && <TestDetails test={test} doc={props.doc}/>}
+            {test && <PropSheet target={test} key={'props'}/>}
         </HBox>
         {map && test && <TestMapPlayer
             doc={doc}
