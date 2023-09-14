@@ -1,7 +1,7 @@
 import {ArrayGrid, genId, Point, Size} from "josh_js_util"
 
 import {PropDef, PropsBase, UUID} from "./base"
-import {EditableMapCell, JSONMap} from "./model"
+import {EditableMapCell, JSONMap, JSONTest} from "./model"
 
 export const NameDef: PropDef<string> = {
     type: 'string',
@@ -75,7 +75,7 @@ export class TestImpl extends PropsBase<TestType> {
         return new TestImpl()
     }
 
-    static fromJSON(json: object): TestImpl {
+    static fromJSON(json: JSONTest): TestImpl {
         console.log(`${this.name}.fromJSON`, json)
         if (!json) throw new Error("null json obj")
         const test = TestImpl.make()
@@ -133,10 +133,15 @@ export class MapImpl extends PropsBase<MapType> {
         return map
     }
 
-    toJSON() {
-        const out = super.toJSON()
-        out.props.cells = this.cells.data
-        return out
+    toJSONMap():JSONMap {
+        return {
+            id: this._id,
+            name: this.getPropValue('name'),
+            width: this.getPropValue('size').w,
+            height: this.getPropValue('size').h,
+            cells: this.cells.data
+        }
+
     }
 }
 

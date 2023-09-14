@@ -30,6 +30,7 @@ function bucketFill(map: MapImpl, target: string, replace:string, at: Point, ) {
         map.cells.set(at,{tile:replace})
         calculateDirections().forEach(dir => {
             const pt = at.add(dir)
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
             // @ts-ignore
             if(map.cells.isValidIndex(pt)) bucketFill(map,target,replace,pt)
         })
@@ -80,7 +81,7 @@ export function MapEditor(props: {
     map: MapImpl,
     sheet: EditableSheet,
     tile: EditableSprite,
-    setSelectedTile:any,
+    setSelectedTile:(sprite:EditableSprite) => void,
 }) {
     const {map, tile, doc} = props
     const [grid, setGrid] = useState<boolean>(false)
@@ -172,24 +173,24 @@ export function MapEditor(props: {
                     if(fillOnce) {
                         const pt = canvasToImage(e)
                         const cell = map.cells.get(pt)
-                        bucketFill(map,cell.tile,tile.id,pt)
+                        bucketFill(map,cell.tile,tile._id,pt)
                         setFillOnce(false)
                         redraw()
                         return
                     }
 
                     setDown(true)
-                    if(map) map.cells.set(canvasToImage(e),{tile:tile.id})
+                    if(map) map.cells.set(canvasToImage(e),{tile:tile._id})
                     // setCount(count + 1)
                     redraw()
                 }}
                 onMouseMove={(e) => {
                     if (down) {
-                        if(map) map.cells.set(canvasToImage(e), {tile:tile.id})
+                        if(map) map.cells.set(canvasToImage(e), {tile:tile._id})
                         redraw()
                     }
                 }}
-                onMouseUp={(e) => setDown(false)}
+                onMouseUp={() => setDown(false)}
         />
         </div>
     </>

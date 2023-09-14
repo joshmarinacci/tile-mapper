@@ -12,11 +12,10 @@ import {
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {useContext, useState} from 'react'
 
-import {EditableLabel, ToggleButtonSet, useObservableChange} from "./common-components"
+import {EditableLabel, ToggleButtonSet} from "./common-components"
 import {MapModeView} from "./MapModeView"
 import {
     canvas_to_bmp,
-    Changed,
     EditableDocument,
     EditableSheet,
     EditableSprite,
@@ -47,7 +46,7 @@ const export_png = async (doc:EditableDocument) => {
     for(const sheet of doc.getSheets()) {
         const can = sheet_to_canvas(sheet)
         const blob = await canvas_to_blob(can)
-        forceDownloadBlob(`${doc.getName()}.${sheet.getName()}.png`,blob)
+        forceDownloadBlob(`${doc.getPropValue('name')}.${sheet.getPropValue('name')}.png`,blob)
     }
 }
 
@@ -56,7 +55,7 @@ const export_bmp = async (doc:EditableDocument) => {
     const canvas = sheet_to_canvas(sheet)
     const rawData = canvas_to_bmp(canvas, doc.getPalette())
     const blob = new Blob([rawData.data], {type:'image/bmp'})
-    forceDownloadBlob(`${sheet.getName()}.bmp`,blob)
+    forceDownloadBlob(`${sheet.getPropValue('name')}.bmp`,blob)
 }
 
 const load_file = async ():Promise<EditableDocument> => {
@@ -73,7 +72,7 @@ const load_file = async ():Promise<EditableDocument> => {
             console.log(file)
             fileToJson(file).then(data => {
                 log("got the data",data)
-                const doc = make_doc_from_json(data)
+                const doc = make_doc_from_json(data as object)
                 log('doc iss',doc)
                 res(doc)
             })
@@ -90,12 +89,11 @@ function Main() {
     const dc = useContext(DialogContext)
     const save_file = () => {
         const blob = jsonObjToBlob(doc.toJSONDoc())
-        forceDownloadBlob(`${doc.getName()}.json`,blob)
+        forceDownloadBlob(`${doc.getPropValue('name')}.json`,blob)
     }
     const new_doc = () => {
         dc.show(<NewDocDialog onComplete={(doc) => setDoc(doc)}/>)
     }
-    useObservableChange(doc,Changed)
     return (
         <>
             <div className={'toolbar'}>
@@ -107,7 +105,7 @@ function Main() {
                 }}>load</button>
                 <button onClick={async () => await export_png(doc)}>to PNG</button>
                 <button onClick={async () => await export_bmp(doc)}>to BMP</button>
-                <EditableLabel value={doc.getName()} onChange={(str:string)=> doc.setName(str)}/>
+                <EditableLabel value={doc.getPropValue('name')} onChange={(str:string)=> doc.setPropValue('name',str)}/>
                 <Spacer/>
                 <ToggleButtonSet values={['tiles','maps','tests']}
                                  selected={mode}

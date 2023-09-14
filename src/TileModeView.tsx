@@ -12,7 +12,7 @@ import {TileSheetView} from "./TileSheetView"
 
 export function TileModeView(props: { doc: EditableDocument }) {
     const {doc} = props
-    const [sheets, setSheets] = useState<EditableSheet[]>(doc.getSheets())
+    // const [sheets, setSheets] = useState<EditableSheet[]>(doc.getSheets())
     const [drawColor, setDrawColor] = useState<string>(doc.getPalette()[0])
     const [sheet, setSheet] = useState<EditableSheet>(doc.getSheets()[0])
     const [tile, setTile] = useState<EditableSprite>(doc.getSheets()[0].getImages()[0])

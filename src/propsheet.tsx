@@ -97,6 +97,14 @@ function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<
                           props.target.setPropValue(props.name,parseFloat(e.target.value) as T[keyof T])
                       }}/>
     }
+    if(def.type === "boolean") {
+        return <input key={`editor_${name.toString()}`} type={'checkbox'}
+            checked={new_val as boolean}
+                      onChange={e => {
+                          props.target.setPropValue(props.name,e.target.checked as T[keyof T])
+                      }}
+        />
+    }
     if(def.type === 'Size') {
         const val = new_val as Size
         return <>

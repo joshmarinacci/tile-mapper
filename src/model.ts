@@ -1,7 +1,7 @@
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
 import {ArrayGrid, genId, Point, Size} from "josh_js_util"
 
-import {JSONObj, PropDef, PropsBase} from "./base"
+import {PropDef, PropsBase} from "./base"
 import {MapImpl, NameDef, SheetType, SpriteType, TestImpl} from "./defs"
 
 // @ts-ignore
@@ -105,11 +105,14 @@ export type JSONMap = {
     width: number
     cells:EditableMapCell[]
 }
+export type JSONTest = {
+
+}
 export type JSONDoc = {
     color_palette:string[]
     sheets:JSONSheet[],
     maps: JSONMap[],
-    tests: JSONObj[],
+    tests: JSONTest[],
     version:number,
     name:string
 }
@@ -132,6 +135,13 @@ export class EditableSprite extends PropsBase<SpriteType> {
         this.setPropValue('name',this.getPropDef('name').default())
         this.setPropDef('size',SizeDef)
         this.setPropValue('size', new Size(w,h))
+        this.setPropDef('blocking',{
+            type:"boolean",
+            editable:true,
+            default: () => false,
+            toJSON: (v) => v,
+        })
+        this.setPropValue('blocking',this.getPropDef('blocking').default())
         this.palette = pallete
         this.data = new ArrayGrid<number>(w,h)
         this.data.fill(()=>0)
@@ -152,10 +162,15 @@ export class EditableSprite extends PropsBase<SpriteType> {
     getPixel(point: Point) {
         return this.data.get(point)
     }
-    toJSON() {
-        const out = super.toJSON()
-        out.props.data = this.data.data
-        return out
+    toJSONSprite():JSONSprite {
+        return {
+            name: this.getPropValue('name'),
+            id: this._id,
+            blocking: this.getPropValue('blocking'),
+            w: this.getPropValue('size').w,
+            h: this.getPropValue('size').h,
+            data: this.data.data
+        }
     }
     isValidIndex(pt: Point) {
         if(pt.x < 0) return false
@@ -216,10 +231,12 @@ export class EditableSheet extends PropsBase<SheetType> {
     getImages() {
         return this.sprites.slice()
     }
-    toJSON() {
-        const out = super.toJSON()
-        out.props.sprites = this.sprites.map(sp => sp.toJSON())
-        return out
+    toJSONSheet():JSONSheet {
+        return {
+            name: this.getPropValue('name'),
+            id: this._id,
+            sprites: this.sprites.map(sp => sp.toJSONSprite())
+        }
     }
     static fromJSON(json_sheet: JSONSheet) {
         const sheet = new EditableSheet()
@@ -233,29 +250,28 @@ export type EditableMapCell = {
     tile:string, //id of the sprite used to draw this
 }
 
-export class EditableDocument extends Observable {
+type DocType = {
+    name:string,
+}
+export class EditableDocument extends PropsBase<DocType> {
     private palette:ImagePalette
     private sheets:EditableSheet[]
     private maps:MapImpl[]
     private tests:TestImpl[]
-    private name:string
     private sprite_lookup:Map<string,EditableSprite>
     constructor() {
         super()
         this.palette = []
         this.sheets = []
         this.maps = []
-        this.name = 'unnamed'
+        this.setPropDef('name',NameDef)
+        this.setPropValue('name',this.getPropDef('name').default())
         this.sprite_lookup = new Map()
         this.tests = []
     }
-    setName(name:string) {
-        this.name = name
-        this.fire(Changed,this)
-    }
     addSheet(sheet:EditableSheet) {
         this.sheets.push(sheet)
-        this.fire(Changed,this)
+        this._fireAll()
     }
     removeSheet(sheet:EditableSheet) {
         const n = this.sheets.indexOf(sheet)
@@ -263,7 +279,7 @@ export class EditableDocument extends Observable {
             console.warn("cannot remove this sheet")
         } else {
             this.sheets.splice(n,1)
-            this.fire(Changed,this)
+            this._fireAll()
         }
     }
     getSheets():EditableSheet[] {
@@ -271,7 +287,7 @@ export class EditableDocument extends Observable {
     }
     addMap(map:MapImpl){
         this.maps.push(map)
-        this.fire(Changed,this)
+        this._fireAll()
     }
     removeMap(map:MapImpl) {
         const n = this.maps.indexOf(map)
@@ -279,7 +295,7 @@ export class EditableDocument extends Observable {
             console.warn("cannot remove this map")
         } else {
             this.maps.splice(n,1)
-            this.fire(Changed,this)
+            this._fireAll()
         }
     }
     getMaps():MapImpl[] {
@@ -287,7 +303,7 @@ export class EditableDocument extends Observable {
     }
     addTest(test:TestImpl) {
         this.tests.push(test)
-        this.fire(Changed,this)
+        this._fireAll()
     }
     removeTest(test:TestImpl) {
         const n = this.tests.indexOf(test)
@@ -295,38 +311,29 @@ export class EditableDocument extends Observable {
             console.warn("cannot remove this map")
         } else {
             this.tests.splice(n,1)
-            this.fire(Changed,this)
+            this._fireAll()
         }
     }
     getTests():TestImpl[] {
         return this.tests.slice()
     }
-
     setPalette(palette:ImagePalette) {
         this.palette = palette
-        this.fire(Changed,this)
+        this._fireAll()
     }
-
-    getName() {
-        return this.name
-    }
-
     toJSONDoc():JSONDoc {
-        const doc:JSONDoc = {
-            name:this.getName(),
+        return {
+            name: this.getPropValue('name'),
             color_palette: this.palette,
             version: CURRENT_VERSION,
             sheets: this.sheets.map(sh => sh.toJSONSheet()),
-            maps: this.maps.map(mp => mp.toJSON()),
+            maps: this.maps.map(mp => mp.toJSONMap()),
             tests: this.tests.map(tst => tst.toJSON())
         }
-        return doc
     }
-
     getPalette() {
         return this.palette
     }
-
     lookup_sprite(id: string) {
         if(this.sprite_lookup.has(id)) return this.sprite_lookup.get(id)
         for(const sheet of this.sheets) {
@@ -342,10 +349,19 @@ export class EditableDocument extends Observable {
     }
 }
 
-export function make_doc_from_json(raw_data: any) {
+export function make_doc_from_json(raw_data: object) {
+    if(!('version' in raw_data)) throw new Error('we cannot load this document')
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if(raw_data['version'] < 3) throw new Error("we cannot load this document")
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     if(raw_data['version'] < 4) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         raw_data.maps = []
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         raw_data.tests = []
     }
     const json_doc = raw_data as JSONDoc
@@ -353,7 +369,7 @@ export function make_doc_from_json(raw_data: any) {
         json_doc.color_palette = PICO8
     }
     const doc = new EditableDocument()
-    doc.setName(json_doc.name)
+    doc.setPropValue('name',json_doc.name)
     doc.setPalette(json_doc.color_palette)
     json_doc.sheets.forEach(json_sheet => {
         const sheet = EditableSheet.fromJSON(json_sheet)

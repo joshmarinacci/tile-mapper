@@ -2,7 +2,7 @@ import {genId} from "josh_js_util"
 
 export type UUID = string
 export type Getter<T> = () => T;
-type JSONValue = string | number | object
+type JSONValue = string | number | object | boolean
 type JsonOut<Type> = {
     id:string,
     class:string,
@@ -10,7 +10,7 @@ type JsonOut<Type> = {
 }
 export type ToJSONner<T> = (v: T) => JSONValue;
 export type PropDef<T> = {
-    type: 'string' | 'integer' | 'float' | 'Size' | 'Point',
+    type: 'string' | 'integer' | 'float' | 'Size' | 'Point' | 'boolean',
     editable: boolean,
     default: Getter<T>,
     toJSON: ToJSONner<T>
@@ -84,7 +84,7 @@ export class PropsBase<Type> {
     toJSON() {
         const obj:JsonOut<Type> = {
             class:'Wrapper',
-            props:{},
+            props:{} as Record<keyof Type, JSONValue>,
             id:this._id,
         }
         for(const [k,d] of this.getAllPropDefs()) {
