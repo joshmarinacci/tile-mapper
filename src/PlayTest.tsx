@@ -1,7 +1,6 @@
 import {Bounds, Point, Size} from "josh_js_util"
-import React, {useEffect, useRef} from "react"
+import React, {useEffect, useRef, useState} from "react"
 
-import {useObservableChange} from "./base"
 import {MapImpl, TestImpl} from "./defs"
 import {
     Changed,
@@ -294,7 +293,6 @@ export function updatePlayer(doc: EditableDocument, map: MapImpl, player: Player
     handle_vertical()
     handle_horizontal()
     player.bounds = player.bounds.add(player.velocity)
-    // console.log("pos",player.bounds.position().y)
 }
 export function drawViewport(current: HTMLCanvasElement, map: MapImpl, doc: EditableDocument, player: Player, keys: KeyManager, TS: Size,
                              SCALE:number
@@ -348,7 +346,13 @@ export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:MapIm
     const ref = useRef(null)
     const sprite = doc.getSheets()[0].getImages()[0]
     const tileSize = new Size(sprite.width(), sprite.height())
-    useObservableChange(test,Changed)
+    const [count, setCount] = useState(0)
+    useEffect(() => {
+        const hand = () => setCount(count + 1)
+        test.onAny(hand)
+        return () => test.offAny(hand)
+    })
+
     function drawGrid(current:HTMLCanvasElement, zoom:number, TS:Size) {
         const ctx = current.getContext('2d') as CanvasRenderingContext2D
         ctx.strokeStyle = 'red'

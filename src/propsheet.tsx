@@ -3,8 +3,8 @@ import "./propsheet.css"
 import {Size} from "josh_js_util"
 import React, {useEffect, useState} from "react"
 
-import {PropDef} from "./base"
-import {PropsBase, TestImpl} from "./defs"
+import {PropDef, PropsBase} from "./base"
+import {TestImpl} from "./defs"
 
 /*
  Doc is
@@ -83,42 +83,44 @@ MapCell is:
 
 
 
-function PropEditor(props: { target: PropsBase, name:string, def:PropDef}) {
+function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<T[keyof T]>}) {
     const {target, def, name} = props
     const [count, setCount] = useState(0)
-    const new_val = props.target.getPropValue(props.name)
+    const new_val = target.getPropValue(name)
+    console.log("new value",new_val)
     useEffect(() => {
         const hand = () => setCount(count + 1)
-        props.target.addEventListener('changed',hand)
-        return () => props.target.removeEventListener('changed', hand)
+        target.on(name,hand)
+        return () => target.off(name, hand)
     })
     if(!props.def.editable) {
-        return <span key={`value_${name}`} className={'value'}><b>{props.def.toString()}</b></span>
+        return <span key={`value_${name.toString()}`} className={'value'}><b>{props.def.toString()}</b></span>
     }
     if(props.def.type === 'string') {
-        return <input key={`editor_${name}`} type={'text'}
+        return <input key={`editor_${name.toString()}`} type={'text'}
                       value={new_val+""}
                       onChange={(e)=>{
-                          props.target.setPropValue(props.name,e.target.value)
+                          console.log("setting",name,'to',e.target.value)
+                          target.setPropValue(name,e.target.value as T[keyof T])
                       }}/>
     }
     if(props.def.type === 'integer') {
-        return <input  key={`editor_${name}`}
+        return <input  key={`editor_${name.toString()}`}
                        type={'number'}
                       value={Math.floor(new_val as number)}
                       onChange={(e)=>{
-                          props.target.setPropValue(props.name,parseInt(e.target.value))
+                          props.target.setPropValue(props.name,parseInt(e.target.value) as T[keyof T])
                       }}/>
     }
     if(props.def.type === 'float') {
-        return <input  key={`editor_${name}`}
+        return <input  key={`editor_${name.toString()}`}
                        type={'number'}
                       value={(new_val as number).toFixed(2)}
                       onChange={(e)=>{
-                          props.target.setPropValue(props.name,parseFloat(e.target.value))
+                          props.target.setPropValue(props.name,parseFloat(e.target.value) as T[keyof T])
                       }}/>
     }
-    if(props.def.type === 'Size') {
+    if(def.type === 'Size') {
         const val = new_val as Size
         return <>
             <label>w</label>
@@ -127,7 +129,7 @@ function PropEditor(props: { target: PropsBase, name:string, def:PropDef}) {
                           onChange={(e)=>{
                               const v = parseInt(e.target.value)
                               const size = new Size(v,val.h)
-                              props.target.setPropValue(props.name,size)
+                              target.setPropValue(props.name,size as T[keyof T])
                           }}/>
             <label>h</label>
             <input type={'number'}
@@ -135,20 +137,19 @@ function PropEditor(props: { target: PropsBase, name:string, def:PropDef}) {
                           onChange={(e)=>{
                               const v = parseInt(e.target.value)
                               const size = new Size(val.w,v)
-                              props.target.setPropValue(props.name,size)
+                              props.target.setPropValue(props.name,size as T[keyof T])
                           }}/>
         </>
     }
     return <label>no editor for it</label>
 }
 
-export function PropSheet(props: { target: PropsBase }) {
-    console.log("PropSheet",props.target)
+export function PropSheet<T>(props: { target: PropsBase<T> }) {
     return <div className={'prop-sheet'}>
-        {Array.from(props.target.props()).map(([name,def]) => {
+        {Array.from(props.target.getAllPropDefs()).map(([name,def]) => {
             return <>
-                <label key={`label_${name}`}>{name}</label>
-                <PropEditor key={`editor_${name}`}
+                <label key={`label_${name.toString()}`}>{name.toString()}</label>
+                <PropEditor key={`editor_${name.toString()}`}
                             target={props.target}
                             name={name}
                             def={def}/>
