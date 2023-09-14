@@ -1,4 +1,4 @@
-import {ArrayGrid, genId, Point, Size} from "josh_js_util"
+import {ArrayGrid, Point, Size} from "josh_js_util"
 
 import {PropDef, PropsBase, UUID} from "./base"
 import {EditableMapCell, JSONMap, JSONTest} from "./model"
@@ -81,10 +81,20 @@ export class TestImpl extends PropsBase<TestType> {
         const test = TestImpl.make()
         if ('id' in json) test._id = json.id as UUID
         if ('name' in json) test.setPropValue('name', json.name as string)
-        if ('viewport' in json) test.setPropValue('viewport', Size.fromJSON(json.viewport as {w:number,h:number}))
+        if ('viewport' in json) test.setPropValue('viewport', new Size(json.viewport.width, json.viewport.height))
         return test
     }
 
+    toJSONTest():JSONTest {
+        return {
+            id:this._id,
+            name: this.getPropValue('name'),
+            viewport: {
+                width: this.getPropValue('viewport').w,
+                height: this.getPropValue('viewport').h,
+            },
+        }
+    }
 }
 
 type MapType = {
@@ -135,8 +145,8 @@ export class MapImpl extends PropsBase<MapType> {
 
     toJSONMap():JSONMap {
         return {
-            id: this._id,
             name: this.getPropValue('name'),
+            id: this._id,
             width: this.getPropValue('size').w,
             height: this.getPropValue('size').h,
             cells: this.cells.data

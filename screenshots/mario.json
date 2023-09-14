@@ -6866,7 +6866,7 @@
                "tile": "tile_625680"
             },
             {
-               "tile": "tile_625680"
+               "tile": "tile_344761"
             },
             {
                "tile": "tile_625680"
@@ -10694,8 +10694,7 @@
          "viewport": {
             "width": 25,
             "height": 20
-         },
-         "map_id": ""
+         }
       }
    ]
 }

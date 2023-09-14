@@ -17,17 +17,6 @@ export type PropDef<T> = {
 }
 type WrapperCallback<Value> = (v:Value) => void
 type WrapperAnyCallback<Type> = (t:Type) => void
-export type JSONObj = {
-    class: string,
-    id: UUID,
-    props: Record<string, unknown>
-}
-/*
-    use only the correct property names
-    use the correct return type for property values
-    add listeners for specific properties
-    add listener for any change at all
-*/
 
 export class PropsBase<Type> {
     private listeners: Map<keyof Type, WrapperCallback<Type[keyof Type]>[]>

@@ -99,12 +99,6 @@ const MAX_FALL_SPEED = 3.0
 const FRICTION = 0.9
 const EPSILON = 0.01
 
-function isBlockingTile(sprite:EditableSprite) {
-    if(sprite.isBlocking()) return true
-    return false
-}
-
-
 
 export function updatePlayer(doc: EditableDocument, map: MapImpl, player: Player, keys: KeyManager, canvas: HTMLCanvasElement, TS: Size, SCALE:number) {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
@@ -161,7 +155,7 @@ export function updatePlayer(doc: EditableDocument, map: MapImpl, player: Player
             const tile = doc.lookup_sprite(cell.tile)
             if (tile) {
                 // debugText(`tile ${tile.getName()}`)
-                const blocking = isBlockingTile(tile)
+                const blocking = tile.getPropValue('blocking')
                 // debugText(`blocking ${blocking}`)
                 if (blocking) {
                     return ({blocking:true, index:index})

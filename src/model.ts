@@ -84,13 +84,13 @@ export class Observable {
 }
 
 export type JSONSprite = {
-    id:string
     name: string
+    id:string
     w: number,
     h: number,
+    blocking:boolean,
     data: number[]
     palette?: string[]
-    blocking:boolean,
 }
 
 export type JSONSheet = {
@@ -106,7 +106,12 @@ export type JSONMap = {
     cells:EditableMapCell[]
 }
 export type JSONTest = {
-
+    id:string,
+    name:string,
+    viewport: {
+        width: number,
+        height: number,
+    },
 }
 export type JSONDoc = {
     color_palette:string[]
@@ -164,11 +169,11 @@ export class EditableSprite extends PropsBase<SpriteType> {
     }
     toJSONSprite():JSONSprite {
         return {
-            name: this.getPropValue('name'),
             id: this._id,
-            blocking: this.getPropValue('blocking'),
+            name: this.getPropValue('name'),
             w: this.getPropValue('size').w,
             h: this.getPropValue('size').h,
+            blocking: this.getPropValue('blocking'),
             data: this.data.data
         }
     }
@@ -328,7 +333,7 @@ export class EditableDocument extends PropsBase<DocType> {
             version: CURRENT_VERSION,
             sheets: this.sheets.map(sh => sh.toJSONSheet()),
             maps: this.maps.map(mp => mp.toJSONMap()),
-            tests: this.tests.map(tst => tst.toJSON())
+            tests: this.tests.map(tst => tst.toJSONTest())
         }
     }
     getPalette() {
