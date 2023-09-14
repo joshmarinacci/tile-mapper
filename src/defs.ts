@@ -8,43 +8,50 @@ export const NameDef: PropDef<string> = {
     editable: true,
     default: () => 'new test',
     toJSON: (v: string) => v,
+    format: (v) => v,
 }
 const JumpDef: PropDef<number> = {
     type: 'float',
     editable: true,
     default: () => 0.0,
     toJSON: (v: number) => v,
+    format: (v) => v.toFixed(2),
 }
 const ViewportDef: PropDef<Size> = {
     type: 'Size',
     editable: true,
     default: () => new Size(10, 10),
     toJSON: (v: Size) => v.toJSON(),
+    format: (v) => `${v.w} x ${v.h}`,
 }
 const GravityDef: PropDef<Point> = {
     type: 'Point',
     editable: true,
     default: () => new Point(0, 0.1),
     toJSON: (v: Point) => v.toJSON(),
+    format: (v) => `${v.x} , ${v.y}`,
 }
 const MoveSpeedDef: PropDef<number> = {
     type: 'float',
     editable: true,
     default: () => 0.5,
     toJSON: (v: number) => v,
+    format: (v) => v.toFixed(2),
 }
 const MaxFallSpeedDef: PropDef<number> = {
     type: 'float',
     editable: true,
     default: () => 0.5,
     toJSON: (v: number) => v,
+    format: (v) => v.toFixed(2),
 }
 
 const FrictionDef:PropDef<number> = {
     type:"float",
     default: () => 0.99,
     editable:true,
-    toJSON: (v) => v
+    toJSON: (v) => v,
+    format: (v) => v.toFixed(2),
 }
 type TestType = {
     name: string,
@@ -111,13 +118,15 @@ export class MapImpl extends PropsBase<MapType> {
             type:'string',
             editable:true,
             default:()=>'new map',
-            toJSON:(v) => v
+            toJSON:(v) => v,
+            format: (v) => v,
         })
         this.setPropDef('size',{
             type:'Size',
             editable:false,
             default:()=>new Size(10,10),
-            toJSON:(v:Size) => v.toJSON()
+            toJSON:(v:Size) => v.toJSON(),
+            format: (v) => `${v.w} x ${v.h}`,
         })
         for(const [name, def] of this.getAllPropDefs()) {
             this.setPropValue(name,def.default())

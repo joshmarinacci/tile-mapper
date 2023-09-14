@@ -21,7 +21,6 @@ import {
     EditableSprite,
     fileToJson,
     jsonObjToBlob,
-    log,
     make_doc_from_json,
     PICO8,
     sheet_to_canvas
@@ -70,12 +69,7 @@ const load_file = async ():Promise<EditableDocument> => {
             if(!files || files.length <= 0) return
             const file = files[0]
             console.log(file)
-            fileToJson(file).then(data => {
-                log("got the data",data)
-                const doc = make_doc_from_json(data as object)
-                log('doc iss',doc)
-                res(doc)
-            })
+            fileToJson(file).then(data => res(make_doc_from_json(data as object)))
         })
         input_element.click()
     })

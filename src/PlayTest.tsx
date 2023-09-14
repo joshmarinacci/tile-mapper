@@ -3,10 +3,8 @@ import React, {useEffect, useRef, useState} from "react"
 
 import {MapImpl, TestImpl} from "./defs"
 import {
-    Changed,
     drawEditableSprite,
     EditableDocument,
-    EditableSprite,
 } from "./model"
 
 export type Player = {

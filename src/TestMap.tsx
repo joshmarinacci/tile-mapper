@@ -1,7 +1,7 @@
 import {ArrayGrid, Point} from "josh_js_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {Changed, drawEditableSprite, EditableSprite} from "./model"
+import {drawEditableSprite, EditableSprite} from "./model"
 
 export function TestMap(props: { tile: EditableSprite, mapArray: ArrayGrid<EditableSprite> }) {
     const {tile, mapArray} = props
@@ -68,7 +68,7 @@ export function TestMap(props: { tile: EditableSprite, mapArray: ArrayGrid<Edita
                         redraw()
                     }
                 }}
-                onMouseUp={(e) => setDown(false)}
+                onMouseUp={() => setDown(false)}
         />
     </div>
 

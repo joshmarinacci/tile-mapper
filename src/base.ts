@@ -9,11 +9,13 @@ type JsonOut<Type> = {
     props:Record<keyof Type, JSONValue>,
 }
 export type ToJSONner<T> = (v: T) => JSONValue;
+export type ToFormatString<T> = (v: T) => string;
 export type PropDef<T> = {
     type: 'string' | 'integer' | 'float' | 'Size' | 'Point' | 'boolean',
     editable: boolean,
     default: Getter<T>,
-    toJSON: ToJSONner<T>
+    toJSON: ToJSONner<T>,
+    format: ToFormatString<T>
 }
 type WrapperCallback<Value> = (v:Value) => void
 type WrapperAnyCallback<Type> = (t:Type) => void
@@ -59,6 +61,8 @@ export class PropsBase<Type> {
         this.all_listeners.push(hand)
     }
     off<K extends keyof Type>(name:K, cb:WrapperCallback<Type[K]>){
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         this.listeners.set(name, this._get_listeners(name).filter(c => c !== cb))
     }
     offAny(hand: WrapperAnyCallback<Type>) {
@@ -83,6 +87,8 @@ export class PropsBase<Type> {
     }
 
     _fireAll() {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
         this.all_listeners.forEach(cb => cb(this))
     }
 }

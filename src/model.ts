@@ -4,6 +4,7 @@ import {ArrayGrid, genId, Point, Size} from "josh_js_util"
 import {PropDef, PropsBase} from "./base"
 import {MapImpl, NameDef, SheetType, SpriteType, TestImpl} from "./defs"
 
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 ArrayGrid.prototype.isValidIndex = function(pt: Point) {
     if(pt.x < 0) return false
@@ -53,36 +54,6 @@ export const MINECRAFT:ImagePalette = [
     '#f27fa5',
 ]
 
-type Etype = string
-type ObservableListener = (type: Etype) => void
-
-export class Observable {
-    private listeners: Map<Etype, Array<ObservableListener>>
-
-    constructor() {
-        this.listeners = new Map<Etype, Array<ObservableListener>>()
-    }
-
-    protected _get_listeners(type: Etype): ObservableListener[] {
-        if (!this.listeners.has(type)) this.listeners.set(type, new Array<ObservableListener>())
-        return this.listeners.get(type) as ObservableListener[]
-    }
-
-    public addEventListener(type: Etype, cb: ObservableListener) {
-        this._get_listeners(type).push(cb)
-    }
-
-    public removeEventListener(type: Etype, cb: ObservableListener) {
-        let list = this._get_listeners(type)
-        list = list.filter(l => l !== cb)
-        this.listeners.set(type, list)
-    }
-
-    protected fire(type: Etype, payload: any) {
-        this._get_listeners(type).forEach(cb => cb(payload))
-    }
-}
-
 export type JSONSprite = {
     name: string
     id:string
@@ -129,6 +100,7 @@ const SizeDef: PropDef<Size> = {
     editable:false,
     default: () => new Size(10,10),
     toJSON: (v) => v.toJSON(),
+    format: (v) => `${v.w} x ${v.h}`,
 }
 export class EditableSprite extends PropsBase<SpriteType> {
     data: ArrayGrid<number>
@@ -145,6 +117,7 @@ export class EditableSprite extends PropsBase<SpriteType> {
             editable:true,
             default: () => false,
             toJSON: (v) => v,
+            format: (v) => v?'true':'false',
         })
         this.setPropValue('blocking',this.getPropDef('blocking').default())
         this.palette = pallete
@@ -393,13 +366,10 @@ export function make_doc_from_json(raw_data: object) {
 }
 
 
-export function log(...args: any) {
-    console.log(...args)
-}
-
 export function fileToJson(file:File) {
     return new Promise((resolve, reject) => {
         const fileReader = new FileReader()
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         fileReader.onload = event => resolve(JSON.parse(event.target.result))
         fileReader.onerror = error => reject(error)
@@ -407,7 +377,7 @@ export function fileToJson(file:File) {
     })
 }
 
-export function jsonObjToBlob(toJsonObj: any) {
+export function jsonObjToBlob(toJsonObj: object) {
     console.log('saving out',toJsonObj)
     const str = JSON.stringify(toJsonObj, null, '   ')
     return new Blob([str])
@@ -450,7 +420,7 @@ export function canvas_to_bmp(canvas: HTMLCanvasElement, palette1: string[]) {
                 const R = id.data[n + 0]
                 const G = id.data[n + 1]
                 const B = id.data[n + 2]
-                const A = id.data[n + 3]
+                // const A = id.data[n + 3]
 
 
                 id.data[n + 0] = 255

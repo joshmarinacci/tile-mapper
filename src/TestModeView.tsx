@@ -4,21 +4,18 @@ import {HBox} from "josh_react_util"
 import React, {useState} from "react"
 
 import {MapImpl, TestImpl} from "./defs"
-import {ListView} from "./ListView"
+import {ListView, ListViewRenderer} from "./ListView"
 import {MapList} from "./MapList"
 import {EditableDocument} from "./model"
 import {PropSheet} from "./propsheet"
 import {TestMapPlayer} from "./TestMapPlayer"
 
 
-function TestNameRenderer(props: {
+const TestNameRenderer:ListViewRenderer<TestImpl> = (props: {
     value: TestImpl,
-    selected: TestImpl,
-    setSelected: (value: T) => void
-}) {
-    return <div onClick={() => props.setSelected(props.value)}>
-        {props.value.getPropValue('name')+""}
-    </div>
+    selected: boolean,
+}) => {
+    return <div>{props.value.getPropValue('name')+""}</div>
 }
 
 function TestList(props: { test: TestImpl|undefined, setTest: (value:TestImpl) => void, editable: boolean, doc: EditableDocument }) {

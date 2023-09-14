@@ -1,7 +1,7 @@
 import React, {useState} from "react"
 
 import {MapImpl, TestImpl} from "./defs"
-import {Changed, EditableDocument} from "./model"
+import {EditableDocument} from "./model"
 import {PlayTest} from "./PlayTest"
 export function TestMapPlayer(props: {
     test: TestImpl,
@@ -12,7 +12,6 @@ export function TestMapPlayer(props: {
     const [playing, setPlaying] = useState(false)
     const [zoom, setZoom] = useState(2)
     const [grid, setGrid] = useState(true)
-    // useObservableChange(test,Changed)
     const togglePlaying = () => {
         setPlaying(!playing)
     }
