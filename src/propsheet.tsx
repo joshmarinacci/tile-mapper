@@ -64,14 +64,13 @@ function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<
     const {target, def, name} = props
     const [count, setCount] = useState(0)
     const new_val = target.getPropValue(name)
-    console.log("new value",new_val)
     useEffect(() => {
         const hand = () => setCount(count + 1)
         target.on(name,hand)
         return () => target.off(name, hand)
     })
     if(!def.editable) {
-        return <span key={`value_${name.toString()}`} className={'value'}><b>{props.def.toString()}</b></span>
+        return <span key={`value_${name.toString()}`} className={'value'}><b>{props.def.format(new_val)}</b></span>
     }
     if(def.type === 'string') {
         return <input key={`editor_${name.toString()}`} type={'text'}
