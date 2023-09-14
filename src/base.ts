@@ -1,26 +1,27 @@
 import {genId} from "josh_js_util"
-import {useEffect, useState} from "react"
 
 export type UUID = string
-
 export type Getter<T> = () => T;
-export type ToJSONner<T> = (v: T) => any;
+type JSONValue = string | number | object
+type JsonOut<Type> = {
+    id:string,
+    class:string,
+    props:Record<keyof Type, JSONValue>,
+}
+export type ToJSONner<T> = (v: T) => JSONValue;
 export type PropDef<T> = {
     type: 'string' | 'integer' | 'float' | 'Size' | 'Point',
     editable: boolean,
     default: Getter<T>,
     toJSON: ToJSONner<T>
 }
-export type Etype = string
-export type ObservableListener = (type: Etype) => void
-type WrapperCallback<T> = (v:T) => void
-type WrapperAnyCallback<T> = (v:T) => void
+type WrapperCallback<Value> = (v:Value) => void
+type WrapperAnyCallback<Type> = (t:Type) => void
 export type JSONObj = {
     class: string,
     id: UUID,
     props: Record<string, unknown>
 }
-
 /*
     use only the correct property names
     use the correct return type for property values
@@ -28,18 +29,12 @@ export type JSONObj = {
     add listener for any change at all
 */
 
-type JSONValue = string | number | object
-type JsonOut<Type> = {
-    id:string,
-    class:string,
-    props:Record<keyof Type, JSONValue>,
-}
 export class PropsBase<Type> {
     private listeners: Map<keyof Type, WrapperCallback<Type[keyof Type]>[]>
     private all_listeners: WrapperAnyCallback<Type>[]
     private values: Map<keyof Type,Type[keyof Type]>
     private defs: Map<keyof Type,PropDef<Type[keyof Type]>>
-    private _id: string
+    protected _id: string
     constructor() {
         this._id = genId("Wrapper")
         this.values = new Map()
@@ -51,10 +46,11 @@ export class PropsBase<Type> {
         return Array.from(this.defs.entries())
     }
     getPropDef<Key extends keyof Type>(name:Key):PropDef<Type[Key]> {
-        return this.defs.get(name) as PropDef<Type[Key]>
+        if(!this.defs.has(name)) throw new Error("")
+        return this.defs.get(name) as unknown as PropDef<Type[Key]>
     }
     setPropDef<Key extends keyof Type>(name:Key, def:PropDef<Type[Key]>) {
-        this.defs.set(name,def)
+        this.defs.set(name,def as unknown as PropDef<Type[keyof Type]>)
     }
     getPropValue<K extends keyof Type>(name:K):Type[K] {
         return this.values.get(name) as Type[K]
@@ -93,17 +89,3 @@ export class PropsBase<Type> {
         return obj
     }
 }
-// export function useObservableChange<T>(ob: PropsBase<T>, eventType: string) {
-//     const [count, setCount] = useState(0)
-//     return useEffect(() => {
-//         const hand = () => {
-//             setCount(count + 1)
-//         }
-//         if (ob) ob.addEventListener(eventType, hand)
-//         return () => {
-//             if (ob) ob.removeEventListener(eventType, hand)
-//         }
-//
-//     }, [ob, count])
-// }
-

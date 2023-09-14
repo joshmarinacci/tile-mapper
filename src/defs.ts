@@ -76,14 +76,12 @@ export class TestImpl extends PropsBase<TestType> {
     }
 
     static fromJSON(json: object): TestImpl {
-        console.log("loading from json", json)
+        console.log(`${this.name}.fromJSON`, json)
         if (!json) throw new Error("null json obj")
         const test = TestImpl.make()
         if ('id' in json) test._id = json.id as UUID
-        if ('name' in json) test._values.set('name', json.name)
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        if ('viewport' in json) test._values.set('viewport', Size.fromJSON(json.viewport))
+        if ('name' in json) test.setPropValue('name', json.name as string)
+        if ('viewport' in json) test.setPropValue('viewport', Size.fromJSON(json.viewport as {w:number,h:number}))
         return test
     }
 
@@ -133,5 +131,11 @@ export class MapImpl extends PropsBase<MapType> {
         map.cells = new ArrayGrid<EditableMapCell>(size.w, size.h)
         map.cells.set_from_list(json.cells)
         return map
+    }
+
+    toJSON(): JsonOut<Type> {
+        const out = super.toJSON()
+        out.props.cells = this.cells.data
+        return out
     }
 }

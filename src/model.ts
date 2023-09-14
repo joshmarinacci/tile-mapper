@@ -386,9 +386,7 @@ export function make_doc_from_json(raw_data: any) {
         })
     })
     json_doc.maps.forEach(json_map => {
-        // log('map',json_map)
-        const map = MapImpl.fromJSON(json_map)
-        doc.addMap(map)
+        doc.addMap(MapImpl.fromJSON(json_map))
     })
     json_doc.tests.forEach(json_test => {
         doc.addTest(TestImpl.fromJSON(json_test))
