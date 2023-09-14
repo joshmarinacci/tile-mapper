@@ -38,8 +38,8 @@ export function TestMap(props: { tile: EditableSprite, mapArray: ArrayGrid<Edita
     useEffect(() => {
         redraw()
         const hand = () => redraw()
-        tile.addEventListener(Changed, hand)
-        return () => tile.removeEventListener(Changed, hand)
+        tile.onAny(hand)
+        return () => tile.offAny(hand)
     }, [tile])
 
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {

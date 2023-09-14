@@ -2,7 +2,7 @@ import {Point} from "josh_js_util"
 import {HBox, toClass} from "josh_react_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {Changed, EditableSprite, ImagePalette, log} from "./model"
+import {EditableSprite, ImagePalette} from "./model"
 
 
 function calculateDirections() {
@@ -62,8 +62,8 @@ export function PixelGridEditor(props: {
     useEffect(() => {
         redraw()
         const hand = () => redraw()
-        image.addEventListener(Changed, hand)
-        return () => image.removeEventListener(Changed, hand)
+        image.onAny(hand)
+        return () => image.offAny(hand)
     }, [image])
 
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {

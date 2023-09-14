@@ -5,9 +5,9 @@ import React, {useState} from "react"
 import {EditableDocument, EditableSheet, EditableSprite} from "./model"
 import {PaletteColorPickerPane} from "./Palette"
 import {PixelGridEditor} from "./PixelGridEditor"
+import {PropSheet} from "./propsheet"
 import {SheetList} from "./SheetList"
 import {TestMap} from "./TestMap"
-import {TileProperties} from "./TileProperties"
 import {TileSheetView} from "./TileSheetView"
 
 export function TileModeView(props: { doc: EditableDocument }) {
@@ -32,7 +32,7 @@ export function TileModeView(props: { doc: EditableDocument }) {
             </div>
             <div className={'pane'}>
                 <header>Tile Info</header>
-                {tile && <TileProperties tile={tile}/>}
+                {tile && <PropSheet target={tile}/>}
             </div>
         </HBox>
         <HBox>

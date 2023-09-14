@@ -4,7 +4,6 @@ import {Size} from "josh_js_util"
 import React, {useEffect, useState} from "react"
 
 import {PropDef, PropsBase} from "./base"
-import {TestImpl} from "./defs"
 
 /*
  Doc is
@@ -56,30 +55,8 @@ Map is:
     cells: MapCell[], editable=false, default:()=>make_new_cell_array()
 MapCell is:
     tile_id: Sprite.id
-
 */
 
-// function SizeEditor(props:{}) {
-//
-// }
-
-// const TestDef = {
-//     name: {
-//         type:'string',
-//         editable:true,
-//         default: () => 'new test',
-//     },
-//     map_id: {
-//         type: 'reference',
-//         target: 'Map'
-//     },
-//     viewport: {
-//         type: 'Size',
-//         editable: true,
-//         default: () => new Size(16,8),
-//         editor: () => SizeEditor,
-//     },
-// }
 
 
 
@@ -93,10 +70,10 @@ function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<
         target.on(name,hand)
         return () => target.off(name, hand)
     })
-    if(!props.def.editable) {
+    if(!def.editable) {
         return <span key={`value_${name.toString()}`} className={'value'}><b>{props.def.toString()}</b></span>
     }
-    if(props.def.type === 'string') {
+    if(def.type === 'string') {
         return <input key={`editor_${name.toString()}`} type={'text'}
                       value={new_val+""}
                       onChange={(e)=>{
@@ -104,7 +81,7 @@ function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<
                           target.setPropValue(name,e.target.value as T[keyof T])
                       }}/>
     }
-    if(props.def.type === 'integer') {
+    if(def.type === 'integer') {
         return <input  key={`editor_${name.toString()}`}
                        type={'number'}
                       value={Math.floor(new_val as number)}
@@ -112,7 +89,7 @@ function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<
                           props.target.setPropValue(props.name,parseInt(e.target.value) as T[keyof T])
                       }}/>
     }
-    if(props.def.type === 'float') {
+    if(def.type === 'float') {
         return <input  key={`editor_${name.toString()}`}
                        type={'number'}
                       value={(new_val as number).toFixed(2)}

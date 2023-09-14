@@ -1,8 +1,8 @@
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
 import {ArrayGrid, genId, Point, Size} from "josh_js_util"
 
-import {JSONObj} from "./base"
-import {MapImpl, TestImpl} from "./defs"
+import {JSONObj, PropDef, PropsBase} from "./base"
+import {MapImpl, NameDef, SheetType, SpriteType, TestImpl} from "./defs"
 
 // @ts-ignore
 ArrayGrid.prototype.isValidIndex = function(pt: Point) {
@@ -98,10 +98,17 @@ export type JSONSheet = {
     name:string,
     sprites:JSONSprite[]
 }
+export type JSONMap = {
+    id:string,
+    name:string,
+    height: number,
+    width: number
+    cells:EditableMapCell[]
+}
 export type JSONDoc = {
     color_palette:string[]
     sheets:JSONSheet[],
-    maps: JSONObj[],
+    maps: JSONMap[],
     tests: JSONObj[],
     version:number,
     name:string
@@ -109,80 +116,63 @@ export type JSONDoc = {
 const CURRENT_VERSION = 4
 export const Changed = 'changed'
 
-export class EditableSprite extends Observable {
-    private w: number
-    private h: number
-    data: number[]
-    id:string
-    private name:string
+const SizeDef: PropDef<Size> = {
+    type:'Size',
+    editable:false,
+    default: () => new Size(10,10),
+    toJSON: (v) => v.toJSON(),
+}
+export class EditableSprite extends PropsBase<SpriteType> {
+    data: ArrayGrid<number>
     palette:ImagePalette
     cache_canvas: HTMLCanvasElement | null
-    blocking: boolean
     constructor(w:number, h:number, pallete:ImagePalette) {
         super()
-        this.name = 'unnamed'
-        this.id = genId('tile')
+        this.setPropDef('name',NameDef)
+        this.setPropValue('name',this.getPropDef('name').default())
+        this.setPropDef('size',SizeDef)
+        this.setPropValue('size', new Size(w,h))
         this.palette = pallete
-        this.w = w
-        this.h = h
-        this.data = []
-        this.blocking = false
-        for (let k = 0; k < this.w * this.h; k++) {
-            this.data[k] = 0
-        }
+        this.data = new ArrayGrid<number>(w,h)
+        this.data.fill(()=>0)
         this.cache_canvas = null
         this.rebuild_cache()
     }
     setPixel(number: number, point: Point) {
-        const n = point.x + point.y * this.w
-        this.data[point.x + point.y * this.w] = number
+        this.data.set(point, number)
         this.rebuild_cache()
-        this.fire(Changed,this)
+        this._fireAll()
     }
     width() {
-        return this.w
+        return this.getPropValue('size').w
     }
     height() {
-        return this.h
+        return this.getPropValue('size').h
     }
     getPixel(point: Point) {
-        return this.data[point.x + point.y * this.w]
+        return this.data.get(point)
     }
-    getName() {
-        return this.name
+    toJSON() {
+        const out = super.toJSON()
+        out.props.data = this.data.data
+        return out
     }
-    setName(name:string) {
-        this.name = name
-        this.fire(Changed,this)
-    }
-
-    toJSONSprite():JSONSprite {
-        return {
-            id:this.id,
-            name:this.name,
-            w: this.w,
-            h: this.h,
-            blocking: this.blocking,
-            data: this.data.slice()
-        }
-    }
-
     isValidIndex(pt: Point) {
         if(pt.x < 0) return false
         if(pt.y < 0) return false
-        if(pt.x >= this.w) return false
-        if(pt.y >= this.h) return false
+        if(pt.x >= this.data.w) return false
+        if(pt.y >= this.data.h) return false
         return true
     }
-
     clone() {
         const new_tile = new EditableSprite(this.width(),this.height(),this.palette)
-        new_tile.data = this.data.slice()
-        new_tile.blocking = this.blocking
+        new_tile.data.data = this.data.data.slice()
+        new_tile.setPropValue('blocking', this.getPropValue('blocking'))
+        new_tile.setPropValue('name',this.getPropValue('name'))
+        new_tile.setPropValue('size',this.getPropValue('size'))
         new_tile.rebuild_cache()
         return new_tile
     }
-
     rebuild_cache() {
         this.cache_canvas = document.createElement('canvas')
         this.cache_canvas.width = this.width()
@@ -191,35 +181,34 @@ export class EditableSprite extends Observable {
         drawEditableSprite(ctx,1,this)
     }
 
-    isBlocking() {
-        return this.blocking
-    }
-
-    setBlocking(checked: boolean) {
-        this.blocking = checked
-        this.fire(Changed,this)
+    static fromJSON(json_sprite: JSONSprite, color_palette: string[]) {
+        const sprite = new EditableSprite(json_sprite.w,json_sprite.h,color_palette)
+        sprite._id = json_sprite.id || genId('sprite')
+        sprite.setPropValue('name',json_sprite.name)
+        sprite.setPropValue('blocking', json_sprite.blocking)
+        sprite.data.data = json_sprite.data
+        sprite.rebuild_cache()
+        return sprite
     }
 }
 
-export class EditableSheet extends Observable {
+export class EditableSheet extends PropsBase<SheetType> {
     sprites: EditableSprite[]
-    id:string
-    private name:string
     constructor() {
         super()
         this.sprites = []
-        this.name = 'unnamed sheet'
-        this.id = genId('sheet')
+        this.setPropDef('name',NameDef)
+        this.setPropValue('name',NameDef.default())
     }
     addSprite(sprite: EditableSprite) {
         this.sprites.push(sprite)
-        this.fire(Changed,this)
+        this._fireAll()
     }
     removeSprite(sprite: EditableSprite) {
         const n = this.sprites.indexOf(sprite)
         if(n >= 0) {
             this.sprites.splice(n,1)
-            this.fire(Changed,this)
+            this._fireAll()
         } else {
             console.warn("cannot delete sprite")
         }
@@ -227,19 +216,16 @@ export class EditableSheet extends Observable {
     getImages() {
         return this.sprites.slice()
     }
-    getName() {
-        return this.name
+    toJSON() {
+        const out = super.toJSON()
+        out.props.sprites = this.sprites.map(sp => sp.toJSON())
+        return out
     }
-    setName(name: string) {
-        this.name = name
-        this.fire(Changed,this)
-    }
-    toJSONSheet():JSONSheet {
-        return {
-            name:this.name,
-            id:this.id,
-            sprites: this.sprites.map(sp => sp.toJSONSprite())
-        }
+    static fromJSON(json_sheet: JSONSheet) {
+        const sheet = new EditableSheet()
+        sheet._id = json_sheet.id
+        sheet.setPropValue('name',json_sheet.name)
+        return sheet
     }
 }
 
@@ -345,9 +331,9 @@ export class EditableDocument extends Observable {
         if(this.sprite_lookup.has(id)) return this.sprite_lookup.get(id)
         for(const sheet of this.sheets) {
             for(const sprite of sheet.sprites) {
-                if(sprite.id === id) {
+                if(sprite._id === id) {
                     // console.log("missed the cache",sprite.id)
-                    this.sprite_lookup.set(sprite.id,sprite)
+                    this.sprite_lookup.set(sprite._id,sprite)
                     return sprite
                 }
             }
@@ -360,6 +346,7 @@ export function make_doc_from_json(raw_data: any) {
     if(raw_data['version'] < 3) throw new Error("we cannot load this document")
     if(raw_data['version'] < 4) {
         raw_data.maps = []
+        raw_data.tests = []
     }
     const json_doc = raw_data as JSONDoc
     if(json_doc.color_palette.length === 0) {
@@ -369,20 +356,10 @@ export function make_doc_from_json(raw_data: any) {
     doc.setName(json_doc.name)
     doc.setPalette(json_doc.color_palette)
     json_doc.sheets.forEach(json_sheet => {
-        // log('sheet',json_sheet)
-        const sheet = new EditableSheet()
-        sheet.id = json_sheet.id
-        sheet.setName(json_sheet.name)
+        const sheet = EditableSheet.fromJSON(json_sheet)
         doc.addSheet(sheet)
         json_sheet.sprites.forEach(json_sprite => {
-            // log("sprite",json_sprite)
-            const sprite = new EditableSprite(json_sprite.w,json_sprite.h,json_doc.color_palette)
-            sprite.id = json_sprite.id || genId('sprite')
-            sprite.setName(json_sprite.name)
-            sprite.blocking = json_sprite.blocking
-            sprite.data = json_sprite.data
-            sprite.rebuild_cache()
-            sheet.addSprite(sprite)
+            sheet.addSprite(EditableSprite.fromJSON(json_sprite,json_doc.color_palette))
         })
     })
     json_doc.maps.forEach(json_map => {

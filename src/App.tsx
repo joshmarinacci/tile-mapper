@@ -28,7 +28,6 @@ import {
     sheet_to_canvas
 } from "./model"
 import {NewDocDialog} from "./NewDocDialog"
-import {PropSheet, TestImpl} from "./propsheet"
 import {TestModeView} from "./TestModeView"
 import {TileModeView} from "./TileModeView"
 

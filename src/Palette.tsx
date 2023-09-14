@@ -4,26 +4,20 @@ import React from "react"
 import {ListView} from "./ListView"
 import {ImagePalette} from "./model"
 
-function PaletteColorRenderer(props: {
-    value: string,
-    selected: any,
-    setSelected: (value: any) => void
-}) {
-    const color = props.value
+const PaletteColorRenderer = (props:{value:string, selected:boolean}) => {
+    const {value, selected} = props
     return <div
         className={toClass({
             'palette-color': true,
-            selected: props.selected === props.value,
-            transparent: color === 'transparent',
+            selected: selected,
+            transparent: value === 'transparent',
         })}
         style={{
-            backgroundColor: color === 'transparent' ? 'magenta' : color,
+            backgroundColor: value === 'transparent' ? 'magenta' : value,
             width: '32px',
             height: '32px',
-        }} onClick={() => {
-        props.setSelected(color)
-    }
-    }></div>
+        }}
+    />
 }
 
 export function PaletteColorPickerPane(props: {
@@ -38,6 +32,9 @@ export function PaletteColorPickerPane(props: {
                   renderer={PaletteColorRenderer}
                   selected={drawColor}
                   setSelected={setDrawColor}
-                  style={{maxWidth: '300px'}}/>
+                  style={{
+                      minWidth: '94px',
+                      maxWidth: '300px'
+                    }}/>
     </div>
 }

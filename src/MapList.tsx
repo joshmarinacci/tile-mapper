@@ -2,16 +2,12 @@ import {DialogContext} from "josh_react_util"
 import React, {useContext} from "react"
 
 import {MapImpl} from "./defs"
-import {ListView} from "./ListView"
+import {ListView, ListViewRenderer} from "./ListView"
 import {EditableDocument} from "./model"
 import {NewMapDialog} from "./NewMapDialog"
 
-function MapNameRenderer(props: {
-    value: MapImpl,
-    selected: MapImpl,
-    setSelected: (value: MapImpl) => void
-}) {
-    return <div onClick={() => props.setSelected(props.value)}>
+const MapNameRenderer:ListViewRenderer<MapImpl> = (props:{value:MapImpl, selected:boolean}) => {
+    return <div>
         {props.value.getPropValue('name') as string}
     </div>
 }

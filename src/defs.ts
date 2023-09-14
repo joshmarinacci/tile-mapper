@@ -1,9 +1,9 @@
 import {ArrayGrid, genId, Point, Size} from "josh_js_util"
 
 import {PropDef, PropsBase, UUID} from "./base"
-import {EditableMapCell} from "./model"
+import {EditableMapCell, JSONMap} from "./model"
 
-const NameDef: PropDef<string> = {
+export const NameDef: PropDef<string> = {
     type: 'string',
     editable: true,
     default: () => 'new test',
@@ -121,7 +121,7 @@ export class MapImpl extends PropsBase<MapType> {
         return new MapImpl()
     }
 
-    static fromJSON(json: object): MapImpl {
+    static fromJSON(json: JSONMap): MapImpl {
         console.log("MapImpl.fromJSON", json)
         const map = MapImpl.make()
         if ('id' in json) map._id = json.id as UUID
@@ -133,9 +133,18 @@ export class MapImpl extends PropsBase<MapType> {
         return map
     }
 
-    toJSON(): JsonOut<Type> {
+    toJSON() {
         const out = super.toJSON()
         out.props.cells = this.cells.data
         return out
     }
+}
+
+export type SpriteType = {
+    name: string,
+    size: Size,
+    blocking: boolean
+}
+export type SheetType = {
+    name: string,
 }

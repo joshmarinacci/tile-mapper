@@ -1,18 +1,11 @@
 import React from "react"
 
-import {ListView} from "./ListView"
+import {ListView, ListViewRenderer} from "./ListView"
 import {EditableDocument, EditableSheet} from "./model"
 
-function SheetNameRenderer(props: {
-    value: EditableSheet,
-    selected: any,
-    setSelected: (value: any) => void
-}) {
-    return <div onClick={() => props.setSelected(props.value)}>
-        {props.value.getName()}
-    </div>
+const SheetNameRender:ListViewRenderer<EditableSheet> = (props:{value:EditableSheet, selected:boolean}) => {
+    return <div>{props.value.getPropValue('name')}</div>
 }
-
 export function SheetList(props: {
     doc: EditableDocument,
     sheet: EditableSheet,
@@ -38,7 +31,7 @@ export function SheetList(props: {
         </div>}
         <ListView selected={sheet}
                   setSelected={setSheet}
-                  renderer={SheetNameRenderer}
+                  renderer={SheetNameRender}
                   data={doc.getSheets()}
                   style={{}}
                   className={'sheet-list'}/>

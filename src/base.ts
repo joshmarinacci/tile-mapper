@@ -34,7 +34,7 @@ export class PropsBase<Type> {
     private all_listeners: WrapperAnyCallback<Type>[]
     private values: Map<keyof Type,Type[keyof Type]>
     private defs: Map<keyof Type,PropDef<Type[keyof Type]>>
-    protected _id: string
+    _id: string
     constructor() {
         this._id = genId("Wrapper")
         this.values = new Map()
@@ -57,7 +57,11 @@ export class PropsBase<Type> {
     }
     setPropValue<K extends keyof Type>(name:K, value:Type[K]) {
         this.values.set(name,value)
+        this._fire(name,value)
+    }
+    _fire<K extends keyof Type>(name:K, value:Type[K]) {
         this._get_listeners(name).forEach(cb => cb(value))
+        this._fireAll()
     }
     on<K extends keyof Type>(name:K, cb:WrapperCallback<Type[K]>){
         this._get_listeners(name).push(cb)
@@ -87,5 +91,9 @@ export class PropsBase<Type> {
             obj.props[k] = d.toJSON(this.getPropValue(k))
         }
         return obj
+    }
+
+    _fireAll() {
+        this.all_listeners.forEach(cb => cb(this))
     }
 }
