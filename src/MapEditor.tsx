@@ -5,12 +5,9 @@ import {toClass} from "josh_react_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {MapImpl} from "./defs"
+import {DocModel, MapModel, SheetModel, SpriteModel} from "./defs"
 import {
     drawEditableSprite,
-    EditableDocument,
-    EditableSheet,
-    EditableSprite
 } from "./model"
 
 function calculateDirections() {
@@ -22,7 +19,7 @@ function calculateDirections() {
     ]
 }
 
-function bucketFill(map: MapImpl, target: string, replace:string, at: Point, ) {
+function bucketFill(map: MapModel, target: string, replace:string, at: Point, ) {
     if(target === replace) return
     const v = map.cells.get(at)
     if(v.tile !== target) return
@@ -38,7 +35,7 @@ function bucketFill(map: MapImpl, target: string, replace:string, at: Point, ) {
 }
 
 
-function map_to_canvas(map: MapImpl, tile: EditableSprite, doc: EditableDocument, scale: number):HTMLCanvasElement {
+function map_to_canvas(map: MapModel, tile: SpriteModel, doc: DocModel, scale: number):HTMLCanvasElement {
     const canvas = document.createElement('canvas')
     const mapSize = map.getPropValue('size') as Size
     canvas.width = mapSize.w*scale*tile.width()
@@ -70,18 +67,18 @@ function map_to_canvas(map: MapImpl, tile: EditableSprite, doc: EditableDocument
     return canvas
 }
 
-async function exportPNG(doc:EditableDocument, map: MapImpl,tile:EditableSprite, scale: number) {
+async function exportPNG(doc:DocModel, map: MapModel, tile:SpriteModel, scale: number) {
     const can = map_to_canvas(map,tile, doc,scale)
     const blob = await canvas_to_blob(can)
     forceDownloadBlob(`${map.getPropValue('name') as string}.${scale}x.png`, blob)
 }
 
 export function MapEditor(props: {
-    doc: EditableDocument,
-    map: MapImpl,
-    sheet: EditableSheet,
-    tile: EditableSprite,
-    setSelectedTile:(sprite:EditableSprite) => void,
+    doc: DocModel,
+    map: MapModel,
+    sheet: SheetModel,
+    tile: SpriteModel,
+    setSelectedTile:(sprite:SpriteModel) => void,
 }) {
     const {map, tile, doc} = props
     const [grid, setGrid] = useState<boolean>(false)

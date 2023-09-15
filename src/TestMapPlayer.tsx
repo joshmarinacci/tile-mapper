@@ -1,12 +1,11 @@
 import React, {useState} from "react"
 
-import {MapImpl, TestImpl} from "./defs"
-import {EditableDocument} from "./model"
+import {DocModel, MapModel, TestImpl} from "./defs"
 import {PlayTest} from "./PlayTest"
 export function TestMapPlayer(props: {
     test: TestImpl,
-    doc: EditableDocument,
-    map: MapImpl
+    doc: DocModel,
+    map: MapModel
 }) {
     const {test, map, doc} = props
     const [playing, setPlaying] = useState(false)

@@ -9,19 +9,18 @@ import {
     PopupContextImpl,
     Spacer
 } from "josh_react_util"
-import React, {useContext, useEffect, useState} from 'react'
+import React, {useContext, useState} from 'react'
 
 import {DocToBMP, DocToPNG, LoadFileAction, SaveAction} from "./actions"
-import {ActionRegistry, PropsBase} from "./base"
+import {ActionRegistry, useWatchAllProps} from "./base"
 import {
     ActionRegistryContext,
     EditableLabel,
     ToggleButtonSet,
     ToolbarActionButton
 } from "./common-components"
+import {DocModel} from "./defs"
 import {MapModeView} from "./MapModeView"
-import {EditableDocument} from "./model"
-import {NewDocDialog} from "./NewDocDialog"
 import {GlobalState} from "./state"
 import {TestModeView} from "./TestModeView"
 import {TileModeView} from "./TileModeView"
@@ -31,26 +30,15 @@ AR.register([
     SaveAction,
     DocToBMP,
     DocToBMP,
+    LoadFileAction,
 ])
 
 const STATE = new GlobalState()
 
-export type Watcher<T> = (v:T) => void
-export function useWatchAny<O extends PropsBase<any>>(target:O, watcher:Watcher<O>) {
-    useEffect(() => {
-        const hand = () => {
-            console.log('something changed in ',target)
-            watcher(target)
-        }
-        target.onAny(hand)
-        return () => target.offAny(hand)
-    }, [target])
-}
-
 function Main() {
-    const [doc,setDoc] = useState(STATE.getPropValue('doc') as EditableDocument)
-    useWatchAny(STATE, (s) => {
-        setDoc(s.getPropValue('doc') as EditableDocument)
+    const [doc,setDoc] = useState(STATE.getPropValue('doc') as DocModel)
+    useWatchAllProps(STATE, (s) => {
+        setDoc(s.getPropValue('doc') as DocModel)
     })
     const [mode, setMode] = useState(STATE.getPropValue('mode'))
     const dc = useContext(DialogContext)

@@ -1,5 +1,6 @@
 import {PropsBase} from "./base"
-import {EditableDocument, EditableSheet, EditableSprite, PICO8} from "./model"
+import {DocModel, SheetModel, SpriteModel} from "./defs"
+import {PICO8} from "./model"
 
 type GlobalStateType = {
     doc: object,
@@ -17,11 +18,11 @@ export class GlobalState extends PropsBase<GlobalStateType> {
             },
             editable: false,
             default: () => {
-                const doc = new EditableDocument()
+                const doc = new DocModel()
                 doc.setPalette(PICO8)
-                const sheet = new EditableSheet()
-                const img = new EditableSprite(10, 10, PICO8)
-                const img2 = new EditableSprite(10, 10, PICO8)
+                const sheet = new SheetModel()
+                const img = new SpriteModel(10, 10, PICO8)
+                const img2 = new SpriteModel(10, 10, PICO8)
                 sheet.addSprite(img)
                 sheet.addSprite(img2)
                 doc.addSheet(sheet)

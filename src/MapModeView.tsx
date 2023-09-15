@@ -1,10 +1,9 @@
 import {HBox} from "josh_react_util"
 import React, {useState} from "react"
 
-import {MapImpl} from "./defs"
+import {DocModel, MapModel, SheetModel, SpriteModel} from "./defs"
 import {MapEditor} from "./MapEditor"
 import {MapList} from "./MapList"
-import {EditableDocument,  EditableSheet, EditableSprite} from "./model"
 import {PropSheet} from "./propsheet"
 import {SheetList} from "./SheetList"
 import {GlobalState} from "./state"
@@ -12,12 +11,12 @@ import {TileSheetView} from "./TileSheetView"
 
 export function MapModeView(props: {
     state: GlobalState,
-    doc: EditableDocument
+    doc: DocModel
 }) {
     const {doc} = props
-    const [selectedMap, setSelectedMap] = useState<MapImpl>(doc.getMaps()[0])
-    const [selectedSheet, setSelectedSheet] = useState<EditableSheet>(doc.getSheets()[0])
-    const [selectedTile, setSelectedTile] = useState<EditableSprite>(doc.getSheets()[0].getImages()[0])
+    const [selectedMap, setSelectedMap] = useState<MapModel>(doc.getMaps()[0])
+    const [selectedSheet, setSelectedSheet] = useState<SheetModel>(doc.getSheets()[0])
+    const [selectedTile, setSelectedTile] = useState<SpriteModel>(doc.getSheets()[0].getImages()[0])
 
     return <>
         <HBox>
@@ -38,7 +37,7 @@ export function MapModeView(props: {
                     sheet={selectedSheet}
                     tile={selectedTile}
                     editable={false}
-                    setTile={(t: EditableSprite) => setSelectedTile(t)}
+                    setTile={(t: SpriteModel) => setSelectedTile(t)}
                     palette={doc.getPalette()}/>}
             </div>
         </HBox>

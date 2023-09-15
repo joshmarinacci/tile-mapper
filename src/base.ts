@@ -1,4 +1,5 @@
 import {genId} from "josh_js_util"
+import {useEffect} from "react"
 
 import {GlobalState} from "./state"
 
@@ -151,4 +152,30 @@ export class ActionRegistry {
     all():MenuAction[] {
         return this.actions.slice()
     }
+}
+
+export type AllPropsWatcher<T> = (v: T) => void
+
+export function useWatchAllProps<O extends PropsBase<any>>(target: O, watcher: AllPropsWatcher<O>) {
+    useEffect(() => {
+        const hand = () => {
+            console.log('something changed in ', target)
+            watcher(target)
+        }
+        target.onAny(hand)
+        return () => target.offAny(hand)
+    }, [target])
+}
+
+export type PropWatcher<T> = (v: T) => void
+
+export function useWatchProp<Type extends PropsBase<any>, Key extends keyof Type>(target: Type, name:Key, watcher: PropWatcher<Type[keyof Type]>) {
+    useEffect(() => {
+        const hand = () => {
+            console.log('something changed in ', target)
+            watcher(target.getPropValue(name))
+        }
+        target.on(name,hand)
+        return () => target.off(name,hand)
+    }, [target])
 }

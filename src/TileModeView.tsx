@@ -2,7 +2,7 @@ import {ArrayGrid} from "josh_js_util"
 import {HBox} from "josh_react_util"
 import React, {useState} from "react"
 
-import {EditableDocument, EditableSheet, EditableSprite} from "./model"
+import {DocModel, SheetModel, SpriteModel} from "./defs"
 import {PaletteColorPickerPane} from "./Palette"
 import {PixelGridEditor} from "./PixelGridEditor"
 import {PropSheet} from "./propsheet"
@@ -11,13 +11,13 @@ import {GlobalState} from "./state"
 import {TestMap} from "./TestMap"
 import {TileSheetView} from "./TileSheetView"
 
-export function TileModeView(props: {state:GlobalState, doc: EditableDocument }) {
+export function TileModeView(props: {state:GlobalState, doc: DocModel }) {
     const {doc} = props
     // const [sheets, setSheets] = useState<EditableSheet[]>(doc.getSheets())
     const [drawColor, setDrawColor] = useState<string>(doc.getPalette()[0])
-    const [sheet, setSheet] = useState<EditableSheet>(doc.getSheets()[0])
-    const [tile, setTile] = useState<EditableSprite>(doc.getSheets()[0].getImages()[0])
-    const [maparray] = useState(() => new ArrayGrid<EditableSprite>(20, 20))
+    const [sheet, setSheet] = useState<SheetModel>(doc.getSheets()[0])
+    const [tile, setTile] = useState<SpriteModel>(doc.getSheets()[0].getImages()[0])
+    const [maparray] = useState(() => new ArrayGrid<SpriteModel>(20, 20))
 
     return (<>
         <HBox>
@@ -28,7 +28,7 @@ export function TileModeView(props: {state:GlobalState, doc: EditableDocument })
                     editable={true}
                     sheet={sheet}
                     tile={tile}
-                    setTile={(t: EditableSprite) => setTile(t)}
+                    setTile={(t: SpriteModel) => setTile(t)}
                     palette={doc.getPalette()}/>}
             </div>
             <div className={'pane'}>

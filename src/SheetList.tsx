@@ -1,20 +1,20 @@
 import React from "react"
 
+import {DocModel, SheetModel} from "./defs"
 import {ListView, ListViewRenderer} from "./ListView"
-import {EditableDocument, EditableSheet} from "./model"
 
-const SheetNameRender:ListViewRenderer<EditableSheet> = (props:{value:EditableSheet, selected:boolean}) => {
+const SheetNameRender:ListViewRenderer<SheetModel> = (props:{value:SheetModel, selected:boolean}) => {
     return <div>{props.value.getPropValue('name')}</div>
 }
 export function SheetList(props: {
-    doc: EditableDocument,
-    sheet: EditableSheet,
-    setSheet: (s: EditableSheet) => void,
+    doc: DocModel,
+    sheet: SheetModel,
+    setSheet: (s: SheetModel) => void,
     editable: boolean
 }) {
     const {doc, sheet, setSheet} = props
     const add_sheet = () => {
-        const sheet = new EditableSheet()
+        const sheet = new SheetModel()
         doc.addSheet(sheet)
         props.setSheet(sheet)
     }

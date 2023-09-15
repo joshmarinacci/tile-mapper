@@ -3,10 +3,9 @@ import "./TestView.css"
 import {HBox} from "josh_react_util"
 import React, {useState} from "react"
 
-import {MapImpl, TestImpl} from "./defs"
+import {DocModel, MapModel, TestImpl} from "./defs"
 import {ListView, ListViewRenderer} from "./ListView"
 import {MapList} from "./MapList"
-import {EditableDocument} from "./model"
 import {PropSheet} from "./propsheet"
 import {GlobalState} from "./state"
 import {TestMapPlayer} from "./TestMapPlayer"
@@ -19,7 +18,7 @@ const TestNameRenderer:ListViewRenderer<TestImpl> = (props: {
     return <div>{props.value.getPropValue('name')+""}</div>
 }
 
-function TestList(props: { test: TestImpl|undefined, setTest: (value:TestImpl) => void, editable: boolean, doc: EditableDocument }) {
+function TestList(props: { test: TestImpl|undefined, setTest: (value:TestImpl) => void, editable: boolean, doc: DocModel }) {
     const {doc, test, setTest, editable} = props
     const add_test = () => {
         const test = TestImpl.make()
@@ -47,11 +46,11 @@ function TestList(props: { test: TestImpl|undefined, setTest: (value:TestImpl) =
 
 export function TestModeView(props: {
     state: GlobalState
-    doc: EditableDocument
+    doc: DocModel
 }) {
     const {doc} = props
     const [test,setTest] = useState<TestImpl>()
-    const [map, setMap] = useState<MapImpl>(props.doc.getMaps()[0])
+    const [map, setMap] = useState<MapModel>(props.doc.getMaps()[0])
 
     return <>
         <HBox>

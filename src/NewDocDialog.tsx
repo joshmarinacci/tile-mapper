@@ -1,20 +1,18 @@
 import {DialogContext} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
+import {DocModel, SheetModel, SpriteModel} from "./defs"
 import {
-    EditableDocument,
-    EditableSheet,
-    EditableSprite,
     ImagePalette,
     MINECRAFT,
     PICO8
 } from "./model"
 
 function make_new_doc(width: number, height: number, palette:ImagePalette) {
-    const doc = new EditableDocument()
+    const doc = new DocModel()
     doc.setPalette(palette)
-    const sheet = new EditableSheet()
-    const img = new EditableSprite(width, height, palette)
+    const sheet = new SheetModel()
+    const img = new SpriteModel(width, height, palette)
     sheet.addSprite(img)
     doc.addSheet(sheet)
     return doc
@@ -35,7 +33,7 @@ const PALS:Pal[] = [
     }
 ]
 
-export function NewDocDialog(props: { onComplete: (doc: EditableDocument) => void }) {
+export function NewDocDialog(props: { onComplete: (doc: DocModel) => void }) {
     const [width, setWidth] = useState(10)
     const [height, setHeight] = useState(10)
     const [pal, setPal] = useState(PALS[0])

@@ -1,9 +1,9 @@
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
 import {SimpleMenuAction} from "./base"
+import {DocModel} from "./defs"
 import {
     canvas_to_bmp,
-    EditableDocument,
     fileToJson,
     jsonObjToBlob,
     make_doc_from_json,
@@ -15,7 +15,7 @@ export const SaveAction:SimpleMenuAction = {
     type: "simple",
     title: "Save",
     async perform(state): Promise<void> {
-        const doc:EditableDocument = state.getPropValue('doc') as EditableDocument
+        const doc:DocModel = state.getPropValue('doc') as DocModel
         const blob = jsonObjToBlob(doc.toJSONDoc())
         forceDownloadBlob(`${doc.getPropValue('name')}.json`,blob)
     },
@@ -25,7 +25,7 @@ export const DocToPNG:SimpleMenuAction = {
     type: "simple",
     title: "to PNG",
     async perform(state): Promise<void> {
-        const doc:EditableDocument = state.getPropValue('doc') as EditableDocument
+        const doc:DocModel = state.getPropValue('doc') as DocModel
         for(const sheet of doc.getSheets()) {
             const can = sheet_to_canvas(sheet)
             const blob = await canvas_to_blob(can)
@@ -38,7 +38,7 @@ export const DocToBMP:SimpleMenuAction = {
     type:'simple',
     title:'to BMP',
     async perform(state) {
-        const doc:EditableDocument = state.getPropValue('doc') as EditableDocument
+        const doc:DocModel = state.getPropValue('doc') as DocModel
         const sheet = doc.getSheets()[0]
         const canvas = sheet_to_canvas(sheet)
         const rawData = canvas_to_bmp(canvas, doc.getPalette())

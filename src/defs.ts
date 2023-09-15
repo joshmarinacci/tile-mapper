@@ -1,7 +1,15 @@
-import {ArrayGrid, Point, Size} from "josh_js_util"
+import {ArrayGrid, genId, Point, Size} from "josh_js_util"
 
 import {PropDef, PropsBase, UUID} from "./base"
-import {EditableMapCell, JSONMap, JSONTest} from "./model"
+import {
+    drawEditableSprite,
+    ImagePalette,
+    JSONDoc,
+    JSONMap,
+    JSONSheet,
+    JSONSprite,
+    JSONTest
+} from "./model"
 
 export const NameDef: PropDef<string> = {
     type: 'string',
@@ -10,6 +18,14 @@ export const NameDef: PropDef<string> = {
     toJSON: (v: string) => v,
     format: (v) => v,
 }
+export const SizeDef: PropDef<Size> = {
+    type:'Size',
+    editable:false,
+    default: () => new Size(10,10),
+    toJSON: (v) => v.toJSON(),
+    format: (v) => `${v.w} x ${v.h}`,
+}
+
 const JumpDef: PropDef<number> = {
     type: 'float',
     editable: true,
@@ -45,7 +61,6 @@ const MaxFallSpeedDef: PropDef<number> = {
     toJSON: (v: number) => v,
     format: (v) => v.toFixed(2),
 }
-
 const FrictionDef:PropDef<number> = {
     type:"float",
     default: () => 0.99,
@@ -62,7 +77,6 @@ type TestType = {
     max_fall_speed: number,
     friction: number,
 }
-
 export class TestImpl extends PropsBase<TestType> {
     constructor() {
         super()
@@ -104,13 +118,130 @@ export class TestImpl extends PropsBase<TestType> {
     }
 }
 
+const CURRENT_VERSION = 4
+export type MapCell = {
+    tile: string, //id of the sprite used to draw this
+}
+
+type DocType = {
+    name: string,
+}
+export class DocModel extends PropsBase<DocType> {
+    private palette: ImagePalette
+    private sheets: SheetModel[]
+    private maps: MapModel[]
+    private tests: TestImpl[]
+    private sprite_lookup: Map<string, SpriteModel>
+
+    constructor() {
+        super()
+        this.palette = []
+        this.sheets = []
+        this.maps = []
+        this.setPropDef('name', NameDef)
+        this.setPropValue('name', this.getPropDef('name').default())
+        this.sprite_lookup = new Map()
+        this.tests = []
+    }
+
+    addSheet(sheet: SheetModel) {
+        this.sheets.push(sheet)
+        this._fireAll()
+    }
+
+    removeSheet(sheet: SheetModel) {
+        const n = this.sheets.indexOf(sheet)
+        if (n < 0) {
+            console.warn("cannot remove this sheet")
+        } else {
+            this.sheets.splice(n, 1)
+            this._fireAll()
+        }
+    }
+
+    getSheets(): SheetModel[] {
+        return this.sheets.slice()
+    }
+
+    addMap(map: MapModel) {
+        this.maps.push(map)
+        this._fireAll()
+    }
+
+    removeMap(map: MapModel) {
+        const n = this.maps.indexOf(map)
+        if (n < 0) {
+            console.warn("cannot remove this map")
+        } else {
+            this.maps.splice(n, 1)
+            this._fireAll()
+        }
+    }
+
+    getMaps(): MapModel[] {
+        return this.maps.slice()
+    }
+
+    addTest(test: TestImpl) {
+        this.tests.push(test)
+        this._fireAll()
+    }
+
+    removeTest(test: TestImpl) {
+        const n = this.tests.indexOf(test)
+        if (n < 0) {
+            console.warn("cannot remove this map")
+        } else {
+            this.tests.splice(n, 1)
+            this._fireAll()
+        }
+    }
+
+    getTests(): TestImpl[] {
+        return this.tests.slice()
+    }
+
+    setPalette(palette: ImagePalette) {
+        this.palette = palette
+        this._fireAll()
+    }
+
+    toJSONDoc(): JSONDoc {
+        return {
+            name: this.getPropValue('name'),
+            color_palette: this.palette,
+            version: CURRENT_VERSION,
+            sheets: this.sheets.map(sh => sh.toJSONSheet()),
+            maps: this.maps.map(mp => mp.toJSONMap()),
+            tests: this.tests.map(tst => tst.toJSONTest())
+        }
+    }
+
+    getPalette() {
+        return this.palette
+    }
+
+    lookup_sprite(id: string) {
+        if (this.sprite_lookup.has(id)) return this.sprite_lookup.get(id)
+        for (const sheet of this.sheets) {
+            for (const sprite of sheet.sprites) {
+                if (sprite._id === id) {
+                    // console.log("missed the cache",sprite.id)
+                    this.sprite_lookup.set(sprite._id, sprite)
+                    return sprite
+                }
+            }
+        }
+        return null
+    }
+}
+
 type MapType = {
     name:string,
     size:Size
 }
-
-export class MapImpl extends PropsBase<MapType> {
-    cells: ArrayGrid<EditableMapCell>
+export class MapModel extends PropsBase<MapType> {
+    cells: ArrayGrid<MapCell>
 
     constructor() {
         super()
@@ -132,22 +263,22 @@ export class MapImpl extends PropsBase<MapType> {
             this.setPropValue(name,def.default())
         }
         const size = this.getPropValue('size')
-        this.cells = new ArrayGrid<EditableMapCell>(size.w, size.h)
+        this.cells = new ArrayGrid<MapCell>(size.w, size.h)
         this.cells.fill(() => ({tile: "nothin"}))
     }
 
-    static make(): MapImpl {
-        return new MapImpl()
+    static make(): MapModel {
+        return new MapModel()
     }
 
-    static fromJSON(json: JSONMap): MapImpl {
+    static fromJSON(json: JSONMap): MapModel {
         console.log("MapImpl.fromJSON", json)
-        const map = MapImpl.make()
+        const map = MapModel.make()
         if ('id' in json) map._id = json.id as UUID
         if ('name' in json) map.setPropValue('name', json.name)
         const size = new Size(json.width, json.height)
         map.setPropValue('size', size)
-        map.cells = new ArrayGrid<EditableMapCell>(size.w, size.h)
+        map.cells = new ArrayGrid<MapCell>(size.w, size.h)
         map.cells.set_from_list(json.cells)
         return map
     }
@@ -169,6 +300,133 @@ export type SpriteType = {
     size: Size,
     blocking: boolean
 }
+export class SpriteModel extends PropsBase<SpriteType> {
+    data: ArrayGrid<number>
+    palette:ImagePalette
+    cache_canvas: HTMLCanvasElement | null
+    constructor(w:number, h:number, pallete:ImagePalette) {
+        super()
+        this.setPropDef('name',NameDef)
+        this.setPropValue('name',this.getPropDef('name').default())
+        this.setPropDef('size',SizeDef)
+        this.setPropValue('size', new Size(w,h))
+        this.setPropDef('blocking',{
+            type:"boolean",
+            editable:true,
+            default: () => false,
+            toJSON: (v) => v,
+            format: (v) => v?'true':'false',
+        })
+        this.setPropValue('blocking',this.getPropDef('blocking').default())
+        this.palette = pallete
+        this.data = new ArrayGrid<number>(w,h)
+        this.data.fill(()=>0)
+        this.cache_canvas = null
+        this.rebuild_cache()
+    }
+    setPixel(number: number, point: Point) {
+        this.data.set(point, number)
+        this.rebuild_cache()
+        this._fireAll()
+    }
+    width() {
+        return this.getPropValue('size').w
+    }
+    height() {
+        return this.getPropValue('size').h
+    }
+    getPixel(point: Point) {
+        return this.data.get(point)
+    }
+    toJSONSprite():JSONSprite {
+        return {
+            id: this._id,
+            name: this.getPropValue('name'),
+            w: this.getPropValue('size').w,
+            h: this.getPropValue('size').h,
+            blocking: this.getPropValue('blocking'),
+            data: this.data.data
+        }
+    }
+    isValidIndex(pt: Point) {
+        if(pt.x < 0) return false
+        if(pt.y < 0) return false
+        if(pt.x >= this.data.w) return false
+        if(pt.y >= this.data.h) return false
+        return true
+    }
+    clone() {
+        const new_tile = new SpriteModel(this.width(),this.height(),this.palette)
+        new_tile.data.data = this.data.data.slice()
+        new_tile.setPropValue('blocking', this.getPropValue('blocking'))
+        new_tile.setPropValue('name',this.getPropValue('name'))
+        new_tile.setPropValue('size',this.getPropValue('size'))
+        new_tile.rebuild_cache()
+        return new_tile
+    }
+    rebuild_cache() {
+        this.cache_canvas = document.createElement('canvas')
+        this.cache_canvas.width = this.width()
+        this.cache_canvas.height = this.height()
+        const ctx = this.cache_canvas.getContext('2d') as CanvasRenderingContext2D
+        drawEditableSprite(ctx,1,this)
+    }
+
+    static fromJSON(json_sprite: JSONSprite, color_palette: string[]) {
+        const sprite = new SpriteModel(json_sprite.w,json_sprite.h,color_palette)
+        sprite._id = json_sprite.id || genId('sprite')
+        sprite.setPropValue('name',json_sprite.name)
+        sprite.setPropValue('blocking', json_sprite.blocking)
+        sprite.data.data = json_sprite.data
+        sprite.rebuild_cache()
+        return sprite
+    }
+}
+
 export type SheetType = {
     name: string,
+}
+export class SheetModel extends PropsBase<SheetType> {
+    sprites: SpriteModel[]
+
+    constructor() {
+        super()
+        this.sprites = []
+        this.setPropDef('name', NameDef)
+        this.setPropValue('name', NameDef.default())
+    }
+
+    addSprite(sprite: SpriteModel) {
+        this.sprites.push(sprite)
+        this._fireAll()
+    }
+
+    removeSprite(sprite: SpriteModel) {
+        const n = this.sprites.indexOf(sprite)
+        if (n >= 0) {
+            this.sprites.splice(n, 1)
+            this._fireAll()
+        } else {
+            console.warn("cannot delete sprite")
+        }
+    }
+
+    getImages() {
+        return this.sprites.slice()
+    }
+
+    toJSONSheet(): JSONSheet {
+        return {
+            name: this.getPropValue('name'),
+            id: this._id,
+            sprites: this.sprites.map(sp => sp.toJSONSprite())
+        }
+    }
+
+    static fromJSON(json_sheet: JSONSheet) {
+        const sheet = new SheetModel()
+        sheet._id = json_sheet.id
+        sheet.setPropValue('name', json_sheet.name)
+        return sheet
+    }
 }

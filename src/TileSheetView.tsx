@@ -2,18 +2,18 @@ import {toClass} from "josh_react_util"
 import {forceDownloadBlob} from "josh_web_util"
 import React, {useEffect, useRef, useState} from "react"
 
+import {SheetModel, SpriteModel} from "./defs"
 import {ListView, ListViewRenderer} from "./ListView"
 import {
     canvas_to_bmp,
     drawEditableSprite,
-    EditableSheet,
-    EditableSprite, ImagePalette,
+    ImagePalette,
     PICO8,
     sheet_to_canvas
 } from "./model"
 import {PropSheet} from "./propsheet"
 
-const TilePreviewRenderer:ListViewRenderer<EditableSprite> = (props:{value:EditableSprite, selected:boolean, index:number}) => {
+const TilePreviewRenderer:ListViewRenderer<SpriteModel> = (props:{value:SpriteModel, selected:boolean, index:number}) => {
     const image = props.value
     const scale = 4
     const ref = useRef<HTMLCanvasElement>(null)
@@ -48,16 +48,16 @@ const TilePreviewRenderer:ListViewRenderer<EditableSprite> = (props:{value:Edita
 }
 
 export function TileSheetView(props: {
-    sheet: EditableSheet,
-    tile: EditableSprite,
-    setTile: (tile: EditableSprite) => void,
+    sheet: SheetModel,
+    tile: SpriteModel,
+    setTile: (tile: SpriteModel) => void,
     palette: ImagePalette,
     editable:boolean,
 }) {
     const {sheet, tile, setTile, palette, editable} = props
     const [tiles, setTiles] = useState(sheet.getImages())
     const add_tile = () => {
-        const new_tile = new EditableSprite(tile.width(), tile.height(), PICO8)
+        const new_tile = new SpriteModel(tile.width(), tile.height(), PICO8)
         sheet.addSprite(new_tile)
         setTile(new_tile)
     }

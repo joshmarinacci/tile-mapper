@@ -1,10 +1,9 @@
 import {Bounds, Point, Size} from "josh_js_util"
 import React, {useEffect, useRef, useState} from "react"
 
-import {MapImpl, TestImpl} from "./defs"
+import {DocModel, MapModel, TestImpl} from "./defs"
 import {
     drawEditableSprite,
-    EditableDocument,
 } from "./model"
 
 export type Player = {
@@ -98,7 +97,7 @@ const FRICTION = 0.9
 const EPSILON = 0.01
 
 
-export function updatePlayer(doc: EditableDocument, map: MapImpl, player: Player, keys: KeyManager, canvas: HTMLCanvasElement, TS: Size, SCALE:number) {
+export function updatePlayer(doc: DocModel, map: MapModel, player: Player, keys: KeyManager, canvas: HTMLCanvasElement, TS: Size, SCALE:number) {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     let debug_y = 200
     function debugText(text:string) {
@@ -286,7 +285,7 @@ export function updatePlayer(doc: EditableDocument, map: MapImpl, player: Player
     handle_horizontal()
     player.bounds = player.bounds.add(player.velocity)
 }
-export function drawViewport(current: HTMLCanvasElement, map: MapImpl, doc: EditableDocument, player: Player, keys: KeyManager, TS: Size,
+export function drawViewport(current: HTMLCanvasElement, map: MapModel, doc: DocModel, player: Player, keys: KeyManager, TS: Size,
                              SCALE:number
                              ) {
     const ctx = current.getContext('2d') as CanvasRenderingContext2D
@@ -330,7 +329,7 @@ export function drawViewport(current: HTMLCanvasElement, map: MapImpl, doc: Edit
 
 
 let anim:Animator|null = null
-export function PlayTest(props:{playing:boolean, doc:EditableDocument, map:MapImpl, test:TestImpl,
+export function PlayTest(props:{playing:boolean, doc:DocModel, map:MapModel, test:TestImpl,
     zoom:number,
     grid:boolean,
 }) {

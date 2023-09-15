@@ -1,12 +1,11 @@
 import {DialogContext} from "josh_react_util"
 import React, {useContext} from "react"
 
-import {MapImpl} from "./defs"
+import {DocModel, MapModel} from "./defs"
 import {ListView, ListViewRenderer} from "./ListView"
-import {EditableDocument} from "./model"
 import {NewMapDialog} from "./NewMapDialog"
 
-const MapNameRenderer:ListViewRenderer<MapImpl> = (props:{value:MapImpl, selected:boolean}) => {
+const MapNameRenderer:ListViewRenderer<MapModel> = (props:{value:MapModel, selected:boolean}) => {
     return <div>
         {props.value.getPropValue('name') as string}
     </div>
@@ -14,9 +13,9 @@ const MapNameRenderer:ListViewRenderer<MapImpl> = (props:{value:MapImpl, selecte
 
 export function MapList(props:{
     editable: boolean,
-    doc: EditableDocument,
-    map: MapImpl,
-    setMap: (s: MapImpl) => void
+    doc: DocModel,
+    map: MapModel,
+    setMap: (s: MapModel) => void
 }) {
     const {doc, map, setMap} = props
     const dc = useContext(DialogContext)

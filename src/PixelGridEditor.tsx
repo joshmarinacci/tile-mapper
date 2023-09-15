@@ -2,7 +2,8 @@ import {Point} from "josh_js_util"
 import {HBox, toClass} from "josh_react_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {EditableSprite, ImagePalette} from "./model"
+import {SpriteModel} from "./defs"
+import {ImagePalette} from "./model"
 
 
 function calculateDirections() {
@@ -14,7 +15,7 @@ function calculateDirections() {
     ]
 }
 
-function bucketFill(tile: EditableSprite, target: number, replace:number, at: Point, ) {
+function bucketFill(tile: SpriteModel, target: number, replace:number, at: Point, ) {
     if(target === replace) return
     const v = tile.getPixel(at)
     if(v !== target) return
@@ -28,7 +29,7 @@ function bucketFill(tile: EditableSprite, target: number, replace:number, at: Po
 }
 
 export function PixelGridEditor(props: {
-    image: EditableSprite,
+    image: SpriteModel,
     selectedColor: number,
     palette: ImagePalette,
     setSelectedColor: (v:number)=>void
@@ -118,7 +119,7 @@ export function PixelGridEditor(props: {
                         image.setPixel(selectedColor, canvasToImage(e))
                     }
                 }}
-                onMouseUp={(e) => setDown(false)}>
+                onMouseUp={() => setDown(false)}>
         </canvas>
     </div>
 }

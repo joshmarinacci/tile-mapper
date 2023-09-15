@@ -1,9 +1,10 @@
 import {ArrayGrid, Point} from "josh_js_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {drawEditableSprite, EditableSprite} from "./model"
+import {SpriteModel} from "./defs"
+import {drawEditableSprite} from "./model"
 
-export function TestMap(props: { tile: EditableSprite, mapArray: ArrayGrid<EditableSprite> }) {
+export function TestMap(props: { tile: SpriteModel, mapArray: ArrayGrid<SpriteModel> }) {
     const {tile, mapArray} = props
     const ref = useRef<HTMLCanvasElement>(null)
     const [down, setDown] = useState<boolean>(false)
