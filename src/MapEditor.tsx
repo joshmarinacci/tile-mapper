@@ -84,9 +84,7 @@ export function MapEditor(props: {
     const [grid, setGrid] = useState<boolean>(false)
     const ref = useRef<HTMLCanvasElement>(null)
     const [down, setDown] = useState<boolean>(false)
-    useEffect(() => {
-        redraw()
-    }, [grid, map])
+    useEffect(() => redraw(), [grid, map])
 
     const [zoom, setZoom] = useState(2)
     const scale = Math.pow(2,zoom)
@@ -137,9 +135,41 @@ export function MapEditor(props: {
     }
     const [fillOnce, setFillOnce] = useState<boolean>(false)
 
-    useEffect(() => {
+    useEffect(() => redraw(),[zoom])
+
+    const onMouseDown = (e:MouseEvent<HTMLCanvasElement>) => {
+        if(e.button === 2) {
+            const cell = map.cells.get(canvasToImage(e))
+            const tile = props.doc.lookup_sprite(cell.tile)
+            if(tile) props.setSelectedTile(tile)
+            e.stopPropagation()
+            e.preventDefault()
+            return
+        }
+        if(fillOnce) {
+            const pt = canvasToImage(e)
+            const cell = map.cells.get(pt)
+            bucketFill(map,cell.tile,tile._id,pt)
+            setFillOnce(false)
+            redraw()
+            return
+        }
+
+        setDown(true)
+        if(map) map.cells.set(canvasToImage(e),{tile:tile._id})
+        // setCount(count + 1)
         redraw()
-    },[zoom])
+
+    }
+    const onMouseMove = (e:MouseEvent<HTMLCanvasElement>) => {
+        if (down) {
+            if(map) map.cells.set(canvasToImage(e), {tile:tile._id})
+            redraw()
+        }
+    }
+    const onMouseUp = (e:MouseEvent<HTMLCanvasElement>) => {
+        setDown(false)
+    }
     if(!map)  return <div>select a map</div>
     return <>
         <div className={'toolbar'}>
@@ -155,39 +185,10 @@ export function MapEditor(props: {
         <canvas ref={ref}
                 width={map.cells.w*scale*tile.width()}
                 height={map.cells.h*scale*tile.height()}
-                onContextMenu={(e) => {
-                    e.preventDefault()
-                }}
-                onMouseDown={(e) => {
-                    if(e.button === 2) {
-                        const cell = map.cells.get(canvasToImage(e))
-                        const tile = props.doc.lookup_sprite(cell.tile)
-                        if(tile) props.setSelectedTile(tile)
-                        e.stopPropagation()
-                        e.preventDefault()
-                        return
-                    }
-                    if(fillOnce) {
-                        const pt = canvasToImage(e)
-                        const cell = map.cells.get(pt)
-                        bucketFill(map,cell.tile,tile._id,pt)
-                        setFillOnce(false)
-                        redraw()
-                        return
-                    }
-
-                    setDown(true)
-                    if(map) map.cells.set(canvasToImage(e),{tile:tile._id})
-                    // setCount(count + 1)
-                    redraw()
-                }}
-                onMouseMove={(e) => {
-                    if (down) {
-                        if(map) map.cells.set(canvasToImage(e), {tile:tile._id})
-                        redraw()
-                    }
-                }}
-                onMouseUp={() => setDown(false)}
+                onContextMenu={(e) => e.preventDefault()}
+                onMouseDown={onMouseDown}
+                onMouseMove={onMouseMove}
+                onMouseUp={onMouseUp}
         />
         </div>
     </>
