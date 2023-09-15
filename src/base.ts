@@ -1,5 +1,7 @@
 import {genId} from "josh_js_util"
 
+import {GlobalState} from "./state"
+
 export type UUID = string
 export type Getter<T> = () => T;
 type JSONValue = string | number | object | boolean
@@ -90,5 +92,63 @@ export class PropsBase<Type> {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         this.all_listeners.forEach(cb => cb(this))
+    }
+}
+
+
+export type Shortcut = {
+    key:string,
+    meta:boolean,
+    shift:boolean,
+    control:boolean,
+    alt:boolean,
+}
+export interface MenuAction{
+    type:string,
+    title:string
+    shortcut?:Shortcut,
+    description?:string
+    // icon?:SupportedIcons,
+    tags?:string[],
+}
+export interface SimpleMenuAction extends MenuAction{
+    type: 'simple',
+    perform: (state:GlobalState) => Promise<void>
+}
+
+export class ActionRegistry {
+    private actions: MenuAction[]
+    private by_key: Map<string, MenuAction[]>
+
+    constructor() {
+        this.actions = []
+        this.by_key = new Map()
+    }
+
+    match(e: React.KeyboardEvent): MenuAction | null {
+        if (this.by_key.has(e.key)) {
+            let actions = this.by_key.get(e.key)
+            if (!actions) return null
+            actions = actions.filter(a => a.shortcut?.meta === e.metaKey)
+            actions = actions.filter(a => a.shortcut?.shift === e.shiftKey)
+            if (actions.length > 0) return actions[0]
+        }
+        return null
+    }
+
+    register(actions: MenuAction[]) {
+        actions.forEach(a => {
+            this.actions.push(a)
+            if (a.shortcut) {
+                let acts = this.by_key.get(a.shortcut.key)
+                if (!acts) acts = []
+                acts.push(a)
+                this.by_key.set(a.shortcut.key, acts)
+            }
+        })
+    }
+
+    all():MenuAction[] {
+        return this.actions.slice()
     }
 }

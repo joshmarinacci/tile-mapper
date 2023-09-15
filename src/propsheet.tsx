@@ -5,61 +5,6 @@ import React, {useEffect, useState} from "react"
 
 import {PropDef, PropsBase} from "./base"
 
-/*
- Doc is
-    impl: EditableDoc
-    name: string
-    palette: ImagePalette
-    sheets: zero or more of Sheet
-    maps: zero or more of Map
-    tests: zero or more of Test
-    spriteSize: Size
-
-ImagePalette:
-    name: string
-    colors: zero or more of string
-
-Sheet:
-    id: string
-    name: string
-    sprites: zero or more of Sprite
-
-Sprite:
-    name:
-    data: zero or more of number
-    blocking: boolean
-Map:
-    name: string
-    size: Size
-    cells: zero or more of MapCell
-
-MapCell:
-    tile_id: sheet_id
-Test:
-    name: string
-    map_id: map_id
-    viewport: Size
-
-
-Size is builtin
-Size.editor is <Size Editor/>
-
-Test is:
-    name: string, editable, default:new test,
-    map_id:  Map.id
-    viewport: Size, editable, default: (16,8), editor is <SizeEditor/>
-
-Map is:
-    name: string, editable, default: new map
-    size: Size, editable, default: (30,15)
-    cells: MapCell[], editable=false, default:()=>make_new_cell_array()
-MapCell is:
-    tile_id: Sprite.id
-*/
-
-
-
-
 function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<T[keyof T]>}) {
     const {target, def, name} = props
     const [count, setCount] = useState(0)

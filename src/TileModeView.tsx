@@ -7,10 +7,11 @@ import {PaletteColorPickerPane} from "./Palette"
 import {PixelGridEditor} from "./PixelGridEditor"
 import {PropSheet} from "./propsheet"
 import {SheetList} from "./SheetList"
+import {GlobalState} from "./state"
 import {TestMap} from "./TestMap"
 import {TileSheetView} from "./TileSheetView"
 
-export function TileModeView(props: { doc: EditableDocument }) {
+export function TileModeView(props: {state:GlobalState, doc: EditableDocument }) {
     const {doc} = props
     // const [sheets, setSheets] = useState<EditableSheet[]>(doc.getSheets())
     const [drawColor, setDrawColor] = useState<string>(doc.getPalette()[0])

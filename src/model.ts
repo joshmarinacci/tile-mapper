@@ -365,7 +365,6 @@ export function make_doc_from_json(raw_data: object) {
     return doc
 }
 
-
 export function fileToJson(file:File) {
     return new Promise((resolve, reject) => {
         const fileReader = new FileReader()

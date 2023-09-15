@@ -7,9 +7,11 @@ import {MapList} from "./MapList"
 import {EditableDocument,  EditableSheet, EditableSprite} from "./model"
 import {PropSheet} from "./propsheet"
 import {SheetList} from "./SheetList"
+import {GlobalState} from "./state"
 import {TileSheetView} from "./TileSheetView"
 
 export function MapModeView(props: {
+    state: GlobalState,
     doc: EditableDocument
 }) {
     const {doc} = props

@@ -8,6 +8,7 @@ import {ListView, ListViewRenderer} from "./ListView"
 import {MapList} from "./MapList"
 import {EditableDocument} from "./model"
 import {PropSheet} from "./propsheet"
+import {GlobalState} from "./state"
 import {TestMapPlayer} from "./TestMapPlayer"
 
 
@@ -45,6 +46,7 @@ function TestList(props: { test: TestImpl|undefined, setTest: (value:TestImpl) =
 }
 
 export function TestModeView(props: {
+    state: GlobalState
     doc: EditableDocument
 }) {
     const {doc} = props
