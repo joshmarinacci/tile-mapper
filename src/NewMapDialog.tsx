@@ -2,7 +2,8 @@ import {Size} from "josh_js_util"
 import {DialogContext} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
-import {MapModel} from "./defs"
+import {PropValues} from "./base"
+import {MapModel, MapType} from "./defs"
 
 
 export function NewMapDialog(props: { onComplete: (map: MapModel) => void }) {
@@ -10,8 +11,10 @@ export function NewMapDialog(props: { onComplete: (map: MapModel) => void }) {
     const [height, setHeight] = useState(10)
     const dc = useContext(DialogContext)
     const create = () => {
-        const map = MapModel.make()
-        map.setPropValue('size', new Size(width,height))
+        const vals:PropValues<MapType> = {
+            size: new Size(width,height)
+        }
+        const map = new MapModel(vals)
         props.onComplete(map)
         dc.hide()
     }

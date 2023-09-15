@@ -1,7 +1,7 @@
 import {Bounds, Point, Size} from "josh_js_util"
 import React, {useEffect, useRef, useState} from "react"
 
-import {DocModel, MapModel, TestImpl} from "./defs"
+import {DocModel, MapModel, TestModel} from "./defs"
 import {
     drawEditableSprite,
 } from "./model"
@@ -329,7 +329,7 @@ export function drawViewport(current: HTMLCanvasElement, map: MapModel, doc: Doc
 
 
 let anim:Animator|null = null
-export function PlayTest(props:{playing:boolean, doc:DocModel, map:MapModel, test:TestImpl,
+export function PlayTest(props:{playing:boolean, doc:DocModel, map:MapModel, test:TestModel,
     zoom:number,
     grid:boolean,
 }) {

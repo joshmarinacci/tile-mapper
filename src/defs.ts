@@ -1,6 +1,6 @@
 import {ArrayGrid, genId, Point, Size} from "josh_js_util"
 
-import {PropDef, PropsBase, UUID} from "./base"
+import {PropDef, PropsBase, PropValues, UUID} from "./base"
 import {
     drawEditableSprite,
     ImagePalette,
@@ -14,7 +14,7 @@ import {
 export const NameDef: PropDef<string> = {
     type: 'string',
     editable: true,
-    default: () => 'new test',
+    default: () => 'unnamed',
     toJSON: (v: string) => v,
     format: (v) => v,
 }
@@ -68,7 +68,7 @@ const FrictionDef:PropDef<number> = {
     toJSON: (v) => v,
     format: (v) => v.toFixed(2),
 }
-type TestType = {
+export type TestType = {
     name: string,
     viewport: Size,
     jump_power: number,
@@ -77,29 +77,27 @@ type TestType = {
     max_fall_speed: number,
     friction: number,
 }
-export class TestImpl extends PropsBase<TestType> {
+export class TestModel extends PropsBase<TestType> {
     constructor() {
-        super()
-        this.setPropDef("name", NameDef)
-        this.setPropDef('viewport', ViewportDef)
-        this.setPropDef('jump_power', JumpDef)
-        this.setPropDef('gravity', GravityDef)
-        this.setPropDef('move_speed', MoveSpeedDef)
-        this.setPropDef('max_fall_speed', MaxFallSpeedDef)
-        this.setPropDef('friction', FrictionDef)
-        for(const [name, def] of this.getAllPropDefs()) {
-            this.setPropValue(name,def.default())
-        }
+        super({
+            name:NameDef,
+            viewport: ViewportDef,
+            jump_power: JumpDef,
+            gravity: GravityDef,
+            move_speed: MoveSpeedDef,
+            max_fall_speed: MaxFallSpeedDef,
+            friction: FrictionDef
+        })
     }
 
-    static make(): TestImpl {
-        return new TestImpl()
+    static make(): TestModel {
+        return new TestModel()
     }
 
-    static fromJSON(json: JSONTest): TestImpl {
+    static fromJSON(json: JSONTest): TestModel {
         console.log(`${this.name}.fromJSON`, json)
         if (!json) throw new Error("null json obj")
-        const test = TestImpl.make()
+        const test = TestModel.make()
         if ('id' in json) test._id = json.id as UUID
         if ('name' in json) test.setPropValue('name', json.name as string)
         if ('viewport' in json) test.setPropValue('viewport', new Size(json.viewport.width, json.viewport.height))
@@ -130,16 +128,16 @@ export class DocModel extends PropsBase<DocType> {
     private palette: ImagePalette
     private sheets: SheetModel[]
     private maps: MapModel[]
-    private tests: TestImpl[]
+    private tests: TestModel[]
     private sprite_lookup: Map<string, SpriteModel>
 
     constructor() {
-        super()
+        super({
+            name: NameDef,
+        })
         this.palette = []
         this.sheets = []
         this.maps = []
-        this.setPropDef('name', NameDef)
-        this.setPropValue('name', this.getPropDef('name').default())
         this.sprite_lookup = new Map()
         this.tests = []
     }
@@ -182,12 +180,12 @@ export class DocModel extends PropsBase<DocType> {
         return this.maps.slice()
     }
 
-    addTest(test: TestImpl) {
+    addTest(test: TestModel) {
         this.tests.push(test)
         this._fireAll()
     }
 
-    removeTest(test: TestImpl) {
+    removeTest(test: TestModel) {
         const n = this.tests.indexOf(test)
         if (n < 0) {
             console.warn("cannot remove this map")
@@ -197,7 +195,7 @@ export class DocModel extends PropsBase<DocType> {
         }
     }
 
-    getTests(): TestImpl[] {
+    getTests(): TestModel[] {
         return this.tests.slice()
     }
 
@@ -236,44 +234,27 @@ export class DocModel extends PropsBase<DocType> {
     }
 }
 
-type MapType = {
+export type MapType = {
     name:string,
     size:Size
 }
+
 export class MapModel extends PropsBase<MapType> {
     cells: ArrayGrid<MapCell>
 
-    constructor() {
-        super()
-        this.setPropDef("name", {
-            type:'string',
-            editable:true,
-            default:()=>'new map',
-            toJSON:(v) => v,
-            format: (v) => v,
-        })
-        this.setPropDef('size',{
-            type:'Size',
-            editable:false,
-            default:()=>new Size(10,10),
-            toJSON:(v:Size) => v.toJSON(),
-            format: (v) => `${v.w} x ${v.h}`,
-        })
-        for(const [name, def] of this.getAllPropDefs()) {
-            this.setPropValue(name,def.default())
-        }
+    constructor(options?:PropValues<MapType>) {
+        super({
+            name: NameDef,
+            size: SizeDef,
+        }, options)
         const size = this.getPropValue('size')
         this.cells = new ArrayGrid<MapCell>(size.w, size.h)
         this.cells.fill(() => ({tile: "nothin"}))
     }
 
-    static make(): MapModel {
-        return new MapModel()
-    }
-
     static fromJSON(json: JSONMap): MapModel {
         console.log("MapImpl.fromJSON", json)
-        const map = MapModel.make()
+        const map = new MapModel()
         if ('id' in json) map._id = json.id as UUID
         if ('name' in json) map.setPropValue('name', json.name)
         const size = new Size(json.width, json.height)
@@ -293,6 +274,7 @@ export class MapModel extends PropsBase<MapType> {
         }
 
     }
+
 }
 
 export type SpriteType = {
@@ -300,24 +282,26 @@ export type SpriteType = {
     size: Size,
     blocking: boolean
 }
+
+const BlockingDef:PropDef<boolean> = {
+    type:"boolean",
+    editable:true,
+    default: () => false,
+    toJSON: (v) => v,
+    format: (v) => v?'true':'false',
+}
 export class SpriteModel extends PropsBase<SpriteType> {
     data: ArrayGrid<number>
     palette:ImagePalette
     cache_canvas: HTMLCanvasElement | null
     constructor(w:number, h:number, pallete:ImagePalette) {
-        super()
-        this.setPropDef('name',NameDef)
-        this.setPropValue('name',this.getPropDef('name').default())
-        this.setPropDef('size',SizeDef)
-        this.setPropValue('size', new Size(w,h))
-        this.setPropDef('blocking',{
-            type:"boolean",
-            editable:true,
-            default: () => false,
-            toJSON: (v) => v,
-            format: (v) => v?'true':'false',
+        super({
+            name:NameDef,
+            size:SizeDef,
+            blocking: BlockingDef,
+        }, {
+            size: new Size(w,h),
         })
-        this.setPropValue('blocking',this.getPropDef('blocking').default())
         this.palette = pallete
         this.data = new ArrayGrid<number>(w,h)
         this.data.fill(()=>0)
@@ -390,10 +374,10 @@ export class SheetModel extends PropsBase<SheetType> {
     sprites: SpriteModel[]
 
     constructor() {
-        super()
+        super({
+            name:NameDef,
+        })
         this.sprites = []
-        this.setPropDef('name', NameDef)
-        this.setPropValue('name', NameDef.default())
     }
 
     addSprite(sprite: SpriteModel) {

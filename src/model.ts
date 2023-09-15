@@ -1,7 +1,7 @@
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
 import {ArrayGrid, Point} from "josh_js_util"
 
-import {DocModel, MapCell, MapModel, SheetModel, SpriteModel, TestImpl} from "./defs"
+import {DocModel, MapCell, MapModel, SheetModel, SpriteModel, TestModel} from "./defs"
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -125,7 +125,7 @@ export function make_doc_from_json(raw_data: object) {
         doc.addMap(MapModel.fromJSON(json_map))
     })
     json_doc.tests.forEach(json_test => {
-        doc.addTest(TestImpl.fromJSON(json_test))
+        doc.addTest(TestModel.fromJSON(json_test))
     })
     return doc
 }

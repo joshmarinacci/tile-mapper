@@ -23,18 +23,32 @@ export type PropDef<T> = {
 type WrapperCallback<Value> = (v:Value) => void
 type WrapperAnyCallback<Type> = (t:Type) => void
 
+
+export type DefList<Type> = Record<keyof Type, PropDef<Type[keyof Type]>>
+export type PropValues<Type> = Record<keyof Type, Type[keyof Type]>
+
 export class PropsBase<Type> {
     private listeners: Map<keyof Type, WrapperCallback<Type[keyof Type]>[]>
     private all_listeners: WrapperAnyCallback<Type>[]
     private values: Map<keyof Type,Type[keyof Type]>
     private defs: Map<keyof Type,PropDef<Type[keyof Type]>>
     _id: string
-    constructor() {
+    constructor(defs:DefList<Type>, options?:PropValues<Type>) {
         this._id = genId("Wrapper")
         this.values = new Map()
         this.defs = new Map()
         this.listeners = new Map()
         this.all_listeners = []
+        for(const [k,d] of Object.entries(defs)) {
+            this.setPropDef(k as keyof Type,d as PropDef<Type[keyof Type]>)
+            this.setPropValue(k as keyof Type,this.getPropDef(k as keyof Type).default())
+        }
+        if(options) this.setProps(options)
+    }
+    setProps(props: PropValues<Type>) {
+        for(const [k,d ] of Object.entries(props)) {
+            this.setPropValue(k as keyof Type,d as Type[keyof Type])
+        }
     }
     getAllPropDefs() {
         return Array.from(this.defs.entries())

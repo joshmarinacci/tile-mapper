@@ -1,9 +1,9 @@
 import React, {useState} from "react"
 
-import {DocModel, MapModel, TestImpl} from "./defs"
+import {DocModel, MapModel, TestModel} from "./defs"
 import {PlayTest} from "./PlayTest"
 export function TestMapPlayer(props: {
-    test: TestImpl,
+    test: TestModel,
     doc: DocModel,
     map: MapModel
 }) {
