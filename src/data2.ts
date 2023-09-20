@@ -4,7 +4,7 @@ import {PropDef, PropsBase, PropValues} from "./base"
 import {BlockingDef, BoundsDef, MapCell, NameDef, PaletteDef, SizeDef, SpriteModel} from "./defs"
 import {drawEditableSprite, ImagePalette, JSONSprite} from "./model"
 
-export type Data2 = {
+export type TileType = {
     name: string,
     blocking: boolean,
     data: object,
@@ -13,7 +13,7 @@ export type Data2 = {
 export type Sheet2Type = {
     name: string
     tileSize: Size,
-    tiles: Data2[]
+    tiles: Tile2[]
 }
 export type Layer2Type = {
     name: string,
@@ -50,7 +50,7 @@ export type Doc2Type = {
     maps: Map2Type[],
     actors: ActorType[],
     tests: Test2Type[]
-    palette: object,
+    palette: ImagePalette,
     tileSize: Size,
 }
 const GenericDataArrayDef: PropDef<object[]> = {
@@ -62,12 +62,12 @@ const GenericDataArrayDef: PropDef<object[]> = {
     toJSON: (v) => 'unknown'
 }
 
-export class Tile2 extends PropsBase<Data2> {
+export class Tile2 extends PropsBase<TileType> {
     data: ArrayGrid<number>
     cache_canvas: HTMLCanvasElement | null
     palette: ImagePalette
 
-    constructor(opts?: PropValues<Data2>, palette: ImagePalette) {
+    constructor(opts?: PropValues<TileType>, palette: ImagePalette) {
         super({
             name: NameDef,
             blocking: BlockingDef,
@@ -176,7 +176,7 @@ const TileDataGridDef: PropDef<ArrayGrid<MapCell>> = {
 }
 
 export class TileLayer2 extends PropsBase<TileLayerType> {
-    constructor(opts?: PropValues<Data2>) {
+    constructor(opts?: PropValues<TileType>) {
         super({
             name: NameDef,
             type: NameDef,

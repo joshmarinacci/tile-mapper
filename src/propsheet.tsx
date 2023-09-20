@@ -73,15 +73,16 @@ function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<
     return <label>no editor for it</label>
 }
 
-export function PropSheet<T>(props: { target: PropsBase<T>|null }) {
-    if(!props.target) return <div>nothing selected</div>
+export function PropSheet<T>(props: { title?:string, target: PropsBase<T>|null }) {
+    const {title, target} = props
+    if(!target) return <div>nothing selected</div>
     return <div className={'prop-sheet pane'}>
-        <header>props</header>
-        {Array.from(props.target.getAllPropDefs()).map(([name,def]) => {
+        <header>{title?props.title:'props'}</header>
+        {Array.from(target.getAllPropDefs()).map(([name,def]) => {
             return <>
                 <label key={`label_${name.toString()}`}>{name.toString()}</label>
                 <PropEditor key={`editor_${name.toString()}`}
-                            target={props.target}
+                            target={target}
                             name={name}
                             def={def}/>
             </>

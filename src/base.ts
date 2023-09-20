@@ -171,15 +171,16 @@ export class ActionRegistry {
 
 export type AllPropsWatcher<T> = (v: T) => void
 
-export function useWatchAllProps<O extends PropsBase<any>>(target: O, watcher: AllPropsWatcher<O>) {
+export function useWatchAllProps<O extends PropsBase<any>>(target: O, watcher?: AllPropsWatcher<O>) {
+    const [count, setCount] = useState(0)
     useEffect(() => {
         const hand = () => {
-            // console.log('something changed in ', target)
-            watcher(target)
+            if(watcher) watcher(target)
+            setCount(count+1)
         }
         target.onAny(hand)
         return () => target.offAny(hand)
-    }, [target])
+    }, [target,count])
 }
 
 export type PropWatcher<T> = (v: T) => void
@@ -192,7 +193,6 @@ export function useWatchProp<Type, Key extends keyof Type>(
     const [count, setCount] = useState(0)
     useEffect(() => {
         const hand = () => {
-            console.log('something changed in ', target._id,name)
             if(watcher) watcher(target.getPropValue(name))
             setCount(count+1)
         }

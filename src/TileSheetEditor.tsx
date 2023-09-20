@@ -2,7 +2,7 @@ import "./TileSheetEditor.css"
 
 import {ArrayGrid} from "josh_js_util"
 import {VBox} from "josh_react_util"
-import React, {useState} from "react"
+import React, {useEffect, useState} from "react"
 
 import {Doc2, Sheet2, Tile2} from "./data2"
 import {PaletteColorPickerPane} from "./Palette"
@@ -13,29 +13,24 @@ import {TestMap} from "./TestMap"
 import {TileListView} from "./TileListView"
 
 export function TileSheetEditor(props: {
+    sheet: Sheet2,
     state: GlobalState,
     doc: Doc2
 }) {
-    const {doc} = props
-    // const [sheets, setSheets] = useState<EditableSheet[]>(doc.getSheets())
+    const {doc, state, sheet} = props
     const palette: string[] = doc.getPropValue('palette') as string[]
     const [drawColor, setDrawColor] = useState<string>(palette[0])
-    const [sheet, setSheet] = useState(doc.getPropValue('sheets')[0] as Sheet2)
-    const [tile, setTile] = useState<Tile2 | null>(sheet.getPropValue('tiles')[0])
+    const [tile, setTile] = useState<Tile2 | null>(null)
     const [maparray] = useState(() => new ArrayGrid<Tile2>(20, 20))
+    useEffect(() => {
+        const tiles = sheet.getPropValue('tiles')
+        setTile(tiles.length > 0?tiles[0]:null)
+    }, [sheet])
 
     return (<div className={'tile-sheet-editor'}>
         <VBox>
-            {sheet && <TileListView
-                editable={true}
-                sheet={sheet}
-                tile={tile}
-                setTile={(t: Tile2) => setTile(t)}
-                palette={palette}/>}
-            <div className={'pane'}>
-                <header>Tile Info</header>
-                {tile && <PropSheet target={tile}/>}
-            </div>
+            {sheet && <TileListView editable={true} sheet={sheet} tile={tile} setTile={setTile}  palette={palette}/>}
+            {tile && <PropSheet target={tile} title={'Tile Info'}/>}
         </VBox>
         <VBox>
             <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor}

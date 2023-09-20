@@ -1,12 +1,13 @@
 import "./TileSheetView.css"
 
 import {toClass} from "josh_react_util"
-import React, {useEffect, useRef, useState} from "react"
+import {forceDownloadBlob} from "josh_web_util"
+import React, {useEffect, useRef} from "react"
 
 import {useWatchProp} from "./base"
 import {Sheet2, Tile2} from "./data2"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
-import {drawEditableSprite, ImagePalette, PICO8} from "./model"
+import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "./model"
 
 const TilePreviewRenderer: ListViewRenderer<Tile2> = (props: { value: Tile2, selected: boolean, index: number }) => {
     const {selected, value, index} = props
@@ -48,8 +49,7 @@ export function TileListView(props: {
     editable: boolean,
 }) {
     const {sheet, tile, setTile, palette, editable} = props
-    const [tiles, setTiles] = useState(sheet.getPropValue('tiles'))
-
+    const tiles = sheet.getPropValue('tiles')
     const add_tile = () => {
         const size = sheet.getPropValue('tileSize')
         const tile = new Tile2({size: size}, PICO8)
@@ -71,14 +71,12 @@ export function TileListView(props: {
         }
     }
     const export_bmp = () => {
-        // const canvas = sheet_to_canvas(sheet)
-        // const rawData = canvas_to_bmp(canvas, palette)
-        // const blob = new Blob([rawData.data], {type:'image/bmp'})
-        // forceDownloadBlob(`${sheet.getPropValue('name')}.bmp`,blob)
+        const canvas = sheet_to_canvas(sheet)
+        const rawData = canvas_to_bmp(canvas, palette)
+        const blob = new Blob([rawData.data], {type:'image/bmp'})
+        forceDownloadBlob(`${sheet.getPropValue('name')}.bmp`,blob)
     }
-    useWatchProp(sheet, 'tiles', () => {
-        // console.log("tiles changed")
-    })
+    useWatchProp(sheet, 'tiles')
     return <div className={'pane tile-list-view'}>
         <header>Tile Sheet</header>
         {editable &&

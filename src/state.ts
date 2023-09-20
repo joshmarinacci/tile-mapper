@@ -1,14 +1,15 @@
 import {PropDef, PropsBase} from "./base"
-import {DocModel, SheetModel, SpriteModel} from "./defs"
+import {Doc2} from "./data2"
+import {SheetModel, SpriteModel} from "./defs"
 import {PICO8} from "./model"
 
 type GlobalStateType = {
-    doc: DocModel,
+    doc: Doc2,
     mode: string,
-    selection: object,
+    selection: PropsBase<any>,
 }
 
-const DocDef:PropDef<DocModel> = {
+const DocDef:PropDef<Doc2> = {
     type:'string',
     format: () => "global state",
     toJSON: (o) => {
@@ -16,14 +17,13 @@ const DocDef:PropDef<DocModel> = {
     },
     editable: false,
     default: () => {
-        const doc = new DocModel()
-        doc.setPalette(PICO8)
+        const doc = new Doc2()
         const sheet = new SheetModel()
         const img = new SpriteModel(10, 10, PICO8)
         const img2 = new SpriteModel(10, 10, PICO8)
         sheet.addSprite(img)
         sheet.addSprite(img2)
-        doc.addSheet(sheet)
+        // doc.addSheet(sheet)
         return doc
     }
 }

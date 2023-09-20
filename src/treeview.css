@@ -1,5 +1,5 @@
 .tree-wrapper {
-    border: 5px solid black;
+    border: 1px solid black;
     max-width: 20em;
     --pane-background: #e1dede;
 }

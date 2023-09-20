@@ -78,7 +78,7 @@ function Main2() {
     let editView= <div>nothing to edit</div>
     if(selection) {
         if(selection instanceof Sheet2) {
-            editView = <TileSheetEditor state={STATE} doc={doc}/>
+            editView = <TileSheetEditor state={STATE} doc={doc} sheet={selection as Sheet2}/>
         }
         if(selection instanceof Actor) {
             editView = <ActorEditView state={STATE} doc={doc2} actor={selection as Actor}/>

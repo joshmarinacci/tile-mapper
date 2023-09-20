@@ -33,7 +33,7 @@ export const BoundsDef: PropDef<Bounds> = {
     toJSON: (v) => v.toJSON(),
     format: (v) => `${v.w} x ${v.h}`,
 }
-export const PaletteDef: PropDef<object> = {
+export const PaletteDef: PropDef<ImagePalette> = {
     type:'object',
     editable:false,
     default: () => PICO8,
