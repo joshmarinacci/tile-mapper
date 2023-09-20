@@ -2,7 +2,8 @@ import {Point} from "josh_js_util"
 import {HBox, toClass} from "josh_react_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {SpriteModel, Tile2} from "./defs"
+import {Tile2} from "./data2"
+import {SpriteModel} from "./defs"
 import {ImagePalette} from "./model"
 
 

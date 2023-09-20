@@ -22,17 +22,10 @@ import {
     ToggleButtonSet,
     ToolbarActionButton
 } from "./common-components"
+import {Actor, ActorLayer, Doc2, Map2, Sheet2, Test2, Tile2, TileLayer2} from "./data2"
 import {
-    Actor,
-    ActorLayer,
-    Doc2,
     DocModel,
-    Map2,
-    MapCell,
-    Sheet2,
-    Test2,
-    Tile2,
-    TileLayer2
+    MapCell
 } from "./defs"
 import {MapModeView} from "./MapModeView"
 import {PropSheet} from "./propsheet"

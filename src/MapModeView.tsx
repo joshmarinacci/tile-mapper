@@ -3,7 +3,7 @@ import "./MapEditor.css"
 import {HBox} from "josh_react_util"
 import React, {useState} from "react"
 
-import {Doc2, Map2, Sheet2, Tile2} from "./defs"
+import {Doc2, Map2, Sheet2, Tile2} from "./data2"
 import {LayerEditor} from "./LayerEditor"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 import {PropSheet} from "./propsheet"

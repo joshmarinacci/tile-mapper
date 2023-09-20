@@ -1,6 +1,7 @@
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
 import {ArrayGrid, Point} from "josh_js_util"
 
+import {Sheet2, Tile2} from "./data2"
 import {DocModel, MapCell, MapModel, SheetModel, SpriteModel, TestModel} from "./defs"
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -147,7 +148,10 @@ export function jsonObjToBlob(toJsonObj: object) {
     return new Blob([str])
 }
 
-export function drawEditableSprite(ctx: CanvasRenderingContext2D, scale: number, image: SpriteModel) {
+export function drawEditableSprite(
+    ctx: CanvasRenderingContext2D,
+    scale: number,
+    image: Tile2) {
     for (let i = 0; i < image.width(); i++) {
         for (let j = 0; j < image.height(); j++) {
             const v: number = image.getPixel(new Point(i, j))
@@ -157,13 +161,14 @@ export function drawEditableSprite(ctx: CanvasRenderingContext2D, scale: number,
     }
 }
 
-export function sheet_to_canvas(sheet: SheetModel) {
-    const sprite = sheet.getImages()[0]
+export function sheet_to_canvas(sheet: Sheet2) {
+    const tiles = sheet.getPropValue('tiles') as Tile2[]
+    const sprite = tiles[0]
     const canvas = document.createElement('canvas')
-    canvas.width = sprite.width() * sheet.getImages().length
+    canvas.width = sprite.width() * tiles.length
     canvas.height = sprite.height()
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-    sheet.getImages().forEach((img, i) => {
+    tiles.forEach((img, i) => {
         ctx.save()
         ctx.translate(i * sprite.width(), 0)
         drawEditableSprite(ctx, 1, img)

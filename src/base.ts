@@ -187,14 +187,16 @@ export type PropWatcher<T> = (v: T) => void
 export function useWatchProp<Type, Key extends keyof Type>(
     target: PropsBase<Type>,
     name:Key,
-    watcher: PropWatcher<Type[keyof Type]>
+    watcher?: PropWatcher<Type[keyof Type]>
 ) {
+    const [count, setCount] = useState(0)
     useEffect(() => {
         const hand = () => {
             console.log('something changed in ', target._id,name)
-            watcher(target.getPropValue(name))
+            if(watcher) watcher(target.getPropValue(name))
+            setCount(count+1)
         }
         target.on(name,hand)
         return () => target.off(name,hand)
-    }, [target])
+    }, [target,count])
 }

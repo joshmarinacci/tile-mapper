@@ -1,5 +1,16 @@
 Tile mapper data model
 
+
+todos:
+ comment out the old model classes
+ let you resize a tile layer from the props
+ improve listening to changes and updating
+ make map editor bigger
+ make persistence work again
+ add array property edit hooks to fire changes properly
+ ex: sheet.removeTile()
+
+
 Doc has
     palette: string[]
     name: string

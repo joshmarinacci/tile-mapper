@@ -1,6 +1,6 @@
 import React from "react"
 
-import {Actor, Doc2} from "./defs"
+import {Actor, Doc2} from "./data2"
 import {GlobalState} from "./state"
 
 export function ActorEditView(props: {

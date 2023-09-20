@@ -5,14 +5,10 @@ import {toClass} from "josh_react_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
+import {ActorLayer, Doc2, Map2, Sheet2, Tile2, TileLayer2} from "./data2"
 import {
-    ActorLayer,
-    Doc2,
-    Map2, MapCell,
-    Sheet2,
-    SpriteModel,
-    Tile2,
-    TileLayer2
+    MapCell,
+    SpriteModel
 } from "./defs"
 import {
     drawEditableSprite,
