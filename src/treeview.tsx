@@ -72,8 +72,10 @@ export function ObjectTreeView<T>(props: {
         'tree-object':true,
         selected: state.getPropValue('selection') === obj,
     }
+    useWatchProp(obj,'name' as keyof T)
     return <ul className={toClass(style)}>
-        <p className={'description'} onClick={select}>{obj.getPropValue('name') as string}
+        <p className={'description'} onClick={select}>
+            {obj.getPropValue('name' as keyof T) as string}
         </p>
         {
             expandable.map(([key, def]) => {
