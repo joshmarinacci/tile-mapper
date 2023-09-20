@@ -5,7 +5,7 @@ import {toClass} from "josh_react_util"
 import React, {useState} from "react"
 
 import {PropDef, PropsBase, useWatchProp} from "./base"
-import {Sheet2} from "./data2"
+import {Map2, Sheet2} from "./data2"
 import {GlobalState} from "./state"
 
 function PropertyList<T, K extends keyof T>(props: {
@@ -24,39 +24,35 @@ function PropertyList<T, K extends keyof T>(props: {
     const add = () => {
         if(name === 'sheets') {
             const sheet = new Sheet2({name:'unnamed', tileSize: new Size(20,20)})
-            target.getPropValue('sheets').push(sheet)
-            target._fire('sheets',target.getPropValue('sheets'))
+            let arr = target.getPropValue(name) as Sheet2[]
+            arr = arr.slice()
+            arr.push(sheet)
+            target.setPropValue(name,arr)
             props.state.setPropValue('selection',sheet)
+        }
+        if(name === 'maps') {
+            const map = new Map2({name:name})
+            let arr = target.getPropValue(name) as Map2[]
+            arr = arr.slice()
+            arr.push(map)
+            target.setPropValue(name,arr)
+            props.state.setPropValue('selection',map)
         }
     }
     return <li className={'tree-item'}>
         <p className={'section'}>
-            <button onClick={() => toggle()}>{open?'-':'+'}</button>
-            {name}
+            <button onClick={() => toggle()}>{open?'▼':'▶'}</button>
+            <b>{name.toString()}</b>
             <button onClick={() => add()}>+</button>
         </p>
         {open &&
-        <ul className={'tree-list'}>{values.map((val, i) => {
+        <ul className={'tree-list'}>{values.map((val) => {
             return <ObjectTreeView
                 obj={val}
                 state={props.state}
                 selection={props.selection}/>
         })}</ul>}
     </li>
-}
-
-function PropertyItem<T, K extends keyof T>(props: {
-    target: PropsBase<T>,
-    value: T[K],
-    name: K,
-    state: GlobalState,
-    def: PropDef<T[K]>
-}) {
-    const {target, value, name, state, def} = props
-    return <li className={'tree-item'}>
-        {name} <b>{def.format(target.getPropValue(name))}</b> <i>{def.type}</i>
-    </li>
-
 }
 
 export function ObjectTreeView<T>(props: {
@@ -77,11 +73,11 @@ export function ObjectTreeView<T>(props: {
         selected: state.getPropValue('selection') === obj,
     }
     return <ul className={toClass(style)}>
-        <p className={'description'} onClick={select}>{obj.getPropValue('name')+""}
+        <p className={'description'} onClick={select}>{obj.getPropValue('name') as string}
         </p>
         {
             expandable.map(([key, def]) => {
-                return <PropertyList key={key} target={obj}
+                return <PropertyList key={key.toString()} target={obj}
                                      value={obj.getPropValue(key)}
                                      name={key}
                                      state={state} def={def}
