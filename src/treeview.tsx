@@ -1,9 +1,11 @@
 import "./treeview.css"
 
+import {Size} from "josh_js_util"
 import {toClass} from "josh_react_util"
 import React, {useState} from "react"
 
 import {PropDef, PropsBase, useWatchProp} from "./base"
+import {Sheet2} from "./data2"
 import {GlobalState} from "./state"
 
 function PropertyList<T, K extends keyof T>(props: {
@@ -11,20 +13,34 @@ function PropertyList<T, K extends keyof T>(props: {
     value: T[K],
     name: K,
     state: GlobalState,
-    def: PropDef<T[K]>
+    def: PropDef<T[K]>,
+    selection: unknown,
 }) {
     const {value, name, def, target} = props
     const values = value as []
     const [open, setOpen] = useState(true)
     const toggle = () => setOpen(!open)
+    useWatchProp(target,name)
+    const add = () => {
+        if(name === 'sheets') {
+            const sheet = new Sheet2({name:'unnamed', tileSize: new Size(20,20)})
+            target.getPropValue('sheets').push(sheet)
+            target._fire('sheets',target.getPropValue('sheets'))
+            props.state.setPropValue('selection',sheet)
+        }
+    }
     return <li className={'tree-item'}>
         <p className={'section'}>
             <button onClick={() => toggle()}>{open?'-':'+'}</button>
             {name}
+            <button onClick={() => add()}>+</button>
         </p>
         {open &&
         <ul className={'tree-list'}>{values.map((val, i) => {
-            return <ObjectTreeView obj={val} state={props.state}/>
+            return <ObjectTreeView
+                obj={val}
+                state={props.state}
+                selection={props.selection}/>
         })}</ul>}
     </li>
 }
@@ -66,8 +82,11 @@ export function ObjectTreeView<T>(props: {
         {
             expandable.map(([key, def]) => {
                 return <PropertyList key={key} target={obj}
-                                     value={obj.getPropValue(key)} name={key}
-                                     state={state} def={def}/>
+                                     value={obj.getPropValue(key)}
+                                     name={key}
+                                     state={state} def={def}
+                                     selection={props.selection}
+                />
             })
         }
     </ul>
