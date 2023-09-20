@@ -92,6 +92,8 @@ export function PixelGridEditor(props: {
         <canvas ref={ref}
                 style={{
                     border: '1px solid black',
+                    width: `${image.width()*scale}px`,
+                    height: `${image.height()*scale}px`,
                 }}
                 width={image.width() * scale}
                 height={image.height() * scale}

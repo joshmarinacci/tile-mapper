@@ -18,9 +18,11 @@
 
 .prop-sheet label {
     grid-column-start: 1;
+    text-align: right;
 }
 .prop-sheet input, .prop-sheet .value {
     grid-column-start: 2;
     min-width: 1rem;
+    justify-self: start;
 }
 

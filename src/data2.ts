@@ -59,7 +59,8 @@ const GenericDataArrayDef: PropDef<object[]> = {
     default: () => [],
     expandable: false,
     format: (v) => 'unknown',
-    toJSON: (v) => 'unknown'
+    toJSON: (v) => 'unknown',
+    hidden: true,
 }
 
 export class Tile2 extends PropsBase<TileType> {

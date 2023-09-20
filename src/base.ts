@@ -20,6 +20,7 @@ export type PropDef<T> = {
     toJSON: ToJSONner<T>,
     format: ToFormatString<T>
     expandable?:boolean
+    hidden?:boolean,
 }
 type WrapperCallback<Value> = (v:Value) => void
 type WrapperAnyCallback<Type> = (t:Type) => void
