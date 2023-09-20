@@ -1,7 +1,14 @@
+import "./ListView.css"
+
 import {toClass} from "josh_react_util"
 import React from "react"
 
 export type ListViewRenderer<T> = (props:{value:T, selected:boolean, index:number}) => JSX.Element;
+
+export enum ListViewDirection {
+    HorizontalWrap='horizontal-wrap',
+    VerticalFill='vertical-fill'
+}
 
 export function ListView<T>(props: {
     selected: T|undefined,
@@ -9,10 +16,11 @@ export function ListView<T>(props: {
     renderer: ListViewRenderer<T>,
     data: T[],
     style: object
-    className:string
+    className:string,
+    direction: ListViewDirection
 }) {
     const Cell = props.renderer
-    return <div className={`list-view ${props.className}`} style={props.style}>
+    return <div className={`list-view ${props.className} ${props.direction}`} style={props.style}>
         {props.data.map((v, i) => {
             return <div className={toClass({
                 'list-item':true,

@@ -1,0 +1,26 @@
+.tile-preview-wrapper {
+    border: 0px solid red;
+    position: relative;
+    padding:0;
+    margin:0;
+    background-color: blue;
+}
+.tile-preview {
+    border: 3px solid transparent;
+    margin:0;
+    padding: 0;
+    background: black;
+    image-rendering: pixelated;
+    display: block;
+}
+.tile-preview.selected {
+    border-color: white;
+}
+.tile-preview-wrapper b {
+    position: absolute;
+    color: white;
+    right:0.5rem;
+    bottom:0.5rem;
+    font-size: 10px;
+    text-shadow: 1px 1px black, -1px -1px black;
+}

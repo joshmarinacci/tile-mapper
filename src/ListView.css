@@ -1,0 +1,41 @@
+.list-view {
+    border: 0px solid black;
+    width: 100%;
+    padding: 0rem;
+    margin: 0rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    align-content: flex-start;
+    overflow-y: scroll;
+}
+.list-view.horizontal-wrap {
+    border: 0px solid yellow;
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+.list-view.vertical-fill {
+    border: 0px solid blue;
+    flex-direction: column;
+    justify-content: stretch;
+}
+.list-view > .list-item {
+  padding:0;
+  margin:0;
+  border: 1px solid black;
+  /*border-width: 0 3px 3px 0px;*/
+  display: flex;
+  flex-direction: row;
+}
+
+
+.list-view > .list-item {
+  background-color: #dddddd;
+  color: black;
+}
+.list-view > .list-item.selected {
+  background-color: var(--selected-background-color);
+  border-color: var(--selected-border-color);
+  color: black;
+}
+

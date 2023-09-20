@@ -1,19 +1,14 @@
+import "./TileSheetView.css"
+
+import {Size} from "josh_js_util"
 import {toClass} from "josh_react_util"
-import {forceDownloadBlob} from "josh_web_util"
 import React, {useEffect, useRef, useState} from "react"
 
-import {SheetModel, SpriteModel} from "./defs"
-import {ListView, ListViewRenderer} from "./ListView"
-import {
-    canvas_to_bmp,
-    drawEditableSprite,
-    ImagePalette,
-    PICO8,
-    sheet_to_canvas
-} from "./model"
-import {PropSheet} from "./propsheet"
+import {Sheet2, Tile2} from "./defs"
+import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
+import {drawEditableSprite, ImagePalette, PICO8} from "./model"
 
-const TilePreviewRenderer:ListViewRenderer<SpriteModel> = (props:{value:SpriteModel, selected:boolean, index:number}) => {
+const TilePreviewRenderer:ListViewRenderer<Tile2> = (props:{value:Tile2, selected:boolean, index:number}) => {
     const image = props.value
     const scale = 4
     const ref = useRef<HTMLCanvasElement>(null)
@@ -47,45 +42,47 @@ const TilePreviewRenderer:ListViewRenderer<SpriteModel> = (props:{value:SpriteMo
     </div>
 }
 
-export function TileSheetView(props: {
-    sheet: SheetModel,
-    tile: SpriteModel,
-    setTile: (tile: SpriteModel) => void,
+
+export function TileListView(props: {
+    sheet: Sheet2,
+    tile: Tile2,
+    setTile: (tile: Tile2) => void,
     palette: ImagePalette,
     editable:boolean,
 }) {
     const {sheet, tile, setTile, palette, editable} = props
-    const [tiles, setTiles] = useState(sheet.getImages())
+    const [tiles, setTiles] = useState(sheet.getPropValue('tiles'))
     const add_tile = () => {
-        const new_tile = new SpriteModel(tile.width(), tile.height(), PICO8)
-        sheet.addSprite(new_tile)
+        const new_tile = new Tile2({ size: new Size(tile.width(), tile.height())}, PICO8)
+        sheet.getPropValue('tiles').push(new_tile)
         setTile(new_tile)
     }
     const dup_tile = () => {
-        const new_tile = tile.clone()
-        sheet.addSprite(new_tile)
-        setTile(new_tile)
+        // const new_tile = tile.clone()
+        // sheet.addSprite(new_tile)
+        // setTile(new_tile)
     }
     const delete_tile = () => {
-        sheet.removeSprite(tile)
-        if(sheet.getImages().length > 0) {
-            setTile(sheet.getImages()[0])
-        }
+        // sheet.removeSprite(tile)
+        // if(sheet.getImages().length > 0) {
+        //     setTile(sheet.getImages()[0])
+        // }
     }
     const export_bmp = () => {
-        const canvas = sheet_to_canvas(sheet)
-        const rawData = canvas_to_bmp(canvas, palette)
-        const blob = new Blob([rawData.data], {type:'image/bmp'})
-        forceDownloadBlob(`${sheet.getPropValue('name')}.bmp`,blob)
+        // const canvas = sheet_to_canvas(sheet)
+        // const rawData = canvas_to_bmp(canvas, palette)
+        // const blob = new Blob([rawData.data], {type:'image/bmp'})
+        // forceDownloadBlob(`${sheet.getPropValue('name')}.bmp`,blob)
     }
     useEffect(() => {
-        setTiles(sheet.getImages())
-        const hand = () => setTiles(sheet.getImages())
+        setTiles(sheet.getPropValue('tiles'))
+        const hand = () => setTiles(sheet.getPropValue('tiles'))
         sheet.onAny(hand)
         return () => sheet.offAny(hand)
     }, [sheet])
-    return <>
-        {editable && <PropSheet target={sheet}/>}
+    return <div className={'pane tile-list-view'}>
+        <header>Tile Sheet</header>
+        {/*{editable && <PropSheet target={sheet}/>}*/}
         {editable &&
             <div className={'toolbar'}>
                 <button onClick={add_tile}>add tile</button>
@@ -96,11 +93,12 @@ export function TileSheetView(props: {
                   setSelected={setTile}
                   renderer={TilePreviewRenderer}
                   data={tiles}
+                  direction={ListViewDirection.HorizontalWrap}
                   style={{}}
         />
         {editable &&
         <div className={'toolbar'}>
             <button onClick={export_bmp}>to BMP</button>
         </div>}
-    </>
+    </div>
 }

@@ -73,8 +73,10 @@ function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<
     return <label>no editor for it</label>
 }
 
-export function PropSheet<T>(props: { target: PropsBase<T> }) {
-    return <div className={'prop-sheet'}>
+export function PropSheet<T>(props: { target: PropsBase<T>|null }) {
+    if(!props.target) return <div>nothing selected</div>
+    return <div className={'prop-sheet pane'}>
+        <header>props</header>
         {Array.from(props.target.getAllPropDefs()).map(([name,def]) => {
             return <>
                 <label key={`label_${name.toString()}`}>{name.toString()}</label>
@@ -84,8 +86,5 @@ export function PropSheet<T>(props: { target: PropsBase<T> }) {
                             def={def}/>
             </>
         })}
-        {/*<div key={'toolbar'} className={'toolbar'}>*/}
-        {/*    <button onClick={() => console.log(props.target.toJSON())}>save</button>*/}
-        {/*</div>*/}
     </div>
 }

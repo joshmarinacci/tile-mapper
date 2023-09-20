@@ -1,5 +1,5 @@
 import {genId} from "josh_js_util"
-import {useEffect} from "react"
+import {useEffect, useState} from "react"
 
 import {GlobalState} from "./state"
 
@@ -14,18 +14,19 @@ type JsonOut<Type> = {
 export type ToJSONner<T> = (v: T) => JSONValue;
 export type ToFormatString<T> = (v: T) => string;
 export type PropDef<T> = {
-    type: 'string' | 'integer' | 'float' | 'Size' | 'Point' | 'boolean',
+    type: 'string' | 'integer' | 'float' | 'Size' | 'Point' | 'Bounds' | 'boolean' | 'array' | 'object',
     editable: boolean,
     default: Getter<T>,
     toJSON: ToJSONner<T>,
     format: ToFormatString<T>
+    expandable?:boolean
 }
 type WrapperCallback<Value> = (v:Value) => void
 type WrapperAnyCallback<Type> = (t:Type) => void
 
 
 export type DefList<Type> = Record<keyof Type, PropDef<Type[keyof Type]>>
-export type PropValues<Type> = Record<keyof Type, Type[keyof Type]>
+export type PropValues<Type> = Partial<Record<keyof Type, Type[keyof Type]>>
 
 export class PropsBase<Type> {
     private listeners: Map<keyof Type, WrapperCallback<Type[keyof Type]>[]>
@@ -173,7 +174,7 @@ export type AllPropsWatcher<T> = (v: T) => void
 export function useWatchAllProps<O extends PropsBase<any>>(target: O, watcher: AllPropsWatcher<O>) {
     useEffect(() => {
         const hand = () => {
-            console.log('something changed in ', target)
+            // console.log('something changed in ', target)
             watcher(target)
         }
         target.onAny(hand)
@@ -183,10 +184,14 @@ export function useWatchAllProps<O extends PropsBase<any>>(target: O, watcher: A
 
 export type PropWatcher<T> = (v: T) => void
 
-export function useWatchProp<Type extends PropsBase<any>, Key extends keyof Type>(target: Type, name:Key, watcher: PropWatcher<Type[keyof Type]>) {
+export function useWatchProp<Type, Key extends keyof Type>(
+    target: PropsBase<Type>,
+    name:Key,
+    watcher: PropWatcher<Type[keyof Type]>
+) {
     useEffect(() => {
         const hand = () => {
-            console.log('something changed in ', target)
+            console.log('something changed in ', target._id,name)
             watcher(target.getPropValue(name))
         }
         target.on(name,hand)

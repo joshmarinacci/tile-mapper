@@ -1,7 +1,9 @@
+import "./Palette.css"
+
 import {toClass} from "josh_react_util"
 import React from "react"
 
-import {ListView} from "./ListView"
+import {ListView, ListViewDirection} from "./ListView"
 import {ImagePalette} from "./model"
 
 const PaletteColorRenderer = (props:{value:string, selected:boolean}) => {
@@ -28,7 +30,9 @@ export function PaletteColorPickerPane(props: {
     const {drawColor, setDrawColor, palette} = props
     return <div className={'pane'}>
         <header>Palette</header>
-        <ListView className={'palette'} data={palette}
+        <ListView className={'palette'}
+                  direction={ListViewDirection.HorizontalWrap}
+                  data={palette}
                   renderer={PaletteColorRenderer}
                   selected={drawColor}
                   setSelected={setDrawColor}

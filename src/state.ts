@@ -5,6 +5,7 @@ import {PICO8} from "./model"
 type GlobalStateType = {
     doc: DocModel,
     mode: string,
+    selection: object,
 }
 
 const DocDef:PropDef<DocModel> = {
@@ -33,11 +34,19 @@ const ModeDef:PropDef<string> = {
     editable: false,
     format: (o) => o,
 }
+const SelectedDef:PropDef<object> = {
+    type:'object',
+    default: () => null,
+    toJSON: (o) => 'uknown',
+    editable:false,
+    format: (o) => 'unknown',
+}
 export class GlobalState extends PropsBase<GlobalStateType> {
     constructor() {
         super({
             doc:DocDef,
             mode: ModeDef,
+            selected: SelectedDef,
         })
     }
 }
