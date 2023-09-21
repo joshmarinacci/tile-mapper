@@ -2,7 +2,8 @@ import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
 
 import {PropDef, PropsBase, PropValues} from "./base"
 import {BlockingDef, BoundsDef, MapCell, NameDef, PaletteDef, SizeDef} from "./defs"
-import {drawEditableSprite, ImagePalette, JSONSprite} from "./model"
+import {JSONSprite} from "./json"
+import {drawEditableSprite, ImagePalette} from "./model"
 
 export type TileType = {
     name: string,
@@ -63,6 +64,15 @@ const GenericDataArrayDef: PropDef<object[]> = {
     hidden: true,
 }
 
+const TileDataDef:PropDef<ArrayGrid<number>> = {
+    type:'array',
+    editable: false,
+    expandable: false,
+    hidden: true,
+    default: () => new ArrayGrid<number>(1,1),
+    format: (v) => 'array number data',
+    toJSON: (v) => v.data
+}
 export class Tile2 extends PropsBase<TileType> {
     data: ArrayGrid<number>
     cache_canvas: HTMLCanvasElement | null
@@ -72,13 +82,14 @@ export class Tile2 extends PropsBase<TileType> {
         super({
             name: NameDef,
             blocking: BlockingDef,
-            data: GenericDataArrayDef,
+            data: TileDataDef,
             size: SizeDef,
         }, opts)
         this.palette = palette
         const size = this.getPropValue('size')
         this.data = new ArrayGrid<number>(size.w, size.h)
         this.data.fill(() => 0)
+        this.setPropValue('data',this.data)
         this.cache_canvas = null
         this.rebuild_cache()
     }
@@ -170,8 +181,8 @@ export class Sheet2 extends PropsBase<Sheet2Type> {
 const TileDataGridDef: PropDef<ArrayGrid<MapCell>> = {
     type: 'object',
     editable: false,
-    toJSON: () => "unknown",
-    format: () => "unreadable",
+    toJSON: (v) => v.data,
+    format: (v) => `${v.size()} cells`,
     default: () => new ArrayGrid<MapCell>(1, 1),
     expandable: false,
     hidden: true,

@@ -2,11 +2,9 @@ import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
 import {SimpleMenuAction} from "./base"
 import {Doc2} from "./data2"
+import {docToJSON, fileToJson, jsonObjToBlob, make_doc_from_json} from "./json"
 import {
     canvas_to_bmp,
-    fileToJson,
-    jsonObjToBlob,
-    make_doc_from_json,
     sheet_to_canvas
 } from "./model"
 import {GlobalState} from "./state"
@@ -16,7 +14,7 @@ export const SaveAction:SimpleMenuAction = {
     title: "Save",
     async perform(state): Promise<void> {
         const doc = state.getPropValue('doc') as Doc2
-        const blob = jsonObjToBlob(doc.toJSONDoc())
+        const blob = jsonObjToBlob(docToJSON(doc))
         forceDownloadBlob(`${doc.getPropValue('name')}.json`,blob)
     },
 }
@@ -56,7 +54,7 @@ export const LoadFileAction:SimpleMenuAction = {
         input_element.setAttribute('type','file')
         input_element.style.display = 'none'
         document.body.appendChild(input_element)
-        const new_doc = await new Promise((res,rej)=>{
+        const new_doc = await new Promise<Doc2>((res,rej)=>{
             input_element.addEventListener('change',() => {
                 const files = input_element.files
                 if(!files || files.length <= 0) return
