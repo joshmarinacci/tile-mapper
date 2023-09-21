@@ -4,8 +4,8 @@ import {Size} from "josh_js_util"
 import {toClass} from "josh_react_util"
 import React, {useState} from "react"
 
-import {PropDef, PropsBase, useWatchProp} from "./base"
-import {appendToList, Map2, Sheet2, Test2} from "./data2"
+import {appendToList, PropDef, PropsBase, useWatchProp} from "./base"
+import {Map2, Sheet2, Test2} from "./data2"
 import {GlobalState} from "./state"
 
 function PropertyList<T, K extends keyof T>(props: {
@@ -64,6 +64,10 @@ export function ObjectTreeView<T>(props: {
         e.preventDefault()
         e.stopPropagation()
         state.setPropValue('selection', obj)
+    }
+    if(!obj.getAllPropDefs) {
+        console.log(obj)
+        throw new Error(`trying to render an invalid object ${obj.constructor.name}`)
     }
     const expandable = obj.getAllPropDefs()
         .filter(([a,b])=> b.expandable)

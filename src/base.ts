@@ -207,3 +207,44 @@ export function useWatchProp<Type, Key extends keyof Type>(
         return () => target.off(name,hand)
     }, [target,count])
 }
+
+class ClassRegistry {
+    classByName: Map<string, any>
+    defsByName: Map<string, DefList<any>>
+
+    constructor() {
+        this.classByName = new Map()
+        this.defsByName = new Map()
+    }
+
+    register<Type>(clazz: any, defs: DefList<Type>) {
+        console.log("registering class", clazz)
+        this.classByName.set(clazz.name, clazz)
+        this.defsByName.set(clazz.name, defs)
+    }
+}
+
+export const CLASS_REGISTRY = new ClassRegistry()
+
+export function restoreClassFromJSON<Type>(json: JsonOut<Type>): PropsBase<Type> {
+    console.log("restoring class", json)
+    const Clazz = CLASS_REGISTRY.classByName.get(json.class)
+    if(!Clazz) throw new Error(`class missing for ${json.class}`)
+    const defs = CLASS_REGISTRY.defsByName.get(json.class)
+    if (!defs) throw new Error(`defs missing for ${json.class}`)
+    const args = {}
+    for (const key of Object.keys(defs)) {
+        const def = defs[key]
+        const val = def.fromJSON ? def.fromJSON(json.props[key]) : json.props[key]
+        args[key] = val
+    }
+    const obj = new Clazz(args)
+    obj._id = json.id
+    return obj
+}
+
+export function appendToList<Type, Key extends keyof Type>(target: PropsBase<Type>, key: Key, value: Type[keyof Type]) {
+    const data = (target.getPropValue(key) as unknown[]).slice()
+    data.push(value)
+    target.setPropValue(key, data as Type[keyof Type])
+}

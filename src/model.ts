@@ -61,7 +61,7 @@ export function drawEditableSprite(
     for (let i = 0; i < image.width(); i++) {
         for (let j = 0; j < image.height(); j++) {
             const v: number = image.getPixel(new Point(i, j))
-            ctx.fillStyle = image.palette[v]
+            ctx.fillStyle = image.getPropValue('palette')[v]
             ctx.fillRect(i * scale, j * scale, scale, scale)
         }
     }

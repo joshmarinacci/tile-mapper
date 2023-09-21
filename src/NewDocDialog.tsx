@@ -2,7 +2,8 @@ import {Size} from "josh_js_util"
 import {DialogContext} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
-import {appendToList, Doc2, Sheet2, Tile2} from "./data2"
+import {appendToList} from "./base"
+import {Doc2, Sheet2, Tile2} from "./data2"
 import {
     ImagePalette,
     MINECRAFT,

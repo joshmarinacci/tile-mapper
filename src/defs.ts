@@ -18,6 +18,7 @@ export const SizeDef: PropDef<Size> = {
     editable:false,
     default: () => new Size(10,10),
     toJSON: (v) => v.toJSON(),
+    fromJSON: (v) => Size.fromJSON(v),
     format: (v) => `${v.w} x ${v.h}`,
 }
 export const BoundsDef: PropDef<Bounds> = {
@@ -33,6 +34,7 @@ export const PaletteDef: PropDef<ImagePalette> = {
     default: () => PICO8,
     toJSON: (v) => PICO8,
     format: (v) => 'unknown',
+    fromJSON: (v) => v,
 }
 
 const JumpDef: PropDef<number> = {

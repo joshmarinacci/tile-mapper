@@ -9,7 +9,7 @@ const LayerNameRenderer: ListViewRenderer<PropsBase<Layer2Type>> = (props: {
     selected: boolean
 }) => {
     useWatchProp(props.value,'name')
-    return <div className={'std-list-item'}>Layer {props.value.getPropValue('name')}</div>
+    return <div className={'std-list-item'}>Layer {props.value.getPropValue('name')} type = {props.value.getPropValue('type')}</div>
 }
 
 export function LayerList(props: {

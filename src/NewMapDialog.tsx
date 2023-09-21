@@ -2,7 +2,8 @@ import {Size} from "josh_js_util"
 import {DialogContext} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
-import {appendToList, Map2, TileLayer2} from "./data2"
+import {appendToList} from "./base"
+import {Map2, TileLayer2} from "./data2"
 
 
 export function NewMapDialog(props: { onComplete: (map: Map2) => void }) {

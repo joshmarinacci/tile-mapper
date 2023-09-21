@@ -1,6 +1,6 @@
 import {ArrayGrid, Size} from "josh_js_util"
 
-import {DefList, JsonOut, PropsBase} from "./base"
+import {appendToList, restoreClassFromJSON} from "./base"
 import {Doc2, Map2, Sheet2, Tile2, TileLayer2} from "./data2"
 import {MapCell} from "./defs"
 import {PICO8} from "./model"
@@ -48,61 +48,11 @@ export type JSONDocV4 = {
     name: string
 }
 
-type JSONSize = {
-    w: number,
-    h: number,
-}
-type JSONTile = {
-    id: string,
-    name: string,
-    data: number[],
-    blocking: boolean,
-    size: JSONSize,
-}
-type JSONLayer = {
-    id:string,
-    name:string,
-    type:string,
-    blocking:boolean,
-    visible:boolean,
-}
-type JSONMapV5 = {
-    id: string,
-    name: string,
-    layers: JSONLayer[],
-}
-type JSONSheetV5 = {
-    id: string,
-    name: string,
-    tileSize: JSONSize,
-    tiles: JSONTile[]
-}
 type JSONDocV5 = {
     name: string
     version: 5
     doc: object
 }
-
-// function sheetToJSONV5(sheet: Sheet2):JSONSheetV5 {
-//     const tiles: JSONTile[] = sheet.getPropValue('tiles')
-//         .map(tile => (tile.toJSON() as JSONTile))
-//     return {
-//         id: sheet._id,
-//         name: sheet.getPropValue('name'),
-//         tileSize: sheet.getPropValue('tileSize'),
-//         tiles: tiles,
-//     }
-// }
-//
-// function mapToJSONV5(map: Map2):JSONMapV5 {
-//     return {
-//         id: map._id,
-//         name: map.getPropValue('name'),
-//         layers: map.getPropValue('layers').map(layer => {
-//             return layer.toJSON() as JSONLayer
-//         })
-//     } as JSONMapV5
-// }
 
 export function docToJSON(doc: Doc2):JSONDocV5 {
     return {
@@ -133,10 +83,12 @@ function load_v4json(json_doc: JSONDocV4) {
                 name: json_sprite.name,
                 blocking: json_sprite.blocking,
                 size: new Size(json_sprite.w, json_sprite.h),
-            }, json_doc.color_palette as string[])
+                palette: json_doc.color_palette,
+            })
             tile._id = json_sprite.id
             console.log("loading tile", tile._id)
-            tile.data.data = json_sprite.data
+            const data = tile.getPropValue('data')
+            data.data = json_sprite.data
             tile.rebuild_cache()
             sheet.addTile(tile)
         })
@@ -146,6 +98,7 @@ function load_v4json(json_doc: JSONDocV4) {
         const map_size = new Size(json_map.width, json_map.height)
         const layer = new TileLayer2({
             name: json_map.name,
+            type: 'tile-layer',
             blocking: true,
             size: map_size,
         })
@@ -157,8 +110,7 @@ function load_v4json(json_doc: JSONDocV4) {
             layers: [layer]
         })
         map._id = json_map.id
-
-        doc.getPropValue('maps').push(map)
+        appendToList(doc,'maps',map)
     })
     // json_doc.tests.forEach(json_test => {
     //     doc.getPropValue('tests').push(TestModel.fromJSON(json_test))
@@ -167,31 +119,7 @@ function load_v4json(json_doc: JSONDocV4) {
 }
 
 function load_v5json(jsonDoc: JSONDocV5) {
-    console.log("loading json doc", jsonDoc)
-    const doc = new Doc2({
-        name: jsonDoc.name,
-        palette: jsonDoc.palette,
-        tileSize: Size.fromJSON(jsonDoc.tileSize),
-        sheets: jsonDoc.sheets.map(sheet => {
-            return new Sheet2({
-                name: sheet.name,
-                tileSize: Size.fromJSON(sheet.tileSize),
-                tiles: sheet.tiles.map(tile => {
-                    const new_tile = new Tile2({
-                        name: tile.name,
-                        size: Size.fromJSON(tile.size),
-                        blocking: tile.blocking,
-                    })
-                    new_tile.data.data = tile.data,
-                    new_tile._id = tile.id
-                    return new_tile
-                })
-            })
-        }),
-        maps: [],
-        actors: [],
-        tests: []
-    })
+    const doc = restoreClassFromJSON(jsonDoc.doc)
     return doc
 }
 
@@ -235,33 +163,3 @@ export function fileToJson(file: File) {
 }
 
 
-class ClassRegistry {
-    classByName:Map<string,any>
-    defsByName:Map<string,DefList<any>>
-    constructor() {
-        this.classByName = new Map()
-        this.defsByName = new Map()
-    }
-    register<Type>(clazz:any, defs:DefList<Type>) {
-        console.log("registering class",clazz)
-        this.classByName.set(clazz.name, clazz)
-        this.defsByName.set(clazz.name, defs)
-    }
-}
-export const CLASS_REGISTRY = new ClassRegistry()
-
-export function restoreClassFromJSON<Type>(json:JsonOut<Type>):PropsBase<Type> {
-    console.log("restoring class",json)
-    const Clazz = CLASS_REGISTRY.classByName.get(json.class)
-    const defs = CLASS_REGISTRY.defsByName.get(json.class)
-    if(!defs) throw new Error(`defs missing for ${json.class}`)
-    const args = { }
-    for(const key of Object.keys(defs)) {
-        const def = defs[key]
-        const val = def.fromJSON?def.fromJSON(json.props[key]):json.props[key]
-        args[key] = val
-    }
-    const obj = new Clazz(args)
-    obj._id = json.id
-    return obj
-}

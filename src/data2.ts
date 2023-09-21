@@ -1,67 +1,20 @@
 import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
 
-import {DefList, PropDef, PropsBase, PropValues} from "./base"
+import {CLASS_REGISTRY, DefList, PropDef, PropsBase, PropValues, restoreClassFromJSON} from "./base"
 import {BlockingDef, BoundsDef, MapCell, NameDef, PaletteDef, SizeDef} from "./defs"
-import {CLASS_REGISTRY, restoreClassFromJSON} from "./json"
 import {drawEditableSprite, ImagePalette} from "./model"
 
-export type TileType = {
-    name: string,
-    blocking: boolean,
-    data: ArrayGrid<number>,
-    size: Size,
-    palette: ImagePalette
-}
-export type Sheet2Type = {
-    name: string
-    tileSize: Size,
-    tiles: Tile2[]
-}
-export type Layer2Type = {
-    name: string,
-    type: string,
-    blocking: boolean,
-    visible: boolean,
-}
-export type TileLayerType = {
-    type: 'tile-layer',
-    size: Size,
-    data: object,
-}
-export type ActorLayerType = {
-    type: 'actor-layer',
-    actors: string[]
-}
-export type Map2Type = {
-    name: string,
-    layers: Layer2Type[]
-}
-export type ActorType = {
-    name: string,
-    hitbox: Bounds,
-    viewbox: Bounds,
-}
-export type Test2Type = {
-    name: string,
-    map: string,
-    viewport: Size,
-}
-export type Doc2Type = {
-    name: string,
-    sheets: Sheet2[]
-    maps: Map2[],
-    actors: Actor[],
-    tests: Test2[]
-    palette: ImagePalette,
-    tileSize: Size,
-}
 const GenericDataArrayDef: PropDef<object[]> = {
     type: "array",
     editable: false,
     default: () => [],
     expandable: false,
     format: (v) => 'unknown',
-    toJSON: (v) => 'unknown',
+    toJSON: (v) => v.map(a => {
+        if(a.toJSON) return a.toJSON()
+        return a
+    }),
+    fromJSON: (v) => v.map(a => restoreClassFromJSON(a)),
     hidden: true,
 }
 
@@ -69,6 +22,13 @@ type ArrayGridNumberJSON = {
     w:number,
     h:number,
     data:number[]
+}
+type TileType = {
+    name: string,
+    blocking: boolean,
+    data: ArrayGrid<number>,
+    size: Size,
+    palette: ImagePalette
 }
 const TileDataDef:PropDef<ArrayGrid<number>> = {
     type:'array',
@@ -85,8 +45,7 @@ const TileDataDef:PropDef<ArrayGrid<number>> = {
         return arr
     }
 }
-
-export const Tile2Defs:DefList<TileType> = {
+const Tile2Defs:DefList<TileType> = {
     name: NameDef,
     blocking: BlockingDef,
     data: TileDataDef,
@@ -162,6 +121,8 @@ export class Tile2 extends PropsBase<TileType> {
 
     rebuild_cache() {
         if(typeof document !== 'undefined') {
+            // console.log(`rebuilding ${this._id} ${this.getPropValue('name')} with palette is`,this.getPropValue('palette'))
+            // console.log(this.getPropValue('data').size())
             this.cache_canvas = document.createElement('canvas')
             this.cache_canvas.width = this.width()
             this.cache_canvas.height = this.height()
@@ -180,6 +141,12 @@ export class Tile2 extends PropsBase<TileType> {
 }
 CLASS_REGISTRY.register(Tile2,Tile2Defs)
 
+
+type Sheet2Type = {
+    name: string
+    tileSize: Size,
+    tiles: Tile2[]
+}
 const TileArrayDef:PropDef<Tile2[]> = {
     type:'array',
     editable:false,
@@ -193,8 +160,7 @@ const TileArrayDef:PropDef<Tile2[]> = {
         return v.map(d => restoreClassFromJSON(d))
     }
 }
-
-export const SheetDefs:DefList<Sheet2Type> = {
+const SheetDefs:DefList<Sheet2Type> = {
     name: NameDef,
     tileSize: SizeDef,
     tiles: TileArrayDef,
@@ -221,84 +187,138 @@ export class Sheet2 extends PropsBase<Sheet2Type> {
 }
 CLASS_REGISTRY.register(Sheet2,SheetDefs)
 
-const TileDataGridDef: PropDef<ArrayGrid<MapCell>> = {
-    type: 'object',
+
+const Actors2Def: PropDef<Actor[]> = {
+    type: 'array',
     editable: false,
-    toJSON: (v) => v.data,
-    format: (v) => `${v.size()} cells`,
-    default: () => new ArrayGrid<MapCell>(1, 1),
-    expandable: false,
-    hidden: true,
+    default: () => [],
+    toJSON: (v) => v.map(actor => actor.toJSON()),
+    format: (v) => 'actors list',
+    fromJSON:(v => v.map(a => restoreClassFromJSON(a))),
+    expandable: true
 }
+const Tests2Def: PropDef<Test2[]> = {
+    type: 'array',
+    editable: false,
+    default: () => [],
+    format: (v) => 'tests list',
+    toJSON: (v) => v.map(n => n.toJSON()),
+    fromJSON:(v => v.map(a => restoreClassFromJSON(a))),
+    expandable: true
+}
+const Sheets2Def: PropDef<Sheet2[]> = {
+    type: 'array',
+    editable: false,
+    default: () => [],
+    toJSON: (v) => v.map(sheet => sheet.toJSON()),
+    format: (v) => 'sheets list',
+    fromJSON: (v) => v.map(sheet => restoreClassFromJSON(sheet)),
+    expandable: true
+}
+const Maps2Def: PropDef<Map2[]> = {
+    type: 'array',
+    editable: false,
+    default: () => [],
+    toJSON: (v) => v.map(map => map.toJSON()),
+    format: (v) => 'maps list',
+    fromJSON:(v => v.map(map => restoreClassFromJSON(map))),
+    expandable: true
+}
+
+
+
 const LayerTypeDef:PropDef<string> = {
     type:'string',
     default: () => 'unknown-type',
     format: (v) => v,
     editable: false,
     toJSON:(v) => v,
+    fromJSON: (v) => v,
 }
-const Actors2Def: PropDef<ActorType[]> = {
-    type: 'array',
+type ArrayGridMapCellJSON = {
+    w:number,
+    h:number,
+    data:MapCell[]
+}
+const TileDataGridDef: PropDef<ArrayGrid<MapCell>> = {
+    type: 'object',
     editable: false,
-    default: () => [],
-    toJSON: (v) => v,
-    format: (v) => 'actors list',
-    expandable: true
+    toJSON: (v) => ({
+            w:v.w,
+            h:v.h,
+            data: v.data,
+        } as ArrayGridMapCellJSON),
+    format: (v) => `${v.size()} cells`,
+    default: () => new ArrayGrid<MapCell>(1, 1),
+    fromJSON:(value) => {
+        const v = value as ArrayGridNumberJSON
+        const arr = new ArrayGrid<MapCell>(v.w,v.h)
+        arr.data = v.data
+        return arr
+    },
+    expandable: false,
+    hidden: true,
 }
-const Tests2Def: PropDef<Map2Type[]> = {
-    type: 'array',
-    editable: false,
-    default: () => [],
-    toJSON: (v) => v,
-    format: (v) => 'tests list',
-    expandable: true
+type TileLayerType = {
+    name: string,
+    type: 'tile-layer',
+    blocking:boolean,
+    visible:boolean,
+    size: Size,
+    data: ArrayGrid<MapCell>,
 }
-const Sheets2Def: PropDef<Sheet2Type[]> = {
-    type: 'array',
-    editable: false,
-    default: () => [],
-    toJSON: (v) => v,
-    format: (v) => 'sheets list',
-    expandable: true
+const TileLayerDefs:DefList<TileLayerType> = {
+    name: NameDef,
+    type: LayerTypeDef,
+    blocking: BlockingDef,
+    visible: BlockingDef,
+    size: SizeDef,
+    data: TileDataGridDef,
 }
-const Maps2Def: PropDef<Map2Type[]> = {
-    type: 'array',
-    editable: false,
-    default: () => [],
-    toJSON: (v) => v,
-    format: (v) => 'maps list',
-    expandable: true
-}
-
 export class TileLayer2 extends PropsBase<TileLayerType> {
     constructor(opts?: PropValues<TileLayerType>) {
-        super({
-            name: NameDef,
-            type: LayerTypeDef,
-            blocking: BlockingDef,
-            visible: BlockingDef,
-            size: SizeDef,
-            data: TileDataGridDef,
-        }, opts)
+        super(TileLayerDefs, opts)
         const size = this.getPropValue('size')
-        const data = new ArrayGrid<number>(size.w, size.h)
-        data.forEach(() => 0)
-        this.setPropValue('data', data)
+        const data = this.getPropValue('data')
+        if(data.w !== size.w || data.h !== size.h) {
+            // this.log("we must rebuild the data with a new size")
+            const data = new ArrayGrid<MapCell>(size.w,size.h)
+            data.fill(() => ({tile:'unknown'}))
+            this.setPropValue('data',data)
+        }
+
     }
 }
+CLASS_REGISTRY.register(TileLayer2,TileLayerDefs)
 
+type ActorLayerType = {
+    type: 'actor-layer',
+    actors: string[]
+}
+const ActorLayerDefs:DefList<ActorLayerType> = {
+    name: NameDef,
+    type: LayerTypeDef,
+    blocking: BlockingDef,
+    visible: BlockingDef,
+    actors: GenericDataArrayDef,
+}
 export class ActorLayer extends PropsBase<ActorLayerType> {
     constructor(opts?: PropValues<ActorLayerType>) {
-        super({
-            name: NameDef,
-            type: LayerTypeDef,
-            blocking: BlockingDef,
-            visible: BlockingDef,
-            actors: GenericDataArrayDef,
-        }, opts)
+        super(ActorLayerDefs, opts)
     }
 }
+CLASS_REGISTRY.register(ActorLayer, ActorLayerDefs)
 
+export type Layer2Type = {
+    name: string,
+    type: string,
+    blocking: boolean,
+    visible: boolean,
+}
+type Map2Type = {
+    name: string,
+    layers: Layer2Type[]
+}
 const Map2Defs:DefList<Map2Type> = {
     name: NameDef,
     layers: GenericDataArrayDef,
@@ -322,7 +342,12 @@ export class Map2 extends PropsBase<Map2Type> {
 }
 CLASS_REGISTRY.register(Map2,Map2Defs)
 
-export const ActorDefs:DefList<ActorType> = {
+type ActorType = {
+    name: string,
+    hitbox: Bounds,
+    viewbox: Bounds,
+}
+const ActorDefs:DefList<ActorType> = {
     name: NameDef,
     hitbox: BoundsDef,
     viewbox: BoundsDef,
@@ -334,29 +359,46 @@ export class Actor extends PropsBase<ActorType> {
 }
 CLASS_REGISTRY.register(Actor,ActorDefs)
 
+type Test2Type = {
+    name: string,
+    map: string,
+    viewport: Size,
+}
+const Test2Defs:DefList<Test2Type> = {
+    name: NameDef,
+    map: NameDef,
+    viewport: SizeDef,
+}
 export class Test2 extends PropsBase<Test2Type> {
     constructor(opts?: PropValues<Test2Type>) {
-        super({
-            name: NameDef,
-            map: NameDef,
-            viewport: SizeDef,
-        }, opts)
+        super(Test2Defs, opts)
     }
 }
+CLASS_REGISTRY.register(Test2, Test2Defs)
 
+type Doc2Type = {
+    name: string,
+    sheets: Sheet2[]
+    maps: Map2[],
+    actors: Actor[],
+    tests: Test2[]
+    palette: ImagePalette,
+    tileSize: Size,
+}
+const Doc2Defs:DefList<Doc2Type> = {
+    name: NameDef,
+    sheets: Sheets2Def,
+    maps: Maps2Def,
+    actors: Actors2Def,
+    tests: Tests2Def,
+    palette: PaletteDef,
+    tileSize: SizeDef,
+}
 export class Doc2 extends PropsBase<Doc2Type> {
     private sprite_lookup: Map<string, Tile2>
 
     constructor(opts?: PropValues<Doc2Type>) {
-        super({
-            name: NameDef,
-            sheets: Sheets2Def,
-            maps: Maps2Def,
-            actors: Actors2Def,
-            tests: Tests2Def,
-            palette: PaletteDef,
-            tileSize: SizeDef,
-        }, opts)
+        super(Doc2Defs, opts)
         this.sprite_lookup = new Map()
     }
 
@@ -365,6 +407,8 @@ export class Doc2 extends PropsBase<Doc2Type> {
         for (const sheet of this.getPropValue('sheets') as Sheet2[]) {
             for (const tile of sheet.getPropValue('tiles') as Tile2[]) {
                 if (tile._id === id) {
+                    console.log("caching",id,tile.getPropValue('name'), tile.cache_canvas)
+                    tile.rebuild_cache()
                     this.sprite_lookup.set(tile._id, tile)
                     return tile
                 }
@@ -374,10 +418,6 @@ export class Doc2 extends PropsBase<Doc2Type> {
         return null
     }
 }
+CLASS_REGISTRY.register(Doc2,Doc2Defs)
 
 
-export function appendToList<Type, Key extends keyof Type>(target:PropsBase<Type>, key:Key, value: Type[keyof Type]) {
-    const data = (target.getPropValue(key) as unknown[]).slice()
-    data.push(value)
-    target.setPropValue(key,data as Type[keyof Type])
-}

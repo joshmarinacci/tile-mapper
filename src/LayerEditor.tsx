@@ -79,8 +79,7 @@ function drawTileLayer(ctx: CanvasRenderingContext2D,
                        doc:Doc2,
                        layer: TileLayer2,
                        scale:number, grid:boolean) {
-    const size = new Size(10,10)
-    console.log("drawing doc2",doc.getPropValue('name'))
+    const size = doc.getPropValue('tileSize')
     const cells = layer.getPropValue('data') as ArrayGrid<MapCell>
     cells.forEach((v, n) => {
         if (v) {
@@ -132,10 +131,8 @@ export function LayerEditor(props: {
             const size = layer.getPropValue('size')
             if(size.w > biggest.w) biggest.w = size.w
             if(size.h > biggest.h) biggest.h = size.h
-            console.log("checking",size)
         }
     })
-    console.log("biggest size is",biggest)
     const redraw = () => {
         if (ref.current) {
             const canvas = ref.current
