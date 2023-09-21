@@ -72,7 +72,7 @@ export class TilemapLayer implements Layer {
                     }
                 }
                 // strokeBounds(ctx,tb,'gray',0.5)
-                const str = `${nn.x}, ${nn.y}`
+                // const str = `${nn.x}, ${nn.y}`
                 // debugDrawText(ctx,str,tb.position().add(new Point(1,0)))
             }
         }
@@ -104,7 +104,7 @@ export class TilemapLayer implements Layer {
         return true
     }
 
-    private log(...any:any[]) {
+    private log(...any:unknown[]) {
         console.log(this.constructor.name,...any)
     }
 }

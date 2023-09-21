@@ -8,10 +8,9 @@ import {GameState} from "./engine/gamestate"
 import {TileReference} from "./engine/globals"
 import {TilemapLayer} from "./engine/tilemaplayer"
 
-
 function generateGamestate(current: HTMLCanvasElement, doc: Doc2, map: Map2, size:Size) {
     const gamestate = new GameState(current, size)
-    const cache = new TileCache()
+    const cache = new TileCache(doc.getPropValue('tileSize'))
     // pre-cache all of the tiles
     doc.getPropValue('sheets').forEach(sht => {
         sht.getPropValue('tiles').forEach(tile => {

@@ -1,7 +1,8 @@
-import {Actor, Layer, Player, SCALE} from "./globals";
-import {Bounds} from "josh_js_util";
-import {TileCache} from "./cache";
-import {fillBounds} from "./util";
+import {Bounds} from "josh_js_util"
+
+import {TileCache} from "./cache"
+import {Actor, Layer, Player} from "./globals"
+import {fillBounds} from "./util"
 
 export class ActorsLayer implements Layer {
     blocking: boolean
@@ -16,7 +17,7 @@ export class ActorsLayer implements Layer {
         this.actors = []
     }
 
-    drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache: TileCache): void {
+    drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache: TileCache, scale:number): void {
         ctx.save()
         ctx.imageSmoothingEnabled = false
         ctx.translate(-viewport.x,0)
@@ -25,10 +26,10 @@ export class ActorsLayer implements Layer {
             const cached = cache.getTileByName(actor.tile)
             if (cached) {
                 ctx.drawImage(cached.canvas,
-                    Math.floor(actor.bounds.x*SCALE),
-                    Math.floor(actor.bounds.y*SCALE),
-                    actor.bounds.w*SCALE,
-                    actor.bounds.h*SCALE)
+                    Math.floor(actor.bounds.x*scale),
+                    Math.floor(actor.bounds.y*scale),
+                    actor.bounds.w*scale,
+                    actor.bounds.h*scale)
             } else {
                 fillBounds(ctx, actor.bounds, actor.color)
             }

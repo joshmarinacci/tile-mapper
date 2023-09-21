@@ -1,4 +1,4 @@
-import {Bounds, Point} from "josh_js_util";
+import {Bounds, Point} from "josh_js_util"
 
 export function strokeBounds(ctx: CanvasRenderingContext2D, bounds: Bounds, color: string, lineWidth: number) {
     ctx.strokeStyle = color

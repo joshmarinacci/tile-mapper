@@ -1,4 +1,4 @@
-import {Bounds, Point, Size} from "josh_js_util"
+import {Bounds} from "josh_js_util"
 
 import {TileCache} from "./cache"
 
@@ -14,8 +14,6 @@ export interface Layer {
     drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache:TileCache, scale:number): void
 }
 
-export const TILE_SIZE = 16
-export const SCALE = 4
 export const GRAVITY = 0.2
 export const JUMP_POWER = -6
 export const MAX_MOVE = 1.5

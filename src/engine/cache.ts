@@ -1,3 +1,5 @@
+import {Size} from "josh_js_util"
+
 import {TileReference} from "./globals"
 
 type JSONTileSprite = {
@@ -19,8 +21,8 @@ export type JSONGameStruct = {
     name: string
     color_palette: hexcolor[]
     sheets: JSONTileSheet[]
-    maps: any[]
-    tests: any[]
+    maps: unknown[]
+    tests: unknown[]
 }
 export type CachedTile = {
     name: string,
@@ -32,10 +34,12 @@ export type CachedTile = {
 export class TileCache {
     private cacheByTileName: Map<string, CachedTile>
     private cacheByTileUUID: Map<string, CachedTile>
+    private tileSize: Size
 
-    constructor() {
+    constructor(tileSize:Size) {
         this.cacheByTileName = new Map()
         this.cacheByTileUUID = new Map()
+        this.tileSize = tileSize
     }
 
     addCachedTile(name:string, uuid:string, cached:CachedTile) {
@@ -83,5 +87,9 @@ export class TileCache {
 
     private log(...args:unknown[]) {
         console.log('TileCache',...args)
+    }
+
+    getTileSize() {
+        return this.tileSize
     }
 }

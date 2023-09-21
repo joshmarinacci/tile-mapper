@@ -1,7 +1,7 @@
 import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
 
 import {PropDef, PropsBase, PropValues} from "./base"
-import {BlockingDef, BoundsDef, MapCell, NameDef, PaletteDef, SizeDef, SpriteModel} from "./defs"
+import {BlockingDef, BoundsDef, MapCell, NameDef, PaletteDef, SizeDef} from "./defs"
 import {drawEditableSprite, ImagePalette, JSONSprite} from "./model"
 
 export type TileType = {
@@ -319,8 +319,7 @@ export class Doc2 extends PropsBase<Doc2Type> {
 
 
 export function appendToList<Type, Key extends keyof Type>(target:PropsBase<Type>, key:Key, value: Type[keyof Type]) {
-    let data = target.getPropValue(key) as []
-    data = data.slice()
+    const data = (target.getPropValue(key) as unknown[]).slice()
     data.push(value)
-    target.setPropValue(key,data)
+    target.setPropValue(key,data as Type[keyof Type])
 }

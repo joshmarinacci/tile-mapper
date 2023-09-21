@@ -7,14 +7,14 @@ type KeyState = {
     down:boolean
 }
 export class KeyboardManager {
-    private state: Map<KeyCodes, KeyState>;
+    private state: Map<KeyCodes, KeyState>
     constructor(window: Window) {
         this.state = new Map<KeyCodes,KeyState>
         window.addEventListener('keydown', (e) => {
             // console.log(e.key, e.code)
             if(e.code in KeyCodes) {
                 this.init_key(e.code as KeyCodes)
-                let state = this.state.get(e.code as KeyCodes) as KeyState
+                const state = this.state.get(e.code as KeyCodes) as KeyState
                 state.down = true
             }
             // this._dump()
@@ -22,7 +22,7 @@ export class KeyboardManager {
         window.addEventListener('keyup', (e) => {
             if(e.code in KeyCodes) {
                 this.init_key(e.code as KeyCodes)
-                let state = this.state.get(e.code as KeyCodes) as KeyState
+                const state = this.state.get(e.code as KeyCodes) as KeyState
                 state.down = false
             }
         })
@@ -35,7 +35,7 @@ export class KeyboardManager {
     }
 
     private _dump() {
-        for(let [code,state] of this.state.entries()) {
+        for(const [code,state] of this.state.entries()) {
             console.log(code,state)
         }
     }

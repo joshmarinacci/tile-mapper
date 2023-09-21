@@ -1,3 +1,7 @@
+import {Bounds, Point} from "josh_js_util"
+
+import {ActorsLayer} from "./actorslayer"
+import {TileCache} from "./cache"
 import {
     Actor,
     Enemy,
@@ -10,27 +14,22 @@ import {
     MAX_MOVE,
     MOVE_SPEED,
     Player,
-    SCALE,
-    TILE_SIZE
-} from "./globals";
-import {Bounds, Point} from "josh_js_util";
-import {TilemapLayer} from "./tilemaplayer";
-import {KeyboardManager, KeyCodes} from "./keyboard";
-import {strokeBounds} from "./util";
-import {TileCache} from "./cache";
-import {ActorsLayer} from "./actorslayer";
+} from "./globals"
+import {KeyboardManager, KeyCodes} from "./keyboard"
+import {TilemapLayer} from "./tilemaplayer"
+import {strokeBounds} from "./util"
 
 type Collision = {
     hit: boolean
     target? : Actor
 }
-const l = (...args: any) => console.log(...args)
+const l = (...args: unknown[]) => console.log(...args)
 
 export class PhysicsManager implements Layer {
-    blocking: boolean;
-    name: string;
-    type: "tilemap" | "actors" | "overlay";
-    private highlights: Point[];
+    blocking: boolean
+    name: string
+    type: "tilemap" | "actors" | "overlay"
+    private highlights: Point[]
 
     constructor() {
         this.blocking = false
@@ -54,11 +53,12 @@ export class PhysicsManager implements Layer {
         }
     }
     collideTilemapLayer(ply:Player, layer:TilemapLayer, cache:TileCache) {
-        let tiles = layer as TilemapLayer
+        const TILE_SIZE = cache.getTileSize().w
+        const tiles = layer as TilemapLayer
         const isBlocking = (index: Point) => {
-            let cell = tiles.tiles.get(index)
+            const cell = tiles.tiles.get(index)
             if (cell) {
-                let tile = cache.getTileByName(cell)
+                const tile = cache.getTileByName(cell)
                 if (tile) {
                     if (tile.blocking) {
                         return true
@@ -70,18 +70,18 @@ export class PhysicsManager implements Layer {
 
         // handle horizontal first
         //if standing and moving left
-        let new_bounds = ply.bounds.copy()
+        const new_bounds = ply.bounds.copy()
         new_bounds.x += ply.vx
         // moving left
         if (ply.vx < 0) {
-            let tx = new_bounds.left()
-            let indexes: Point[] = []
+            const tx = new_bounds.left()
+            const indexes: Point[] = []
             for (let y = new_bounds.top(); y < new_bounds.bottom(); y += TILE_SIZE) {
-                let index = new Point(tx, y).scale(1 / TILE_SIZE).floor()
+                const index = new Point(tx, y).scale(1 / TILE_SIZE).floor()
                 indexes.push(index)
                 this.highlights.push(index)
             }
-            for (let index of indexes) {
+            for (const index of indexes) {
                 if (isBlocking(index)) {
                     ply.vx = 0
                     new_bounds.x = (index.x + 1) * TILE_SIZE
@@ -90,14 +90,14 @@ export class PhysicsManager implements Layer {
         }
         // moving right
         if (ply.vx > 0) {
-            let tx = new_bounds.right()
-            let indexes: Point[] = []
+            const tx = new_bounds.right()
+            const indexes: Point[] = []
             for (let y = new_bounds.top(); y < new_bounds.bottom(); y += TILE_SIZE) {
-                let index = new Point(tx, y).scale(1 / TILE_SIZE).floor()
+                const index = new Point(tx, y).scale(1 / TILE_SIZE).floor()
                 indexes.push(index)
                 this.highlights.push(index)
             }
-            for (let index of indexes) {
+            for (const index of indexes) {
                 if (isBlocking(index)) {
                     ply.vx = 0
                     new_bounds.x = (index.x * TILE_SIZE) - new_bounds.w
@@ -112,15 +112,15 @@ export class PhysicsManager implements Layer {
         new_bounds.y += ply.vy
         // going up
         if (ply.vy < 0) {
-            let ty = new_bounds.top()
-            let indexes: Point[] = []
+            const ty = new_bounds.top()
+            const indexes: Point[] = []
             for (let x = new_bounds.left(); x < new_bounds.right(); x += TILE_SIZE) {
-                let index = new Point(x, ty).scale(1 / TILE_SIZE).floor()
+                const index = new Point(x, ty).scale(1 / TILE_SIZE).floor()
                 indexes.push(index)
             }
-            let index_extra = new Point(new_bounds.right()-1,ty).scale(1/TILE_SIZE).floor()
+            const index_extra = new Point(new_bounds.right()-1,ty).scale(1/TILE_SIZE).floor()
             indexes.push(index_extra)
-            for (let index of indexes) {
+            for (const index of indexes) {
                 this.highlights.push(index)
                 if (isBlocking(index)) {
                     ply.vy = 0
@@ -131,16 +131,16 @@ export class PhysicsManager implements Layer {
         }
         // going down
         if (ply.vy > 0) {
-            let ty = new_bounds.bottom()
-            let indexes: Point[] = []
+            const ty = new_bounds.bottom()
+            const indexes: Point[] = []
             for (let x = new_bounds.left(); x < new_bounds.right(); x += TILE_SIZE) {
-                let index = new Point(x, ty).scale(1 / TILE_SIZE).floor()
+                const index = new Point(x, ty).scale(1 / TILE_SIZE).floor()
                 indexes.push(index)
             }
-            let index_extra = new Point(new_bounds.right()-1,ty).scale(1/TILE_SIZE).floor()
+            const index_extra = new Point(new_bounds.right()-1,ty).scale(1/TILE_SIZE).floor()
             indexes.push(index_extra)
 
-            for (let index of indexes) {
+            for (const index of indexes) {
                 this.highlights.push(index)
                 if (isBlocking(index)) {
                     ply.vy = 0
@@ -183,18 +183,18 @@ export class PhysicsManager implements Layer {
                 ply.standing = false
             }
             layers.forEach(layer => {
-                let col = this.collide(ply, layer, cache)
+                const col = this.collide(ply, layer, cache)
                 if(col.hit) {
                     // l("hit something",col)
                     if(col.target && col.target?.type === 'item') {
-                        let item = col.target as Item
+                        const item = col.target as Item
                         if(item.name === 'health'){
                             l("got some health")
                             item.hidden = true
                         }
                     }
                     if(col.target && col.target.type === 'enemy' && ply.hitable) {
-                        let enemy = col.target as Enemy
+                        // const enemy = col.target as Enemy
                         l("hit a badguy. loose some health")
                         ply.hitable = false
                         setTimeout(() =>{ ply.hitable = true},1000)
@@ -205,18 +205,19 @@ export class PhysicsManager implements Layer {
     }
 
 
-    drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache: TileCache): void {
+    drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache: TileCache, scale:number): void {
+        const TILE_SIZE = cache.getTileSize().w
         ctx.save()
         ctx.translate(-viewport.x,-viewport.y)
         this.highlights.forEach(cell => {
-            strokeBounds(ctx, new Bounds(cell.x, cell.y, 1, 1).scale(TILE_SIZE).scale(SCALE), 'yellow', 5)
+            strokeBounds(ctx, new Bounds(cell.x, cell.y, 1, 1).scale(TILE_SIZE).scale(scale), 'yellow', 5)
         })
         this.highlights = []
         ctx.restore()
     }
 
     private collideActorsLayer(ply: Player, layer1: ActorsLayer, cache: TileCache):Collision {
-        for(let act of layer1.actors) {
+        for(const act of layer1.actors) {
             if(act === ply) continue
             if(act.hidden) continue
             if(act.bounds.intersects(ply.bounds)) {
@@ -232,13 +233,14 @@ export class PhysicsManager implements Layer {
     }
 
     updateEnemies(enemies: Enemy[], layers: Layer[], cache: TileCache) {
-        for(let layer of layers) {
+        const TILE_SIZE = cache.getTileSize().w
+        for(const layer of layers) {
             if(layer.type === 'tilemap' && layer.blocking) {
-                let tiles = layer as TilemapLayer
+                const tiles = layer as TilemapLayer
                 const isBlocking = (index: Point) => {
-                    let cell = tiles.tiles.get(index)
+                    const cell = tiles.tiles.get(index)
                     if (cell) {
-                        let tile = cache.getTileByName(cell)
+                        const tile = cache.getTileByName(cell)
                         if (tile) {
                             if (tile.blocking) {
                                 return true
@@ -248,10 +250,10 @@ export class PhysicsManager implements Layer {
                     return false
                 }
                 enemies.forEach(en => {
-                    let new_bounds = en.bounds.copy()
+                    const new_bounds = en.bounds.copy()
                     new_bounds.x += en.vx
                     if(en.vx > 0) {
-                        let next = en.bounds.top_right().scale(1 / TILE_SIZE).floor()
+                        const next = en.bounds.top_right().scale(1 / TILE_SIZE).floor()
                         if (isBlocking(next)) {
                             en.vx *= -1
                             new_bounds.x = en.bounds.x
@@ -260,7 +262,7 @@ export class PhysicsManager implements Layer {
                         }
                     }
                     if(en.vx < 0) {
-                        let next = en.bounds.top_left().scale(1 / TILE_SIZE).floor()
+                        const next = en.bounds.top_left().scale(1 / TILE_SIZE).floor()
                         if (isBlocking(next)) {
                             en.vx *= -1
                             new_bounds.x = en.bounds.x

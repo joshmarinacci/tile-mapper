@@ -1,12 +1,11 @@
 import {Bounds, Size} from "josh_js_util"
 
-import {ActorsLayer} from "./actorslayer"
 import {JSONGameStruct, TileCache} from "./cache"
 import {GameMap, GameState} from "./gamestate"
-import {Enemy, Item, Player, SCALE} from "./globals"
+import {Player} from "./globals"
 import {TilemapLayer} from "./tilemaplayer"
 
-function updateViewport(viewport: Bounds, players: Player[]) {
+function updateViewport(viewport: Bounds, players: Player[], SCALE:number) {
     players.forEach(play => {
         const p = play.bounds.scale(SCALE)
         const vl = viewport.left() + 200
@@ -24,16 +23,17 @@ function updateViewport(viewport: Bounds, players: Player[]) {
 }
 
 function gameLoop(state: GameState, dt: number) {
+    const scale = 4
     const map: GameMap = state.getCurrentMap()
     const ctx = state.getDrawingSurface()
     const viewport = state.getViewport()
     const players = state.getPlayers()
     state.getPhysics().updatePlayer(players, map.layers, state.getKeyboard(), cache)
     state.getPhysics().updateEnemies(state.getEnemies(), map.layers, cache)
-    updateViewport(viewport, players)
+    updateViewport(viewport, players, scale)
     ctx.fillStyle = 'black'
     ctx.save()
-    map.layers.forEach(layer => layer.drawSelf(ctx, viewport, cache))
+    map.layers.forEach(layer => layer.drawSelf(ctx, viewport, cache, scale))
     ctx.restore()
 }
 
@@ -97,7 +97,7 @@ export class Engine {
         // const actors = new ActorsLayer()
         // actors.blocking = true
         // const overlay = new OverlayLayer()
-        const state = new GameState()
+        const state = new GameState(document.createElement('canvas'), new Size(640,480))
         state.addLayer(scenery)//,terrain, actors, overlay])
         state.addLayer(terrain)
         // state.addLayer(actors)
