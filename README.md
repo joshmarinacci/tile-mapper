@@ -1,6 +1,9 @@
 Tile mapper data model
 
 
+bugs:
+    size of tiles incorrect after loading. reports ten in sheet, but clearly are 16 in the tiles
+
 todos:
  [ ] support loading mario, but not saving out again. specific to V4
  [x] let you add a new sprite sheet

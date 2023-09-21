@@ -221,8 +221,6 @@ export function LayerEditor(props: {
         </div>
         <div className={'map-editor-canvas-wrapper'}>
         <canvas ref={ref}
-                // width={map.cells.w*scale*tile.width()}
-                // height={map.cells.h*scale*tile.height()}
                 width={biggest.w*scale*tile.width()}
                 height={biggest.h*scale*tile.height()}
                 onContextMenu={(e) => e.preventDefault()}

@@ -46,10 +46,10 @@ export type Test2Type = {
 }
 export type Doc2Type = {
     name: string,
-    sheets: Sheet2Type[]
-    maps: Map2Type[],
-    actors: ActorType[],
-    tests: Test2Type[]
+    sheets: Sheet2[]
+    maps: Map2[],
+    actors: Actor[],
+    tests: Test2[]
     palette: ImagePalette,
     tileSize: Size,
 }
@@ -174,13 +174,53 @@ const TileDataGridDef: PropDef<ArrayGrid<MapCell>> = {
     format: () => "unreadable",
     default: () => new ArrayGrid<MapCell>(1, 1),
     expandable: false,
+    hidden: true,
+}
+const LayerTypeDef:PropDef<string> = {
+    type:'string',
+    default: () => 'unknown-type',
+    format: (v) => v,
+    editable: false,
+    toJSON:(v) => v,
+}
+const Actors2Def: PropDef<ActorType[]> = {
+    type: 'array',
+    editable: false,
+    default: () => [],
+    toJSON: (v) => v,
+    format: (v) => 'actors list',
+    expandable: true
+}
+const Tests2Def: PropDef<Map2Type[]> = {
+    type: 'array',
+    editable: false,
+    default: () => [],
+    toJSON: (v) => v,
+    format: (v) => 'tests list',
+    expandable: true
+}
+const Sheets2Def: PropDef<Sheet2Type[]> = {
+    type: 'array',
+    editable: false,
+    default: () => [],
+    toJSON: (v) => v,
+    format: (v) => 'sheets list',
+    expandable: true
+}
+const Maps2Def: PropDef<Map2Type[]> = {
+    type: 'array',
+    editable: false,
+    default: () => [],
+    toJSON: (v) => v,
+    format: (v) => 'maps list',
+    expandable: true
 }
 
 export class TileLayer2 extends PropsBase<TileLayerType> {
-    constructor(opts?: PropValues<TileType>) {
+    constructor(opts?: PropValues<TileLayerType>) {
         super({
             name: NameDef,
-            type: NameDef,
+            type: LayerTypeDef,
             blocking: BlockingDef,
             visible: BlockingDef,
             size: SizeDef,
@@ -197,7 +237,7 @@ export class ActorLayer extends PropsBase<ActorLayerType> {
     constructor(opts?: PropValues<ActorLayerType>) {
         super({
             name: NameDef,
-            type: NameDef,
+            type: LayerTypeDef,
             blocking: BlockingDef,
             visible: BlockingDef,
             actors: GenericDataArrayDef,
@@ -265,35 +305,3 @@ export class Doc2 extends PropsBase<Doc2Type> {
     }
 }
 
-const Actors2Def: PropDef<ActorType[]> = {
-    type: 'array',
-    editable: false,
-    default: () => [],
-    toJSON: (v) => v,
-    format: (v) => 'actors list',
-    expandable: true
-}
-const Tests2Def: PropDef<Map2Type[]> = {
-    type: 'array',
-    editable: false,
-    default: () => [],
-    toJSON: (v) => v,
-    format: (v) => 'tests list',
-    expandable: true
-}
-const Sheets2Def: PropDef<Sheet2Type[]> = {
-    type: 'array',
-    editable: false,
-    default: () => [],
-    toJSON: (v) => v,
-    format: (v) => 'sheets list',
-    expandable: true
-}
-const Maps2Def: PropDef<Map2Type[]> = {
-    type: 'array',
-    editable: false,
-    default: () => [],
-    toJSON: (v) => v,
-    format: (v) => 'maps list',
-    expandable: true
-}

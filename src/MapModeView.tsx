@@ -5,53 +5,11 @@ import React, {useState} from "react"
 
 import {Doc2, Map2, Sheet2, Tile2} from "./data2"
 import {LayerEditor} from "./LayerEditor"
-import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
+import {LayerList} from "./LayerList"
 import {PropSheet} from "./propsheet"
 import {SheetList} from "./SheetList"
 import {GlobalState} from "./state"
 import {TileListView} from "./TileListView"
-
-const LayerNameRenderer: ListViewRenderer<Sheet2> = (props: {
-    value: Sheet2,
-    selected: boolean
-}) => {
-    return <div>Layer {props.value.getPropValue('name')}</div>
-}
-
-function LayerList(props: {
-    setSelectedLayer: (value: any) => void,
-    map: Map2,
-    editable: boolean,
-    layer: any
-}) {
-
-    const add_tile_layer = () => {
-
-    }
-    const add_actor_layer = () => {
-
-    }
-    const delete_layer = () => {
-
-    }
-
-    return <div className={'pane layer-list-view'}>
-        <header>Layers</header>
-        {props.editable &&
-            <div className={'toolbar'}>
-                <button onClick={add_tile_layer}>add tile layer</button>
-                <button onClick={add_actor_layer}>add actor layer</button>
-                <button onClick={delete_layer}>del layer</button>
-            </div>}
-        <ListView selected={props.layer}
-                  setSelected={props.setSelectedLayer}
-                  renderer={LayerNameRenderer}
-                  data={props.map.getPropValue('layers')}
-                  style={{}}
-                  direction={ListViewDirection.VerticalFill}
-                  className={'sheet-list'}/>
-    </div>
-}
 
 export function MapModeView(props: {
     state: GlobalState,
@@ -81,8 +39,6 @@ export function MapModeView(props: {
                 editable={false}
                 setTile={(t: Tile2) => setSelectedTile(t)}
                 palette={doc.getPropValue('palette')}/>}
-        </HBox>
-        <HBox>
             <LayerList
                 key={'layer-list'}
                 editable={true}
@@ -91,6 +47,8 @@ export function MapModeView(props: {
                 setSelectedLayer={setSelectedLayer}
             />
             <PropSheet target={selectedLayer}/>
+        </HBox>
+        <HBox>
             <LayerEditor
                 key={'layer-editor'}
                 doc={doc}
