@@ -305,3 +305,10 @@ export class Doc2 extends PropsBase<Doc2Type> {
     }
 }
 
+
+export function appendToList<Type, Key extends keyof Type>(target:PropsBase<Type>, key:Key, value: Type[keyof Type]) {
+    let data = target.getPropValue(key) as []
+    data = data.slice()
+    data.push(value)
+    target.setPropValue(key,data)
+}

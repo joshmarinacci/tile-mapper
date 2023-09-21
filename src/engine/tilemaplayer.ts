@@ -1,8 +1,7 @@
 import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
 
 import {TileCache} from "./cache"
-import {Layer, SCALE, TILE_SIZE, TileReference} from "./globals"
-import {fillBounds, strokeBounds} from "./util"
+import {Layer, TileReference} from "./globals"
 
 function wrapPoint(pt: Point, size: Size) {
     pt = pt.copy()
@@ -37,7 +36,8 @@ export class TilemapLayer implements Layer {
     }
 
 
-    drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache:TileCache): void {
+    drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache:TileCache, SCALE:number): void {
+        const TILE_SIZE = 16
         // this.log('drawing self')
         // this.log("viewport is", viewport)
         ctx.save()
@@ -77,7 +77,7 @@ export class TilemapLayer implements Layer {
             }
         }
         ctx.restore()
-        strokeBounds(ctx, new Bounds(0, 0, viewport.w, viewport.h), 'red', 1.0)
+        // strokeBounds(ctx, new Bounds(0, 0, viewport.w, viewport.h), 'red', 1.0)
     }
 
     loadFromString(size: Size, string: string, mapping: Record<string, string>) {

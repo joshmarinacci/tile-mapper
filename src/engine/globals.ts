@@ -1,5 +1,6 @@
-import {Bounds, Point, Size} from "josh_js_util";
-import {TileCache} from "./cache";
+import {Bounds, Point, Size} from "josh_js_util"
+
+import {TileCache} from "./cache"
 
 type TileName = string
 export type TileReference = {
@@ -10,18 +11,17 @@ export interface Layer {
     name: string,
     type: 'tilemap' | 'actors' | 'overlay'
     blocking: boolean
-    drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache:TileCache): void
+    drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache:TileCache, scale:number): void
 }
 
 export const TILE_SIZE = 16
 export const SCALE = 4
-export const CANVAS_SIZE = new Size(12*SCALE*TILE_SIZE, 10*SCALE*TILE_SIZE)
 export const GRAVITY = 0.2
 export const JUMP_POWER = -6
-export const MAX_MOVE = 1.5;
-export const EPISLON = 0.001;
+export const MAX_MOVE = 1.5
+export const EPISLON = 0.001
 export const MOVE_SPEED = 0.3
-export const FRICTION = 0.90;
+export const FRICTION = 0.90
 
 export type Actor = {
     type: string

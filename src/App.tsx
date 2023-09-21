@@ -39,17 +39,18 @@ AR.register([
 
 const STATE = new GlobalState()
 
-const doc2 = new Doc2({name: 'doc2'})
+const TS = new Size(16,16)
+const doc2 = new Doc2({name: 'doc2', tileSize:TS})
 {
-    const s1 = new Sheet2({name: 'sheet 1', tileSize: new Size(10, 10)})
-    const tile1 = new Tile2({name: 'tile1', blocking: false, size: new Size(10, 10)}, doc2.getPropValue('palette'))
+    const s1 = new Sheet2({name: 'sheet 1', tileSize: TS})
+    const tile1 = new Tile2({name: 'tile1', blocking: false, size:TS}, doc2.getPropValue('palette'))
     tile1.setPixel(2, new Point(2, 2))
     s1.getPropValue('tiles').push(tile1)
     const s2 = new Sheet2({name: 'sheet 2'})
     doc2.getPropValue('sheets').push(s1)
     doc2.getPropValue('sheets').push(s2)
-    const m1 = new Map2({name: 'first map', size: new Size(10, 10)})
-    const l1 = new TileLayer2({type: 'tile-layer', name: 'terrain', blocking: true})
+    const m1 = new Map2({name: 'first map'})
+    const l1 = new TileLayer2({type: 'tile-layer', name: 'terrain', blocking: true, size: new Size(20,10)})
     const grid = (l1.getPropValue('data') as ArrayGrid<MapCell>)
     grid.set(new Point(1,0),{tile:tile1._id})
     const l2 = new ActorLayer({type: 'actor-layer', name: 'enemies', blocking: true})
@@ -62,12 +63,12 @@ const doc2 = new Doc2({name: 'doc2'})
     doc2.getPropValue('actors').push(a1)
     doc2.getPropValue('actors').push(enemy)
 
-    const test1 = new Test2({name: 'test 1', viewport: new Size(10, 10), map: 'unknown'})
+    const test1 = new Test2({name: 'test 1', viewport: new Size(12,8), map: 'unknown'})
     doc2.getPropValue('tests').push(test1)
     STATE.setPropValue('doc',doc2)
-    // setTimeout(() =>  {
-    //     STATE.setPropValue('selection',test1)
-    // }, 1000)
+    setTimeout(() =>  {
+        STATE.setPropValue('selection',test1)
+    }, 1000)
 }
 
 function Main2() {

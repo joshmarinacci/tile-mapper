@@ -1,6 +1,6 @@
-import {Bounds} from "josh_js_util"
+import {Bounds, Size} from "josh_js_util"
 
-import {CANVAS_SIZE, Enemy, Layer, Player} from "./globals"
+import {Enemy, Layer, Player} from "./globals"
 import {KeyboardManager} from "./keyboard"
 import {PhysicsManager} from "./physics"
 
@@ -18,7 +18,7 @@ export class GameState {
     private physics: PhysicsManager
     private enemies: Enemy[]
 
-    constructor(canvas?:HTMLCanvasElement) {
+    constructor(canvas:HTMLCanvasElement, CANVAS_SIZE:Size) {
         this.map = {
             name: 'level1',
             layers: []

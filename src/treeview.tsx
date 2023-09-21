@@ -5,7 +5,7 @@ import {toClass} from "josh_react_util"
 import React, {useState} from "react"
 
 import {PropDef, PropsBase, useWatchProp} from "./base"
-import {Map2, Sheet2, Test2} from "./data2"
+import {appendToList, Map2, Sheet2, Test2} from "./data2"
 import {GlobalState} from "./state"
 
 function PropertyList<T, K extends keyof T>(props: {
@@ -24,26 +24,17 @@ function PropertyList<T, K extends keyof T>(props: {
     const add = () => {
         if(name === 'sheets') {
             const sheet = new Sheet2({name:'unnamed', tileSize: new Size(20,20)})
-            let arr = target.getPropValue(name) as Sheet2[]
-            arr = arr.slice()
-            arr.push(sheet)
-            target.setPropValue(name,arr)
+            appendToList(target,name,sheet)
             props.state.setPropValue('selection',sheet)
         }
         if(name === 'maps') {
             const map = new Map2({name:name})
-            let arr = target.getPropValue(name) as Map2[]
-            arr = arr.slice()
-            arr.push(map)
-            target.setPropValue(name,arr)
+            appendToList(target,name,map)
             props.state.setPropValue('selection',map)
         }
         if(name === 'tests') {
             const test = new Test2({name: 'a new test'})
-            let arr = target.getPropValue(name) as Test2[]
-            arr = arr.slice()
-            arr.push(test)
-            target.setPropValue(name,arr)
+            appendToList(target,name,test)
             props.state.setPropValue('selection',test)
         }
     }
