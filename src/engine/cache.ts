@@ -1,5 +1,4 @@
-import {Size} from "josh_js_util";
-import {TileReference} from "./globals";
+import {TileReference} from "./globals"
 
 type JSONTileSprite = {
     id: string,
@@ -23,7 +22,7 @@ export type JSONGameStruct = {
     maps: any[]
     tests: any[]
 }
-type CachedTile = {
+export type CachedTile = {
     name: string,
     id: string,
     canvas: HTMLCanvasElement,
@@ -31,14 +30,20 @@ type CachedTile = {
 }
 
 export class TileCache {
-    private cacheByTileName: Map<string, CachedTile>;
-    private cacheByTileUUID: Map<string, CachedTile>;
+    private cacheByTileName: Map<string, CachedTile>
+    private cacheByTileUUID: Map<string, CachedTile>
 
     constructor() {
         this.cacheByTileName = new Map()
         this.cacheByTileUUID = new Map()
     }
 
+    addCachedTile(name:string, uuid:string, cached:CachedTile) {
+        this.cacheByTileName.set(name,cached)
+        this.cacheByTileUUID.set(uuid,cached)
+        if(name !== 'unnamed')
+            this.log("caching",cached)
+    }
     loadSheet(sheet: JSONTileSheet, palette: hexcolor[]) {
         sheet.sprites.forEach(sprite => {
             const canvas = this.spriteToCanvas(sprite, palette)
@@ -51,12 +56,12 @@ export class TileCache {
             this.cacheByTileName.set(sprite.name, cached)
             this.cacheByTileUUID.set(sprite.id, cached)
             if(sprite.name !== 'unnamed')
-                console.log("caching",sprite.name)
+                this.log("caching",cached)
         })
     }
 
     getTileByName(tile: TileReference) {
-        return this.cacheByTileName.get(tile.uuid)
+        return this.cacheByTileUUID.get(tile.uuid)
     }
 
     private spriteToCanvas(sprite: JSONTileSprite, palette: hexcolor[]) {
@@ -68,11 +73,15 @@ export class TileCache {
         ctx.fillRect(0, 0, canvas.width, canvas.height)
         for (let j = 0; j < sprite.h; j++) {
             for (let i = 0; i < sprite.w; i++) {
-                let v = sprite.data[j * sprite.w + i]
+                const v = sprite.data[j * sprite.w + i]
                 ctx.fillStyle = palette[v]
                 ctx.fillRect(i, j, 1, 1)
             }
         }
         return canvas
+    }
+
+    private log(...args:unknown[]) {
+        console.log('TileCache',...args)
     }
 }

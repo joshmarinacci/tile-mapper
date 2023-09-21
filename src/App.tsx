@@ -8,28 +8,24 @@ import {
     PopupContainer,
     PopupContext,
     PopupContextImpl,
-    Spacer,
-    VBox
 } from "josh_react_util"
-import React, {useContext, useState} from 'react'
+import React, {useState} from 'react'
 
 import {DocToBMP, DocToPNG, LoadFileAction, SaveAction} from "./actions"
 import {ActorEditView} from "./ActorEditView"
 import {ActionRegistry, PropsBase, useWatchAllProps, useWatchProp} from "./base"
 import {
     ActionRegistryContext,
-    EditableLabel,
-    ToggleButtonSet,
     ToolbarActionButton
 } from "./common-components"
 import {Actor, ActorLayer, Doc2, Map2, Sheet2, Test2, Tile2, TileLayer2} from "./data2"
 import {
-    DocModel,
     MapCell
 } from "./defs"
 import {MapModeView} from "./MapModeView"
 import {PropSheet} from "./propsheet"
 import {GlobalState} from "./state"
+import {TestModeView} from "./TestModeView"
 import {TileSheetEditor} from "./TileSheetEditor"
 import {ObjectTreeView} from "./treeview"
 
@@ -68,18 +64,17 @@ const doc2 = new Doc2({name: 'doc2'})
 
     const test1 = new Test2({name: 'test 1', viewport: new Size(10, 10), map: 'unknown'})
     doc2.getPropValue('tests').push(test1)
+    STATE.setPropValue('doc',doc2)
+    // setTimeout(() =>  {
+    //     STATE.setPropValue('selection',test1)
+    // }, 1000)
 }
-STATE.setPropValue('doc',doc2)
 
 function Main2() {
     const [selection, setSelection] = useState<PropsBase<any>|null>(null)
     const [doc, setDoc] = useState(STATE.getPropValue('doc') as Doc2)
-    useWatchAllProps(STATE, (s) => {
-        setSelection(s.getPropValue('selection'))
-    })
-    useWatchProp(STATE, 'doc', () => {
-        setDoc(STATE.getPropValue('doc'))
-    })
+    useWatchAllProps(STATE, (s) => setSelection(s.getPropValue('selection')))
+    useWatchProp(STATE, 'doc', () => setDoc(STATE.getPropValue('doc')))
     let editView= <div>nothing to edit</div>
     if(selection) {
         if(selection instanceof Sheet2) {
@@ -90,6 +85,9 @@ function Main2() {
         }
         if(selection instanceof Map2) {
             editView = <MapModeView state={STATE} doc={doc} map={selection as Map2}/>
+        }
+        if(selection instanceof Test2) {
+            editView = <TestModeView state={STATE} doc={doc} test={selection as Test2}/>
         }
     }
     return <div className={'main-content'}>

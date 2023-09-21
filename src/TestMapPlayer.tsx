@@ -1,19 +1,17 @@
 import React, {useState} from "react"
 
-import {DocModel, MapModel, TestModel} from "./defs"
+import {Doc2, Map2, Test2} from "./data2"
 import {PlayTest} from "./PlayTest"
 export function TestMapPlayer(props: {
-    test: TestModel,
-    doc: DocModel,
-    map: MapModel
+    test: Test2,
+    doc: Doc2,
+    map: Map2
 }) {
     const {test, map, doc} = props
     const [playing, setPlaying] = useState(false)
     const [zoom, setZoom] = useState(2)
     const [grid, setGrid] = useState(true)
-    const togglePlaying = () => {
-        setPlaying(!playing)
-    }
+    const togglePlaying = () => setPlaying(!playing)
     return <>
         <div className={'toolbar'}>
             <button onClick={()=>togglePlaying()}>{playing?"pause":"play"}</button>
@@ -25,8 +23,10 @@ export function TestMapPlayer(props: {
         </div>
         <PlayTest
             playing={playing}
-            doc={doc} map={map}
-            test={test} zoom={zoom}
+            doc={doc}
+            map={map}
+            test={test}
+            zoom={zoom}
             grid={grid}
         />
     </>

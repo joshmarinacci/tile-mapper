@@ -5,7 +5,7 @@ import {toClass} from "josh_react_util"
 import React, {useState} from "react"
 
 import {PropDef, PropsBase, useWatchProp} from "./base"
-import {Map2, Sheet2} from "./data2"
+import {Map2, Sheet2, Test2} from "./data2"
 import {GlobalState} from "./state"
 
 function PropertyList<T, K extends keyof T>(props: {
@@ -37,6 +37,14 @@ function PropertyList<T, K extends keyof T>(props: {
             arr.push(map)
             target.setPropValue(name,arr)
             props.state.setPropValue('selection',map)
+        }
+        if(name === 'tests') {
+            const test = new Test2({name: 'a new test'})
+            let arr = target.getPropValue(name) as Test2[]
+            arr = arr.slice()
+            arr.push(test)
+            target.setPropValue(name,arr)
+            props.state.setPropValue('selection',test)
         }
     }
     return <li className={'tree-item'}>

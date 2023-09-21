@@ -1,7 +1,12 @@
-import {Bounds, Point, Size} from "josh_js_util"
+import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
 import React, {useEffect, useRef, useState} from "react"
 
-import {DocModel, MapModel, TestModel} from "./defs"
+import {Doc2, Map2, Test2, TileLayer2} from "./data2"
+import {DocModel, MapCell, MapModel} from "./defs"
+import {TileCache} from "./engine/cache"
+import {GameMap, GameState} from "./engine/gamestate"
+import {TileReference} from "./engine/globals"
+import {TilemapLayer} from "./engine/tilemaplayer"
 import {
     drawEditableSprite,
 } from "./model"
@@ -328,78 +333,141 @@ export function drawViewport(current: HTMLCanvasElement, map: MapModel, doc: Doc
 }
 
 
-let anim:Animator|null = null
-export function PlayTest(props:{playing:boolean, doc:DocModel, map:MapModel, test:TestModel,
+const anim:Animator|null = null
+
+function l(...args:any[]) {
+    console.log("PLayTest",...args)
+}
+
+export function PlayTest(props:{
+    playing:boolean,
+    doc:Doc2,
+    map:Map2,
+    test:Test2,
     zoom:number,
     grid:boolean,
 }) {
     const {doc, map, test, zoom, grid} = props
-    const ref = useRef(null)
-    const sprite = doc.getSheets()[0].getImages()[0]
-    const tileSize = new Size(sprite.width(), sprite.height())
-    const [count, setCount] = useState(0)
     useEffect(() => {
-        const hand = () => setCount(count + 1)
-        test.onAny(hand)
-        return () => test.offAny(hand)
-    })
+        if(!ref.current) return
 
-    function drawGrid(current:HTMLCanvasElement, zoom:number, TS:Size) {
-        const ctx = current.getContext('2d') as CanvasRenderingContext2D
-        ctx.strokeStyle = 'red'
-        ctx.lineWidth = 1
-        ctx.save()
-        ctx.beginPath()
-        const size = map.getPropValue('size') as Size
-        for(let i=0; i<size.w; i++) {
-            ctx.moveTo(i*zoom*TS.w,0)
-            ctx.lineTo(i*zoom*TS.w,size.h*zoom*TS.h)
-        }
-        for(let i=0; i<size.h; i++) {
-            ctx.moveTo(0,i*zoom*TS.h)
-            ctx.lineTo(size.w*zoom*TS.h,i*zoom*TS.w)
-        }
-        ctx.stroke()
-        ctx.restore()
-    }
+        const gamestate = new GameState(ref.current)
+        l("resetting everything and drawing one frame")
+        const cache = new TileCache()
+        //for each sheet, precache into the tile cache
+        doc.getPropValue('sheets').forEach(sht => {
+            sht.getPropValue('tiles').forEach(tile => {
+                l("loading tile into cache",tile.data, tile.palette)
+                tile.rebuild_cache()
+                if(tile.cache_canvas) {
+                    cache.addCachedTile(tile.getPropValue('name'), tile._id, {
+                        name: tile.getPropValue('name'),
+                        id: tile._id,
+                        blocking: tile.getPropValue('blocking'),
+                        canvas: tile.cache_canvas
+                    })
+                }
+            })
+        })
+        map.getPropValue('layers').forEach(layer => {
+            if(layer instanceof TileLayer2) {
+                // l('layer',layer)
+                const tl = new TilemapLayer()
+                const size = layer.getPropValue('size')
+                tl.tiles = new ArrayGrid<TileReference>(size.w, size.h)
+                const editorCells = layer.getPropValue('data') as ArrayGrid<MapCell>
 
-    useEffect(() => {
-        if (ref.current) {
-            const canvas = ref.current as HTMLCanvasElement
-            const player: Player = {
-                bounds: new Bounds(30, 30, tileSize.w, tileSize.h),
-                velocity: new Point(0, 0),
-                standing: false,
-                scroll: new Point(0,0),
-            }
-            if (props.playing) {
-                canvas.focus()
-                anim = new Animator(() => {
-                    player.scroll.x = -player.bounds.x + 100
-                    drawViewport(canvas, map, doc, player, keyManager, tileSize, zoom)
-                    updatePlayer(doc, map, player, keyManager, canvas, tileSize, zoom)
-                    if(grid) drawGrid(canvas,zoom,tileSize)
-                    keyManager.update()
+                tl.tiles.fill((n)=>{
+                    // console.log('map cell',editorCells.get(n))
+                    if(editorCells.get(n)) {
+                        return {
+                            uuid: editorCells.get(n).tile
+                        }
+                    }
+                    return {
+                        uuid: 'unknown'
+                    }
                 })
-                anim.start()
-            } else {
-                if(anim) anim.stop()
-                drawViewport(canvas, map, doc, player, keyManager, tileSize, zoom)
-                if(grid) drawGrid(canvas,zoom,tileSize)
+
+                gamestate.addLayer(tl)
             }
-        }
-    }, [props.playing, test.getPropValue('viewport'), zoom, grid])
+        })
+        const ctx = gamestate.getDrawingSurface()
+        const viewport = gamestate.getViewport()
+        const room: GameMap = gamestate.getCurrentMap()
+        ctx.fillStyle = 'red'
+        ctx.fillRect(0,0, 300,300)
+        room.layers.forEach(layer => layer.drawSelf(ctx, viewport, cache))
+    }, [])
+    const ref = useRef<HTMLCanvasElement>(null)
+    // const sprite = doc.getSheets()[0].getImages()[0]
+    // const tileSize = new Size(sprite.width(), sprite.height())
+    // const [count, setCount] = useState(0)
+    // useEffect(() => {
+    //     const hand = () => setCount(count + 1)
+    //     test.onAny(hand)
+    //     return () => test.offAny(hand)
+    // })
+
+    // function drawGrid(current:HTMLCanvasElement, zoom:number, TS:Size) {
+    //     const ctx = current.getContext('2d') as CanvasRenderingContext2D
+    //     ctx.strokeStyle = 'red'
+    //     ctx.lineWidth = 1
+    //     ctx.save()
+    //     ctx.beginPath()
+    //     const size = map.getPropValue('size') as Size
+    //     for(let i=0; i<size.w; i++) {
+    //         ctx.moveTo(i*zoom*TS.w,0)
+    //         ctx.lineTo(i*zoom*TS.w,size.h*zoom*TS.h)
+    //     }
+    //     for(let i=0; i<size.h; i++) {
+    //         ctx.moveTo(0,i*zoom*TS.h)
+    //         ctx.lineTo(size.w*zoom*TS.h,i*zoom*TS.w)
+    //     }
+    //     ctx.stroke()
+    //     ctx.restore()
+    // }
+
+    // useEffect(() => {
+    //     if (ref.current) {
+    //         const canvas = ref.current as HTMLCanvasElement
+    //         const player: Player = {
+    //             bounds: new Bounds(30, 30, tileSize.w, tileSize.h),
+    //             velocity: new Point(0, 0),
+    //             standing: false,
+    //             scroll: new Point(0,0),
+    //         }
+    //         if (props.playing) {
+    //             canvas.focus()
+    //             anim = new Animator(() => {
+    //                 player.scroll.x = -player.bounds.x + 100
+    //                 drawViewport(canvas, map, doc, player, keyManager, tileSize, zoom)
+    //                 updatePlayer(doc, map, player, keyManager, canvas, tileSize, zoom)
+    //                 if(grid) drawGrid(canvas,zoom,tileSize)
+    //                 keyManager.update()
+    //             })
+    //             anim.start()
+    //         } else {
+    //             if(anim) anim.stop()
+    //             drawViewport(canvas, map, doc, player, keyManager, tileSize, zoom)
+    //             if(grid) drawGrid(canvas,zoom,tileSize)
+    //         }
+    //     }
+    // }, [props.playing, test.getPropValue('viewport'), zoom, grid])
     const viewport = test.getPropValue('viewport') as Size
-    return <canvas ref={ref}
-                   width={viewport.w*tileSize.w*zoom}
-                   height={viewport.h*tileSize.h*zoom}
-                   autoFocus={true}
-                   className={'play-canvas'}
-                   tabIndex={0}
-                   style={{
-                       alignSelf:'start'
-                   }}
-                   onKeyDown={(e)=> keyManager.down(e)}
-                   onKeyUp={(e) => keyManager.up(e)}
-    ></canvas>
+    return <div>
+        <canvas ref={ref} width={500} height={500}/>
+    </div>
+    // return <canvas ref={ref}
+    //                width={viewport.w*tileSize.w*zoom}
+    //                height={viewport.h*tileSize.h*zoom}
+    //                autoFocus={true}
+    //                className={'play-canvas'}
+    //                tabIndex={0}
+    //                style={{
+    //                    alignSelf:'start'
+    //                }}
+    //                onKeyDown={(e)=> keyManager.down(e)}
+    //                onKeyUp={(e) => keyManager.up(e)}
+    // ></canvas>
 }

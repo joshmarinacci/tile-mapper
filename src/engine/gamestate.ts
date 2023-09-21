@@ -1,7 +1,8 @@
-import {Bounds, Point} from "josh_js_util";
-import {KeyboardManager} from "./keyboard";
-import {CANVAS_SIZE, Enemy, Layer, Player} from "./globals";
-import {PhysicsManager} from "./physics";
+import {Bounds} from "josh_js_util"
+
+import {CANVAS_SIZE, Enemy, Layer, Player} from "./globals"
+import {KeyboardManager} from "./keyboard"
+import {PhysicsManager} from "./physics"
 
 export type GameMap = {
     name: string,
@@ -10,26 +11,30 @@ export type GameMap = {
 
 export class GameState {
     map: GameMap
-    private canvas: HTMLCanvasElement;
-    private viewport: Bounds;
-    private keyboard: KeyboardManager;
-    private players: Player[];
-    private physics: PhysicsManager;
-    private enemies: Enemy[];
+    private canvas: HTMLCanvasElement
+    private viewport: Bounds
+    private keyboard: KeyboardManager
+    private players: Player[]
+    private physics: PhysicsManager
+    private enemies: Enemy[]
 
-    constructor() {
+    constructor(canvas?:HTMLCanvasElement) {
         this.map = {
             name: 'level1',
             layers: []
         }
-        this.canvas = document.createElement('canvas')
+        if(canvas) {
+            this.canvas = canvas
+        } else {
+            this.canvas = document.createElement('canvas')
+            document.body.append(this.canvas)
+        }
         this.canvas.style.border = '1px solid red'
         this.canvas.width = CANVAS_SIZE.w
         this.canvas.height = CANVAS_SIZE.h
-        document.body.append(this.canvas)
         this.keyboard = new KeyboardManager(window)
         this.viewport = new Bounds(0, 0, CANVAS_SIZE.w, CANVAS_SIZE.h)
-        let player: Player = {
+        const player: Player = {
             type: "player",
             color: 'green',
             tile: {
@@ -53,7 +58,7 @@ export class GameState {
     }
 
     getDrawingSurface() {
-        let ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D
+        const ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D
         ctx.fillStyle = 'black'
         ctx.fillRect(0,0,this.canvas.width,this.canvas.height)
         return ctx

@@ -1,7 +1,8 @@
-import {ArrayGrid, Bounds, Point, Size} from "josh_js_util";
-import {Layer, SCALE, TILE_SIZE, TileReference} from "./globals";
-import {strokeBounds} from "./util";
-import {TileCache} from "./cache";
+import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
+
+import {TileCache} from "./cache"
+import {Layer, SCALE, TILE_SIZE, TileReference} from "./globals"
+import {fillBounds, strokeBounds} from "./util"
 
 function wrapPoint(pt: Point, size: Size) {
     pt = pt.copy()
@@ -20,9 +21,9 @@ function wrapPoint(pt: Point, size: Size) {
 
 export class TilemapLayer implements Layer {
     tiles: ArrayGrid<TileReference>
-    name: string;
-    type: "tilemap";
-    blocking: boolean;
+    name: string
+    type: "tilemap"
+    blocking: boolean
     wrapping: boolean
     scrollSpeed: number
 
@@ -37,12 +38,15 @@ export class TilemapLayer implements Layer {
 
 
     drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache:TileCache): void {
+        // this.log('drawing self')
+        // this.log("viewport is", viewport)
         ctx.save()
         ctx.imageSmoothingEnabled = false
-        let w = Math.ceil(viewport.w / SCALE / TILE_SIZE) + 1
-        let h = Math.ceil(viewport.h / SCALE / TILE_SIZE) + 1
-        let xoff = viewport.x / SCALE / TILE_SIZE * this.scrollSpeed
-        let yoff = viewport.y / SCALE / TILE_SIZE * this.scrollSpeed
+        const w = Math.ceil(viewport.w / SCALE / TILE_SIZE) + 1
+        const h = Math.ceil(viewport.h / SCALE / TILE_SIZE) + 1
+        const xoff = viewport.x / SCALE / TILE_SIZE * this.scrollSpeed
+        const yoff = viewport.y / SCALE / TILE_SIZE * this.scrollSpeed
+        // this.log(`drawing ${w} x ${h} cells`)
         for (let j = 0; j < h; j++) {
             for (let i = 0; i < w; i++) {
                 let tb = new Bounds(i, j, 1, 1).scale(TILE_SIZE)
@@ -55,7 +59,7 @@ export class TilemapLayer implements Layer {
                     nn = wrapPoint(nn, new Size(this.tiles.w, this.tiles.h))
                 }
                 if (this.isValidIndex(nn)) {
-                    let tile = this.tiles.get(nn)
+                    const tile = this.tiles.get(nn)
                     const cached = cache.getTileByName(tile)
                     if (cached) {
                         ctx.drawImage(cached.canvas,
@@ -68,7 +72,7 @@ export class TilemapLayer implements Layer {
                     }
                 }
                 // strokeBounds(ctx,tb,'gray',0.5)
-                let str = `${nn.x}, ${nn.y}`
+                const str = `${nn.x}, ${nn.y}`
                 // debugDrawText(ctx,str,tb.position().add(new Point(1,0)))
             }
         }
@@ -82,10 +86,10 @@ export class TilemapLayer implements Layer {
         lines.forEach((line, j) => {
             // l(line.trim(),j)
             line = line.trim().replaceAll(' ', '')
-            for (let [i, ch] of Array.from(line).entries()) {
+            for (const [i, ch] of Array.from(line).entries()) {
                 // l(i,ch)
                 if (mapping[ch]) {
-                    let v = mapping[ch]
+                    const v = mapping[ch]
                     this.tiles.set_at(i, j, {uuid: v})
                 }
             }
@@ -98,5 +102,9 @@ export class TilemapLayer implements Layer {
         if (nn.x >= this.tiles.w) return false
         if (nn.y >= this.tiles.h) return false
         return true
+    }
+
+    private log(...any:any[]) {
+        console.log(this.constructor.name,...any)
     }
 }
