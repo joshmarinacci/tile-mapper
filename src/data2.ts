@@ -252,6 +252,18 @@ export class Map2 extends PropsBase<Map2Type> {
             layers: GenericDataArrayDef,
         }, opts)
     }
+
+    calcBiggestLayer() {
+        const biggest = new Size(0, 0)
+        this.getPropValue('layers').forEach(layer => {
+            if (layer instanceof TileLayer2) {
+                const size = layer.getPropValue('size')
+                if (size.w > biggest.w) biggest.w = size.w
+                if (size.h > biggest.h) biggest.h = size.h
+            }
+        })
+        return biggest
+    }
 }
 
 export class Actor extends PropsBase<ActorType> {
