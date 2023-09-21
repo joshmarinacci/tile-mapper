@@ -125,14 +125,8 @@ export function LayerEditor(props: {
 
     const [zoom, setZoom] = useState(2)
     const scale = Math.pow(2,zoom)
-    const biggest = new Size(0,0)
-    map.getPropValue('layers').forEach(layer => {
-        if(layer instanceof TileLayer2) {
-            const size = layer.getPropValue('size')
-            if(size.w > biggest.w) biggest.w = size.w
-            if(size.h > biggest.h) biggest.h = size.h
-        }
-    })
+    const biggest = map.calcBiggestLayer()
+    const tileSize = doc.getPropValue('tileSize')
     const redraw = () => {
         if (ref.current) {
             const canvas = ref.current
@@ -140,7 +134,6 @@ export function LayerEditor(props: {
             ctx.imageSmoothingEnabled = false
             ctx.fillStyle = 'red'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
-            // const size = new Size(tile.width(),tile.height())
             map.getPropValue('layers').forEach(layer => {
                 if(layer instanceof TileLayer2) {
                     drawTileLayer(ctx, doc, layer as TileLayer2, scale, grid)
@@ -149,7 +142,6 @@ export function LayerEditor(props: {
                     // drawActorlayer(ctx)
                 }
             })
-            // if(!layer) return
         }
     }
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
@@ -157,8 +149,7 @@ export function LayerEditor(props: {
         let pt = new Point(e.clientX, e.clientY)
             .subtract(new Point(rect.left, rect.top))
             .scale(1 / scale)
-        pt = new Point(pt.x / tile.width(), pt.y / tile.height())
-            .floor()
+        pt = new Point(pt.x / tileSize.w, pt.y / tileSize.h).floor()
         return pt
     }
     const [fillOnce, setFillOnce] = useState<boolean>(false)
@@ -188,9 +179,8 @@ export function LayerEditor(props: {
             console.log("writing to tile layer", canvasToImage(e), tile._id)
             const cells = layer.getPropValue('data') as ArrayGrid<MapCell>
             cells.set(canvasToImage(e),{tile:tile._id})
-        }// setCount(count + 1)
+        }
         redraw()
-
     }
     const onMouseMove = (e:MouseEvent<HTMLCanvasElement>) => {
         if (down) {
@@ -217,8 +207,8 @@ export function LayerEditor(props: {
         </div>
         <div className={'map-editor-canvas-wrapper'}>
         <canvas ref={ref}
-                width={biggest.w*scale*tile.width()}
-                height={biggest.h*scale*tile.height()}
+                width={biggest.w*scale*tileSize.w}
+                height={biggest.h*scale*tileSize.h}
                 onContextMenu={(e) => e.preventDefault()}
                 onMouseDown={onMouseDown}
                 onMouseMove={onMouseMove}
