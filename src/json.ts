@@ -1,6 +1,7 @@
 import {ArrayGrid, Size} from "josh_js_util"
 
-import {Doc2, Layer2Type, Map2, Sheet2, Tile2, TileLayer2} from "./data2"
+import {DefList, JsonOut, PropsBase} from "./base"
+import {Doc2, Map2, Sheet2, Tile2, TileLayer2} from "./data2"
 import {MapCell} from "./defs"
 import {PICO8} from "./model"
 
@@ -77,49 +78,37 @@ type JSONSheetV5 = {
     tiles: JSONTile[]
 }
 type JSONDocV5 = {
-    id: string
     name: string
     version: 5
-    palette: string[]
-    sheets: JSONSheetV5[]
-    maps: JSONMapV5[],
-    tests: JSONTest[]
-    actors: JSONActor[],
-    tileSize: JSONSize,
+    doc: object
 }
 
-function sheetToJSONV5(sheet: Sheet2):JSONSheetV5 {
-    const tiles: JSONTile[] = sheet.getPropValue('tiles')
-        .map(tile => (tile.toJSON() as JSONTile))
-    return {
-        id: sheet._id,
-        name: sheet.getPropValue('name'),
-        tileSize: sheet.getPropValue('tileSize'),
-        tiles: tiles,
-    }
-}
-
-function mapToJSONV5(map: Map2):JSONMapV5 {
-    return {
-        id: map._id,
-        name: map.getPropValue('name'),
-        layers: map.getPropValue('layers').map(layer => {
-            return layer.toJSON() as JSONLayer
-        })
-    } as JSONMapV5
-}
+// function sheetToJSONV5(sheet: Sheet2):JSONSheetV5 {
+//     const tiles: JSONTile[] = sheet.getPropValue('tiles')
+//         .map(tile => (tile.toJSON() as JSONTile))
+//     return {
+//         id: sheet._id,
+//         name: sheet.getPropValue('name'),
+//         tileSize: sheet.getPropValue('tileSize'),
+//         tiles: tiles,
+//     }
+// }
+//
+// function mapToJSONV5(map: Map2):JSONMapV5 {
+//     return {
+//         id: map._id,
+//         name: map.getPropValue('name'),
+//         layers: map.getPropValue('layers').map(layer => {
+//             return layer.toJSON() as JSONLayer
+//         })
+//     } as JSONMapV5
+// }
 
 export function docToJSON(doc: Doc2):JSONDocV5 {
     return {
         version:5,
-        id:      doc._id,
         name:    doc.getPropValue('name'),
-        palette: doc.getPropValue('palette'),
-        tileSize: doc.getPropValue('tileSize'),
-        sheets:  doc.getPropValue('sheets').map(sheet => sheetToJSONV5(sheet)),
-        maps:    doc.getPropValue('maps').map(map => mapToJSONV5(map)),
-        tests:   doc.getPropValue('tests').map(test => test.toJSON()),
-        actors:  doc.getPropValue('actors').map(actor => actor.toJSON())
+        doc: doc.toJSON(),
     }
 }
 
@@ -243,4 +232,36 @@ export function fileToJson(file: File) {
         fileReader.onerror = error => reject(error)
         fileReader.readAsText(file)
     })
+}
+
+
+class ClassRegistry {
+    classByName:Map<string,any>
+    defsByName:Map<string,DefList<any>>
+    constructor() {
+        this.classByName = new Map()
+        this.defsByName = new Map()
+    }
+    register<Type>(clazz:any, defs:DefList<Type>) {
+        console.log("registering class",clazz)
+        this.classByName.set(clazz.name, clazz)
+        this.defsByName.set(clazz.name, defs)
+    }
+}
+export const CLASS_REGISTRY = new ClassRegistry()
+
+export function restoreClassFromJSON<Type>(json:JsonOut<Type>):PropsBase<Type> {
+    console.log("restoring class",json)
+    const Clazz = CLASS_REGISTRY.classByName.get(json.class)
+    const defs = CLASS_REGISTRY.defsByName.get(json.class)
+    if(!defs) throw new Error(`defs missing for ${json.class}`)
+    const args = { }
+    for(const key of Object.keys(defs)) {
+        const def = defs[key]
+        const val = def.fromJSON?def.fromJSON(json.props[key]):json.props[key]
+        args[key] = val
+    }
+    const obj = new Clazz(args)
+    obj._id = json.id
+    return obj
 }

@@ -5,19 +5,21 @@ import {GlobalState} from "./state"
 
 export type UUID = string
 export type Getter<T> = () => T;
-type JSONValue = string | number | object | boolean
-type JsonOut<Type> = {
+export type JSONValue = string | number | object | boolean | []
+export type JsonOut<Type> = {
     id:string,
     class:string,
     props:Record<keyof Type, JSONValue>,
 }
 export type ToJSONner<T> = (v: T) => JSONValue;
+export type FromJSONner<T> = (v: JSONValue) => T
 export type ToFormatString<T> = (v: T) => string;
 export type PropDef<T> = {
     type: 'string' | 'integer' | 'float' | 'Size' | 'Point' | 'Bounds' | 'boolean' | 'array' | 'object',
     editable: boolean,
     default: Getter<T>,
     toJSON: ToJSONner<T>,
+    fromJSON?: FromJSONner<T>
     format: ToFormatString<T>
     expandable?:boolean
     hidden?:boolean,
@@ -55,6 +57,10 @@ export class PropsBase<Type> {
     getAllPropDefs() {
         return Array.from(this.defs.entries())
     }
+    getAllPropDefsAsMap() {
+        return this.defs
+    }
+
     getPropDef<Key extends keyof Type>(name:Key):PropDef<Type[Key]> {
         if(!this.defs.has(name)) throw new Error("")
         return this.defs.get(name) as unknown as PropDef<Type[Key]>
@@ -95,7 +101,7 @@ export class PropsBase<Type> {
     }
     toJSON() {
         const obj:JsonOut<Type> = {
-            class:'Wrapper',
+            class:this.constructor.name,
             props:{} as Record<keyof Type, JSONValue>,
             id:this._id,
         }

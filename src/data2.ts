@@ -1,15 +1,16 @@
 import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
 
-import {PropDef, PropsBase, PropValues} from "./base"
+import {DefList, PropDef, PropsBase, PropValues} from "./base"
 import {BlockingDef, BoundsDef, MapCell, NameDef, PaletteDef, SizeDef} from "./defs"
-import {JSONSprite} from "./json"
+import {CLASS_REGISTRY, restoreClassFromJSON} from "./json"
 import {drawEditableSprite, ImagePalette} from "./model"
 
 export type TileType = {
     name: string,
     blocking: boolean,
-    data: object,
+    data: ArrayGrid<number>,
     size: Size,
+    palette: ImagePalette
 }
 export type Sheet2Type = {
     name: string
@@ -64,6 +65,11 @@ const GenericDataArrayDef: PropDef<object[]> = {
     hidden: true,
 }
 
+type ArrayGridNumberJSON = {
+    w:number,
+    h:number,
+    data:number[]
+}
 const TileDataDef:PropDef<ArrayGrid<number>> = {
     type:'array',
     editable: false,
@@ -71,31 +77,40 @@ const TileDataDef:PropDef<ArrayGrid<number>> = {
     hidden: true,
     default: () => new ArrayGrid<number>(1,1),
     format: (v) => 'array number data',
-    toJSON: (v) => v.data
+    toJSON: (v):ArrayGridNumberJSON => ({w:v.w, h:v.h, data:v.data}),
+    fromJSON:(value) => {
+        const v = value as ArrayGridNumberJSON
+        const arr = new ArrayGrid<number>(v.w,v.h)
+        arr.data = v.data
+        return arr
+    }
+}
+
+export const Tile2Defs:DefList<TileType> = {
+    name: NameDef,
+    blocking: BlockingDef,
+    data: TileDataDef,
+    size: SizeDef,
+    palette: PaletteDef,
 }
 export class Tile2 extends PropsBase<TileType> {
-    data: ArrayGrid<number>
     cache_canvas: HTMLCanvasElement | null
-    palette: ImagePalette
-
-    constructor(opts?: PropValues<TileType>, palette: ImagePalette) {
-        super({
-            name: NameDef,
-            blocking: BlockingDef,
-            data: TileDataDef,
-            size: SizeDef,
-        }, opts)
-        this.palette = palette
-        const size = this.getPropValue('size')
-        this.data = new ArrayGrid<number>(size.w, size.h)
-        this.data.fill(() => 0)
-        this.setPropValue('data',this.data)
+    constructor(opts?: PropValues<TileType>) {
+        super(Tile2Defs, opts)
         this.cache_canvas = null
-        this.rebuild_cache()
+        const size = this.getPropValue('size')
+        const data = this.getPropValue('data')
+        if(data.w !== size.w || data.h !== size.h) {
+            // this.log("we must rebuild the data with a new size")
+            const data = new ArrayGrid<number>(size.w,size.h)
+            data.fill(() => 0)
+            this.setPropValue('data',data)
+            this.rebuild_cache()
+        }
     }
 
     setPixel(number: number, point: Point) {
-        this.data.set(point, number)
+        this.getPropValue('data').set(point, number)
         this.rebuild_cache()
         this._fire('data',this.getPropValue('data'))
         this._fireAll()
@@ -110,31 +125,34 @@ export class Tile2 extends PropsBase<TileType> {
     }
 
     getPixel(point: Point) {
-        return this.data.get(point)
+        return this.getPropValue('data').get(point)
     }
 
-    toJSONSprite(): JSONSprite {
-        return {
-            id: this._id,
-            name: this.getPropValue('name'),
-            w: this.getPropValue('size').w,
-            h: this.getPropValue('size').h,
-            blocking: this.getPropValue('blocking'),
-            data: this.data.data
-        }
-    }
+    // toJSONSprite(): JSONSprite {
+    //     return {
+    //         id: this._id,
+    //         name: this.getPropValue('name'),
+    //         w: this.getPropValue('size').w,
+    //         h: this.getPropValue('size').h,
+    //         blocking: this.getPropValue('blocking'),
+    //         data: this.data.data
+    //     }
+    // }
 
     isValidIndex(pt: Point) {
         if (pt.x < 0) return false
         if (pt.y < 0) return false
-        if (pt.x >= this.data.w) return false
-        if (pt.y >= this.data.h) return false
+        if (pt.x >= this.data().w) return false
+        if (pt.y >= this.data().h) return false
         return true
     }
 
     clone() {
-        const new_tile = new Tile2({size: this.getPropValue('size')}, this.palette)
-        new_tile.data.data = this.data.data.slice()
+        const new_tile = new Tile2({
+            size: this.getPropValue('size'),
+            palette:this.getPropValue('palette')
+        })
+        new_tile.getPropValue('data').data = this.data().data.slice()
         new_tile.setPropValue('blocking', this.getPropValue('blocking'))
         new_tile.setPropValue('name', this.getPropValue('name'))
         new_tile.setPropValue('size', this.getPropValue('size'))
@@ -143,24 +161,48 @@ export class Tile2 extends PropsBase<TileType> {
     }
 
     rebuild_cache() {
-        this.cache_canvas = document.createElement('canvas')
-        this.cache_canvas.width = this.width()
-        this.cache_canvas.height = this.height()
-        const ctx = this.cache_canvas.getContext('2d') as CanvasRenderingContext2D
-        drawEditableSprite(ctx, 1, this)
+        if(typeof document !== 'undefined') {
+            this.cache_canvas = document.createElement('canvas')
+            this.cache_canvas.width = this.width()
+            this.cache_canvas.height = this.height()
+            const ctx = this.cache_canvas.getContext('2d') as CanvasRenderingContext2D
+            drawEditableSprite(ctx, 1, this)
+        }
     }
 
+    private log(...args:unknown[]) {
+        console.log(this.constructor.name,...args)
+    }
+
+    private data() {
+        return this.getPropValue('data')
+    }
+}
+CLASS_REGISTRY.register(Tile2,Tile2Defs)
+
+const TileArrayDef:PropDef<Tile2[]> = {
+    type:'array',
+    editable:false,
+    hidden: true,
+    default: () => [],
+    toJSON: (v) => v.map(t => t.toJSON()),
+    format: (v) => "list of tiles",
+    expandable:false,
+    fromJSON: (value) => {
+        const v = value as any[]
+        return v.map(d => restoreClassFromJSON(d))
+    }
 }
 
+export const SheetDefs:DefList<Sheet2Type> = {
+    name: NameDef,
+    tileSize: SizeDef,
+    tiles: TileArrayDef,
+}
 export class Sheet2 extends PropsBase<Sheet2Type> {
     constructor(opts?: PropValues<Sheet2Type>) {
-        super({
-            name: NameDef,
-            tileSize: SizeDef,
-            tiles: GenericDataArrayDef,
-        }, opts)
+        super(SheetDefs, opts)
     }
-
     addTile(new_tile: Tile2) {
         this.getPropValue('tiles').push(new_tile)
         this._fire('tiles', this.getPropValue('tiles'))
@@ -177,6 +219,7 @@ export class Sheet2 extends PropsBase<Sheet2Type> {
 
     }
 }
+CLASS_REGISTRY.register(Sheet2,SheetDefs)
 
 const TileDataGridDef: PropDef<ArrayGrid<MapCell>> = {
     type: 'object',
@@ -256,12 +299,13 @@ export class ActorLayer extends PropsBase<ActorLayerType> {
     }
 }
 
+const Map2Defs:DefList<Map2Type> = {
+    name: NameDef,
+    layers: GenericDataArrayDef,
+}
 export class Map2 extends PropsBase<Map2Type> {
     constructor(opts?: PropValues<Map2Type>) {
-        super({
-            name: NameDef,
-            layers: GenericDataArrayDef,
-        }, opts)
+        super(Map2Defs, opts)
     }
 
     calcBiggestLayer() {
@@ -276,16 +320,19 @@ export class Map2 extends PropsBase<Map2Type> {
         return biggest
     }
 }
+CLASS_REGISTRY.register(Map2,Map2Defs)
 
+export const ActorDefs:DefList<ActorType> = {
+    name: NameDef,
+    hitbox: BoundsDef,
+    viewbox: BoundsDef,
+}
 export class Actor extends PropsBase<ActorType> {
     constructor(opts?: PropValues<ActorType>) {
-        super({
-            name: NameDef,
-            hitbox: BoundsDef,
-            viewbox: BoundsDef,
-        }, opts)
+        super(ActorDefs, opts)
     }
 }
+CLASS_REGISTRY.register(Actor,ActorDefs)
 
 export class Test2 extends PropsBase<Test2Type> {
     constructor(opts?: PropValues<Test2Type>) {
