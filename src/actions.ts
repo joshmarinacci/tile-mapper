@@ -1,7 +1,7 @@
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
 import {SimpleMenuAction} from "./base"
-import {DocModel} from "./defs"
+import {Doc2} from "./data2"
 import {
     canvas_to_bmp,
     fileToJson,
@@ -15,7 +15,7 @@ export const SaveAction:SimpleMenuAction = {
     type: "simple",
     title: "Save",
     async perform(state): Promise<void> {
-        const doc:DocModel = state.getPropValue('doc') as DocModel
+        const doc = state.getPropValue('doc') as Doc2
         const blob = jsonObjToBlob(doc.toJSONDoc())
         forceDownloadBlob(`${doc.getPropValue('name')}.json`,blob)
     },
@@ -25,8 +25,8 @@ export const DocToPNG:SimpleMenuAction = {
     type: "simple",
     title: "to PNG",
     async perform(state): Promise<void> {
-        const doc:DocModel = state.getPropValue('doc') as DocModel
-        for(const sheet of doc.getSheets()) {
+        const doc = state.getPropValue('doc') as Doc2
+        for(const sheet of doc.getPropValue('sheets')) {
             const can = sheet_to_canvas(sheet)
             const blob = await canvas_to_blob(can)
             forceDownloadBlob(`${doc.getPropValue('name')}.${sheet.getPropValue('name')}.png`,blob)
@@ -38,10 +38,10 @@ export const DocToBMP:SimpleMenuAction = {
     type:'simple',
     title:'to BMP',
     async perform(state) {
-        const doc:DocModel = state.getPropValue('doc') as DocModel
-        const sheet = doc.getSheets()[0]
+        const doc = state.getPropValue('doc') as Doc2
+        const sheet = doc.getPropValue('sheets')[0]
         const canvas = sheet_to_canvas(sheet)
-        const rawData = canvas_to_bmp(canvas, doc.getPalette())
+        const rawData = canvas_to_bmp(canvas, doc.getPropValue('palette'))
         const blob = new Blob([rawData.data], {type: 'image/bmp'})
         forceDownloadBlob(`${sheet.getPropValue('name')}.bmp`, blob)
 

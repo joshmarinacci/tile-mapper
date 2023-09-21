@@ -7,35 +7,42 @@
     flex-direction: column;
     align-items: flex-start;
     align-content: flex-start;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
+
 .list-view.horizontal-wrap {
     border: 0px solid yellow;
     flex-direction: row;
     flex-wrap: wrap;
 }
+
 .list-view.vertical-fill {
     border: 0px solid blue;
     flex-direction: column;
-    justify-content: stretch;
-}
-.list-view > .list-item {
-  padding:0;
-  margin:0;
-  border: 1px solid black;
-  /*border-width: 0 3px 3px 0px;*/
-  display: flex;
-  flex-direction: row;
+    align-items: stretch;
 }
 
 
 .list-view > .list-item {
-  background-color: #dddddd;
-  color: black;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    background-color: #dddddd;
+    color: black;
 }
+
 .list-view > .list-item.selected {
-  background-color: var(--selected-background-color);
-  border-color: var(--selected-border-color);
-  color: black;
+    background-color: var(--selected-background-color);
+    border-color: var(--selected-border-color);
+    color: black;
 }
 
+
+.std-list-item {
+    padding: 0.5rem;
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+    flex: 1.0;
+}

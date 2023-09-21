@@ -1,6 +1,7 @@
+import {Size} from "josh_js_util"
+
 import {PropDef, PropsBase} from "./base"
-import {Doc2} from "./data2"
-import {SheetModel, SpriteModel} from "./defs"
+import {appendToList, Doc2, Sheet2, Tile2} from "./data2"
 import {PICO8} from "./model"
 
 type GlobalStateType = {
@@ -17,13 +18,14 @@ const DocDef:PropDef<Doc2> = {
     },
     editable: false,
     default: () => {
-        const doc = new Doc2()
-        const sheet = new SheetModel()
-        const img = new SpriteModel(10, 10, PICO8)
-        const img2 = new SpriteModel(10, 10, PICO8)
-        sheet.addSprite(img)
-        sheet.addSprite(img2)
-        // doc.addSheet(sheet)
+        const size = new Size(10,10)
+        const doc = new Doc2({tileSize: size})
+        const sheet = new Sheet2({tileSize:size})
+        const tile1 = new Tile2({size: size}, PICO8)
+        const tile2 = new Tile2({size:size}, PICO8)
+        appendToList(sheet,'tiles',tile1)
+        appendToList(sheet,'tiles',tile2)
+        appendToList(doc,"sheets", sheet)
         return doc
     }
 }

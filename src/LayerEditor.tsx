@@ -8,7 +8,6 @@ import React, {MouseEvent, useEffect, useRef, useState} from "react"
 import {ActorLayer, Doc2, Map2, Sheet2, Tile2, TileLayer2} from "./data2"
 import {
     MapCell,
-    SpriteModel
 } from "./defs"
 import {
     drawEditableSprite,
@@ -70,7 +69,7 @@ function map_to_canvas(map: Map2, tile: Tile2, doc: Doc2, scale: number):HTMLCan
     return canvas
 }
 
-async function exportPNG(doc:Doc2, map: Map2, tile:SpriteModel, scale: number) {
+async function exportPNG(doc:Doc2, map: Map2, tile:Tile2, scale: number) {
     const can = map_to_canvas(map,tile, doc,scale)
     const blob = await canvas_to_blob(can)
     forceDownloadBlob(`${map.getPropValue('name') as string}.${scale}x.png`, blob)

@@ -4,9 +4,6 @@
 .map-editor .sheet-list {
     width: 200px;
 }
-.map-editor .sheet-list .list-item {
-    border: 1px solid black;
-}
 .map-editor .tile-list-view {
     width: 320px;
     height: 200px;

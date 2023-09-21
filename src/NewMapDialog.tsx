@@ -2,19 +2,20 @@ import {Size} from "josh_js_util"
 import {DialogContext} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
-import {PropValues} from "./base"
-import {MapModel, MapType} from "./defs"
+import {appendToList, Map2, TileLayer2} from "./data2"
 
 
-export function NewMapDialog(props: { onComplete: (map: MapModel) => void }) {
+export function NewMapDialog(props: { onComplete: (map: Map2) => void }) {
     const [width, setWidth] = useState(10)
     const [height, setHeight] = useState(10)
     const dc = useContext(DialogContext)
     const create = () => {
-        const vals:PropValues<MapType> = {
-            size: new Size(width,height)
-        }
-        const map = new MapModel(vals)
+        const size = new Size(width, height)
+        const map = new Map2({
+            name:'new map',
+        })
+        const layer = new TileLayer2({size})
+        appendToList(map,"layers", layer)
         props.onComplete(map)
         dc.hide()
     }

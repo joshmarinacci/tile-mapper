@@ -1,7 +1,7 @@
 import React from "react"
 
 import {PropsBase, useWatchProp} from "./base"
-import {Layer2Type, Map2, Sheet2} from "./data2"
+import {Layer2Type, Map2} from "./data2"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
 const LayerNameRenderer: ListViewRenderer<PropsBase<Layer2Type>> = (props: {
@@ -9,7 +9,7 @@ const LayerNameRenderer: ListViewRenderer<PropsBase<Layer2Type>> = (props: {
     selected: boolean
 }) => {
     useWatchProp(props.value,'name')
-    return <div>Layer {props.value.getPropValue('name')}</div>
+    return <div className={'std-list-item'}>Layer {props.value.getPropValue('name')}</div>
 }
 
 export function LayerList(props: {

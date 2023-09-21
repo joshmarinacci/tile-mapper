@@ -4,7 +4,7 @@ import {Doc2, Sheet2} from "./data2"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
 const SheetNameRender:ListViewRenderer<Sheet2> = (props:{value:Sheet2, selected:boolean}) => {
-    return <div>{props.value.getPropValue('name')}</div>
+    return <div className={'std-list-item'}>{props.value.getPropValue('name')}</div>
 }
 export function SheetList(props: {
     doc: Doc2,

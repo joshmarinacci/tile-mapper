@@ -2,7 +2,7 @@ import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
 import {ArrayGrid, Point, Size} from "josh_js_util"
 
 import {Doc2, Map2, Sheet2, Tile2, TileLayer2} from "./data2"
-import {DocModel, MapCell, MapModel, SheetModel, SpriteModel, TestModel} from "./defs"
+import {MapCell} from "./defs"
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

@@ -1,7 +1,8 @@
+import {Size} from "josh_js_util"
 import {DialogContext} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
-import {DocModel, SheetModel, SpriteModel} from "./defs"
+import {appendToList, Doc2, Sheet2, Tile2} from "./data2"
 import {
     ImagePalette,
     MINECRAFT,
@@ -9,12 +10,16 @@ import {
 } from "./model"
 
 function make_new_doc(width: number, height: number, palette:ImagePalette) {
-    const doc = new DocModel()
-    doc.setPalette(palette)
-    const sheet = new SheetModel()
-    const img = new SpriteModel(width, height, palette)
-    sheet.addSprite(img)
-    doc.addSheet(sheet)
+    const TS = new Size(16,16)
+    const doc = new Doc2({
+        name:'new doc',
+        palette: palette,
+        tileSize: TS,
+    })
+    const sheet = new Sheet2({tileSize:TS })
+    const tile = new Tile2({size:TS}, palette)
+    appendToList(sheet,"tiles", tile)
+    appendToList(doc,'sheets',sheet)
     return doc
 }
 
@@ -33,7 +38,7 @@ const PALS:Pal[] = [
     }
 ]
 
-export function NewDocDialog(props: { onComplete: (doc: DocModel) => void }) {
+export function NewDocDialog(props: { onComplete: (doc: Doc2) => void }) {
     const [width, setWidth] = useState(10)
     const [height, setHeight] = useState(10)
     const [pal, setPal] = useState(PALS[0])

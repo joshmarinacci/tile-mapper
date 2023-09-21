@@ -3,7 +3,6 @@ import {HBox, toClass} from "josh_react_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
 import {Tile2} from "./data2"
-import {SpriteModel} from "./defs"
 import {ImagePalette} from "./model"
 
 

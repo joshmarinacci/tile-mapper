@@ -5,6 +5,9 @@ import React from "react"
 
 export type ListViewRenderer<T> = (props:{value:T, selected:boolean, index:number}) => JSX.Element;
 
+function DefaultRenderer(props:{})  {
+    return <div>default</div>
+}
 export enum ListViewDirection {
     HorizontalWrap='horizontal-wrap',
     VerticalFill='vertical-fill'
@@ -13,13 +16,13 @@ export enum ListViewDirection {
 export function ListView<T>(props: {
     selected: T|undefined,
     setSelected: (v: T) => void,
-    renderer: ListViewRenderer<T>,
+    renderer: ListViewRenderer<T>|undefined,
     data: T[],
     style: object
     className:string,
     direction: ListViewDirection
 }) {
-    const Cell = props.renderer
+    const Cell = props.renderer || DefaultRenderer
     return <div className={`list-view ${props.className} ${props.direction}`} style={props.style}>
         {props.data.map((v, i) => {
             return <div className={toClass({
