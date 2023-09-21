@@ -253,11 +253,10 @@ export class Doc2 extends PropsBase<Doc2Type> {
     lookup_sprite(id: string) {
         if (this.sprite_lookup.has(id)) return this.sprite_lookup.get(id)
         for (const sheet of this.getPropValue('sheets') as Sheet2[]) {
-            for (const sprite of sheet.getPropValue('tiles') as Tile2[]) {
-                if (sprite._id === id) {
-                    // console.log("missed the cache",sprite.id)
-                    this.sprite_lookup.set(sprite._id, sprite)
-                    return sprite
+            for (const tile of sheet.getPropValue('tiles') as Tile2[]) {
+                if (tile._id === id) {
+                    this.sprite_lookup.set(tile._id, tile)
+                    return tile
                 }
             }
         }

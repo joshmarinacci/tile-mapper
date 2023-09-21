@@ -8,7 +8,8 @@
     border: 1px solid black;
 }
 .map-editor .tile-list-view {
-    width: 200px;
+    width: 320px;
+    height: 200px;
 }
 .map-editor .layer-list-view {
     width: 200px;
@@ -16,5 +17,7 @@
 .map-editor-canvas-wrapper {
     overflow: scroll;
     border: 0px solid green;
-    flex: 1.0;
+    /*flex: 1.0;*/
+    width: 400px;
+    height: 400px;
 }

@@ -79,8 +79,9 @@ async function exportPNG(doc:Doc2, map: Map2, tile:SpriteModel, scale: number) {
 function drawTileLayer(ctx: CanvasRenderingContext2D,
                        doc:Doc2,
                        layer: TileLayer2,
-                       scale:number) {
+                       scale:number, grid:boolean) {
     const size = new Size(10,10)
+    console.log("drawing doc2",doc.getPropValue('name'))
     const cells = layer.getPropValue('data') as ArrayGrid<MapCell>
     cells.forEach((v, n) => {
         if (v) {
@@ -101,10 +102,10 @@ function drawTileLayer(ctx: CanvasRenderingContext2D,
                     drawEditableSprite(ctx, scale, tile)
                 }
             }
-            // if (grid) {
-            //     ctx.strokeStyle = 'gray'
-            //     ctx.strokeRect(x, y, size.w * scale-1, size.h * scale-1)
-            // }
+            if (grid) {
+                ctx.strokeStyle = 'gray'
+                ctx.strokeRect(x, y, size.w * scale-1, size.h * scale-1)
+            }
         }
     })
 
@@ -126,6 +127,16 @@ export function LayerEditor(props: {
 
     const [zoom, setZoom] = useState(2)
     const scale = Math.pow(2,zoom)
+    const biggest = new Size(0,0)
+    map.getPropValue('layers').forEach(layer => {
+        if(layer instanceof TileLayer2) {
+            const size = layer.getPropValue('size')
+            if(size.w > biggest.w) biggest.w = size.w
+            if(size.h > biggest.h) biggest.h = size.h
+            console.log("checking",size)
+        }
+    })
+    console.log("biggest size is",biggest)
     const redraw = () => {
         if (ref.current) {
             const canvas = ref.current
@@ -136,7 +147,7 @@ export function LayerEditor(props: {
             // const size = new Size(tile.width(),tile.height())
             map.getPropValue('layers').forEach(layer => {
                 if(layer instanceof TileLayer2) {
-                    drawTileLayer(ctx, doc, layer as TileLayer2, scale)
+                    drawTileLayer(ctx, doc, layer as TileLayer2, scale, grid)
                 }
                 if(layer instanceof ActorLayer) {
                     // drawActorlayer(ctx)
@@ -212,8 +223,8 @@ export function LayerEditor(props: {
         <canvas ref={ref}
                 // width={map.cells.w*scale*tile.width()}
                 // height={map.cells.h*scale*tile.height()}
-                width={320}
-                height={240}
+                width={biggest.w*scale*tile.width()}
+                height={biggest.h*scale*tile.height()}
                 onContextMenu={(e) => e.preventDefault()}
                 onMouseDown={onMouseDown}
                 onMouseMove={onMouseMove}

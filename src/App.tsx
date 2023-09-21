@@ -15,7 +15,7 @@ import React, {useContext, useState} from 'react'
 
 import {DocToBMP, DocToPNG, LoadFileAction, SaveAction} from "./actions"
 import {ActorEditView} from "./ActorEditView"
-import {ActionRegistry, PropsBase, useWatchAllProps} from "./base"
+import {ActionRegistry, PropsBase, useWatchAllProps, useWatchProp} from "./base"
 import {
     ActionRegistryContext,
     EditableLabel,
@@ -74,17 +74,22 @@ STATE.setPropValue('doc',doc2)
 function Main2() {
     const [selection, setSelection] = useState<PropsBase<any>|null>(null)
     const [doc, setDoc] = useState(STATE.getPropValue('doc') as Doc2)
-    useWatchAllProps(STATE, (s) => setSelection(s.getPropValue('selection')))
+    useWatchAllProps(STATE, (s) => {
+        setSelection(s.getPropValue('selection'))
+    })
+    useWatchProp(STATE, 'doc', () => {
+        setDoc(STATE.getPropValue('doc'))
+    })
     let editView= <div>nothing to edit</div>
     if(selection) {
         if(selection instanceof Sheet2) {
             editView = <TileSheetEditor state={STATE} doc={doc} sheet={selection as Sheet2}/>
         }
         if(selection instanceof Actor) {
-            editView = <ActorEditView state={STATE} doc={doc2} actor={selection as Actor}/>
+            editView = <ActorEditView state={STATE} doc={doc} actor={selection as Actor}/>
         }
         if(selection instanceof Map2) {
-            editView = <MapModeView state={STATE} doc={doc2} map={selection as Map2}/>
+            editView = <MapModeView state={STATE} doc={doc} map={selection as Map2}/>
         }
     }
     return <div className={'main-content'}>

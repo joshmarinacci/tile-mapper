@@ -1,7 +1,7 @@
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
-import {ArrayGrid, Point} from "josh_js_util"
+import {ArrayGrid, Point, Size} from "josh_js_util"
 
-import {Sheet2, Tile2} from "./data2"
+import {Doc2, Map2, Sheet2, Tile2, TileLayer2} from "./data2"
 import {DocModel, MapCell, MapModel, SheetModel, SpriteModel, TestModel} from "./defs"
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -93,6 +93,53 @@ export type JSONDoc = {
 }
 
 
+function load_v4json(json_doc: JSONDoc) {
+    const doc = new Doc2()
+    doc.setPropValue('palette', json_doc.color_palette)
+    doc.setPropValue('name',json_doc.name)
+    json_doc.sheets.forEach(json_sheet => {
+        const sheet = new Sheet2({
+            name: json_sheet.name,
+        })
+        sheet._id = json_sheet.id
+        json_sheet.sprites.forEach(json_sprite => {
+            const tile = new Tile2({
+                name: json_sprite.name,
+                blocking: json_sprite.blocking,
+                size: new Size(json_sprite.w,json_sprite.h),
+            }, json_doc.color_palette as string[])
+            tile._id = json_sprite.id
+            console.log("loading tile",tile._id)
+            tile.data.data = json_sprite.data
+            tile.rebuild_cache()
+            sheet.addTile(tile)
+        })
+        doc.getPropValue('sheets').push(sheet)
+    })
+    json_doc.maps.forEach(json_map => {
+        const map_size = new Size(json_map.width, json_map.height)
+        const layer = new TileLayer2({
+            name: json_map.name,
+            blocking: true,
+            size: map_size,
+        })
+        const data = new ArrayGrid<number>(map_size.w, map_size.h)
+        data.data = json_map.cells
+        layer.setPropValue('data',data)
+        const map = new Map2({
+            name: json_map.name,
+            layers: [layer]
+        })
+        map._id = json_map.id
+
+        doc.getPropValue('maps').push(map)
+    })
+    // json_doc.tests.forEach(json_test => {
+    //     doc.getPropValue('tests').push(TestModel.fromJSON(json_test))
+    // })
+    return doc
+}
+
 export function make_doc_from_json(raw_data: object) {
     if(!('version' in raw_data)) throw new Error('we cannot load this document')
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -109,26 +156,14 @@ export function make_doc_from_json(raw_data: object) {
         raw_data.tests = []
     }
     const json_doc = raw_data as JSONDoc
+    console.log("json doc",json_doc)
     if(json_doc.color_palette.length === 0) {
         json_doc.color_palette = PICO8
     }
-    const doc = new DocModel()
-    doc.setPropValue('name',json_doc.name)
-    doc.setPalette(json_doc.color_palette)
-    json_doc.sheets.forEach(json_sheet => {
-        const sheet = SheetModel.fromJSON(json_sheet)
-        doc.addSheet(sheet)
-        json_sheet.sprites.forEach(json_sprite => {
-            sheet.addSprite(SpriteModel.fromJSON(json_sprite,json_doc.color_palette))
-        })
-    })
-    json_doc.maps.forEach(json_map => {
-        doc.addMap(MapModel.fromJSON(json_map))
-    })
-    json_doc.tests.forEach(json_test => {
-        doc.addTest(TestModel.fromJSON(json_test))
-    })
-    return doc
+    if(json_doc.version === 4) {
+        return load_v4json(json_doc)
+    }
+    throw new Error("cannot load v5 files yt")
 }
 
 export function fileToJson(file:File) {

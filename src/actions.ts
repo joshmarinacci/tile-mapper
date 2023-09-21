@@ -58,15 +58,14 @@ export const LoadFileAction:SimpleMenuAction = {
         document.body.appendChild(input_element)
         const new_doc = await new Promise((res,rej)=>{
             input_element.addEventListener('change',() => {
-                console.log("user picked a file, we hope")
                 const files = input_element.files
                 if(!files || files.length <= 0) return
                 const file = files[0]
-                console.log(file)
                 fileToJson(file).then(data => res(make_doc_from_json(data as object)))
             })
             input_element.click()
         })
-        state.setPropValue('doc',new_doc as object)
+        console.log('new doc is',new_doc)
+        state.setPropValue('doc',new_doc)
     }
 }
