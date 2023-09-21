@@ -46,11 +46,6 @@ body {
 /* general */
 
 
-.toolbar {
-  border: 1px solid black;
-  display: flex;
-  flex-direction: row;
-}
 
 button {
   border: 1px solid #333;
@@ -70,6 +65,16 @@ button.selected:hover {
 }
 button.selected:active {
   background: #fff;
+}
+
+.toolbar {
+    border: 1px solid black;
+    display: flex;
+    flex-direction: row;
+}
+.toolbar > button {
+    border: 0px solid black;
+    border-width: 0px 1px 0px 0px;
 }
 
 

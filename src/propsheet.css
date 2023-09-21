@@ -10,10 +10,12 @@
 }
 .prop-sheet > * {
     padding: 0.25rem 0.5rem;
+    margin: 0.25rem 0.5rem;
 }
 .prop-sheet header {
     grid-column-start: 1;
     grid-column-end: 3;
+    margin:0;
 }
 
 .prop-sheet label {
@@ -25,5 +27,8 @@
     grid-column-end: 3;
     min-width: 1rem;
     justify-self: stretch;
+}
+.prop-sheet input[type='checkbox'] {
+    justify-self: start;
 }
 

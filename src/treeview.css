@@ -1,18 +1,20 @@
 .tree-wrapper {
-    border: 1px solid black;
-    max-width: 20em;
+    border: 0px solid black;
+    border-right-width: 1px;
+    border-bottom-width: 1px;
     --pane-background: #e1dede;
+    --section-header-background: #909191;
+    --section-header-background-hover: #dcdede;
 }
 .tree-wrapper > * {
     margin:0;
 }
 .tree-wrapper .description {
-    border: 1px solid black;
     margin:0;
     padding: 0.25rem 0.5rem;
     font-weight: bold;
 }
-.tree-object.selected .description {
+.tree-object.selected > .description {
     background-color: black;
     color: white;
 }
@@ -24,37 +26,22 @@
     flex-direction: column;
     align-items: stretch;
     justify-content: start;
+    background-color: var(--pane-background);
+    color: black;
+    border: 1px solid black;
+    border-width: 0px 0px 1px 1px;
+}
+.tree-object:last-child {
+    border-bottom-width: 0;
 }
 .tree-object.selected {
-    background-color: white;
+    background-color: var(--pane-background);
+    color: black;
 }
 
 .tree-item {
     list-style: none;
     margin: 0;
-}
-.tree-item p {
-    display: flex;
-    flex-direction: row;
-    align-items: baseline;
-    margin:0;
-    padding: 0;
-    justify-content: space-between;
-    border: 1px solid black;
-}
-.tree-item p button:first-child {
-    border-width: 0 1px 0 0;
-    width: 1.5rem;
-    text-align: center;
-}
-.tree-item p b {
-    flex: 1.0;
-    padding: 0.25rem;
-}
-.tree-item p button:last-child {
-    border-width: 0 0px 0 1px;
-    width: 1.5rem;
-    text-align: center;
 }
 .tree-list {
     margin: 0;
@@ -62,5 +49,39 @@
     border: 0px solid yellow;
     margin: 0rem;
     margin-left: 1.5rem;
+}
+
+.tree-item .section {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    margin:0;
+    padding: 0;
+    justify-content: space-between;
+    border: 1px solid black;
+    border-width: 1px 0px 1px 1px;
+    border-left-color: transparent;
+    background-color: var(--section-header-background);
+}
+.tree-item .section button {
+    background-color: var(--section-header-background);
+    width: 1.5rem;
+    text-align: center;
+}
+.tree-item .section button:first-child {
+    border-width: 0 1px 0 0;
+}
+.tree-item .section b {
+    flex: 1.0;
+    padding: 0.25rem;
+    text-transform: uppercase;
+    font-weight: normal;
+    font-size: 85%;
+}
+.tree-item .section button:last-child {
+    border-width: 0 0px 0 1px;
+}
+.tree-item .section button:hover {
+    background-color: var(--section-header-background-hover);
 }
 

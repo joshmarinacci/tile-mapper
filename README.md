@@ -2,15 +2,18 @@ Tile mapper data model
 
 
 todos:
- let you add a new sprite sheet
- comment out the old model classes
- let you resize a tile layer from the props
- improve listening to changes and updating
- make map editor bigger
- make persistence work again
- add array property edit hooks to fire changes properly
+ [ ] support loading mario, but not saving out again. specific to V4
+ [x] let you add a new sprite sheet
+ [ ] comment out the old model classes
+ [x] improve listening to changes and updating
+ [ ] make map editor bigger. sheets and tiles on left, layers and full props on right. map in the middle. ? 
+ [ ] make map editor canvas big as the biggest tile layer, and scroll
+ [ ] make persistence work again
+ [ ] add array property edit hooks to fire changes properly
  [x] ex: sheet.removeTile()
-
+ [ ] add and remove map layers
+ [ ] let you resize a tile layer from the props. destructive?
+ [ ] fix width of cells of vertical list views
 
 Doc has
     palette: string[]
