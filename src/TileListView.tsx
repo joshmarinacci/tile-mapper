@@ -5,9 +5,9 @@ import {forceDownloadBlob} from "josh_web_util"
 import React, {useEffect, useRef} from "react"
 
 import {useWatchProp} from "./base"
-import {Sheet2, Tile2} from "./data2"
+import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "./common"
+import {Sheet2, Tile2} from "./datamodel"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
-import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "./model"
 
 const TilePreviewRenderer: ListViewRenderer<Tile2> = (props: { value: Tile2, selected: boolean, index: number }) => {
     const {selected, value, index} = props

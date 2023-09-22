@@ -1,8 +1,105 @@
 import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
 
 import {CLASS_REGISTRY, DefList, PropDef, PropsBase, PropValues, restoreClassFromJSON} from "./base"
-import {BlockingDef, BoundsDef, MapCell, NameDef, PaletteDef, SizeDef} from "./defs"
-import {drawEditableSprite, ImagePalette} from "./model"
+import {drawEditableSprite, ImagePalette, PICO8} from "./common"
+
+export const NameDef: PropDef<string> = {
+    type: 'string',
+    editable: true,
+    default: () => 'unnamed',
+    toJSON: (v: string) => v,
+    format: (v) => v,
+}
+export const SizeDef: PropDef<Size> = {
+    type:'Size',
+    editable:false,
+    default: () => new Size(10,10),
+    toJSON: (v) => v.toJSON(),
+    fromJSON: (v) => Size.fromJSON(v),
+    format: (v) => `${v.w} x ${v.h}`,
+}
+export const PointDef: PropDef<Point> = {
+    type:'Point',
+    editable:false,
+    default: () => new Point(0,0),
+    toJSON: (v) => v.toJSON(),
+    fromJSON: (v) => Point.fromJSON(v),
+    format: (v) => `${v.x} , ${v.y}`,
+}
+export const BoundsDef: PropDef<Bounds> = {
+    type:'Bounds',
+    editable:false,
+    default: () => new Bounds(0,0,10,10),
+    toJSON: (v) => v.toJSON(),
+    format: (v) => `${v.w} x ${v.h}`,
+    fromJSON: (v) => Bounds.fromJSON(v)
+}
+export const PaletteDef: PropDef<ImagePalette> = {
+    type:'object',
+    editable:false,
+    default: () => PICO8,
+    toJSON: (v) => PICO8,
+    format: (v) => 'unknown',
+    fromJSON: (v) => v,
+}
+
+const JumpDef: PropDef<number> = {
+    type: 'float',
+    editable: true,
+    default: () => 0.0,
+    toJSON: (v: number) => v,
+    format: (v) => v.toFixed(2),
+}
+const ViewportDef: PropDef<Size> = {
+    type: 'Size',
+    editable: true,
+    default: () => new Size(10, 10),
+    toJSON: (v: Size) => v.toJSON(),
+    format: (v) => `${v.w} x ${v.h}`,
+}
+const GravityDef: PropDef<Point> = {
+    type: 'Point',
+    editable: true,
+    default: () => new Point(0, 0.1),
+    toJSON: (v: Point) => v.toJSON(),
+    format: (v) => `${v.x} , ${v.y}`,
+}
+const MoveSpeedDef: PropDef<number> = {
+    type: 'float',
+    editable: true,
+    default: () => 0.5,
+    toJSON: (v: number) => v,
+    format: (v) => v.toFixed(2),
+}
+const MaxFallSpeedDef: PropDef<number> = {
+    type: 'float',
+    editable: true,
+    default: () => 0.5,
+    toJSON: (v: number) => v,
+    format: (v) => v.toFixed(2),
+}
+const FrictionDef:PropDef<number> = {
+    type:"float",
+    default: () => 0.99,
+    editable:true,
+    toJSON: (v) => v,
+    format: (v) => v.toFixed(2),
+}
+const CURRENT_VERSION = 4
+export type MapCell = {
+    tile: string, //id of the sprite used to draw this
+}
+
+export const BlockingDef:PropDef<boolean> = {
+    type:"boolean",
+    editable:true,
+    default: () => false,
+    toJSON: (v) => v,
+    format: (v) => v?'true':'false',
+}
+
+
+
 
 const GenericDataArrayDef: PropDef<object[]> = {
     type: "array",
@@ -139,7 +236,7 @@ export class Tile2 extends PropsBase<TileType> {
         return this.getPropValue('data')
     }
 }
-CLASS_REGISTRY.register(Tile2,Tile2Defs)
+CLASS_REGISTRY.register('Tile',Tile2,Tile2Defs)
 
 
 type Sheet2Type = {
@@ -185,7 +282,7 @@ export class Sheet2 extends PropsBase<Sheet2Type> {
 
     }
 }
-CLASS_REGISTRY.register(Sheet2,SheetDefs)
+CLASS_REGISTRY.register('Sheet',Sheet2,SheetDefs)
 
 
 
@@ -253,7 +350,7 @@ export class TileLayer2 extends PropsBase<TileLayerType> {
 
     }
 }
-CLASS_REGISTRY.register(TileLayer2,TileLayerDefs)
+CLASS_REGISTRY.register('TileLayer',TileLayer2,TileLayerDefs)
 
 type ActorLayerType = {
     type: 'actor-layer',
@@ -271,7 +368,7 @@ export class ActorLayer extends PropsBase<ActorLayerType> {
         super(ActorLayerDefs, opts)
     }
 }
-CLASS_REGISTRY.register(ActorLayer, ActorLayerDefs)
+CLASS_REGISTRY.register('ActorLayer',ActorLayer, ActorLayerDefs)
 
 export type Layer2Type = {
     name: string,
@@ -304,7 +401,7 @@ export class Map2 extends PropsBase<Map2Type> {
         return biggest
     }
 }
-CLASS_REGISTRY.register(Map2,Map2Defs)
+CLASS_REGISTRY.register('Map',Map2,Map2Defs)
 
 type ActorType = {
     name: string,
@@ -321,7 +418,7 @@ export class Actor extends PropsBase<ActorType> {
         super(ActorDefs, opts)
     }
 }
-CLASS_REGISTRY.register(Actor,ActorDefs)
+CLASS_REGISTRY.register('Actor',Actor,ActorDefs)
 
 const EditableSizeDef: PropDef<Size> = {
     type:'Size',
@@ -348,7 +445,7 @@ export class Test2 extends PropsBase<TestType> {
         super(TestDefs, opts)
     }
 }
-CLASS_REGISTRY.register(Test2, TestDefs)
+CLASS_REGISTRY.register('GameTest',Test2, TestDefs)
 
 const ActorsListDef: PropDef<Actor[]> = {
     type: 'array',
@@ -432,6 +529,6 @@ export class Doc2 extends PropsBase<Doc2Type> {
         return null
     }
 }
-CLASS_REGISTRY.register(Doc2,Doc2Defs)
+CLASS_REGISTRY.register('Doc',Doc2,Doc2Defs)
 
 

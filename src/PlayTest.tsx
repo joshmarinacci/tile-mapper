@@ -2,8 +2,7 @@ import {ArrayGrid, Size} from "josh_js_util"
 import React, {useEffect, useRef} from "react"
 
 import {useWatchProp} from "./base"
-import {Doc2, Map2, Test2, TileLayer2} from "./data2"
-import {MapCell} from "./defs"
+import {Doc2, Map2, MapCell,Test2, TileLayer2} from "./datamodel"
 import {TileCache} from "./engine/cache"
 import {GameState} from "./engine/gamestate"
 import {TileReference} from "./engine/globals"
@@ -72,7 +71,6 @@ export function PlayTest(props: {
 }) {
     const {doc, map, test, zoom, grid} = props
     const tileSize = doc.getPropValue('tileSize')
-    const biggest = map.calcBiggestLayer()
     const viewport = test.getPropValue('viewport') as Size
     const ref = useRef<HTMLCanvasElement>(null)
 

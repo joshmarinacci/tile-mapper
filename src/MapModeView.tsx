@@ -3,7 +3,7 @@ import "./MapEditor.css"
 import {HBox} from "josh_react_util"
 import React, {useState} from "react"
 
-import {Doc2, Map2, Sheet2, Tile2} from "./data2"
+import {Doc2, Map2, Sheet2, Tile2} from "./datamodel"
 import {LayerEditor} from "./LayerEditor"
 import {LayerList} from "./LayerList"
 import {PropSheet} from "./propsheet"
@@ -54,7 +54,6 @@ export function MapModeView(props: {
                 doc={doc}
                 map={props.map}
                 layer={selectedLayer}
-                sheet={selectedSheet}
                 tile={selectedTile}
                 setSelectedTile={setSelectedTile}
             />

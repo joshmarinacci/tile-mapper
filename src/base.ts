@@ -101,7 +101,7 @@ export class PropsBase<Type> {
     }
     toJSON() {
         const obj:JsonOut<Type> = {
-            class:this.constructor.name,
+            class:CLASS_REGISTRY.lookupNameForObject(this),
             props:{} as Record<keyof Type, JSONValue>,
             id:this._id,
         }
@@ -209,25 +209,51 @@ export function useWatchProp<Type, Key extends keyof Type>(
 }
 
 class ClassRegistry {
-    classByName: Map<string, any>
+    classByName: Map<string, unknown>
     defsByName: Map<string, DefList<any>>
+    private namesByClass: Map<any, string>
 
     constructor() {
         this.classByName = new Map()
         this.defsByName = new Map()
+        this.namesByClass = new Map()
     }
 
-    register<Type>(clazz: any, defs: DefList<Type>) {
-        console.log("registering class", clazz)
-        this.classByName.set(clazz.name, clazz)
-        this.defsByName.set(clazz.name, defs)
+    register<Type>(name:string, clazz: unknown, defs: DefList<Type>) {
+        this.log("registering class", clazz)
+        this.classByName.set(name, clazz)
+        this.defsByName.set(name, defs)
+        this.namesByClass.set(clazz,name)
+    }
+
+    lookupNameForObject(target:PropsBase<any>) {
+        const clazz = target.constructor
+        this.log("checking name",clazz)
+        if(this.namesByClass.has(clazz)) {
+            this.log("found class for target",clazz,this.namesByClass.get(clazz))
+            return this.namesByClass.get(clazz)
+        }
+        throw new Error("cannot serialize class")
+    }
+
+    private log(...args:unknown[]) {
+        console.log("ClassRegistry",...args)
     }
 }
 
 export const CLASS_REGISTRY = new ClassRegistry()
 
+const CLASS_NAME_MAP:Record<string, string> = {
+    'Doc2':'Doc',
+    'Sheet2':'Sheet',
+    '_Tile2':'Tile',
+    'Map2':'Map',
+    'TileLayer2':'TileLayer',
+    'Test2':'GameTest',
+}
 export function restoreClassFromJSON<Type>(json: JsonOut<Type>): PropsBase<Type> {
     console.log("restoring class", json)
+    if(CLASS_NAME_MAP[json.class]) json.class = CLASS_NAME_MAP[json.class]
     const Clazz = CLASS_REGISTRY.classByName.get(json.class)
     if(!Clazz) throw new Error(`class missing for ${json.class}`)
     const defs = CLASS_REGISTRY.defsByName.get(json.class)

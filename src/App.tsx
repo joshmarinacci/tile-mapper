@@ -14,16 +14,13 @@ import React, {useState} from 'react'
 import {DocToBMP, DocToPNG, LoadFileAction, SaveAction} from "./actions"
 import {ActorEditView} from "./ActorEditView"
 import {ActionRegistry, PropsBase, useWatchAllProps, useWatchProp} from "./base"
+import {PICO8} from "./common"
 import {
     ActionRegistryContext,
     ToolbarActionButton
 } from "./common-components"
-import {Actor, ActorLayer, Doc2, Map2, Sheet2, Test2, Tile2, TileLayer2} from "./data2"
-import {
-    MapCell
-} from "./defs"
+import {Actor, ActorLayer, Doc2, Map2, MapCell, Sheet2, Test2, Tile2, TileLayer2} from "./datamodel"
 import {MapModeView} from "./MapModeView"
-import {PICO8} from "./model"
 import {PropSheet} from "./propsheet"
 import {GlobalState} from "./state"
 import {TestModeView} from "./TestModeView"

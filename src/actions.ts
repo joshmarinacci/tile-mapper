@@ -1,12 +1,9 @@
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
 import {SimpleMenuAction} from "./base"
-import {Doc2} from "./data2"
+import {canvas_to_bmp, sheet_to_canvas} from "./common"
+import {Doc2} from "./datamodel"
 import {docToJSON, fileToJson, jsonObjToBlob, make_doc_from_json} from "./json"
-import {
-    canvas_to_bmp,
-    sheet_to_canvas
-} from "./model"
 import {GlobalState} from "./state"
 
 export const SaveAction:SimpleMenuAction = {

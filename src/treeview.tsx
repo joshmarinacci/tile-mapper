@@ -5,7 +5,7 @@ import {toClass} from "josh_react_util"
 import React, {useState} from "react"
 
 import {appendToList, PropDef, PropsBase, useWatchProp} from "./base"
-import {Map2, Sheet2, Test2} from "./data2"
+import {Map2, Sheet2, Test2} from "./datamodel"
 import {GlobalState} from "./state"
 
 function PropertyList<T, K extends keyof T>(props: {

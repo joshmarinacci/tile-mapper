@@ -1,8 +1,8 @@
 import {Size} from "josh_js_util"
 
-import { PropDef, PropsBase} from "./base"
-import {Doc2} from "./data2"
-import {PICO8} from "./model"
+import {PropDef, PropsBase} from "./base"
+import {PICO8} from "./common"
+import {Doc2} from "./datamodel"
 
 type GlobalStateType = {
     doc: Doc2,
