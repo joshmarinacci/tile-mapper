@@ -1,12 +1,13 @@
-import {ArrayGrid, Bounds, Size} from "josh_js_util"
+import {ArrayGrid, Size} from "josh_js_util"
 import React, {useEffect, useRef, useState} from "react"
 
-import {useWatchProp} from "./base"
+import {useWatchAllProps} from "./base"
 import {GameDoc, GameMap, GameTest, MapCell,TileLayer} from "./datamodel"
 import {ActorsLayer} from "./engine/actorslayer"
 import {TileCache} from "./engine/cache"
 import {GameState} from "./engine/gamestate"
 import {TileReference} from "./engine/globals"
+import {PhysicsConstants} from "./engine/physics"
 import {TilemapLayer} from "./engine/tilemaplayer"
 
 function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMap, size:Size) {
@@ -77,8 +78,13 @@ class Anim {
     private zoom: number
     private callback: () => void
     private playing: boolean
+    private physics: PhysicsConstants
     constructor() {
         this.playing = false
+        this.physics = {
+            gravity:0,
+            jump_power: 0
+        }
         this.callback = () => {
             this.drawOnce()
             if(this.playing) requestAnimationFrame(this.callback)
@@ -111,7 +117,7 @@ class Anim {
         const vp = this.game_state.getViewport()
         // const vp = new Bounds(0,0,300,300)
         const players = this.game_state.getPlayers()
-        this.game_state.getPhysics().updatePlayer(players, map.layers, this.game_state.getKeyboard(), this.cache)
+        this.game_state.getPhysics().updatePlayer(players, map.layers, this.game_state.getKeyboard(), this.cache, this.physics)
         this.game_state.getPhysics().updateEnemies(this.game_state.getEnemies(), map.layers, this.cache)
         this.game_state.updateViewport(vp, players, this.zoom)
         // this.log("drawing", players.length, map.layers.length, vp.left())
@@ -123,6 +129,10 @@ class Anim {
 
     setZoom(zoom: number) {
         this.zoom = zoom
+    }
+
+    setPhysicsConstants(phs: PhysicsConstants) {
+        this.physics = phs
     }
 }
 
@@ -143,13 +153,18 @@ export function PlayTest(props: {
     const redraw = () => {
         if (!ref.current) return
         anim.setGamestate(generateGamestate(ref.current, doc, map, viewport.scale(zoom).scale(tileSize.w)))
+        const phs:PhysicsConstants = {
+            gravity: test.getPropValue('gravity'),
+            jump_power: test.getPropValue('jump_power')
+        }
+        anim.setPhysicsConstants(phs)
         anim.setZoom(zoom)
         anim.drawOnce()
         if (grid) {
             drawGrid(ref.current, zoom, tileSize, viewport)
         }
     }
-    useWatchProp(test,'viewport', ()=> redraw())
+    useWatchAllProps(test, () => redraw())
     useEffect(() => redraw(), [doc, test, zoom, grid, ref, viewport])
     useEffect(() => {
         if(playing) {

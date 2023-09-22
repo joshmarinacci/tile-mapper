@@ -7,9 +7,7 @@ import {
     Enemy,
     EPISLON,
     FRICTION,
-    GRAVITY,
     Item,
-    JUMP_POWER,
     Layer,
     MAX_MOVE,
     MOVE_SPEED,
@@ -22,6 +20,10 @@ import {strokeBounds} from "./util"
 type Collision = {
     hit: boolean
     target? : Actor
+}
+export type PhysicsConstants = {
+    jump_power: number
+    gravity:number,
 }
 const l = (...args: unknown[]) => console.log(...args)
 
@@ -157,10 +159,10 @@ export class PhysicsManager implements Layer {
         }
     }
 
-    updatePlayer(players: Player[], layers: Layer[], keyboard: KeyboardManager, cache: TileCache) {
+    updatePlayer(players: Player[], layers: Layer[], keyboard: KeyboardManager, cache: TileCache, values:PhysicsConstants) {
         players.forEach(ply => {
             // apply gravity
-            ply.vy += GRAVITY
+            ply.vy += values.gravity
 
             // run right
             if (keyboard.isPressed(KeyCodes.ArrowRight)) {
@@ -180,7 +182,7 @@ export class PhysicsManager implements Layer {
 
             // jump
             if (keyboard.isPressed(KeyCodes.Space) && ply.standing) {
-                ply.vy += JUMP_POWER
+                ply.vy += values.jump_power
                 ply.standing = false
             }
             layers.forEach(layer => {

@@ -14,8 +14,6 @@ export interface Layer {
     drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache:TileCache, scale:number): void
 }
 
-export const GRAVITY = 0.2
-export const JUMP_POWER = -6
 export const MAX_MOVE = 1.5
 export const EPISLON = 0.001
 export const MOVE_SPEED = 0.3

@@ -46,23 +46,16 @@ export const PaletteDef: PropDef<ImagePalette> = {
 const JumpDef: PropDef<number> = {
     type: 'float',
     editable: true,
-    default: () => 0.0,
+    default: () => -5,
     toJSON: (v: number) => v,
     format: (v) => v.toFixed(2),
 }
-const ViewportDef: PropDef<Size> = {
-    type: 'Size',
+const GravityDef: PropDef<number> = {
+    type: 'float',
     editable: true,
-    default: () => new Size(10, 10),
-    toJSON: (v: Size) => v.toJSON(),
-    format: (v) => `${v.w} x ${v.h}`,
-}
-const GravityDef: PropDef<Point> = {
-    type: 'Point',
-    editable: true,
-    default: () => new Point(0, 0.1),
-    toJSON: (v: Point) => v.toJSON(),
-    format: (v) => `${v.x} , ${v.y}`,
+    default: () => 0.2,
+    toJSON: (v) => v,
+    format: (v) => v.toFixed(2),
 }
 const MoveSpeedDef: PropDef<number> = {
     type: 'float',
@@ -450,15 +443,28 @@ const EditableSizeDef: PropDef<Size> = {
     format: (v) => `${v.w} x ${v.h}`,
 }
 
+const ViewportDef: PropDef<Size> = {
+    type: 'Size',
+    editable: true,
+    hidden:false,
+    default: () => new Size(10, 10),
+    toJSON: (v: Size) => v.toJSON(),
+    fromJSON: (v) => Size.fromJSON(v),
+    format: (v) => `${v.w} x ${v.h}`,
+}
 type TestType = {
     name: string,
     map: string,
     viewport: Size,
+    gravity: number,
+    jump_power: number,
 }
 const TestDefs:DefList<TestType> = {
     name: NameDef,
     map: NameDef,
-    viewport: EditableSizeDef,
+    viewport: ViewportDef,
+    gravity: GravityDef,
+    jump_power: JumpDef,
 }
 export class GameTest extends PropsBase<TestType> {
     constructor(opts?: PropValues<TestType>) {
