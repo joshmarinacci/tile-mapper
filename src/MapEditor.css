@@ -2,14 +2,14 @@
     border: 1px solid black;
 }
 .map-editor .sheet-list {
-    width: 200px;
+    width: 100%;
 }
 .map-editor .tile-list-view {
     width: 320px;
     height: 200px;
 }
 .map-editor .layer-list-view {
-    width: 200px;
+    width: 250px;
 }
 .map-editor-canvas-wrapper {
     overflow: scroll;
