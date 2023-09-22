@@ -1,7 +1,9 @@
+import {Size} from "josh_js_util"
 import React from "react"
 
-import {PropsBase, useWatchProp} from "./base"
-import {GameMap,Layer2Type} from "./datamodel"
+import {appendToList, PropsBase, useWatchProp} from "./base"
+import {GameMap, Layer2Type, TileLayer} from "./datamodel"
+import {TilemapLayer} from "./engine/tilemaplayer"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
 const LayerNameRenderer: ListViewRenderer<PropsBase<Layer2Type>> = (props: {
@@ -21,8 +23,10 @@ export function LayerList(props: {
     layer: PropsBase<Layer2Type>
 }) {
 
+    useWatchProp(props.map,"layers")
     const add_tile_layer = () => {
-
+        const layer = new TileLayer({name:'new tile layer', size: new Size(20,10), type:'tile-layer'})
+        appendToList(props.map,"layers", layer)
     }
     const add_actor_layer = () => {
 

@@ -5,6 +5,7 @@ import {toClass} from "josh_react_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
+import {useWatchProp} from "./base"
 import {drawEditableSprite} from "./common"
 import {ActorLayer, GameDoc, GameMap, MapCell, Tile, TileLayer} from "./datamodel"
 
@@ -128,6 +129,7 @@ export function LayerEditor(props: {
     const scale = Math.pow(2, zoom)
     const biggest = map.calcBiggestLayer()
     const tileSize = doc.getPropValue('tileSize')
+    useWatchProp(map,"layers")
     const redraw = () => {
         if (ref.current) {
             const canvas = ref.current
@@ -135,7 +137,8 @@ export function LayerEditor(props: {
             ctx.imageSmoothingEnabled = false
             ctx.fillStyle = 'magenta'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
-            map.getPropValue('layers').forEach(layer => {
+            map.getPropValue('layers').forEach((layer:TileLayer) => {
+                if(!layer.getPropValue('visible')) return
                 if (layer instanceof TileLayer) {
                     drawTileLayer(ctx, doc, layer as TileLayer, scale, grid)
                 }
@@ -155,7 +158,7 @@ export function LayerEditor(props: {
     }
     const [fillOnce, setFillOnce] = useState<boolean>(false)
 
-    useEffect(() => redraw(), [zoom])
+    useEffect(() => redraw(), [zoom, layer])
 
     const onMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
         if (e.button === 2) {
