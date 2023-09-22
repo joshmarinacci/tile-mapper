@@ -2,12 +2,11 @@ import {Size} from "josh_js_util"
 import React from "react"
 
 import {appendToList, PropsBase, useWatchProp} from "./base"
-import {GameMap, Layer2Type, TileLayer} from "./datamodel"
-import {TilemapLayer} from "./engine/tilemaplayer"
+import {GameMap, MapLayerType, TileLayer} from "./datamodel"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
-const LayerNameRenderer: ListViewRenderer<PropsBase<Layer2Type>> = (props: {
-    value: PropsBase<Layer2Type>,
+const LayerNameRenderer: ListViewRenderer<PropsBase<MapLayerType>> = (props: {
+    value: PropsBase<MapLayerType>,
     selected: boolean
 }) => {
     useWatchProp(props.value,'name')
@@ -17,10 +16,10 @@ const LayerNameRenderer: ListViewRenderer<PropsBase<Layer2Type>> = (props: {
 }
 
 export function LayerList(props: {
-    setSelectedLayer: (value: PropsBase<Layer2Type>) => void,
+    setSelectedLayer: (value: PropsBase<MapLayerType>) => void,
     map: GameMap,
     editable: boolean,
-    layer: PropsBase<Layer2Type>
+    layer: PropsBase<MapLayerType>
 }) {
 
     useWatchProp(props.map,"layers")
@@ -34,6 +33,27 @@ export function LayerList(props: {
     const delete_layer = () => {
 
     }
+    const move_layer_up = () => {
+        if(!props.layer) return
+        let layers = props.map.getPropValue('layers') as PropsBase<MapLayerType>[]
+        layers = layers.slice()
+        const n = layers.indexOf(props.layer)
+        if(n>= layers.length) return
+        layers.splice(n,1)
+        layers.splice(n+1,0,props.layer)
+        props.map.setPropValue('layers',layers)
+    }
+    const move_layer_down = () => {
+        if(!props.layer) return
+        let layers = props.map.getPropValue('layers') as PropsBase<MapLayerType>[]
+        layers = layers.slice()
+        const n = layers.indexOf(props.layer)
+        if(n<=0) return
+        layers.splice(n,1)
+        layers.splice(n-1,0,props.layer)
+        props.map.setPropValue('layers',layers)
+
+    }
 
     return <div className={'pane layer-list-view'}>
         <header>Layers</header>
@@ -42,6 +62,8 @@ export function LayerList(props: {
                 <button onClick={add_tile_layer}>add tile layer</button>
                 <button onClick={add_actor_layer}>add actor layer</button>
                 <button onClick={delete_layer}>del layer</button>
+                <button onClick={move_layer_up}>down</button>
+                <button onClick={move_layer_down}>up</button>
             </div>}
         <ListView selected={props.layer}
                   setSelected={props.setSelectedLayer}

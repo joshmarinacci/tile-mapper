@@ -31,6 +31,9 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
         if (layer instanceof TileLayer) {
             const tl = new TilemapLayer()
             tl.type = 'tilemap'
+            tl.blocking = layer.getPropValue('blocking')
+            tl.wrapping = layer.getPropValue('wrapping')
+            tl.scrollSpeed = layer.getPropValue('scrollSpeed')
             const size = layer.getPropValue('size')
             tl.tiles = new ArrayGrid<TileReference>(size.w, size.h)
             const editorCells = layer.getPropValue('data') as ArrayGrid<MapCell>
@@ -38,14 +41,13 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
                 if (editorCells.get(n)) return ({ uuid: editorCells.get(n).tile })
                 return ({ uuid: 'unknown' })
             })
-            tl.blocking = true
             gamestate.addLayer(tl)
         }
     })
     const actors = new ActorsLayer()
     actors.blocking = true
     gamestate.addLayer(actors)
-    // gamestate.addLayer(gamestate.getPhysics())
+    gamestate.addLayer(gamestate.getPhysics())
     gamestate.getPlayers().forEach(ply => actors.addActor(ply))
     return {game_state: gamestate, cache}
 }

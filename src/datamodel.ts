@@ -390,22 +390,22 @@ export class ActorLayer extends PropsBase<ActorLayerType> {
 }
 CLASS_REGISTRY.register('ActorLayer',ActorLayer, ActorLayerDefs)
 
-export type Layer2Type = {
+export type MapLayerType = {
     name: string,
     type: string,
     blocking: boolean,
     visible: boolean,
 }
-type Map2Type = {
+type GameMapType = {
     name: string,
-    layers: Layer2Type[]
+    layers: MapLayerType[]
 }
-const GameMapDefs:DefList<Map2Type> = {
+const GameMapDefs:DefList<GameMapType> = {
     name: NameDef,
     layers: GenericDataArrayDef,
 }
-export class GameMap extends PropsBase<Map2Type> {
-    constructor(opts?: PropValues<Map2Type>) {
+export class GameMap extends PropsBase<GameMapType> {
+    constructor(opts?: PropValues<GameMapType>) {
         super(GameMapDefs, opts)
     }
 
