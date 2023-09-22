@@ -32,7 +32,7 @@ export class GameState {
             this.canvas.height = size.h
         }
         this.canvas.style.border = '1px solid red'
-        this.keyboard = new KeyboardManager(canvas)
+        this.keyboard = new KeyboardManager()
         this.viewport = new Bounds(0, 0, size.w, size.h)
         const player: Player = {
             type: "player",

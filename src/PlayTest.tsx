@@ -79,9 +79,19 @@ class Anim {
     private callback: () => void
     private playing: boolean
     private physics: PhysicsConstants
+    private target: HTMLCanvasElement
+    private keydown_handler: (e: KeyboardEvent) => void
+    private keyup_handler: (e: KeyboardEvent) => void
     constructor() {
         this.playing = false
         this.zoom = 1
+        this.keydown_handler = (e:KeyboardEvent)  => {
+            this.game_state.getKeyboard().keydown(e.code)
+        }
+        this.keyup_handler = (e:KeyboardEvent)  => {
+            this.game_state.getKeyboard().keyup(e.code)
+        }
+
         this.physics = {
             gravity:0,
             jump_power: 0,
@@ -138,6 +148,18 @@ class Anim {
     setPhysicsConstants(phs: PhysicsConstants) {
         this.physics = phs
     }
+
+    setKeyboardTarget(target: HTMLCanvasElement) {
+        if(this.target) {
+            this.target.removeEventListener('keydown',this.keydown_handler)
+            this.target.removeEventListener('keyup',this.keyup_handler)
+        }
+        this.target = target
+        if(this.target) {
+            this.target.addEventListener('keydown',this.keydown_handler)
+            this.target.addEventListener('keyup',this.keyup_handler)
+        }
+    }
 }
 
 export function PlayTest(props: {
@@ -165,6 +187,7 @@ export function PlayTest(props: {
             friction: test.getPropValue('friction')
         }
         anim.setPhysicsConstants(phs)
+        anim.setKeyboardTarget(ref.current)
         anim.setZoom(zoom)
         anim.drawOnce()
         if (grid) {

@@ -1,6 +1,8 @@
 export enum KeyCodes {
     ArrowLeft='ArrowLeft',
     ArrowRight='ArrowRight',
+    ArrowUp='ArrowUp',
+    ArrowDown='ArrowDown',
     Space='Space',
 }
 type KeyState = {
@@ -8,24 +10,23 @@ type KeyState = {
 }
 export class KeyboardManager {
     private state: Map<KeyCodes, KeyState>
-    constructor(target: HTMLElement) {
+    constructor() {
         this.state = new Map<KeyCodes,KeyState>
-        target.addEventListener('keydown', (e) => {
-            // console.log(e.key, e.code)
-            if(e.code in KeyCodes) {
-                this.init_key(e.code as KeyCodes)
-                const state = this.state.get(e.code as KeyCodes) as KeyState
-                state.down = true
-            }
-            // this._dump()
-        })
-        target.addEventListener('keyup', (e) => {
-            if(e.code in KeyCodes) {
-                this.init_key(e.code as KeyCodes)
-                const state = this.state.get(e.code as KeyCodes) as KeyState
-                state.down = false
-            }
-        })
+    }
+
+    public keydown(code:string) {
+        if(code in KeyCodes) {
+            this.init_key(code as KeyCodes)
+            const state = this.state.get(code as KeyCodes) as KeyState
+            state.down = true
+        }
+    }
+    public keyup(code:string) {
+        if(code in KeyCodes) {
+            this.init_key(code as KeyCodes)
+            const state = this.state.get(code as KeyCodes) as KeyState
+            state.down = false
+        }
     }
 
     private init_key(code: KeyCodes) {
