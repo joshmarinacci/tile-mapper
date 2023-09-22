@@ -261,11 +261,18 @@ export function restoreClassFromJSON<Type>(json: JsonOut<Type>): PropsBase<Type>
     const args = {}
     for (const key of Object.keys(defs)) {
         const def = defs[key]
-        const val = def.fromJSON ? def.fromJSON(json.props[key]) : json.props[key]
-        args[key] = val
+        if(json.props.hasOwnProperty(key)) {
+            const val = def.fromJSON ? def.fromJSON(json.props[key]) : json.props[key]
+            args[key] = val
+            console.log("setting",key,'to',val)
+        } else {
+            console.log(`prop missing in json: ${key}. using default: ${def.default()}`)
+            args[key] = def.default()
+        }
     }
     const obj = new Clazz(args)
     obj._id = json.id
+    console.log("created object is",obj)
     return obj
 }
 

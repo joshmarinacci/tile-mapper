@@ -324,6 +324,28 @@ type TileLayerType = {
     visible:boolean,
     size: Size,
     data: ArrayGrid<MapCell>,
+    wrapping: boolean,
+    scrollSpeed: number,
+}
+const BooleanDef:PropDef<boolean> = {
+    type:'boolean',
+    hidden:false,
+    editable:true,
+    expandable:false,
+    default: () => true,
+    format:(v)=>v?'true':'false',
+    toJSON:(v) => v,
+    fromJSON:(v) => v as boolean,
+}
+const NumberDef:PropDef<number> = {
+    type:'float',
+    hidden:false,
+    editable:true,
+    expandable:false,
+    default: () => 0.0,
+    format:(v)=>v.toFixed(2),
+    toJSON:(v) => v,
+    fromJSON:(v) => v as number,
 }
 const TileLayerDefs:DefList<TileLayerType> = {
     name: NameDef,
@@ -332,6 +354,8 @@ const TileLayerDefs:DefList<TileLayerType> = {
     visible: BlockingDef,
     size: SizeDef,
     data: TileDataGridDef,
+    wrapping: BooleanDef,
+    scrollSpeed:NumberDef,
 }
 export class TileLayer extends PropsBase<TileLayerType> {
     constructor(opts?: PropValues<TileLayerType>) {
@@ -344,7 +368,6 @@ export class TileLayer extends PropsBase<TileLayerType> {
             data.fill(() => ({tile:'unknown'}))
             this.setPropValue('data',data)
         }
-
     }
 }
 CLASS_REGISTRY.register('TileLayer',TileLayer,TileLayerDefs)
