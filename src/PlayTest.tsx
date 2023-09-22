@@ -81,9 +81,13 @@ class Anim {
     private physics: PhysicsConstants
     constructor() {
         this.playing = false
+        this.zoom = 1
         this.physics = {
             gravity:0,
-            jump_power: 0
+            jump_power: 0,
+            friction:0,
+            move_speed_max: 0,
+            move_speed: 0,
         }
         this.callback = () => {
             this.drawOnce()
@@ -155,7 +159,10 @@ export function PlayTest(props: {
         anim.setGamestate(generateGamestate(ref.current, doc, map, viewport.scale(zoom).scale(tileSize.w)))
         const phs:PhysicsConstants = {
             gravity: test.getPropValue('gravity'),
-            jump_power: test.getPropValue('jump_power')
+            jump_power: test.getPropValue('jump_power'),
+            move_speed: test.getPropValue('move_speed'),
+            move_speed_max: test.getPropValue('move_speed_max'),
+            friction: test.getPropValue('friction')
         }
         anim.setPhysicsConstants(phs)
         anim.setZoom(zoom)

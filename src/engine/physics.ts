@@ -6,11 +6,8 @@ import {
     Actor,
     Enemy,
     EPISLON,
-    FRICTION,
     Item,
     Layer,
-    MAX_MOVE,
-    MOVE_SPEED,
     Player,
 } from "./globals"
 import {KeyboardManager, KeyCodes} from "./keyboard"
@@ -22,8 +19,11 @@ type Collision = {
     target? : Actor
 }
 export type PhysicsConstants = {
-    jump_power: number
     gravity:number,
+    jump_power: number
+    move_speed: number,
+    move_speed_max: number,
+    friction: number,
 }
 const l = (...args: unknown[]) => console.log(...args)
 
@@ -166,17 +166,17 @@ export class PhysicsManager implements Layer {
 
             // run right
             if (keyboard.isPressed(KeyCodes.ArrowRight)) {
-                ply.vx += MOVE_SPEED
+                ply.vx += values.move_speed
             }
             // run left
             if (keyboard.isPressed(KeyCodes.ArrowLeft)) {
-                ply.vx -= MOVE_SPEED
+                ply.vx -= values.move_speed
             }
             // apply friction when standing
-            if (ply.standing) ply.vx *= FRICTION
+            if (ply.standing) ply.vx *= values.friction
             // limit to max speeds
-            if (ply.vx > MAX_MOVE) ply.vx = MAX_MOVE
-            if (ply.vx < -MAX_MOVE) ply.vx = -MAX_MOVE
+            if (ply.vx > values.move_speed_max) ply.vx = values.move_speed_max
+            if (ply.vx < - values.move_speed_max) ply.vx = -values.move_speed_max
             // round to zero
             if (Math.abs(ply.vx) < EPISLON) ply.vx = 0
 

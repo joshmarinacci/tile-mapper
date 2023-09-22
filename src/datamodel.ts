@@ -458,6 +458,9 @@ type TestType = {
     viewport: Size,
     gravity: number,
     jump_power: number,
+    move_speed: number,
+    move_speed_max: number,
+    friction: number,
 }
 const TestDefs:DefList<TestType> = {
     name: NameDef,
@@ -465,6 +468,9 @@ const TestDefs:DefList<TestType> = {
     viewport: ViewportDef,
     gravity: GravityDef,
     jump_power: JumpDef,
+    move_speed: NumberDef,
+    move_speed_max: NumberDef,
+    friction: NumberDef,
 }
 export class GameTest extends PropsBase<TestType> {
     constructor(opts?: PropValues<TestType>) {

@@ -2021,12 +2021,6 @@
                                     "tile": "Wrapper_885994"
                                  },
                                  {
-                                    "tile": "Wrapper_28153"
-                                 },
-                                 {
-                                    "tile": "Wrapper_28153"
-                                 },
-                                 {
                                     "tile": "Wrapper_885994"
                                  },
                                  {
@@ -2034,15 +2028,6 @@
                                  },
                                  {
                                     "tile": "Wrapper_885994"
-                                 },
-                                 {
-                                    "tile": "Wrapper_885994"
-                                 },
-                                 {
-                                    "tile": "Wrapper_885994"
-                                 },
-                                 {
-                                    "tile": "Wrapper_28153"
                                  },
                                  {
                                     "tile": "Wrapper_885994"
@@ -2063,10 +2048,7 @@
                                     "tile": "Wrapper_885994"
                                  },
                                  {
-                                    "tile": "Wrapper_28153"
-                                 },
-                                 {
-                                    "tile": "Wrapper_28153"
+                                    "tile": "Wrapper_885994"
                                  },
                                  {
                                     "tile": "Wrapper_885994"
@@ -2099,13 +2081,31 @@
                                     "tile": "Wrapper_885994"
                                  },
                                  {
-                                    "tile": "Wrapper_28153"
+                                    "tile": "Wrapper_885994"
                                  },
                                  {
-                                    "tile": "Wrapper_28153"
+                                    "tile": "Wrapper_885994"
                                  },
                                  {
-                                    "tile": "Wrapper_28153"
+                                    "tile": "Wrapper_885994"
+                                 },
+                                 {
+                                    "tile": "Wrapper_885994"
+                                 },
+                                 {
+                                    "tile": "Wrapper_885994"
+                                 },
+                                 {
+                                    "tile": "Wrapper_885994"
+                                 },
+                                 {
+                                    "tile": "Wrapper_885994"
+                                 },
+                                 {
+                                    "tile": "Wrapper_885994"
+                                 },
+                                 {
+                                    "tile": "Wrapper_885994"
                                  },
                                  {
                                     "tile": "Wrapper_885994"
@@ -2255,9 +2255,14 @@
                   "name": "test 1",
                   "map": "unknown",
                   "viewport": {
-                     "w": 12,
+                     "w": 14,
                      "h": 10
-                  }
+                  },
+                  "gravity": 0.2,
+                  "jump_power": -4,
+                  "move_speed": 0.3,
+                  "move_speed_max": 1.5,
+                  "friction": 0.9
                },
                "id": "Wrapper_963831"
             }
