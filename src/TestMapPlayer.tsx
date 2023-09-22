@@ -9,9 +9,10 @@ export function TestMapPlayer(props: {
 }) {
     const {test, map, doc} = props
     const [playing, setPlaying] = useState(false)
-    const [zoom, setZoom] = useState(2)
-    const [grid, setGrid] = useState(true)
+    const [zoom, setZoom] = useState(3)
+    const [grid, setGrid] = useState(false)
     const togglePlaying = () => setPlaying(!playing)
+    const [physicsDebug, setPhysicsDebug] = useState(false)
     return <>
         <div className={'toolbar'}>
             <button onClick={()=>togglePlaying()}>{playing?"pause":"play"}</button>
@@ -20,6 +21,7 @@ export function TestMapPlayer(props: {
             <label>{zoom}</label>
             <button onClick={()=>setZoom(zoom-1)}>-</button>
             <button onClick={()=>setGrid(!grid)}>grid</button>
+            <button onClick={()=>setPhysicsDebug(!physicsDebug)}>collisons</button>
         </div>
         <PlayTest
             playing={playing}
@@ -28,6 +30,7 @@ export function TestMapPlayer(props: {
             test={test}
             zoom={zoom}
             grid={grid}
+            physicsDebug={physicsDebug}
         />
     </>
 }

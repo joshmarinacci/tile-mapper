@@ -10,7 +10,7 @@ import {TileReference} from "./engine/globals"
 import {PhysicsConstants} from "./engine/physics"
 import {TilemapLayer} from "./engine/tilemaplayer"
 
-function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMap, size:Size) {
+function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMap, size:Size, physicsDebug:boolean) {
     const gamestate = new GameState(current, size)
     const cache = new TileCache(doc.getPropValue('tileSize'))
     // pre-cache all of the tiles
@@ -48,7 +48,7 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
     const actors = new ActorsLayer()
     actors.blocking = true
     gamestate.addLayer(actors)
-    gamestate.addLayer(gamestate.getPhysics())
+    if(physicsDebug) gamestate.addLayer(gamestate.getPhysics())
     gamestate.getPlayers().forEach(ply => actors.addActor(ply))
     return {game_state: gamestate, cache}
 }
@@ -169,6 +169,7 @@ export function PlayTest(props: {
     test: GameTest,
     zoom: number,
     grid: boolean,
+    physicsDebug: boolean,
 }) {
     const {doc, map, test, zoom, grid, playing} = props
     const tileSize = doc.getPropValue('tileSize')
@@ -178,7 +179,7 @@ export function PlayTest(props: {
 
     const redraw = () => {
         if (!ref.current) return
-        anim.setGamestate(generateGamestate(ref.current, doc, map, viewport.scale(zoom).scale(tileSize.w)))
+        anim.setGamestate(generateGamestate(ref.current, doc, map, viewport.scale(zoom).scale(tileSize.w), props.physicsDebug))
         const phs:PhysicsConstants = {
             gravity: test.getPropValue('gravity'),
             jump_power: test.getPropValue('jump_power'),
@@ -195,7 +196,7 @@ export function PlayTest(props: {
         }
     }
     useWatchAllProps(test, () => redraw())
-    useEffect(() => redraw(), [doc, test, zoom, grid, ref, viewport])
+    useEffect(() => redraw(), [doc, test, zoom, grid, ref, viewport, props.physicsDebug])
     useEffect(() => {
         if(playing) {
             anim.stop()
