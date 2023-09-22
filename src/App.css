@@ -76,6 +76,10 @@ button.selected:active {
     display: flex;
     flex-direction: row;
     border-width: 0px 1px 1px 0px;
+    align-items: center;
+}
+.toolbar > label {
+    padding: 0.25rem 0.5rem;
 }
 .toolbar > button {
     border: 0px solid black;
