@@ -38,7 +38,7 @@ export function TileSheetEditor(props: {
             {tile && <PixelGridEditor
                 selectedColor={palette.indexOf(drawColor)}
                 setSelectedColor={(n) => setDrawColor(palette[n])}
-                image={tile} palette={palette}/>}
+                tile={tile} palette={palette}/>}
             {!tile && <div>no tile selected</div>}
         </VBox>
         {tile &&

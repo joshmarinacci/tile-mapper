@@ -29,12 +29,12 @@ function bucketFill(tile: Tile, target: number, replace:number, at: Point, ) {
 }
 
 export function PixelGridEditor(props: {
-    image: Tile,
+    tile: Tile,
     selectedColor: number,
     palette: ImagePalette,
     setSelectedColor: (v:number)=>void
 }) {
-    const {selectedColor, palette, image} = props
+    const {selectedColor, palette, tile} = props
     const [down, setDown] = useState<boolean>(false)
     const [grid, setGrid] = useState<boolean>(false)
     const [fillOnce, setFillOnce] = useState<boolean>(false)
@@ -46,9 +46,9 @@ export function PixelGridEditor(props: {
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.fillStyle = 'red'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
-            for (let i = 0; i < image.width(); i++) {
-                for (let j = 0; j < image.height(); j++) {
-                    const v: number = image.getPixel(new Point(i, j))
+            for (let i = 0; i < tile.width(); i++) {
+                for (let j = 0; j < tile.height(); j++) {
+                    const v: number = tile.getPixel(new Point(i, j))
                     ctx.fillStyle = palette[v]
                     ctx.fillRect(i * scale, j * scale, scale, scale)
                     if (grid) {
@@ -63,9 +63,9 @@ export function PixelGridEditor(props: {
     useEffect(() => {
         redraw()
         const hand = () => redraw()
-        image.onAny(hand)
-        return () => image.offAny(hand)
-    }, [image])
+        tile.onAny(hand)
+        return () => tile.offAny(hand)
+    }, [tile])
 
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
         const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
@@ -94,34 +94,34 @@ export function PixelGridEditor(props: {
         <canvas ref={ref}
                 style={{
                     border: '1px solid black',
-                    width: `${image.width()*scale}px`,
-                    height: `${image.height()*scale}px`,
+                    width: `${tile.width()*scale}px`,
+                    height: `${tile.height()*scale}px`,
                 }}
-                width={image.width() * scale}
-                height={image.height() * scale}
+                width={tile.width() * scale}
+                height={tile.height() * scale}
                 onContextMenu={(e) => {
                     e.preventDefault()
                 }}
                 onMouseDown={(e) => {
                     if(e.button === 2) {
-                        props.setSelectedColor(image.getPixel(canvasToImage(e)))
+                        props.setSelectedColor(tile.getPixel(canvasToImage(e)))
                         e.stopPropagation()
                         e.preventDefault()
                         return
                     }
                     if(fillOnce) {
                         const pt = canvasToImage(e)
-                        const current_color = image.getPixel(pt)
-                        bucketFill(image,current_color,selectedColor,pt)
+                        const current_color = tile.getPixel(pt)
+                        bucketFill(tile,current_color,selectedColor,pt)
                         setFillOnce(false)
                         return
                     }
                     setDown(true)
-                    image.setPixel(selectedColor, canvasToImage(e))
+                    tile.setPixel(selectedColor, canvasToImage(e))
                 }}
                 onMouseMove={(e) => {
                     if (down) {
-                        image.setPixel(selectedColor, canvasToImage(e))
+                        tile.setPixel(selectedColor, canvasToImage(e))
                     }
                 }}
                 onMouseUp={() => setDown(false)}>
