@@ -1,6 +1,5 @@
 import './App.css'
 
-import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
 import {
     DialogContainer,
     DialogContext,
@@ -14,14 +13,16 @@ import React, {useState} from 'react'
 import {DocToBMP, DocToPNG, LoadFileAction, SaveAction} from "./actions"
 import {ActorEditView} from "./ActorEditView"
 import {ActionRegistry, PropsBase, useWatchAllProps, useWatchProp} from "./base"
-import {PICO8} from "./common"
 import {
     ActionRegistryContext,
     ToolbarActionButton
 } from "./common-components"
-import {Actor, ActorLayer, GameDoc, GameMap, GameTest, MapCell, Sheet, Tile,TileLayer} from "./datamodel"
+import {Actor,  GameDoc, GameMap, GameTest, Sheet} from "./datamodel"
+import Example from "./example.json"
+import {make_doc_from_json} from "./json"
 import {MapModeView} from "./MapModeView"
 import {PropSheet} from "./propsheet"
+import {NewDocAction} from "./reactactions"
 import {GlobalState} from "./state"
 import {TestModeView} from "./TestModeView"
 import {TileSheetEditor} from "./TileSheetEditor"
@@ -33,49 +34,11 @@ AR.register([
     DocToBMP,
     DocToBMP,
     LoadFileAction,
+    NewDocAction,
 ])
 
 const STATE = new GlobalState()
-
-const TS = new Size(8,8)
-const doc2 = new GameDoc({name: 'doc2', tileSize:TS, palette:PICO8})
-{
-    const s1 = new Sheet({name: 'terrain', tileSize: TS})
-    const tile1 = new Tile({name: 'tile1',
-        blocking: false,
-        size:TS,
-        palette:doc2.getPropValue('palette')} )
-    tile1.setPixel(2, new Point(2, 2))
-    s1.getPropValue('tiles').push(tile1)
-    const s2 = new Sheet({name: 'characters', tileSize: TS})
-    doc2.getPropValue('sheets').push(s1)
-    doc2.getPropValue('sheets').push(s2)
-    const m1 = new GameMap({name: 'first map'})
-    const l1 = new TileLayer({
-        type: 'tile-layer',
-        name: 'terrain',
-        blocking: true,
-        size: new Size(20,10)
-    })
-    const grid = (l1.getPropValue('data') as ArrayGrid<MapCell>)
-    grid.set(new Point(1,0),{tile:tile1._id})
-    const l2 = new ActorLayer({type: 'actor-layer', name: 'enemies', blocking: true})
-    m1.getPropValue('layers').push(l1)
-    m1.getPropValue('layers').push(l2)
-    doc2.getPropValue('maps').push(m1)
-
-    const a1 = new Actor({name: 'player', hitbox: new Bounds(0, 0, 16, 16), viewbox: new Bounds(0, 0, 32, 32)})
-    const enemy = new Actor({name: 'enemy', hitbox: new Bounds(0, 0, 16, 16), viewbox: new Bounds(0, 0, 16, 16)})
-    doc2.getPropValue('actors').push(a1)
-    doc2.getPropValue('actors').push(enemy)
-
-    const test1 = new GameTest({name: 'test 1', viewport: new Size(12,8), map: 'unknown'})
-    doc2.getPropValue('tests').push(test1)
-    STATE.setPropValue('doc',doc2)
-    // setTimeout(() =>  {
-    //     STATE.setPropValue('selection',test1)
-    // }, 1000)
-}
+STATE.setPropValue('doc',make_doc_from_json(Example))
 
 function Main2() {
     const [selection, setSelection] = useState<PropsBase<any>|null>(null)
@@ -99,6 +62,7 @@ function Main2() {
     }
     return <div className={'main-content'}>
         <div className={'toolbar across'}>
+            <ToolbarActionButton action={NewDocAction} state={STATE}/>
             <ToolbarActionButton action={SaveAction} state={STATE}/>
             <ToolbarActionButton action={LoadFileAction} state={STATE}/>
             <ToolbarActionButton action={DocToPNG} state={STATE}/>

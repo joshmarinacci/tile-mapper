@@ -52,11 +52,16 @@ const AR = new ActionRegistry()
 export const ActionRegistryContext =  React.createContext(AR)
 
 
+export interface ReactMenuAction extends MenuAction{
+    type: 'react',
+    makeComponent: (state:GlobalState) => JSX.Element
+}
+
 export function ToolbarActionButton(props:{state:GlobalState, action:MenuAction,disabled?:boolean}):JSX.Element {
     const {action, disabled=false} = props
-    // if(action.type === 'react') {
-    //     return (action as ReactMenuAction).makeComponent(state) as JSX.Element
-    // }
+    if(action.type === 'react') {
+        return  (action as ReactMenuAction).makeComponent(props.state) as JSX.Element
+    }
     const icon = <></>
     // if(action.icon) {
     //     icon = <span  className="material-icons material-symbols-rounded">{action.icon}</span>

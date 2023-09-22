@@ -1,0 +1,1263 @@
+{
+   "version": 5,
+   "name": "example",
+   "doc": {
+      "class": "Doc2",
+      "props": {
+         "name": "example",
+         "sheets": [
+            {
+               "class": "Sheet2",
+               "props": {
+                  "name": "terrain",
+                  "tileSize": {
+                     "w": 8,
+                     "h": 8
+                  },
+                  "tiles": [
+                     {
+                        "class": "_Tile2",
+                        "props": {
+                           "name": "ground",
+                           "blocking": true,
+                           "data": {
+                              "w": 8,
+                              "h": 8,
+                              "data": [
+                                 11,
+                                 3,
+                                 11,
+                                 3,
+                                 11,
+                                 3,
+                                 11,
+                                 3,
+                                 3,
+                                 3,
+                                 3,
+                                 3,
+                                 3,
+                                 3,
+                                 3,
+                                 3,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 5,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 5,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4,
+                                 4
+                              ]
+                           },
+                           "size": {
+                              "w": 8,
+                              "h": 8
+                           },
+                           "palette": [
+                              "#000000",
+                              "#1D2B53",
+                              "#7E2553",
+                              "#008751",
+                              "#AB5236",
+                              "#5F574F",
+                              "#C2C3C7",
+                              "#FFF1E8",
+                              "#FF004D",
+                              "#FFA300",
+                              "#FFEC27",
+                              "#00E436",
+                              "#29ADFF",
+                              "#83769C",
+                              "#FF77A8",
+                              "#FFCCAA",
+                              "transparent"
+                           ]
+                        },
+                        "id": "Wrapper_558651"
+                     },
+                     {
+                        "class": "_Tile2",
+                        "props": {
+                           "name": "sky",
+                           "blocking": false,
+                           "data": {
+                              "w": 8,
+                              "h": 8,
+                              "data": [
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12,
+                                 12
+                              ]
+                           },
+                           "size": {
+                              "w": 8,
+                              "h": 8
+                           },
+                           "palette": [
+                              "#000000",
+                              "#1D2B53",
+                              "#7E2553",
+                              "#008751",
+                              "#AB5236",
+                              "#5F574F",
+                              "#C2C3C7",
+                              "#FFF1E8",
+                              "#FF004D",
+                              "#FFA300",
+                              "#FFEC27",
+                              "#00E436",
+                              "#29ADFF",
+                              "#83769C",
+                              "#FF77A8",
+                              "#FFCCAA",
+                              "transparent"
+                           ]
+                        },
+                        "id": "Wrapper_532672"
+                     },
+                     {
+                        "class": "_Tile2",
+                        "props": {
+                           "name": "brick",
+                           "blocking": true,
+                           "data": {
+                              "w": 8,
+                              "h": 8,
+                              "data": [
+                                 15,
+                                 15,
+                                 15,
+                                 15,
+                                 15,
+                                 15,
+                                 15,
+                                 15,
+                                 15,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 15,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 15,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 15,
+                                 15,
+                                 15,
+                                 15,
+                                 15,
+                                 15,
+                                 15,
+                                 15,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 15,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 15,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 8,
+                                 15,
+                                 8,
+                                 8,
+                                 8
+                              ]
+                           },
+                           "size": {
+                              "w": 8,
+                              "h": 8
+                           },
+                           "palette": [
+                              "#000000",
+                              "#1D2B53",
+                              "#7E2553",
+                              "#008751",
+                              "#AB5236",
+                              "#5F574F",
+                              "#C2C3C7",
+                              "#FFF1E8",
+                              "#FF004D",
+                              "#FFA300",
+                              "#FFEC27",
+                              "#00E436",
+                              "#29ADFF",
+                              "#83769C",
+                              "#FF77A8",
+                              "#FFCCAA",
+                              "transparent"
+                           ]
+                        },
+                        "id": "Wrapper_28153"
+                     }
+                  ]
+               },
+               "id": "Wrapper_799693"
+            },
+            {
+               "class": "Sheet2",
+               "props": {
+                  "name": "characters",
+                  "tileSize": {
+                     "w": 8,
+                     "h": 8
+                  },
+                  "tiles": [
+                     {
+                        "class": "_Tile2",
+                        "props": {
+                           "name": "punkin",
+                           "blocking": true,
+                           "data": {
+                              "w": 8,
+                              "h": 8,
+                              "data": [
+                                 8,
+                                 8,
+                                 8,
+                                 11,
+                                 11,
+                                 11,
+                                 8,
+                                 8,
+                                 8,
+                                 9,
+                                 9,
+                                 11,
+                                 9,
+                                 9,
+                                 8,
+                                 8,
+                                 9,
+                                 9,
+                                 9,
+                                 9,
+                                 9,
+                                 9,
+                                 9,
+                                 8,
+                                 9,
+                                 0,
+                                 9,
+                                 9,
+                                 9,
+                                 0,
+                                 9,
+                                 8,
+                                 9,
+                                 9,
+                                 9,
+                                 0,
+                                 9,
+                                 9,
+                                 9,
+                                 8,
+                                 9,
+                                 0,
+                                 9,
+                                 9,
+                                 9,
+                                 0,
+                                 9,
+                                 8,
+                                 9,
+                                 9,
+                                 0,
+                                 0,
+                                 0,
+                                 9,
+                                 9,
+                                 8,
+                                 8,
+                                 9,
+                                 9,
+                                 9,
+                                 9,
+                                 9,
+                                 8,
+                                 8
+                              ]
+                           },
+                           "size": {
+                              "w": 8,
+                              "h": 8
+                           },
+                           "palette": [
+                              "#000000",
+                              "#1D2B53",
+                              "#7E2553",
+                              "#008751",
+                              "#AB5236",
+                              "#5F574F",
+                              "#C2C3C7",
+                              "#FFF1E8",
+                              "#FF004D",
+                              "#FFA300",
+                              "#FFEC27",
+                              "#00E436",
+                              "#29ADFF",
+                              "#83769C",
+                              "#FF77A8",
+                              "#FFCCAA",
+                              "transparent"
+                           ]
+                        },
+                        "id": "Wrapper_286423"
+                     },
+                     {
+                        "class": "_Tile2",
+                        "props": {
+                           "name": "bat",
+                           "blocking": true,
+                           "data": {
+                              "w": 8,
+                              "h": 8,
+                              "data": [
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 0,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 0,
+                                 0,
+                                 16,
+                                 0,
+                                 0,
+                                 0,
+                                 0,
+                                 16,
+                                 0,
+                                 0,
+                                 0,
+                                 7,
+                                 0,
+                                 0,
+                                 7,
+                                 0,
+                                 0,
+                                 16,
+                                 0,
+                                 0,
+                                 0,
+                                 0,
+                                 0,
+                                 0,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16,
+                                 16
+                              ]
+                           },
+                           "size": {
+                              "w": 8,
+                              "h": 8
+                           },
+                           "palette": [
+                              "#000000",
+                              "#1D2B53",
+                              "#7E2553",
+                              "#008751",
+                              "#AB5236",
+                              "#5F574F",
+                              "#C2C3C7",
+                              "#FFF1E8",
+                              "#FF004D",
+                              "#FFA300",
+                              "#FFEC27",
+                              "#00E436",
+                              "#29ADFF",
+                              "#83769C",
+                              "#FF77A8",
+                              "#FFCCAA",
+                              "transparent"
+                           ]
+                        },
+                        "id": "Wrapper_244329"
+                     }
+                  ]
+               },
+               "id": "Wrapper_896159"
+            }
+         ],
+         "maps": [
+            {
+               "class": "Map2",
+               "props": {
+                  "name": "first map",
+                  "layers": [
+                     {
+                        "class": "TileLayer2",
+                        "props": {
+                           "name": "terrain",
+                           "type": "tile-layer",
+                           "blocking": true,
+                           "visible": true,
+                           "size": {
+                              "w": 20,
+                              "h": 10
+                           },
+                           "data": {
+                              "w": 20,
+                              "h": 10,
+                              "data": [
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_244329"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_244329"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_244329"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_244329"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_286423"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_286423"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_286423"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_532672"
+                                 },
+                                 {
+                                    "tile": "Wrapper_244329"
+                                 },
+                                 {
+                                    "tile": "Wrapper_28153"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 },
+                                 {
+                                    "tile": "Wrapper_558651"
+                                 }
+                              ]
+                           }
+                        },
+                        "id": "Wrapper_732737"
+                     },
+                     {
+                        "class": "ActorLayer",
+                        "props": {
+                           "name": "enemies",
+                           "type": "actor-layer",
+                           "blocking": true,
+                           "visible": false,
+                           "actors": []
+                        },
+                        "id": "Wrapper_321318"
+                     }
+                  ]
+               },
+               "id": "Wrapper_418455"
+            }
+         ],
+         "actors": [
+            {
+               "class": "Actor",
+               "props": {
+                  "name": "player",
+                  "hitbox": {
+                     "x": 0,
+                     "y": 0,
+                     "w": 16,
+                     "h": 16
+                  },
+                  "viewbox": {
+                     "x": 0,
+                     "y": 0,
+                     "w": 32,
+                     "h": 32
+                  }
+               },
+               "id": "Wrapper_153483"
+            },
+            {
+               "class": "Actor",
+               "props": {
+                  "name": "enemy",
+                  "hitbox": {
+                     "x": 0,
+                     "y": 0,
+                     "w": 16,
+                     "h": 16
+                  },
+                  "viewbox": {
+                     "x": 0,
+                     "y": 0,
+                     "w": 16,
+                     "h": 16
+                  }
+               },
+               "id": "Wrapper_878568"
+            }
+         ],
+         "tests": [
+            {
+               "class": "Test2",
+               "props": {
+                  "name": "test 1",
+                  "map": "unknown",
+                  "viewport": {
+                     "w": 12,
+                     "h": 8
+                  }
+               },
+               "id": "Wrapper_963831"
+            }
+         ],
+         "palette": [
+            "#000000",
+            "#1D2B53",
+            "#7E2553",
+            "#008751",
+            "#AB5236",
+            "#5F574F",
+            "#C2C3C7",
+            "#FFF1E8",
+            "#FF004D",
+            "#FFA300",
+            "#FFEC27",
+            "#00E436",
+            "#29ADFF",
+            "#83769C",
+            "#FF77A8",
+            "#FFCCAA",
+            "transparent"
+         ],
+         "tileSize": {
+            "w": 8,
+            "h": 8
+         }
+      },
+      "id": "Wrapper_25508"
+   }
+}

@@ -39,14 +39,14 @@ function PropertyList<T, K extends keyof T>(props: {
         }
     }
     return <li className={'tree-item'}>
-        <p className={'section'}>
+        <p key={'section-description'} className={'section'}>
             <button onClick={() => toggle()}>{open?'▼':'▶'}</button>
             <b>{name.toString()}</b>
             <button onClick={() => add()}>+</button>
         </p>
         {open &&
-        <ul className={'tree-list'}>{values.map((val) => {
-            return <ObjectTreeView
+        <ul key={'children'} className={'tree-list'}>{values.map((val) => {
+            return <ObjectTreeView key={val._id}
                 obj={val}
                 state={props.state}
                 selection={props.selection}/>
@@ -76,8 +76,8 @@ export function ObjectTreeView<T>(props: {
         selected: state.getPropValue('selection') === obj,
     }
     useWatchProp(obj,'name' as keyof T)
-    return <ul className={toClass(style)}>
-        <p className={'description'} onClick={select}>
+    return <ul key={obj._id} className={toClass(style)}>
+        <p key={obj._id+'description'} className={'description'} onClick={select}>
             {obj.getPropValue('name' as keyof T) as string}
         </p>
         {

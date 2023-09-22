@@ -1,19 +1,14 @@
 import "./propsheet.css"
 
 import {Size} from "josh_js_util"
-import React, {useEffect, useState} from "react"
+import React from "react"
 
-import {PropDef, PropsBase} from "./base"
+import {PropDef, PropsBase, useWatchProp} from "./base"
 
 function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<T[keyof T]>}) {
     const {target, def, name} = props
-    const [count, setCount] = useState(0)
     const new_val = target.getPropValue(name)
-    useEffect(() => {
-        const hand = () => setCount(count + 1)
-        target.on(name,hand)
-        return () => target.off(name, hand)
-    })
+    useWatchProp(target,name)
     if(!def.editable) {
         return <span key={`value_${name.toString()}`} className={'value'}><b>{props.def.format(new_val)}</b></span>
     }
@@ -52,16 +47,16 @@ function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<
     if(def.type === 'Size') {
         const val = new_val as Size
         return <>
-            <label>w</label>
-            <input type={'number'}
+            <label key={`editor_${name.toString()}_w_label`}>w</label>
+            <input key={`editor_${name.toString()}_w_input`} type={'number'}
                           value={val.w}
                           onChange={(e)=>{
                               const v = parseInt(e.target.value)
                               const size = new Size(v,val.h)
                               target.setPropValue(props.name,size as T[keyof T])
                           }}/>
-            <label>h</label>
-            <input type={'number'}
+            <label key={`editor_${name.toString()}_h_label`}>h</label>
+            <input key={`editor_${name.toString()}_h_input`} type={'number'}
                           value={val.h}
                           onChange={(e)=>{
                               const v = parseInt(e.target.value)
@@ -70,16 +65,16 @@ function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<
                           }}/>
         </>
     }
-    return <label>no editor for it</label>
+    return <label key={'nothing'}>no editor for it</label>
 }
 
 export function PropSheet<T>(props: { title?:string, target: PropsBase<T>|null }) {
     const {title, target} = props
-    if(!target) return <div>nothing selected</div>
+    if(!target) return <div key={'nothing'}>nothing selected</div>
     const propnames = Array.from(target.getAllPropDefs())
         .filter(([a,b])=>!b.hidden)
-    return <div className={'prop-sheet pane'}>
-        <header>{title?props.title:'props'}</header>
+    return <div className={'prop-sheet pane'} key={'prop-sheet'}>
+        <header key={'the-header'}>{title?props.title:'props'}</header>
         {propnames.map(([name,def]) => {
             return <>
                 <label key={`label_${name.toString()}`}>{name.toString()}</label>

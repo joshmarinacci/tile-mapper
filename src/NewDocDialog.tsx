@@ -11,7 +11,7 @@ import {
 import {GameDoc, Sheet, Tile} from "./datamodel"
 
 function make_new_doc(width: number, height: number, palette:ImagePalette) {
-    const TS = new Size(16,16)
+    const TS = new Size(width,height)
     const doc = new GameDoc({
         name:'new doc',
         palette: palette,

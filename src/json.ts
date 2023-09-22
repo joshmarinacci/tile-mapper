@@ -2,7 +2,7 @@ import {ArrayGrid, Size} from "josh_js_util"
 
 import {appendToList, restoreClassFromJSON} from "./base"
 import {PICO8} from "./common"
-import {GameDoc, GameMap, MapCell, Sheet, Tile,TileLayer} from "./datamodel"
+import {GameDoc, GameMap, MapCell, Sheet, Tile, TileLayer} from "./datamodel"
 
 export type JSONSprite = {
     name: string
@@ -68,7 +68,7 @@ export function jsonObjToBlob(toJsonObj: object) {
 }
 
 
-function load_v4json(json_doc: JSONDocV4) {
+function load_v4json(json_doc: JSONDocV4):GameDoc {
     const doc = new GameDoc()
     doc.setPropValue('palette', json_doc.color_palette)
     doc.setPropValue('name', json_doc.name)
@@ -117,9 +117,8 @@ function load_v4json(json_doc: JSONDocV4) {
     return doc
 }
 
-function load_v5json(jsonDoc: JSONDocV5) {
-    const doc = restoreClassFromJSON(jsonDoc.doc)
-    return doc
+function load_v5json(jsonDoc: JSONDocV5):GameDoc {
+    return restoreClassFromJSON(jsonDoc.doc) as GameDoc
 }
 
 export function make_doc_from_json(raw_data: object):GameDoc {

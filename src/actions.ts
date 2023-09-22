@@ -64,3 +64,4 @@ export const LoadFileAction:SimpleMenuAction = {
         state.setPropValue('doc',new_doc)
     }
 }
+
