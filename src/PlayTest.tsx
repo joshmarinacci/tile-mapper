@@ -148,7 +148,7 @@ export function PlayTest(props: {
         }
     }
     useWatchProp(test,'viewport', ()=> redraw())
-    useEffect(() => redraw(), [doc, test, zoom, grid, ref])
+    useEffect(() => redraw(), [doc, test, zoom, grid, ref, viewport])
     useEffect(() => {
         if(playing) {
             anim.stop()

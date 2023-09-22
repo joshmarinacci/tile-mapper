@@ -133,7 +133,7 @@ export function LayerEditor(props: {
             const canvas = ref.current
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.imageSmoothingEnabled = false
-            ctx.fillStyle = 'red'
+            ctx.fillStyle = 'magenta'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             map.getPropValue('layers').forEach(layer => {
                 if (layer instanceof TileLayer) {

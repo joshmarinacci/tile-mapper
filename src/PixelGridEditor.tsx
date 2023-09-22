@@ -44,7 +44,7 @@ export function PixelGridEditor(props: {
         if (ref.current) {
             const canvas = ref.current
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-            ctx.fillStyle = 'red'
+            ctx.fillStyle = 'magenta'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             for (let i = 0; i < tile.width(); i++) {
                 for (let j = 0; j < tile.height(); j++) {
