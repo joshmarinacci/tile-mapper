@@ -2,7 +2,7 @@ import {ArrayGrid, Size} from "josh_js_util"
 
 import {appendToList, restoreClassFromJSON} from "./base"
 import {PICO8} from "./common"
-import {Doc2, Map2, MapCell, Sheet2, Tile2, TileLayer2} from "./datamodel"
+import {GameDoc, GameMap, MapCell, Sheet, Tile,TileLayer} from "./datamodel"
 
 export type JSONSprite = {
     name: string
@@ -53,7 +53,7 @@ type JSONDocV5 = {
     doc: object
 }
 
-export function docToJSON(doc: Doc2):JSONDocV5 {
+export function docToJSON(doc: GameDoc):JSONDocV5 {
     return {
         version:5,
         name:    doc.getPropValue('name'),
@@ -69,16 +69,16 @@ export function jsonObjToBlob(toJsonObj: object) {
 
 
 function load_v4json(json_doc: JSONDocV4) {
-    const doc = new Doc2()
+    const doc = new GameDoc()
     doc.setPropValue('palette', json_doc.color_palette)
     doc.setPropValue('name', json_doc.name)
     json_doc.sheets.forEach(json_sheet => {
-        const sheet = new Sheet2({
+        const sheet = new Sheet({
             name: json_sheet.name,
         })
         sheet._id = json_sheet.id
         json_sheet.sprites.forEach(json_sprite => {
-            const tile = new Tile2({
+            const tile = new Tile({
                 name: json_sprite.name,
                 blocking: json_sprite.blocking,
                 size: new Size(json_sprite.w, json_sprite.h),
@@ -95,7 +95,7 @@ function load_v4json(json_doc: JSONDocV4) {
     })
     json_doc.maps.forEach(json_map => {
         const map_size = new Size(json_map.width, json_map.height)
-        const layer = new TileLayer2({
+        const layer = new TileLayer({
             name: json_map.name,
             type: 'tile-layer',
             blocking: true,
@@ -104,7 +104,7 @@ function load_v4json(json_doc: JSONDocV4) {
         const data = new ArrayGrid<number>(map_size.w, map_size.h)
         data.data = json_map.cells
         layer.setPropValue('data', data)
-        const map = new Map2({
+        const map = new GameMap({
             name: json_map.name,
             layers: [layer]
         })
@@ -122,7 +122,7 @@ function load_v5json(jsonDoc: JSONDocV5) {
     return doc
 }
 
-export function make_doc_from_json(raw_data: object):Doc2 {
+export function make_doc_from_json(raw_data: object):GameDoc {
     if (!('version' in raw_data)) throw new Error('we cannot load this document')
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore

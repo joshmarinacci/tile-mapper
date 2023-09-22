@@ -3,19 +3,19 @@ import {DialogContext} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
 import {appendToList} from "./base"
-import {Map2, TileLayer2} from "./datamodel"
+import {GameMap, TileLayer} from "./datamodel"
 
 
-export function NewMapDialog(props: { onComplete: (map: Map2) => void }) {
+export function NewMapDialog(props: { onComplete: (map: GameMap) => void }) {
     const [width, setWidth] = useState(10)
     const [height, setHeight] = useState(10)
     const dc = useContext(DialogContext)
     const create = () => {
         const size = new Size(width, height)
-        const map = new Map2({
+        const map = new GameMap({
             name:'new map',
         })
-        const layer = new TileLayer2({size})
+        const layer = new TileLayer({size})
         appendToList(map,"layers", layer)
         props.onComplete(map)
         dc.hide()

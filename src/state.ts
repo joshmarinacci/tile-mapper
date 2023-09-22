@@ -2,15 +2,15 @@ import {Size} from "josh_js_util"
 
 import {PropDef, PropsBase} from "./base"
 import {PICO8} from "./common"
-import {Doc2} from "./datamodel"
+import {GameDoc} from "./datamodel"
 
 type GlobalStateType = {
-    doc: Doc2,
+    doc: GameDoc,
     mode: string,
     selection: PropsBase<any>,
 }
 
-const DocDef:PropDef<Doc2> = {
+const DocDef:PropDef<GameDoc> = {
     type:'string',
     format: () => "global state",
     toJSON: (o) => {
@@ -19,7 +19,7 @@ const DocDef:PropDef<Doc2> = {
     editable: false,
     default: () => {
         const size = new Size(10,10)
-        return new Doc2({tileSize: size, name: 'unnamed doc', palette: PICO8})
+        return new GameDoc({tileSize: size, name: 'unnamed doc', palette: PICO8})
     }
 }
 const ModeDef:PropDef<string> = {

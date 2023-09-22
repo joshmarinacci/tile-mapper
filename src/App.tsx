@@ -19,7 +19,7 @@ import {
     ActionRegistryContext,
     ToolbarActionButton
 } from "./common-components"
-import {Actor, ActorLayer, Doc2, Map2, MapCell, Sheet2, Test2, Tile2, TileLayer2} from "./datamodel"
+import {Actor, ActorLayer, GameDoc, GameMap, GameTest, MapCell, Sheet, Tile,TileLayer} from "./datamodel"
 import {MapModeView} from "./MapModeView"
 import {PropSheet} from "./propsheet"
 import {GlobalState} from "./state"
@@ -38,20 +38,20 @@ AR.register([
 const STATE = new GlobalState()
 
 const TS = new Size(8,8)
-const doc2 = new Doc2({name: 'doc2', tileSize:TS, palette:PICO8})
+const doc2 = new GameDoc({name: 'doc2', tileSize:TS, palette:PICO8})
 {
-    const s1 = new Sheet2({name: 'terrain', tileSize: TS})
-    const tile1 = new Tile2({name: 'tile1',
+    const s1 = new Sheet({name: 'terrain', tileSize: TS})
+    const tile1 = new Tile({name: 'tile1',
         blocking: false,
         size:TS,
         palette:doc2.getPropValue('palette')} )
     tile1.setPixel(2, new Point(2, 2))
     s1.getPropValue('tiles').push(tile1)
-    const s2 = new Sheet2({name: 'characters', tileSize: TS})
+    const s2 = new Sheet({name: 'characters', tileSize: TS})
     doc2.getPropValue('sheets').push(s1)
     doc2.getPropValue('sheets').push(s2)
-    const m1 = new Map2({name: 'first map'})
-    const l1 = new TileLayer2({
+    const m1 = new GameMap({name: 'first map'})
+    const l1 = new TileLayer({
         type: 'tile-layer',
         name: 'terrain',
         blocking: true,
@@ -69,7 +69,7 @@ const doc2 = new Doc2({name: 'doc2', tileSize:TS, palette:PICO8})
     doc2.getPropValue('actors').push(a1)
     doc2.getPropValue('actors').push(enemy)
 
-    const test1 = new Test2({name: 'test 1', viewport: new Size(12,8), map: 'unknown'})
+    const test1 = new GameTest({name: 'test 1', viewport: new Size(12,8), map: 'unknown'})
     doc2.getPropValue('tests').push(test1)
     STATE.setPropValue('doc',doc2)
     // setTimeout(() =>  {
@@ -79,22 +79,22 @@ const doc2 = new Doc2({name: 'doc2', tileSize:TS, palette:PICO8})
 
 function Main2() {
     const [selection, setSelection] = useState<PropsBase<any>|null>(null)
-    const [doc, setDoc] = useState(STATE.getPropValue('doc') as Doc2)
+    const [doc, setDoc] = useState(STATE.getPropValue('doc') as GameDoc)
     useWatchAllProps(STATE, (s) => setSelection(s.getPropValue('selection')))
     useWatchProp(STATE, 'doc', () => setDoc(STATE.getPropValue('doc')))
     let editView= <div>nothing to edit</div>
     if(selection) {
-        if(selection instanceof Sheet2) {
-            editView = <TileSheetEditor state={STATE} doc={doc} sheet={selection as Sheet2}/>
+        if(selection instanceof Sheet) {
+            editView = <TileSheetEditor state={STATE} doc={doc} sheet={selection as Sheet}/>
         }
         if(selection instanceof Actor) {
             editView = <ActorEditView state={STATE} doc={doc} actor={selection as Actor}/>
         }
-        if(selection instanceof Map2) {
-            editView = <MapModeView state={STATE} doc={doc} map={selection as Map2}/>
+        if(selection instanceof GameMap) {
+            editView = <MapModeView state={STATE} doc={doc} map={selection as GameMap}/>
         }
-        if(selection instanceof Test2) {
-            editView = <TestModeView state={STATE} doc={doc} test={selection as Test2}/>
+        if(selection instanceof GameTest) {
+            editView = <TestModeView state={STATE} doc={doc} test={selection as GameTest}/>
         }
     }
     return <div className={'main-content'}>

@@ -3,7 +3,7 @@ import {HBox, toClass} from "josh_react_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
 import {ImagePalette} from "./common"
-import {Tile2} from "./datamodel"
+import {Tile} from "./datamodel"
 
 
 function calculateDirections() {
@@ -15,7 +15,7 @@ function calculateDirections() {
     ]
 }
 
-function bucketFill(tile: Tile2, target: number, replace:number, at: Point, ) {
+function bucketFill(tile: Tile, target: number, replace:number, at: Point, ) {
     if(target === replace) return
     const v = tile.getPixel(at)
     if(v !== target) return
@@ -29,7 +29,7 @@ function bucketFill(tile: Tile2, target: number, replace:number, at: Point, ) {
 }
 
 export function PixelGridEditor(props: {
-    image: Tile2,
+    image: Tile,
     selectedColor: number,
     palette: ImagePalette,
     setSelectedColor: (v:number)=>void

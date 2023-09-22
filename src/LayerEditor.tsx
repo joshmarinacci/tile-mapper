@@ -5,57 +5,59 @@ import {toClass} from "josh_react_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {ActorLayer, Doc2, Map2, MapCell, Tile2, TileLayer2} from "./datamodel"
+import {drawEditableSprite} from "./common"
+import {ActorLayer, GameDoc, GameMap, MapCell, Tile, TileLayer} from "./datamodel"
 
 function calculateDirections() {
     return [
-        new Point(-1,0),
-        new Point(1,0),
-        new Point(0,-1),
-        new Point(0,1)
+        new Point(-1, 0),
+        new Point(1, 0),
+        new Point(0, -1),
+        new Point(0, 1)
     ]
 }
 
-function bucketFill(layer: TileLayer2, target: string, replace:string, at: Point, ) {
-    if(target === replace) return
+function bucketFill(layer: TileLayer, target: string, replace: string, at: Point,) {
+    if (target === replace) return
     const cells = layer.getPropValue('data') as ArrayGrid<MapCell>
     const v = cells.get(at)
-    if(v.tile !== target) return
-    if(v.tile === target) {
-        cells.set(at,{tile:replace})
+    if (v.tile !== target) return
+    if (v.tile === target) {
+        cells.set(at, {tile: replace})
         calculateDirections().forEach(dir => {
             const pt = at.add(dir)
-            if(cells.isValidIndex(pt)) bucketFill(layer,target,replace,pt)
+            if (cells.isValidIndex(pt)) bucketFill(layer, target, replace, pt)
         })
     }
 }
 
 
-function map_to_canvas(map: Map2, doc: Doc2, scale: number):HTMLCanvasElement {
+function map_to_canvas(map: GameMap, doc: GameDoc, scale: number): HTMLCanvasElement {
+    console.log("doc is", doc)
     const canvas = document.createElement('canvas')
     const mapSize = map.calcBiggestLayer()
     const size = doc.getPropValue('tileSize')
-    canvas.width = mapSize.w*scale*size.w
-    canvas.height = mapSize.h*scale*size.h
+    canvas.width = mapSize.w * scale * size.w
+    canvas.height = mapSize.h * scale * size.h
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     ctx.imageSmoothingEnabled = false
     map.getPropValue('layers').forEach(layer => {
-        if(layer instanceof TileLayer2) {
+        if (layer instanceof TileLayer) {
             const cells = layer.getPropValue('data')
-            cells.forEach((v,n) => {
+            cells.forEach((v, n) => {
                 if (v) {
-                    const x = n.x*size.w*scale
-                    const y = n.y*size.w*scale
+                    const x = n.x * size.w * scale
+                    const y = n.y * size.w * scale
                     const tile = doc.lookup_sprite(v.tile)
-                    if(tile) {
-                        if(tile.cache_canvas) {
+                    if (tile) {
+                        if (tile.cache_canvas) {
                             ctx.drawImage(tile.cache_canvas,
                                 //src
-                                0,0,tile.cache_canvas.width,tile.cache_canvas.height,
+                                0, 0, tile.cache_canvas.width, tile.cache_canvas.height,
                                 //dst
                                 x,
                                 y,
-                                size.w*scale,size.h*scale
+                                size.w * scale, size.h * scale
                             )
                         } else {
                             drawEditableSprite(ctx, scale, tile)
@@ -69,40 +71,40 @@ function map_to_canvas(map: Map2, doc: Doc2, scale: number):HTMLCanvasElement {
     return canvas
 }
 
-async function exportPNG(doc:Doc2, map: Map2, scale: number) {
-    const can = map_to_canvas(map, doc,scale)
+async function exportPNG(doc: GameDoc, map: GameMap, scale: number) {
+    const can = map_to_canvas(map, doc, scale)
     const blob = await canvas_to_blob(can)
     forceDownloadBlob(`${map.getPropValue('name') as string}.${scale}x.png`, blob)
 }
 
 function drawTileLayer(ctx: CanvasRenderingContext2D,
-                       doc:Doc2,
-                       layer: TileLayer2,
-                       scale:number, grid:boolean) {
+                       doc: GameDoc,
+                       layer: TileLayer,
+                       scale: number, grid: boolean) {
     const size = doc.getPropValue('tileSize')
     const cells = layer.getPropValue('data') as ArrayGrid<MapCell>
     cells.forEach((v, n) => {
         if (v) {
-            const x = n.x*size.w*scale
-            const y = n.y*size.w*scale
+            const x = n.x * size.w * scale
+            const y = n.y * size.w * scale
             const tile = doc.lookup_sprite(v.tile)
-            if(tile) {
-                if(tile.cache_canvas) {
+            if (tile) {
+                if (tile.cache_canvas) {
                     ctx.drawImage(tile.cache_canvas,
                         //src
-                        0,0,tile.cache_canvas.width,tile.cache_canvas.height,
+                        0, 0, tile.cache_canvas.width, tile.cache_canvas.height,
                         //dst
                         x,
                         y,
-                        size.w*scale,size.h*scale
-                        )
+                        size.w * scale, size.h * scale
+                    )
                 } else {
                     drawEditableSprite(ctx, scale, tile)
                 }
             }
             if (grid) {
                 ctx.strokeStyle = 'gray'
-                ctx.strokeRect(x, y, size.w * scale-1, size.h * scale-1)
+                ctx.strokeRect(x, y, size.w * scale - 1, size.h * scale - 1)
             }
         }
     })
@@ -110,20 +112,20 @@ function drawTileLayer(ctx: CanvasRenderingContext2D,
 }
 
 export function LayerEditor(props: {
-    doc: Doc2,
-    map: Map2,
-    layer: TileLayer2,
-    tile: Tile2,
-    setSelectedTile:(sprite:Tile2) => void,
+    doc: GameDoc,
+    map: GameMap,
+    layer: TileLayer,
+    tile: Tile,
+    setSelectedTile: (sprite: Tile) => void,
 }) {
-    const {map, layer,  tile, doc} = props
+    const {map, layer, tile, doc} = props
     const [grid, setGrid] = useState<boolean>(false)
     const ref = useRef<HTMLCanvasElement>(null)
     const [down, setDown] = useState<boolean>(false)
     useEffect(() => redraw(), [grid, layer])
 
     const [zoom, setZoom] = useState(2)
-    const scale = Math.pow(2,zoom)
+    const scale = Math.pow(2, zoom)
     const biggest = map.calcBiggestLayer()
     const tileSize = doc.getPropValue('tileSize')
     const redraw = () => {
@@ -134,10 +136,10 @@ export function LayerEditor(props: {
             ctx.fillStyle = 'red'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             map.getPropValue('layers').forEach(layer => {
-                if(layer instanceof TileLayer2) {
-                    drawTileLayer(ctx, doc, layer as TileLayer2, scale, grid)
+                if (layer instanceof TileLayer) {
+                    drawTileLayer(ctx, doc, layer as TileLayer, scale, grid)
                 }
-                if(layer instanceof ActorLayer) {
+                if (layer instanceof ActorLayer) {
                     // drawActorlayer(ctx)
                 }
             })
@@ -153,66 +155,67 @@ export function LayerEditor(props: {
     }
     const [fillOnce, setFillOnce] = useState<boolean>(false)
 
-    useEffect(() => redraw(),[zoom])
+    useEffect(() => redraw(), [zoom])
 
-    const onMouseDown = (e:MouseEvent<HTMLCanvasElement>) => {
-        if(e.button === 2) {
+    const onMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
+        if (e.button === 2) {
             const cell = layer.getPropValue('data').get(canvasToImage(e))
             const tile = props.doc.lookup_sprite(cell.tile)
-            if(tile) props.setSelectedTile(tile)
+            if (tile) props.setSelectedTile(tile)
             e.stopPropagation()
             e.preventDefault()
             return
         }
-        if(fillOnce) {
+        if (fillOnce) {
             const pt = canvasToImage(e)
             const cell = layer.getPropValue('data').get(pt)
-            bucketFill(layer,cell.tile,tile._id,pt)
+            bucketFill(layer, cell.tile, tile._id, pt)
             setFillOnce(false)
             redraw()
             return
         }
 
         setDown(true)
-        if(layer instanceof TileLayer2) {
-            console.log("writing to tile layer", canvasToImage(e), tile._id)
+        if (layer instanceof TileLayer) {
             const cells = layer.getPropValue('data') as ArrayGrid<MapCell>
-            cells.set(canvasToImage(e),{tile:tile._id})
+            cells.set(canvasToImage(e), {tile: tile._id})
         }
         redraw()
     }
-    const onMouseMove = (e:MouseEvent<HTMLCanvasElement>) => {
+    const onMouseMove = (e: MouseEvent<HTMLCanvasElement>) => {
         if (down) {
-            if(layer instanceof TileLayer2) {
+            if (layer instanceof TileLayer) {
                 const cells = layer.getPropValue('data') as ArrayGrid<MapCell>
-                cells.set(canvasToImage(e), {tile:tile._id})
+                cells.set(canvasToImage(e), {tile: tile._id})
             }
             redraw()
         }
     }
-    const onMouseUp = (e:MouseEvent<HTMLCanvasElement>) => {
+    const onMouseUp = (e: MouseEvent<HTMLCanvasElement>) => {
         setDown(false)
     }
-    if(!layer)  return <div>select a map</div>
+    if (!layer) return <div>select a map</div>
     return <div className={'vbox'}>
         <div className={'toolbar'}>
             <button onClick={() => setGrid(!grid)}>grid</button>
-            <button onClick={() => setFillOnce(true)} className={toClass({ selected:fillOnce })}>fill</button>
-            <button onClick={()=>setZoom(zoom+1)}>+</button>
-            <button onClick={()=>setZoom(zoom-1)}>-</button>
-            <button onClick={()=>exportPNG(doc, map,1)}>png 1x</button>
-            <button onClick={()=>exportPNG(doc, map,2)}>png 2x</button>
-            <button onClick={()=>exportPNG(doc, map,4)}>png 4x</button>
+            <button onClick={() => setFillOnce(true)}
+                    className={toClass({selected: fillOnce})}>fill
+            </button>
+            <button onClick={() => setZoom(zoom + 1)}>+</button>
+            <button onClick={() => setZoom(zoom - 1)}>-</button>
+            <button onClick={() => exportPNG(doc, map, 1)}>png 1x</button>
+            <button onClick={() => exportPNG(doc, map, 2)}>png 2x</button>
+            <button onClick={() => exportPNG(doc, map, 4)}>png 4x</button>
         </div>
         <div className={'map-editor-canvas-wrapper'}>
-        <canvas ref={ref}
-                width={biggest.w*scale*tileSize.w}
-                height={biggest.h*scale*tileSize.h}
-                onContextMenu={(e) => e.preventDefault()}
-                onMouseDown={onMouseDown}
-                onMouseMove={onMouseMove}
-                onMouseUp={onMouseUp}
-        />
+            <canvas ref={ref}
+                    width={biggest.w * scale * tileSize.w}
+                    height={biggest.h * scale * tileSize.h}
+                    onContextMenu={(e) => e.preventDefault()}
+                    onMouseDown={onMouseDown}
+                    onMouseMove={onMouseMove}
+                    onMouseUp={onMouseUp}
+            />
         </div>
     </div>
 

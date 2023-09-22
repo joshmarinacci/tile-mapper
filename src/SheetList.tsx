@@ -1,15 +1,15 @@
 import React from "react"
 
-import {Doc2, Sheet2} from "./datamodel"
+import {GameDoc, Sheet} from "./datamodel"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
-const SheetNameRender:ListViewRenderer<Sheet2> = (props:{value:Sheet2, selected:boolean}) => {
+const SheetNameRender:ListViewRenderer<Sheet> = (props:{value:Sheet, selected:boolean}) => {
     return <div className={'std-list-item'}>{props.value.getPropValue('name')}</div>
 }
 export function SheetList(props: {
-    doc: Doc2,
-    sheet: Sheet2,
-    setSheet: (s: Sheet2) => void,
+    doc: GameDoc,
+    sheet: Sheet,
+    setSheet: (s: Sheet) => void,
     editable: boolean
 }) {
     const {doc, sheet, setSheet} = props

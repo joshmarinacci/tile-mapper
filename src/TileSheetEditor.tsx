@@ -4,7 +4,7 @@ import {ArrayGrid} from "josh_js_util"
 import {VBox} from "josh_react_util"
 import React, {useEffect, useState} from "react"
 
-import {Doc2, Sheet2, Tile2} from "./datamodel"
+import {GameDoc, Sheet, Tile} from "./datamodel"
 import {PaletteColorPickerPane} from "./Palette"
 import {PixelGridEditor} from "./PixelGridEditor"
 import {PropSheet} from "./propsheet"
@@ -13,15 +13,15 @@ import {TestMap} from "./TestMap"
 import {TileListView} from "./TileListView"
 
 export function TileSheetEditor(props: {
-    sheet: Sheet2,
+    sheet: Sheet,
     state: GlobalState,
-    doc: Doc2
+    doc: GameDoc
 }) {
     const {doc, state, sheet} = props
     const palette: string[] = doc.getPropValue('palette') as string[]
     const [drawColor, setDrawColor] = useState<string>(palette[0])
-    const [tile, setTile] = useState<Tile2 | null>(null)
-    const [maparray] = useState(() => new ArrayGrid<Tile2>(20, 20))
+    const [tile, setTile] = useState<Tile | null>(null)
+    const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20))
     useEffect(() => {
         const tiles = sheet.getPropValue('tiles')
         setTile(tiles.length > 0?tiles[0]:null)

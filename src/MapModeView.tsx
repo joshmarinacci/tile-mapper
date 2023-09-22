@@ -3,7 +3,7 @@ import "./MapEditor.css"
 import {HBox} from "josh_react_util"
 import React, {useState} from "react"
 
-import {Doc2, Map2, Sheet2, Tile2} from "./datamodel"
+import {GameDoc, GameMap, Sheet, Tile} from "./datamodel"
 import {LayerEditor} from "./LayerEditor"
 import {LayerList} from "./LayerList"
 import {PropSheet} from "./propsheet"
@@ -13,15 +13,15 @@ import {TileListView} from "./TileListView"
 
 export function MapModeView(props: {
     state: GlobalState,
-    doc: Doc2,
-    map: Map2,
+    doc: GameDoc,
+    map: GameMap,
 }) {
     const {doc} = props
     const selectedMap = props.map
     const layers = selectedMap.getPropValue('layers')
-    const sheets = doc.getPropValue('sheets') as Sheet2[]
-    const [selectedSheet, setSelectedSheet] = useState<Sheet2>(sheets[0])
-    const [selectedTile, setSelectedTile] = useState<Tile2>(sheets[0].getPropValue('tiles')[0])
+    const sheets = doc.getPropValue('sheets') as Sheet[]
+    const [selectedSheet, setSelectedSheet] = useState<Sheet>(sheets[0])
+    const [selectedTile, setSelectedTile] = useState<Tile>(sheets[0].getPropValue('tiles')[0])
     const [selectedLayer, setSelectedLayer] = useState(layers[0])
 
 
@@ -37,7 +37,7 @@ export function MapModeView(props: {
                 sheet={selectedSheet}
                 tile={selectedTile}
                 editable={false}
-                setTile={(t: Tile2) => setSelectedTile(t)}
+                setTile={(t: Tile) => setSelectedTile(t)}
                 palette={doc.getPropValue('palette')}/>}
             <LayerList
                 key={'layer-list'}

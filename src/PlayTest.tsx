@@ -2,13 +2,13 @@ import {ArrayGrid, Size} from "josh_js_util"
 import React, {useEffect, useRef} from "react"
 
 import {useWatchProp} from "./base"
-import {Doc2, Map2, MapCell,Test2, TileLayer2} from "./datamodel"
+import {GameDoc, GameMap, GameTest, MapCell,TileLayer} from "./datamodel"
 import {TileCache} from "./engine/cache"
 import {GameState} from "./engine/gamestate"
 import {TileReference} from "./engine/globals"
 import {TilemapLayer} from "./engine/tilemaplayer"
 
-function generateGamestate(current: HTMLCanvasElement, doc: Doc2, map: Map2, size:Size) {
+function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMap, size:Size) {
     const gamestate = new GameState(current, size)
     const cache = new TileCache(doc.getPropValue('tileSize'))
     // pre-cache all of the tiles
@@ -27,7 +27,7 @@ function generateGamestate(current: HTMLCanvasElement, doc: Doc2, map: Map2, siz
     })
     // turn each layer of the map into a layer of the engine
     map.getPropValue('layers').forEach(layer => {
-        if (layer instanceof TileLayer2) {
+        if (layer instanceof TileLayer) {
             const tl = new TilemapLayer()
             const size = layer.getPropValue('size')
             tl.tiles = new ArrayGrid<TileReference>(size.w, size.h)
@@ -63,9 +63,9 @@ function drawGrid(current: HTMLCanvasElement, zoom: number, tileSize: Size, view
 
 export function PlayTest(props: {
     playing: boolean,
-    doc: Doc2,
-    map: Map2,
-    test: Test2,
+    doc: GameDoc,
+    map: GameMap,
+    test: GameTest,
     zoom: number,
     grid: boolean,
 }) {

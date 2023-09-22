@@ -98,9 +98,6 @@ export const BlockingDef:PropDef<boolean> = {
     format: (v) => v?'true':'false',
 }
 
-
-
-
 const GenericDataArrayDef: PropDef<object[]> = {
     type: "array",
     editable: false,
@@ -108,7 +105,7 @@ const GenericDataArrayDef: PropDef<object[]> = {
     expandable: false,
     format: (v) => 'unknown',
     toJSON: (v) => v.map(a => {
-        if(a.toJSON) return a.toJSON()
+        if('toJSON' in a) return a.toJSON()
         return a
     }),
     fromJSON: (v) => v.map(a => restoreClassFromJSON(a)),
@@ -142,17 +139,17 @@ const TileDataDef:PropDef<ArrayGrid<number>> = {
         return arr
     }
 }
-const Tile2Defs:DefList<TileType> = {
+const TileDefs:DefList<TileType> = {
     name: NameDef,
     blocking: BlockingDef,
     data: TileDataDef,
     size: SizeDef,
     palette: PaletteDef,
 }
-export class Tile2 extends PropsBase<TileType> {
+export class Tile extends PropsBase<TileType> {
     cache_canvas: HTMLCanvasElement | null
     constructor(opts?: PropValues<TileType>) {
-        super(Tile2Defs, opts)
+        super(TileDefs, opts)
         this.cache_canvas = null
         const size = this.getPropValue('size')
         const data = this.getPropValue('data')
@@ -204,7 +201,7 @@ export class Tile2 extends PropsBase<TileType> {
     }
 
     clone() {
-        const new_tile = new Tile2({
+        const new_tile = new Tile({
             size: this.getPropValue('size'),
             palette:this.getPropValue('palette')
         })
@@ -236,15 +233,15 @@ export class Tile2 extends PropsBase<TileType> {
         return this.getPropValue('data')
     }
 }
-CLASS_REGISTRY.register('Tile',Tile2,Tile2Defs)
+CLASS_REGISTRY.register('Tile',Tile,TileDefs)
 
 
-type Sheet2Type = {
+type SheetType = {
     name: string
     tileSize: Size,
-    tiles: Tile2[]
+    tiles: Tile[]
 }
-const TileArrayDef:PropDef<Tile2[]> = {
+const TileArrayDef:PropDef<Tile[]> = {
     type:'array',
     editable:false,
     hidden: true,
@@ -257,21 +254,21 @@ const TileArrayDef:PropDef<Tile2[]> = {
         return v.map(d => restoreClassFromJSON(d))
     }
 }
-const SheetDefs:DefList<Sheet2Type> = {
+const SheetDefs:DefList<SheetType> = {
     name: NameDef,
     tileSize: SizeDef,
     tiles: TileArrayDef,
 }
-export class Sheet2 extends PropsBase<Sheet2Type> {
-    constructor(opts?: PropValues<Sheet2Type>) {
+export class Sheet extends PropsBase<SheetType> {
+    constructor(opts?: PropValues<SheetType>) {
         super(SheetDefs, opts)
     }
-    addTile(new_tile: Tile2) {
+    addTile(new_tile: Tile) {
         this.getPropValue('tiles').push(new_tile)
         this._fire('tiles', this.getPropValue('tiles'))
     }
-    removeTile(tile:Tile2) {
-        const tiles = this.getPropValue('tiles') as Tile2[]
+    removeTile(tile:Tile) {
+        const tiles = this.getPropValue('tiles') as Tile[]
         const n = tiles.indexOf(tile)
         if (n >= 0) {
             tiles.splice(n, 1)
@@ -282,7 +279,7 @@ export class Sheet2 extends PropsBase<Sheet2Type> {
 
     }
 }
-CLASS_REGISTRY.register('Sheet',Sheet2,SheetDefs)
+CLASS_REGISTRY.register('Sheet',Sheet,SheetDefs)
 
 
 
@@ -336,7 +333,7 @@ const TileLayerDefs:DefList<TileLayerType> = {
     size: SizeDef,
     data: TileDataGridDef,
 }
-export class TileLayer2 extends PropsBase<TileLayerType> {
+export class TileLayer extends PropsBase<TileLayerType> {
     constructor(opts?: PropValues<TileLayerType>) {
         super(TileLayerDefs, opts)
         const size = this.getPropValue('size')
@@ -350,7 +347,7 @@ export class TileLayer2 extends PropsBase<TileLayerType> {
 
     }
 }
-CLASS_REGISTRY.register('TileLayer',TileLayer2,TileLayerDefs)
+CLASS_REGISTRY.register('TileLayer',TileLayer,TileLayerDefs)
 
 type ActorLayerType = {
     type: 'actor-layer',
@@ -380,19 +377,19 @@ type Map2Type = {
     name: string,
     layers: Layer2Type[]
 }
-const Map2Defs:DefList<Map2Type> = {
+const GameMapDefs:DefList<Map2Type> = {
     name: NameDef,
     layers: GenericDataArrayDef,
 }
-export class Map2 extends PropsBase<Map2Type> {
+export class GameMap extends PropsBase<Map2Type> {
     constructor(opts?: PropValues<Map2Type>) {
-        super(Map2Defs, opts)
+        super(GameMapDefs, opts)
     }
 
     calcBiggestLayer() {
         const biggest = new Size(0, 0)
         this.getPropValue('layers').forEach(layer => {
-            if (layer instanceof TileLayer2) {
+            if (layer instanceof TileLayer) {
                 const size = layer.getPropValue('size')
                 if (size.w > biggest.w) biggest.w = size.w
                 if (size.h > biggest.h) biggest.h = size.h
@@ -401,7 +398,7 @@ export class Map2 extends PropsBase<Map2Type> {
         return biggest
     }
 }
-CLASS_REGISTRY.register('Map',Map2,Map2Defs)
+CLASS_REGISTRY.register('Map',GameMap,GameMapDefs)
 
 type ActorType = {
     name: string,
@@ -440,12 +437,12 @@ const TestDefs:DefList<TestType> = {
     map: NameDef,
     viewport: EditableSizeDef,
 }
-export class Test2 extends PropsBase<TestType> {
+export class GameTest extends PropsBase<TestType> {
     constructor(opts?: PropValues<TestType>) {
         super(TestDefs, opts)
     }
 }
-CLASS_REGISTRY.register('GameTest',Test2, TestDefs)
+CLASS_REGISTRY.register('GameTest',GameTest, TestDefs)
 
 const ActorsListDef: PropDef<Actor[]> = {
     type: 'array',
@@ -457,7 +454,7 @@ const ActorsListDef: PropDef<Actor[]> = {
     expandable: true,
     hidden:true,
 }
-const TestsListDef: PropDef<Test2[]> = {
+const TestsListDef: PropDef<GameTest[]> = {
     type: 'array',
     editable: false,
     hidden:true,
@@ -467,7 +464,7 @@ const TestsListDef: PropDef<Test2[]> = {
     fromJSON:(v => v.map(a => restoreClassFromJSON(a))),
     expandable: true
 }
-const SheetsListDef: PropDef<Sheet2[]> = {
+const SheetsListDef: PropDef<Sheet[]> = {
     type: 'array',
     editable: false,
     hidden:true,
@@ -477,7 +474,7 @@ const SheetsListDef: PropDef<Sheet2[]> = {
     fromJSON: (v) => v.map(sheet => restoreClassFromJSON(sheet)),
     expandable: true
 }
-const MapsListDef: PropDef<Map2[]> = {
+const MapsListDef: PropDef<GameMap[]> = {
     type: 'array',
     editable: false,
     hidden:true,
@@ -489,14 +486,14 @@ const MapsListDef: PropDef<Map2[]> = {
 }
 type Doc2Type = {
     name: string,
-    sheets: Sheet2[]
-    maps: Map2[],
+    sheets: Sheet[]
+    maps: GameMap[],
     actors: Actor[],
-    tests: Test2[]
+    tests: GameTest[]
     palette: ImagePalette,
     tileSize: Size,
 }
-const Doc2Defs:DefList<Doc2Type> = {
+const GameDocDefs:DefList<Doc2Type> = {
     name: NameDef,
     sheets: SheetsListDef,
     maps: MapsListDef,
@@ -505,18 +502,18 @@ const Doc2Defs:DefList<Doc2Type> = {
     palette: PaletteDef,
     tileSize: SizeDef,
 }
-export class Doc2 extends PropsBase<Doc2Type> {
-    private sprite_lookup: Map<string, Tile2>
+export class GameDoc extends PropsBase<Doc2Type> {
+    private sprite_lookup: Map<string, Tile>
 
     constructor(opts?: PropValues<Doc2Type>) {
-        super(Doc2Defs, opts)
+        super(GameDocDefs, opts)
         this.sprite_lookup = new Map()
     }
 
     lookup_sprite(id: string) {
         if (this.sprite_lookup.has(id)) return this.sprite_lookup.get(id)
-        for (const sheet of this.getPropValue('sheets') as Sheet2[]) {
-            for (const tile of sheet.getPropValue('tiles') as Tile2[]) {
+        for (const sheet of this.getPropValue('sheets') as Sheet[]) {
+            for (const tile of sheet.getPropValue('tiles') as Tile[]) {
                 if (tile._id === id) {
                     console.log("caching",id,tile.getPropValue('name'), tile.cache_canvas)
                     tile.rebuild_cache()
@@ -529,6 +526,6 @@ export class Doc2 extends PropsBase<Doc2Type> {
         return null
     }
 }
-CLASS_REGISTRY.register('Doc',Doc2,Doc2Defs)
+CLASS_REGISTRY.register('Doc',GameDoc,GameDocDefs)
 
 

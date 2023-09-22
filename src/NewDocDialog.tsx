@@ -8,17 +8,17 @@ import {
     MINECRAFT,
     PICO8
 } from "./common"
-import {Doc2, Sheet2, Tile2} from "./datamodel"
+import {GameDoc, Sheet, Tile} from "./datamodel"
 
 function make_new_doc(width: number, height: number, palette:ImagePalette) {
     const TS = new Size(16,16)
-    const doc = new Doc2({
+    const doc = new GameDoc({
         name:'new doc',
         palette: palette,
         tileSize: TS,
     })
-    const sheet = new Sheet2({tileSize:TS })
-    const tile = new Tile2({size:TS, palette:palette})
+    const sheet = new Sheet({tileSize:TS })
+    const tile = new Tile({size:TS, palette:palette})
     appendToList(sheet,"tiles", tile)
     appendToList(doc,'sheets',sheet)
     return doc
@@ -39,7 +39,7 @@ const PALS:Pal[] = [
     }
 ]
 
-export function NewDocDialog(props: { onComplete: (doc: Doc2) => void }) {
+export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
     const [width, setWidth] = useState(10)
     const [height, setHeight] = useState(10)
     const [pal, setPal] = useState(PALS[0])

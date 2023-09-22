@@ -1,7 +1,7 @@
 import React from "react"
 
 import {PropsBase, useWatchProp} from "./base"
-import {Layer2Type, Map2} from "./datamodel"
+import {GameMap,Layer2Type} from "./datamodel"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
 const LayerNameRenderer: ListViewRenderer<PropsBase<Layer2Type>> = (props: {
@@ -16,7 +16,7 @@ const LayerNameRenderer: ListViewRenderer<PropsBase<Layer2Type>> = (props: {
 
 export function LayerList(props: {
     setSelectedLayer: (value: PropsBase<Layer2Type>) => void,
-    map: Map2,
+    map: GameMap,
     editable: boolean,
     layer: PropsBase<Layer2Type>
 }) {

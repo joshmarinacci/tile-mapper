@@ -6,10 +6,10 @@ import React, {useEffect, useRef} from "react"
 
 import {useWatchProp} from "./base"
 import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "./common"
-import {Sheet2, Tile2} from "./datamodel"
+import {Sheet, Tile} from "./datamodel"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
-const TilePreviewRenderer: ListViewRenderer<Tile2> = (props: { value: Tile2, selected: boolean, index: number }) => {
+const TilePreviewRenderer: ListViewRenderer<Tile> = (props: { value: Tile, selected: boolean, index: number }) => {
     const {selected, value, index} = props
     const scale = 4
     const ref = useRef<HTMLCanvasElement>(null)
@@ -42,9 +42,9 @@ const TilePreviewRenderer: ListViewRenderer<Tile2> = (props: { value: Tile2, sel
 
 
 export function TileListView(props: {
-    sheet: Sheet2,
-    tile: Tile2 | null,
-    setTile: (tile: Tile2) => void,
+    sheet: Sheet,
+    tile: Tile | null,
+    setTile: (tile: Tile) => void,
     palette: ImagePalette,
     editable: boolean,
 }) {
@@ -52,7 +52,7 @@ export function TileListView(props: {
     const tiles = sheet.getPropValue('tiles')
     const add_tile = () => {
         const size = sheet.getPropValue('tileSize')
-        const tile = new Tile2({size: size}, PICO8)
+        const tile = new Tile({size: size, palette:PICO8})
         sheet.addTile(tile)
         setTile(tile)
     }

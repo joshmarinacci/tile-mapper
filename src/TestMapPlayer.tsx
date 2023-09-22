@@ -1,11 +1,11 @@
 import React, {useState} from "react"
 
-import {Doc2, Map2, Test2} from "./datamodel"
+import {GameDoc, GameMap, GameTest} from "./datamodel"
 import {PlayTest} from "./PlayTest"
 export function TestMapPlayer(props: {
-    test: Test2,
-    doc: Doc2,
-    map: Map2
+    test: GameTest,
+    doc: GameDoc,
+    map: GameMap
 }) {
     const {test, map, doc} = props
     const [playing, setPlaying] = useState(false)

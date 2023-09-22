@@ -2,7 +2,7 @@ import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
 import {SimpleMenuAction} from "./base"
 import {canvas_to_bmp, sheet_to_canvas} from "./common"
-import {Doc2} from "./datamodel"
+import {GameDoc} from "./datamodel"
 import {docToJSON, fileToJson, jsonObjToBlob, make_doc_from_json} from "./json"
 import {GlobalState} from "./state"
 
@@ -10,7 +10,7 @@ export const SaveAction:SimpleMenuAction = {
     type: "simple",
     title: "Save",
     async perform(state): Promise<void> {
-        const doc = state.getPropValue('doc') as Doc2
+        const doc = state.getPropValue('doc') as GameDoc
         const blob = jsonObjToBlob(docToJSON(doc))
         forceDownloadBlob(`${doc.getPropValue('name')}.json`,blob)
     },
@@ -20,7 +20,7 @@ export const DocToPNG:SimpleMenuAction = {
     type: "simple",
     title: "to PNG",
     async perform(state): Promise<void> {
-        const doc = state.getPropValue('doc') as Doc2
+        const doc = state.getPropValue('doc') as GameDoc
         for(const sheet of doc.getPropValue('sheets')) {
             const can = sheet_to_canvas(sheet)
             const blob = await canvas_to_blob(can)
@@ -33,7 +33,7 @@ export const DocToBMP:SimpleMenuAction = {
     type:'simple',
     title:'to BMP',
     async perform(state) {
-        const doc = state.getPropValue('doc') as Doc2
+        const doc = state.getPropValue('doc') as GameDoc
         const sheet = doc.getPropValue('sheets')[0]
         const canvas = sheet_to_canvas(sheet)
         const rawData = canvas_to_bmp(canvas, doc.getPropValue('palette'))
@@ -51,7 +51,7 @@ export const LoadFileAction:SimpleMenuAction = {
         input_element.setAttribute('type','file')
         input_element.style.display = 'none'
         document.body.appendChild(input_element)
-        const new_doc = await new Promise<Doc2>((res,rej)=>{
+        const new_doc = await new Promise<GameDoc>((res, rej)=>{
             input_element.addEventListener('change',() => {
                 const files = input_element.files
                 if(!files || files.length <= 0) return
