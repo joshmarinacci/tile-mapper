@@ -37,7 +37,7 @@ export class TilemapLayer implements Layer {
 
 
     drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache:TileCache, SCALE:number): void {
-        const TILE_SIZE = 16
+        const TILE_SIZE = cache.getTileSize().w
         // this.log('drawing self')
         // this.log("viewport is", viewport)
         ctx.save()

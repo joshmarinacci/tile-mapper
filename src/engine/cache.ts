@@ -86,7 +86,7 @@ export class TileCache {
     }
 
     private log(...args:unknown[]) {
-        console.log('TileCache',...args)
+        // console.log('TileCache',...args)
     }
 
     getTileSize() {

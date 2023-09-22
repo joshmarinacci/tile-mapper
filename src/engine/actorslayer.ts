@@ -31,7 +31,7 @@ export class ActorsLayer implements Layer {
                     actor.bounds.w*scale,
                     actor.bounds.h*scale)
             } else {
-                fillBounds(ctx, actor.bounds, actor.color)
+                fillBounds(ctx, actor.bounds.scale(scale), actor.color)
             }
         })
         ctx.restore()

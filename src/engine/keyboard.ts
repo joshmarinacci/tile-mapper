@@ -8,9 +8,9 @@ type KeyState = {
 }
 export class KeyboardManager {
     private state: Map<KeyCodes, KeyState>
-    constructor(window: Window) {
+    constructor(target: HTMLElement) {
         this.state = new Map<KeyCodes,KeyState>
-        window.addEventListener('keydown', (e) => {
+        target.addEventListener('keydown', (e) => {
             // console.log(e.key, e.code)
             if(e.code in KeyCodes) {
                 this.init_key(e.code as KeyCodes)
@@ -19,7 +19,7 @@ export class KeyboardManager {
             }
             // this._dump()
         })
-        window.addEventListener('keyup', (e) => {
+        target.addEventListener('keyup', (e) => {
             if(e.code in KeyCodes) {
                 this.init_key(e.code as KeyCodes)
                 const state = this.state.get(e.code as KeyCodes) as KeyState

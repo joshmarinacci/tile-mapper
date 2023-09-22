@@ -28,11 +28,11 @@ export class GameState {
         } else {
             this.canvas = document.createElement('canvas')
             document.body.append(this.canvas)
+            this.canvas.width = size.w
+            this.canvas.height = size.h
         }
         this.canvas.style.border = '1px solid red'
-        this.canvas.width = size.w
-        this.canvas.height = size.h
-        this.keyboard = new KeyboardManager(window)
+        this.keyboard = new KeyboardManager(canvas)
         this.viewport = new Bounds(0, 0, size.w, size.h)
         const player: Player = {
             type: "player",
@@ -40,7 +40,7 @@ export class GameState {
             tile: {
                 uuid: 'smileguy'
             },
-            bounds: new Bounds(25, 25, 16, 15),
+            bounds: new Bounds(8, 8, 7, 7),
             vx: 0,
             vy: 0,
             standing: false,
@@ -91,4 +91,21 @@ export class GameState {
     addEnemy(badguy: Enemy) {
         this.enemies.push(badguy)
     }
+    updateViewport(viewport: Bounds, players: Player[], scale:number) {
+        players.forEach(play => {
+            const p = play.bounds.scale(scale)
+            const vl = viewport.left() + 200
+            const vr = viewport.right() - 200
+            const pl = p.left()
+            const pr = p.right()
+            if (pr > vr) {
+                viewport.x -= (vr - pr)
+            }
+            if (pl < vl) {
+                viewport.x -= (vl - pl)
+                if (viewport.x < 0) viewport.x = 0
+            }
+        })
+    }
+
 }
