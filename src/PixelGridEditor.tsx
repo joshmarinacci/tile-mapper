@@ -76,7 +76,10 @@ export function PixelGridEditor(props: {
     }
 
 
-    return <div className={'pane'}>
+    return <div className={'pane'} style={{
+        overflow:'scroll',
+        maxWidth: 'unset'
+    }}>
         <header>Edit</header>
         <HBox className={'hbox toolbar'}>
             <button

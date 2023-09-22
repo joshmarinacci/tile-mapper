@@ -1,6 +1,7 @@
 import {ArrayGrid, Size} from "josh_js_util"
 import React, {useEffect, useRef} from "react"
 
+import {useWatchProp} from "./base"
 import {Doc2, Map2, Test2, TileLayer2} from "./data2"
 import {MapCell} from "./defs"
 import {TileCache} from "./engine/cache"
@@ -43,20 +44,19 @@ function generateGamestate(current: HTMLCanvasElement, doc: Doc2, map: Map2, siz
     return {game_state: gamestate, cache}
 }
 
-function drawGrid(current: HTMLCanvasElement, zoom: number, tileSize: Size, biggest:Size) {
+function drawGrid(current: HTMLCanvasElement, zoom: number, tileSize: Size, viewport:Size) {
     const ctx = current.getContext('2d') as CanvasRenderingContext2D
     ctx.strokeStyle = '#000000'
     ctx.lineWidth = 1
     ctx.save()
     ctx.beginPath()
-    const size = biggest
-    for (let i = 0; i < size.w; i++) {
+    for (let i = 0; i < viewport.w; i++) {
         ctx.moveTo(i * zoom * tileSize.w, 0)
-        ctx.lineTo(i * zoom * tileSize.w, size.h * zoom * tileSize.h)
+        ctx.lineTo(i * zoom * tileSize.w, viewport.h * zoom * tileSize.h)
     }
-    for (let i = 0; i < size.h; i++) {
+    for (let i = 0; i < viewport.h; i++) {
         ctx.moveTo(0, i * zoom * tileSize.h)
-        ctx.lineTo(size.w * zoom * tileSize.h, i * zoom * tileSize.w)
+        ctx.lineTo(viewport.w * zoom * tileSize.h, i * zoom * tileSize.w)
     }
     ctx.stroke()
     ctx.restore()
@@ -76,7 +76,7 @@ export function PlayTest(props: {
     const viewport = test.getPropValue('viewport') as Size
     const ref = useRef<HTMLCanvasElement>(null)
 
-    useEffect(() => {
+    const redraw = () => {
         if (!ref.current) return
         const {game_state, cache} = generateGamestate(ref.current, doc, map, viewport.scale(zoom).scale(tileSize.w))
         const ctx = game_state.getDrawingSurface()
@@ -85,9 +85,11 @@ export function PlayTest(props: {
         ctx.fillRect(0, 0, 300, 300)
         game_state.getCurrentMap().layers.forEach(layer => layer.drawSelf(ctx, vp, cache, zoom))
         if (grid) {
-            drawGrid(ref.current, zoom, tileSize, biggest)
+            drawGrid(ref.current, zoom, tileSize, viewport)
         }
-    }, [doc, test, zoom, grid])
+    }
+    useWatchProp(test,'viewport', ()=> redraw())
+    useEffect(() => redraw(), [doc, test, zoom, grid, ref])
     return <div>
         <canvas ref={ref}
                 width={viewport.w * tileSize.w * zoom}

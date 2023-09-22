@@ -40,17 +40,17 @@ AR.register([
 
 const STATE = new GlobalState()
 
-const TS = new Size(16,16)
+const TS = new Size(8,8)
 const doc2 = new Doc2({name: 'doc2', tileSize:TS, palette:PICO8})
 {
-    const s1 = new Sheet2({name: 'sheet 1', tileSize: TS})
+    const s1 = new Sheet2({name: 'terrain', tileSize: TS})
     const tile1 = new Tile2({name: 'tile1',
         blocking: false,
         size:TS,
         palette:doc2.getPropValue('palette')} )
     tile1.setPixel(2, new Point(2, 2))
     s1.getPropValue('tiles').push(tile1)
-    const s2 = new Sheet2({name: 'sheet 2', tileSize: TS})
+    const s2 = new Sheet2({name: 'characters', tileSize: TS})
     doc2.getPropValue('sheets').push(s1)
     doc2.getPropValue('sheets').push(s2)
     const m1 = new Map2({name: 'first map'})
@@ -107,11 +107,20 @@ function Main2() {
             <ToolbarActionButton action={DocToPNG} state={STATE}/>
             <ToolbarActionButton action={DocToBMP} state={STATE}/>
         </div>
-        <div className={'tree-wrapper pane'}>
+        <div className={'tree-wrapper pane'} style={{
+            alignSelf:'stretch',
+            overflow: "auto"
+        }}>
             <ObjectTreeView obj={doc} state={STATE} selection={selection}/>
         </div>
-        {editView}
+        <div style={{
+            overflow: "auto",
+            alignSelf: 'stretch',
+        }}>{editView}</div>
         <PropSheet target={selection}/>
+        <div className={'toolbar across'}>
+            <label>greetings, earthling!</label>
+        </div>
     </div>
 }
 

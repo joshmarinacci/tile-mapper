@@ -46,7 +46,7 @@ export function MapModeView(props: {
                 layer={selectedLayer}
                 setSelectedLayer={setSelectedLayer}
             />
-            <PropSheet target={selectedLayer}/>
+            <PropSheet target={selectedLayer} title={'Layer Info'}/>
         </HBox>
         <HBox>
             <LayerEditor

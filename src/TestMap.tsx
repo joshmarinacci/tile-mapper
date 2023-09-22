@@ -52,11 +52,11 @@ export function TestMap(props: { tile: Tile2|null, mapArray: ArrayGrid<Tile2> })
             .floor()
         return pt
     }
-    return <div>
+    return <div style={{ overflow:'auto' }}>
         <div className={'toolbar'}>
             <button onClick={() => setGrid(!grid)}>grid</button>
         </div>
-        <canvas ref={ref} width={300} height={300}
+        <canvas ref={ref} width={32*10} height={32*10}
                 onMouseDown={(e) => {
                     setDown(true)
                     mapArray.set(canvasToImage(e), tile)

@@ -21,12 +21,21 @@ export const SizeDef: PropDef<Size> = {
     fromJSON: (v) => Size.fromJSON(v),
     format: (v) => `${v.w} x ${v.h}`,
 }
+export const PointDef: PropDef<Point> = {
+    type:'Point',
+    editable:false,
+    default: () => new Point(0,0),
+    toJSON: (v) => v.toJSON(),
+    fromJSON: (v) => Point.fromJSON(v),
+    format: (v) => `${v.x} , ${v.y}`,
+}
 export const BoundsDef: PropDef<Bounds> = {
     type:'Bounds',
     editable:false,
     default: () => new Bounds(0,0,10,10),
     toJSON: (v) => v.toJSON(),
     format: (v) => `${v.w} x ${v.h}`,
+    fromJSON: (v) => Bounds.fromJSON(v)
 }
 export const PaletteDef: PropDef<ImagePalette> = {
     type:'object',

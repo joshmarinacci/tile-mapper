@@ -9,10 +9,13 @@ body {
 }
 
 .main-content {
-    border: 0px solid red;
+    border: 0px solid black;
     display: grid;
-    grid-template-columns: 10rem 1fr 10rem;
-    grid-template-rows: auto auto;
+    grid-template-columns: 10rem 1fr 15rem;
+    grid-template-rows: auto 1fr;
+    width: 99vw;
+    height: 99vh;
+    overflow: clip;
 }
 .across {
     grid-column-start: 1;
@@ -25,6 +28,7 @@ body {
     display: flex;
     flex-direction: column;
     max-width: 20rem;
+    border-width: 0 1px 1px 0;
 }
 .pane header {
     background-color: #333333;
@@ -71,6 +75,7 @@ button.selected:active {
     border: 1px solid black;
     display: flex;
     flex-direction: row;
+    border-width: 0px 1px 1px 0px;
 }
 .toolbar > button {
     border: 0px solid black;

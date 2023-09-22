@@ -18,7 +18,7 @@ export class GameState {
     private physics: PhysicsManager
     private enemies: Enemy[]
 
-    constructor(canvas:HTMLCanvasElement, CANVAS_SIZE:Size) {
+    constructor(canvas:HTMLCanvasElement, size:Size) {
         this.map = {
             name: 'level1',
             layers: []
@@ -30,10 +30,10 @@ export class GameState {
             document.body.append(this.canvas)
         }
         this.canvas.style.border = '1px solid red'
-        this.canvas.width = CANVAS_SIZE.w
-        this.canvas.height = CANVAS_SIZE.h
+        this.canvas.width = size.w
+        this.canvas.height = size.h
         this.keyboard = new KeyboardManager(window)
-        this.viewport = new Bounds(0, 0, CANVAS_SIZE.w, CANVAS_SIZE.h)
+        this.viewport = new Bounds(0, 0, size.w, size.h)
         const player: Player = {
             type: "player",
             color: 'green',

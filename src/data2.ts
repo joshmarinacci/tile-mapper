@@ -188,42 +188,6 @@ export class Sheet2 extends PropsBase<Sheet2Type> {
 CLASS_REGISTRY.register(Sheet2,SheetDefs)
 
 
-const Actors2Def: PropDef<Actor[]> = {
-    type: 'array',
-    editable: false,
-    default: () => [],
-    toJSON: (v) => v.map(actor => actor.toJSON()),
-    format: (v) => 'actors list',
-    fromJSON:(v => v.map(a => restoreClassFromJSON(a))),
-    expandable: true
-}
-const Tests2Def: PropDef<Test2[]> = {
-    type: 'array',
-    editable: false,
-    default: () => [],
-    format: (v) => 'tests list',
-    toJSON: (v) => v.map(n => n.toJSON()),
-    fromJSON:(v => v.map(a => restoreClassFromJSON(a))),
-    expandable: true
-}
-const Sheets2Def: PropDef<Sheet2[]> = {
-    type: 'array',
-    editable: false,
-    default: () => [],
-    toJSON: (v) => v.map(sheet => sheet.toJSON()),
-    format: (v) => 'sheets list',
-    fromJSON: (v) => v.map(sheet => restoreClassFromJSON(sheet)),
-    expandable: true
-}
-const Maps2Def: PropDef<Map2[]> = {
-    type: 'array',
-    editable: false,
-    default: () => [],
-    toJSON: (v) => v.map(map => map.toJSON()),
-    format: (v) => 'maps list',
-    fromJSON:(v => v.map(map => restoreClassFromJSON(map))),
-    expandable: true
-}
 
 
 
@@ -359,23 +323,73 @@ export class Actor extends PropsBase<ActorType> {
 }
 CLASS_REGISTRY.register(Actor,ActorDefs)
 
-type Test2Type = {
+const EditableSizeDef: PropDef<Size> = {
+    type:'Size',
+    editable:true,
+    hidden:false,
+    default: () => new Size(10,10),
+    toJSON: (v) => v.toJSON(),
+    fromJSON: (v) => Size.fromJSON(v),
+    format: (v) => `${v.w} x ${v.h}`,
+}
+
+type TestType = {
     name: string,
     map: string,
     viewport: Size,
 }
-const Test2Defs:DefList<Test2Type> = {
+const TestDefs:DefList<TestType> = {
     name: NameDef,
     map: NameDef,
-    viewport: SizeDef,
+    viewport: EditableSizeDef,
 }
-export class Test2 extends PropsBase<Test2Type> {
-    constructor(opts?: PropValues<Test2Type>) {
-        super(Test2Defs, opts)
+export class Test2 extends PropsBase<TestType> {
+    constructor(opts?: PropValues<TestType>) {
+        super(TestDefs, opts)
     }
 }
-CLASS_REGISTRY.register(Test2, Test2Defs)
+CLASS_REGISTRY.register(Test2, TestDefs)
 
+const ActorsListDef: PropDef<Actor[]> = {
+    type: 'array',
+    editable: false,
+    default: () => [],
+    toJSON: (v) => v.map(actor => actor.toJSON()),
+    format: (v) => 'actors list',
+    fromJSON:(v => v.map(a => restoreClassFromJSON(a))),
+    expandable: true,
+    hidden:true,
+}
+const TestsListDef: PropDef<Test2[]> = {
+    type: 'array',
+    editable: false,
+    hidden:true,
+    default: () => [],
+    format: (v) => 'tests list',
+    toJSON: (v) => v.map(n => n.toJSON()),
+    fromJSON:(v => v.map(a => restoreClassFromJSON(a))),
+    expandable: true
+}
+const SheetsListDef: PropDef<Sheet2[]> = {
+    type: 'array',
+    editable: false,
+    hidden:true,
+    default: () => [],
+    toJSON: (v) => v.map(sheet => sheet.toJSON()),
+    format: (v) => 'sheets list',
+    fromJSON: (v) => v.map(sheet => restoreClassFromJSON(sheet)),
+    expandable: true
+}
+const MapsListDef: PropDef<Map2[]> = {
+    type: 'array',
+    editable: false,
+    hidden:true,
+    default: () => [],
+    toJSON: (v) => v.map(map => map.toJSON()),
+    format: (v) => 'maps list',
+    fromJSON:(v => v.map(map => restoreClassFromJSON(map))),
+    expandable: true
+}
 type Doc2Type = {
     name: string,
     sheets: Sheet2[]
@@ -387,10 +401,10 @@ type Doc2Type = {
 }
 const Doc2Defs:DefList<Doc2Type> = {
     name: NameDef,
-    sheets: Sheets2Def,
-    maps: Maps2Def,
-    actors: Actors2Def,
-    tests: Tests2Def,
+    sheets: SheetsListDef,
+    maps: MapsListDef,
+    actors: ActorsListDef,
+    tests: TestsListDef,
     palette: PaletteDef,
     tileSize: SizeDef,
 }

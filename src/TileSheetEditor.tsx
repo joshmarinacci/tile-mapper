@@ -40,12 +40,12 @@ export function TileSheetEditor(props: {
                 setSelectedColor={(n) => setDrawColor(palette[n])}
                 image={tile} palette={palette}/>}
             {!tile && <div>no tile selected</div>}
-            {tile &&
-                <div className={'pane'}>
-                    <header>Test</header>
-                    <TestMap tile={tile} mapArray={maparray}/>
-                </div>
-            }
         </VBox>
+        {tile &&
+            <div className={'pane'} style={{ maxWidth:'unset' }}>
+                <header>Test</header>
+                <TestMap tile={tile} mapArray={maparray}/>
+            </div>
+        }
     </div>)
 }
