@@ -32,6 +32,7 @@ function PropEditor<T>(props: { target: PropsBase<T>, name:keyof T, def:PropDef<
         return <input  key={`editor_${name.toString()}`}
                        type={'number'}
                       value={(new_val as number).toFixed(2)}
+                       step={0.1}
                       onChange={(e)=>{
                           props.target.setPropValue(props.name,parseFloat(e.target.value) as T[keyof T])
                       }}/>

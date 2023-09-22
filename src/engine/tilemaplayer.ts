@@ -36,23 +36,21 @@ export class TilemapLayer implements Layer {
     }
 
 
-    drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache:TileCache, SCALE:number): void {
-        const TILE_SIZE = cache.getTileSize().w
-        // this.log('drawing self')
-        // this.log("viewport is", viewport)
+    drawSelf(ctx: CanvasRenderingContext2D, viewport: Bounds, cache:TileCache, scale:number): void {
+        const tw = cache.getTileSize().w
         ctx.save()
         ctx.imageSmoothingEnabled = false
-        const w = Math.ceil(viewport.w / SCALE / TILE_SIZE) + 1
-        const h = Math.ceil(viewport.h / SCALE / TILE_SIZE) + 1
-        const xoff = viewport.x / SCALE / TILE_SIZE * this.scrollSpeed
-        const yoff = viewport.y / SCALE / TILE_SIZE * this.scrollSpeed
-        // this.log(`drawing ${w} x ${h} cells`)
+        const w = Math.ceil(viewport.w / scale / tw) + 1
+        const h = Math.ceil(viewport.h / scale / tw) + 1
+        const xoff = viewport.x / scale / tw * this.scrollSpeed
+        const yoff = viewport.y / scale / tw * this.scrollSpeed
+        // this.log(`drawing ${w} x ${h} cells at ${xoff},${yoff}. scrollspeed=${this.scrollSpeed} tw=${tw} scale=${scale}`)
         for (let j = 0; j < h; j++) {
             for (let i = 0; i < w; i++) {
-                let tb = new Bounds(i, j, 1, 1).scale(TILE_SIZE)
+                let tb = new Bounds(i, j, 1, 1).scale(tw)
                 tb = tb.add(new Point(
-                    (-xoff * TILE_SIZE % TILE_SIZE),
-                    (-yoff * TILE_SIZE % TILE_SIZE)))
+                    (-xoff * tw % tw),
+                    (-yoff * tw % tw)))
 
                 let nn = new Point(i + xoff, j + yoff).floor()
                 if (this.wrapping) {
@@ -63,10 +61,10 @@ export class TilemapLayer implements Layer {
                     const cached = cache.getTileByName(tile)
                     if (cached) {
                         ctx.drawImage(cached.canvas,
-                            Math.floor(tb.x*SCALE),
-                            Math.floor(tb.y*SCALE),
-                            tb.w*SCALE,
-                            tb.h*SCALE)
+                            Math.floor(tb.x*scale),
+                            Math.floor(tb.y*scale),
+                            tb.w*scale,
+                            tb.h*scale)
                     } else {
                         // fillBounds(ctx, tb, 'magenta')
                     }
@@ -77,7 +75,7 @@ export class TilemapLayer implements Layer {
             }
         }
         ctx.restore()
-        // strokeBounds(ctx, new Bounds(0, 0, viewport.w, viewport.h), 'red', 1.0)
+        // strokeBounds(ctx, viewport.scale(scale), 'red', 1.0)
     }
 
     loadFromString(size: Size, string: string, mapping: Record<string, string>) {
