@@ -19,8 +19,7 @@ const DocDef:PropDef<Doc2> = {
     editable: false,
     default: () => {
         const size = new Size(10,10)
-        const doc = new Doc2({tileSize: size, name:'unnamed doc', palette:PICO8})
-        return doc
+        return new Doc2({tileSize: size, name: 'unnamed doc', palette: PICO8})
     }
 }
 const ModeDef:PropDef<string> = {

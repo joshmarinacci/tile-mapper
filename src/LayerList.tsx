@@ -1,7 +1,7 @@
 import React from "react"
 
 import {PropsBase, useWatchProp} from "./base"
-import {Layer2Type, Map2} from "./data2"
+import {Layer2Type, Map2} from "./datamodel"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
 const LayerNameRenderer: ListViewRenderer<PropsBase<Layer2Type>> = (props: {

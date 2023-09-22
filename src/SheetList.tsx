@@ -1,6 +1,6 @@
 import React from "react"
 
-import {Doc2, Sheet2} from "./data2"
+import {Doc2, Sheet2} from "./datamodel"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
 const SheetNameRender:ListViewRenderer<Sheet2> = (props:{value:Sheet2, selected:boolean}) => {

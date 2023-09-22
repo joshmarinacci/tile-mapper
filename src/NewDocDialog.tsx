@@ -3,12 +3,12 @@ import {DialogContext} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
 import {appendToList} from "./base"
-import {Doc2, Sheet2, Tile2} from "./data2"
 import {
     ImagePalette,
     MINECRAFT,
     PICO8
-} from "./model"
+} from "./common"
+import {Doc2, Sheet2, Tile2} from "./datamodel"
 
 function make_new_doc(width: number, height: number, palette:ImagePalette) {
     const TS = new Size(16,16)
@@ -18,7 +18,7 @@ function make_new_doc(width: number, height: number, palette:ImagePalette) {
         tileSize: TS,
     })
     const sheet = new Sheet2({tileSize:TS })
-    const tile = new Tile2({size:TS}, palette)
+    const tile = new Tile2({size:TS, palette:palette})
     appendToList(sheet,"tiles", tile)
     appendToList(doc,'sheets',sheet)
     return doc

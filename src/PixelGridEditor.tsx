@@ -2,8 +2,8 @@ import {Point} from "josh_js_util"
 import {HBox, toClass} from "josh_react_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {Tile2} from "./data2"
-import {ImagePalette} from "./model"
+import {ImagePalette} from "./common"
+import {Tile2} from "./datamodel"
 
 
 function calculateDirections() {

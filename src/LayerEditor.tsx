@@ -5,7 +5,7 @@ import {toClass} from "josh_react_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {ActorLayer, Doc2, Map2, Tile2, TileLayer2} from "./datamodel"
+import {ActorLayer, Doc2, Map2, MapCell, Tile2, TileLayer2} from "./datamodel"
 
 function calculateDirections() {
     return [

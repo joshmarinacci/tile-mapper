@@ -3,8 +3,8 @@ import "./Palette.css"
 import {toClass} from "josh_react_util"
 import React from "react"
 
+import {ImagePalette} from "./common"
 import {ListView, ListViewDirection} from "./ListView"
-import {ImagePalette} from "./model"
 
 const PaletteColorRenderer = (props:{value:string, selected:boolean}) => {
     const {value, selected} = props

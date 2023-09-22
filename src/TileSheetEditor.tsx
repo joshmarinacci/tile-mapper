@@ -4,7 +4,7 @@ import {ArrayGrid} from "josh_js_util"
 import {VBox} from "josh_react_util"
 import React, {useEffect, useState} from "react"
 
-import {Doc2, Sheet2, Tile2} from "./data2"
+import {Doc2, Sheet2, Tile2} from "./datamodel"
 import {PaletteColorPickerPane} from "./Palette"
 import {PixelGridEditor} from "./PixelGridEditor"
 import {PropSheet} from "./propsheet"

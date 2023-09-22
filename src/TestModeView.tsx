@@ -3,7 +3,7 @@ import "./TestView.css"
 import {HBox} from "josh_react_util"
 import React, {useState} from "react"
 
-import {Doc2, Map2, Test2} from "./data2"
+import {Doc2, Map2, Test2} from "./datamodel"
 import {GlobalState} from "./state"
 import {TestMapPlayer} from "./TestMapPlayer"
 

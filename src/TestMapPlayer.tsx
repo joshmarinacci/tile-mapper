@@ -1,6 +1,6 @@
 import React, {useState} from "react"
 
-import {Doc2, Map2, Test2} from "./data2"
+import {Doc2, Map2, Test2} from "./datamodel"
 import {PlayTest} from "./PlayTest"
 export function TestMapPlayer(props: {
     test: Test2,
