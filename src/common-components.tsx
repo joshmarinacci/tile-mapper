@@ -1,5 +1,5 @@
-import {toClass} from "josh_react_util"
-import React, {ReactNode, useState} from "react"
+import {PopupContext, toClass} from "josh_react_util"
+import React, {ReactNode, useContext, useState} from "react"
 
 import {ActionRegistry, MenuAction, SimpleMenuAction} from "./base"
 import {GlobalState} from "./state"
@@ -70,4 +70,15 @@ export function ToolbarActionButton(props:{state:GlobalState, action:MenuAction,
         if(action.type === 'simple') await (action as SimpleMenuAction).perform(props.state)
     }
     return <button className={'menu-button'} onClick={perform} disabled={disabled}> {icon} {action.title}</button>
+}
+
+export function MenuList(props: { children:ReactNode }) {
+    return <div className={'menu-list'}>{props.children}</div>
+}
+export function DropdownButton(props: { title:string,     children: ReactNode,
+}) {
+    const pm = useContext(PopupContext)
+    return <button onClick={(e)=>{
+        pm.show_at(<MenuList>{props.children}</MenuList>,e.target)
+    }}>{props.title}</button>
 }

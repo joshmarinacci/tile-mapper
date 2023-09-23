@@ -5,7 +5,8 @@ import {toClass} from "josh_react_util"
 import React, {useState} from "react"
 
 import {appendToList, PropDef, PropsBase, useWatchProp} from "./base"
-import {GameMap, GameTest,Sheet} from "./datamodel"
+import {DropdownButton} from "./common-components"
+import {Actor, GameMap, GameTest, Sheet} from "./datamodel"
 import {GlobalState} from "./state"
 
 function PropertyList<T, K extends keyof T>(props: {
@@ -21,28 +22,38 @@ function PropertyList<T, K extends keyof T>(props: {
     const [open, setOpen] = useState(true)
     const toggle = () => setOpen(!open)
     useWatchProp(target,name)
-    const add = () => {
-        if(name === 'sheets') {
-            const sheet = new Sheet({name:'unnamed', tileSize: new Size(20,20)})
-            appendToList(target,name,sheet)
-            props.state.setPropValue('selection',sheet)
-        }
-        if(name === 'maps') {
-            const map = new GameMap({name:name})
-            appendToList(target,name,map)
-            props.state.setPropValue('selection',map)
-        }
-        if(name === 'tests') {
-            const test = new GameTest({name: 'a new test'})
-            appendToList(target,name,test)
-            props.state.setPropValue('selection',test)
-        }
+    const addSheet = () => {
+        const sheet = new Sheet({name:'unnamed sheet', tileSize: new Size(20,20)})
+        appendToList(target,name,sheet)
+        props.state.setPropValue('selection',sheet)
     }
+    const addMap = () => {
+        const map = new GameMap({name:'new map'})
+        appendToList(target,name,map)
+        props.state.setPropValue('selection',map)
+    }
+    const addActor = () => {
+        const actor = new Actor({name:'new actor'})
+        appendToList(target,name,actor)
+        props.state.setPropValue('selection',actor)
+    }
+    const addTest = () => {
+        const test = new GameTest({name: 'a new test'})
+        appendToList(target,name,test)
+        props.state.setPropValue('selection',test)
+    }
+
     return <li className={'tree-item'}>
         <p key={'section-description'} className={'section'}>
             <button onClick={() => toggle()}>{open?'▼':'▶'}</button>
             <b>{name.toString()}</b>
-            <button onClick={() => add()}>+</button>
+            <DropdownButton title={"..."}>
+                {name === 'sheets' && <button onClick={addSheet}>Add Sheet</button>}
+                {name === 'maps' && <button onClick={addMap}>Add Map</button>}
+                {name === 'tests' && <button onClick={addTest}>Add Test</button>}
+                {name === 'actors' && <button onClick={addActor}>Add Actor</button>}
+                {/*<button onClick={() => add()}>Add</button>*/}
+            </DropdownButton>
         </p>
         {open &&
         <ul key={'children'} className={'tree-list'}>{values.map((val) => {
