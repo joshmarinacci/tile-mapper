@@ -17,6 +17,9 @@ body {
     height: 99vh;
     overflow: clip;
 }
+.editor-view {
+    border: 1px solid black;
+}
 .across {
     grid-column-start: 1;
     grid-column-end: 4;
@@ -49,13 +52,14 @@ body {
 
 /* general */
 
-
-
+button, label {
+    box-sizing: border-box;
+    padding: 0.25rem 0.5rem;
+}
 button {
   border: 1px solid #333;
   background: #ddd;
   color: #333;
-  padding: 0.25rem 0.5rem;
 }
 button:hover {
   background: #fff;
@@ -71,6 +75,14 @@ button.selected:active {
   background: #fff;
 }
 
+.logo {
+    text-transform: uppercase;
+    background-color: black;
+    color: white;
+    border: 1px solid black;
+    align-self: center;
+}
+
 .toolbar {
     border: 1px solid black;
     display: flex;
@@ -78,69 +90,18 @@ button.selected:active {
     border-width: 0px 1px 1px 0px;
     align-items: center;
 }
-.toolbar > label {
-    padding: 0.25rem 0.5rem;
-}
-.toolbar > button {
-    border: 0px solid black;
+.toolbar > * {
     border-width: 0px 1px 0px 0px;
 }
 
-
-/*.props-sheet {*/
-/*  border: 1px solid var(--pane-border);*/
-/*  padding: 0;*/
-/*  margin: 0;*/
-/*  list-style: none;*/
-/*}*/
-/*.props-sheet li {*/
-/*  padding: 0.5rem;*/
-/*}*/
-/*.props-sheet li b {*/
-/*  padding-right: 1rem;*/
-/*}*/
-/*.props-sheet li input {*/
-/*  background-color: #dddddd;*/
-/*  border: 1px solid black;*/
-/*  border-radius: 5px;*/
-/*  padding: 0.25rem;*/
-/*}*/
-/*.props-sheet li input:focus {*/
-/*  background-color: white;*/
-/*}*/
-
-
-
-/*.sheet-list .list-item div, .map-list .list-item div {*/
-/*  width: 100%;*/
-/*}*/
-
-
-
-/*.sheet-list, .map-list, .test-list {*/
-/*  flex-direction: column;*/
-/*  border: 1px solid var(--pane-border);*/
-/*  align-content: stretch;*/
-/*  align-items: stretch;*/
-/*}*/
-
-/*.tile-list {*/
-/*  width: 20rem;*/
-/*  height: 200px;*/
-/*}*/
-
-/*.tile-properties {*/
-/*  min-width: 10rem;*/
-/*}*/
-
-/*.standard-form {*/
-/*  border: 0px solid red;*/
-/*  display: grid;*/
-/*  grid-template-columns: 1fr 2fr;*/
-/*  justify-content: center;*/
-/*  align-items: baseline;*/
-/*}*/
-/*.standard-form label {*/
-/*  justify-self: end;*/
-/*  padding-right: 1rem;*/
-/*}*/
+.standard-form {
+  border: 0px solid red;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  justify-content: center;
+  align-items: baseline;
+}
+.standard-form label {
+  justify-self: end;
+  padding-right: 1rem;
+}

@@ -45,7 +45,9 @@ function Main2() {
     const [doc, setDoc] = useState(STATE.getPropValue('doc') as GameDoc)
     useWatchAllProps(STATE, (s) => setSelection(s.getPropValue('selection')))
     useWatchProp(STATE, 'doc', () => setDoc(STATE.getPropValue('doc')))
-    let editView= <div>nothing to edit</div>
+    let editView= <div style={{
+        padding: '1rem',
+    }}><h3>Select item from the left</h3></div>
     if(selection) {
         if(selection instanceof Sheet) {
             editView = <TileSheetEditor state={STATE} doc={doc} sheet={selection as Sheet}/>
@@ -62,6 +64,7 @@ function Main2() {
     }
     return <div className={'main-content'}>
         <div className={'toolbar across'}>
+            <button className={'logo'}>Tile-Mapper</button>
             <ToolbarActionButton action={NewDocAction} state={STATE}/>
             <ToolbarActionButton action={SaveAction} state={STATE}/>
             <ToolbarActionButton action={LoadFileAction} state={STATE}/>
@@ -72,9 +75,10 @@ function Main2() {
             alignSelf:'stretch',
             overflow: "auto"
         }}>
+            <header>Document</header>
             <ObjectTreeView obj={doc} state={STATE} selection={selection}/>
         </div>
-        <div style={{
+        <div className={'editor-view'} style={{
             overflow: "auto",
             alignSelf: 'stretch',
         }}>{editView}</div>
