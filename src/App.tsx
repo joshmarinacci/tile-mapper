@@ -13,13 +13,11 @@ import React, {useState} from 'react'
 import {DocToBMP, DocToPNG, LoadFileAction, SaveAction} from "./actions"
 import {ActorEditView} from "./ActorEditView"
 import {ActionRegistry, PropsBase, useWatchAllProps, useWatchProp} from "./base"
-import {
-    ActionRegistryContext,
-    ToolbarActionButton
-} from "./common-components"
-import {Actor,  GameDoc, GameMap, GameTest, Sheet} from "./datamodel"
+import {ActionRegistryContext, ToolbarActionButton} from "./common-components"
+import {Actor, GameDoc, GameMap, GameTest, Sheet} from "./datamodel"
 import Example from "./example.json"
 import {make_doc_from_json} from "./json"
+import {MainView} from "./MainView"
 import {MapModeView} from "./MapModeView"
 import {PropSheet} from "./propsheet"
 import {NewDocAction} from "./reactactions"
@@ -38,55 +36,54 @@ AR.register([
 ])
 
 const STATE = new GlobalState()
-STATE.setPropValue('doc',make_doc_from_json(Example))
+STATE.setPropValue('doc', make_doc_from_json(Example))
 
 function Main2() {
-    const [selection, setSelection] = useState<PropsBase<any>|null>(null)
+    const [selection, setSelection] = useState<PropsBase<any> | null>(null)
     const [doc, setDoc] = useState(STATE.getPropValue('doc') as GameDoc)
     useWatchAllProps(STATE, (s) => setSelection(s.getPropValue('selection')))
     useWatchProp(STATE, 'doc', () => setDoc(STATE.getPropValue('doc')))
-    let editView= <div style={{
+    let editView = <div style={{
         padding: '1rem',
     }}><h3>Select item from the left</h3></div>
-    if(selection) {
-        if(selection instanceof Sheet) {
+    if (selection) {
+        if (selection instanceof Sheet) {
             editView = <TileSheetEditor state={STATE} doc={doc} sheet={selection as Sheet}/>
         }
-        if(selection instanceof Actor) {
+        if (selection instanceof Actor) {
             editView = <ActorEditView state={STATE} doc={doc} actor={selection as Actor}/>
         }
-        if(selection instanceof GameMap) {
+        if (selection instanceof GameMap) {
             editView = <MapModeView state={STATE} doc={doc} map={selection as GameMap}/>
         }
-        if(selection instanceof GameTest) {
+        if (selection instanceof GameTest) {
             editView = <TestModeView state={STATE} doc={doc} test={selection as GameTest}/>
         }
     }
-    return <div className={'main-content'}>
-        <div className={'toolbar across'}>
-            <button className={'logo'}>Tile-Mapper</button>
-            <ToolbarActionButton action={NewDocAction} state={STATE}/>
-            <ToolbarActionButton action={SaveAction} state={STATE}/>
-            <ToolbarActionButton action={LoadFileAction} state={STATE}/>
-            <ToolbarActionButton action={DocToPNG} state={STATE}/>
-            <ToolbarActionButton action={DocToBMP} state={STATE}/>
-        </div>
-        <div className={'tree-wrapper pane'} style={{
-            alignSelf:'stretch',
-            overflow: "auto"
-        }}>
-            <header>Document</header>
-            <ObjectTreeView obj={doc} state={STATE} selection={selection}/>
-        </div>
-        <div className={'editor-view'} style={{
-            overflow: "auto",
-            alignSelf: 'stretch',
-        }}>{editView}</div>
-        <PropSheet target={selection}/>
-        <div className={'toolbar across'}>
-            <label>greetings, earthling!</label>
-        </div>
+
+
+    const toolbar = <div className={'toolbar across'}>
+        <button className={'logo'}>Tile-Mapper</button>
+        <ToolbarActionButton action={NewDocAction} state={STATE}/>
+        <ToolbarActionButton action={SaveAction} state={STATE}/>
+        <ToolbarActionButton action={LoadFileAction} state={STATE}/>
+        <ToolbarActionButton action={DocToPNG} state={STATE}/>
+        <ToolbarActionButton action={DocToBMP} state={STATE}/>
     </div>
+
+    const left_column = <div className={'tree-wrapper pane'} style={{
+        alignSelf: 'stretch',
+        overflow: "auto"
+    }}>
+        <header>Document</header>
+        <ObjectTreeView obj={doc} state={STATE} selection={selection}/>
+    </div>
+    const center_column = <div className={'editor-view'} style={{
+        overflow: "auto",
+        alignSelf: 'stretch',
+    }}>{editView}</div>
+    const right_column = <PropSheet target={selection}/>
+    return <MainView left={left_column} center={center_column} right={right_column} toolbar={toolbar}/>
 }
 
 function App() {

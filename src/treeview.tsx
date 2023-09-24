@@ -5,6 +5,7 @@ import {toClass} from "josh_react_util"
 import React, {useState} from "react"
 
 import {appendToList, PropDef, PropsBase, useWatchProp} from "./base"
+import {down_arrow_triangle, right_arrow_triangle} from "./common"
 import {DropdownButton} from "./common-components"
 import {Actor, GameMap, GameTest, Sheet} from "./datamodel"
 import {GlobalState} from "./state"
@@ -45,7 +46,7 @@ function PropertyList<T, K extends keyof T>(props: {
 
     return <li className={'tree-item'}>
         <p key={'section-description'} className={'section'}>
-            <button onClick={() => toggle()}>{open?'▼':'▶'}</button>
+            <button onClick={() => toggle()}>{open?down_arrow_triangle:right_arrow_triangle}</button>
             <b>{name.toString()}</b>
             <DropdownButton title={"..."}>
                 {name === 'sheets' && <button onClick={addSheet}>Add Sheet</button>}

@@ -135,3 +135,8 @@ export function canvas_to_bmp(canvas: HTMLCanvasElement, palette1: string[]) {
     }
     return bmp.encode(bmpData)
 }
+
+export const down_arrow_triangle = '▼'
+export const up_arrow_triangle = '▲'
+export const right_arrow_triangle = '▶'
+export const left_arrow_triangle = '◀'

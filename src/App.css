@@ -9,13 +9,6 @@ body {
 }
 
 .main-content {
-    border: 0px solid black;
-    display: grid;
-    grid-template-columns: 10rem 1fr 15rem;
-    grid-template-rows: auto 1fr;
-    width: 99vw;
-    height: 99vh;
-    overflow: clip;
 }
 .editor-view {
     border: 1px solid black;
