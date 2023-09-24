@@ -38,29 +38,27 @@ AR.register([
 const STATE = new GlobalState()
 STATE.setPropValue('doc', make_doc_from_json(Example))
 
+function getEditView(STATE:GlobalState, doc:GameDoc, selection: unknown) {
+    if(selection instanceof Sheet) {
+        return <TileSheetEditor state={STATE} doc={doc} sheet={selection as Sheet}/>
+    }
+    if (selection instanceof Actor) {
+        return <ActorEditView state={STATE} doc={doc} actor={selection as Actor}/>
+    }
+    if (selection instanceof GameMap) {
+        return <MapModeView state={STATE} doc={doc} map={selection as GameMap}/>
+    }
+    if (selection instanceof GameTest) {
+        return <TestModeView state={STATE} doc={doc} test={selection as GameTest}/>
+    }
+    return  <div style={{ padding: '1rem' }}><h3>Select item from the left</h3></div>
+}
+
 function Main2() {
     const [selection, setSelection] = useState<PropsBase<any> | null>(null)
     const [doc, setDoc] = useState(STATE.getPropValue('doc') as GameDoc)
     useWatchAllProps(STATE, (s) => setSelection(s.getPropValue('selection')))
     useWatchProp(STATE, 'doc', () => setDoc(STATE.getPropValue('doc')))
-    let editView = <div style={{
-        padding: '1rem',
-    }}><h3>Select item from the left</h3></div>
-    if (selection) {
-        if (selection instanceof Sheet) {
-            editView = <TileSheetEditor state={STATE} doc={doc} sheet={selection as Sheet}/>
-        }
-        if (selection instanceof Actor) {
-            editView = <ActorEditView state={STATE} doc={doc} actor={selection as Actor}/>
-        }
-        if (selection instanceof GameMap) {
-            editView = <MapModeView state={STATE} doc={doc} map={selection as GameMap}/>
-        }
-        if (selection instanceof GameTest) {
-            editView = <TestModeView state={STATE} doc={doc} test={selection as GameTest}/>
-        }
-    }
-
 
     const toolbar = <div className={'toolbar across'}>
         <button className={'logo'}>Tile-Mapper</button>
@@ -78,6 +76,7 @@ function Main2() {
         <header>Document</header>
         <ObjectTreeView obj={doc} state={STATE} selection={selection}/>
     </div>
+    const editView = getEditView(STATE,doc,selection)
     const center_column = <div className={'editor-view'} style={{
         overflow: "auto",
         alignSelf: 'stretch',
