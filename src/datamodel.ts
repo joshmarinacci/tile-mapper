@@ -436,11 +436,21 @@ type ActorType = {
     name: string,
     hitbox: Bounds,
     viewbox: Bounds,
+    tile: string|undefined,
 }
 const ActorDefs:DefList<ActorType> = {
     name: NameDef,
     hitbox: EditableBoundsDef,
     viewbox: EditableBoundsDef,
+    tile: {
+        type:'reference',
+        custom:'tile-reference',
+        editable:true,
+        hidden:false,
+        expandable:false,
+        default: () => undefined,
+        format:(v) => v?v:'unknown',
+    }
 }
 export class Actor extends PropsBase<ActorType> {
     constructor(opts?: PropValues<ActorType>) {

@@ -7,9 +7,8 @@ import {GameDoc, GameMap, Sheet, Tile} from "./datamodel"
 import {LayerEditor} from "./LayerEditor"
 import {LayerList} from "./LayerList"
 import {PropSheet} from "./propsheet"
-import {SheetList} from "./SheetList"
 import {GlobalState} from "./state"
-import {TileListView} from "./TileListView"
+import {CompactSheetAndTileSelector} from "./TileListView"
 
 export function MapModeView(props: {
     state: GlobalState,
@@ -20,7 +19,6 @@ export function MapModeView(props: {
     const selectedMap = props.map
     const layers = selectedMap.getPropValue('layers')
     const sheets = doc.getPropValue('sheets') as Sheet[]
-    const [selectedSheet, setSelectedSheet] = useState<Sheet>(sheets[0])
     const [selectedTile, setSelectedTile] = useState<Tile>(sheets[0].getPropValue('tiles')[0])
     const [selectedLayer, setSelectedLayer] = useState(layers[0])
 
@@ -28,17 +26,7 @@ export function MapModeView(props: {
     return <div className={'map-editor'}>
         <HBox>
             {!selectedMap && <div>no map selected</div>}
-            <SheetList
-                editable={false}
-                sheet={selectedSheet}
-                setSheet={setSelectedSheet}
-                doc={doc}/>
-            {selectedSheet && <TileListView
-                sheet={selectedSheet}
-                tile={selectedTile}
-                editable={false}
-                setTile={(t: Tile) => setSelectedTile(t)}
-                palette={doc.getPropValue('palette')}/>}
+            <CompactSheetAndTileSelector doc={doc} selectedTile={selectedTile} setSelectedTile={setSelectedTile} />
             <LayerList
                 key={'layer-list'}
                 editable={true}

@@ -129,14 +129,28 @@ function findActorForInstance(inst:ActorInstance,doc:GameDoc) {
     return doc.getPropValue('actors').find(act => act._id === actor_id)
 }
 function drawActorlayer(ctx: CanvasRenderingContext2D, doc: GameDoc, layer: ActorLayer, scale: number, grid: boolean) {
-    ctx.fillStyle = 'rgba(255,0,0,0.5)'
-    ctx.fillRect(0,0,100,100)
     layer.getPropValue('actors').forEach(inst => {
         const position = inst.getPropValue('position')
         const source = findActorForInstance(inst,doc)
         if(source) {
-            const box = source.getPropValue('viewbox')
-            fillBounds(ctx,box.add(position).scale(scale),'red')
+            const box = source.getPropValue('viewbox').add(position).scale(scale)
+            const tileRef = source.getPropValue('tile')
+            fillBounds(ctx,box,'red')
+            if(tileRef) {
+                const tile = doc.lookup_sprite(tileRef)
+                if (tile) {
+                    if (tile.cache_canvas) {
+                        ctx.drawImage(tile.cache_canvas,
+                            //src
+                            0, 0, tile.cache_canvas.width, tile.cache_canvas.height,
+                            //dst
+                            box.x, box.y, box.w, box.h
+                        )
+                    } else {
+                        drawEditableSprite(ctx, scale, tile)
+                    }
+                }
+            }
         }
     })
 }

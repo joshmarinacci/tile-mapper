@@ -2,6 +2,7 @@ import {PopupContext, toClass} from "josh_react_util"
 import React, {ReactNode, useContext, useState} from "react"
 
 import {ActionRegistry, MenuAction, SimpleMenuAction} from "./base"
+import {GameDoc} from "./datamodel"
 import {GlobalState} from "./state"
 
 export function EditableLabel(props: { onChange: (str: string) => void, value: string }) {
@@ -82,3 +83,5 @@ export function DropdownButton(props: { title:string,     children: ReactNode,
         pm.show_at(<MenuList>{props.children}</MenuList>,e.target)
     }}>{props.title}</button>
 }
+
+export const DocContext = React.createContext(new GameDoc())

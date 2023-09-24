@@ -1,12 +1,13 @@
 import "./TileSheetView.css"
 
-import {toClass} from "josh_react_util"
+import {HBox, toClass, VBox} from "josh_react_util"
 import {forceDownloadBlob} from "josh_web_util"
-import React, {useEffect, useRef} from "react"
+import React, {useEffect, useRef, useState} from "react"
 
 import {useWatchProp} from "./base"
 import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "./common"
-import {Sheet, Tile} from "./datamodel"
+import {GameDoc, Sheet, Tile} from "./datamodel"
+import {ListSelect} from "./ListSelect"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
 const TilePreviewRenderer: ListViewRenderer<Tile> = (props: { value: Tile, selected: boolean, index: number }) => {
@@ -98,4 +99,27 @@ export function TileListView(props: {
                 <button onClick={export_bmp}>to BMP</button>
             </div>}
     </div>
+}
+
+export function CompactSheetAndTileSelector(props: {
+    selectedTile: Tile,
+    setSelectedTile: (t: Tile) => void,
+    doc: GameDoc,
+}) {
+    const {selectedTile, setSelectedTile, doc} = props
+    const sheets = doc.getPropValue('sheets')
+    const [selectedSheet, setSelectedSheet] = useState<Sheet>(sheets[0])
+    return <VBox>
+        <HBox>
+            <label>sheet</label>
+            <ListSelect selected={selectedSheet} setSelected={setSelectedSheet} data={sheets}
+                        renderer={(sh) => sh.getPropValue('name')}/>
+        </HBox>
+        {selectedSheet && <TileListView
+            sheet={selectedSheet}
+            tile={selectedTile}
+            editable={false}
+            setTile={(t: Tile) => setSelectedTile(t)}
+            palette={doc.getPropValue('palette')}/>}
+    </VBox>
 }

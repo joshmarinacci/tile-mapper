@@ -13,7 +13,11 @@ import React, {useState} from 'react'
 import {DocToBMP, DocToPNG, LoadFileAction, SaveAction} from "./actions"
 import {ActorEditView} from "./ActorEditView"
 import {ActionRegistry, PropsBase, useWatchAllProps, useWatchProp} from "./base"
-import {ActionRegistryContext, ToolbarActionButton} from "./common-components"
+import {
+    ActionRegistryContext,
+    DocContext,
+    ToolbarActionButton
+} from "./common-components"
 import {Actor, GameDoc, GameMap, GameTest, Sheet} from "./datamodel"
 import Example from "./example.json"
 import {make_doc_from_json} from "./json"
@@ -38,8 +42,8 @@ AR.register([
 const STATE = new GlobalState()
 STATE.setPropValue('doc', make_doc_from_json(Example))
 
-function getEditView(STATE:GlobalState, doc:GameDoc, selection: unknown) {
-    if(selection instanceof Sheet) {
+function getEditView(STATE: GlobalState, doc: GameDoc, selection: unknown) {
+    if (selection instanceof Sheet) {
         return <TileSheetEditor state={STATE} doc={doc} sheet={selection as Sheet}/>
     }
     if (selection instanceof Actor) {
@@ -51,7 +55,7 @@ function getEditView(STATE:GlobalState, doc:GameDoc, selection: unknown) {
     if (selection instanceof GameTest) {
         return <TestModeView state={STATE} doc={doc} test={selection as GameTest}/>
     }
-    return  <div style={{ padding: '1rem' }}><h3>Select item from the left</h3></div>
+    return <div style={{padding: '1rem'}}><h3>Select item from the left</h3></div>
 }
 
 function Main2() {
@@ -76,13 +80,15 @@ function Main2() {
         <header>Document</header>
         <ObjectTreeView obj={doc} state={STATE} selection={selection}/>
     </div>
-    const editView = getEditView(STATE,doc,selection)
+    const editView = getEditView(STATE, doc, selection)
     const center_column = <div className={'editor-view'} style={{
         overflow: "auto",
         alignSelf: 'stretch',
     }}>{editView}</div>
-    const right_column = <PropSheet target={selection}/>
-    return <MainView left={left_column} center={center_column} right={right_column} toolbar={toolbar}/>
+    const right_column = <PropSheet target={selection} doc={doc}/>
+    return <DocContext.Provider value={doc}>
+        <MainView left={left_column} center={center_column} right={right_column} toolbar={toolbar}/>
+    </DocContext.Provider>
 }
 
 function App() {

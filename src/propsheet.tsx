@@ -1,11 +1,66 @@
 import "./propsheet.css"
 
 import {Bounds, Size} from "josh_js_util"
-import React from "react"
+import {HBox, PopupContext} from "josh_react_util"
+import React, {useContext, useEffect, useRef, useState} from "react"
 
 import {PropDef, PropsBase, useWatchProp} from "./base"
+import {drawEditableSprite} from "./common"
+import {GameDoc, Tile} from "./datamodel"
+import {CompactSheetAndTileSelector} from "./TileListView"
 
-function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDef<T[keyof T]> }) {
+function TileReferenceSelector<T>(props:{
+    def: PropDef<T[keyof T]>,
+    name: keyof T,
+    target: PropsBase<T>,
+    doc: GameDoc
+}) {
+    const [tile, setTile] = useState<Tile|undefined>(undefined)
+    const {doc} = props
+    return<CompactSheetAndTileSelector selectedTile={tile} setSelectedTile={(tile)=>{
+        setTile(tile)
+        props.target.setPropValue(props.name,tile._id)
+    }} doc={doc}/>
+}
+
+function TileReferenceView(props: { tileRef: string, doc:GameDoc }) {
+    const { tileRef , doc} = props
+    const canvasRef = useRef<HTMLCanvasElement>(null)
+    useEffect(() => {
+        if(canvasRef.current) {
+            const canvas = canvasRef.current
+            const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+            ctx.fillStyle = 'blue'
+            ctx.fillRect(0,0,32,32)
+            ctx.fillRect(0, 0, canvas.width, canvas.height)
+            if(tileRef) {
+                const tile = doc.lookup_sprite(tileRef)
+                if (tile) drawEditableSprite(ctx, 3, tile)
+            }
+        }
+    }, [props.tileRef])
+    return <div>
+        <canvas ref={canvasRef} width={32} height={32}/>
+    </div>
+}
+
+function TileReferenceEditor<T>(props: {
+    def: PropDef<T[keyof T]>,
+    name: keyof T,
+    target: PropsBase<T>
+    doc:GameDoc,
+}) {
+    const pm = useContext(PopupContext)
+    const value = props.target.getPropValue(props.name)
+    return <HBox>
+        <button onClick={(e) => {
+            pm.show_at(<TileReferenceSelector name={props.name} target={props.target} def={props.def} doc={props.doc} />,e.target,'below')
+        }}>edit</button>
+        <TileReferenceView tileRef={value} doc={props.doc}/>
+    </HBox>
+}
+
+function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDef<T[keyof T]>, doc:GameDoc }) {
     const {target, def, name} = props
     const new_val = target.getPropValue(name)
     useWatchProp(target, name)
@@ -104,10 +159,13 @@ function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDe
                    }}/>
         </>
     }
+    if (def.type === 'reference' && def.custom === 'tile-reference') {
+        return <TileReferenceEditor target={target} name={name} def={def} doc={props.doc}/>
+    }
     return <label key={'nothing'}>no editor for it</label>
 }
 
-export function PropSheet<T>(props: { title?: string, target: PropsBase<T> | null }) {
+export function PropSheet<T>(props: { title?: string, target: PropsBase<T> | null, doc:GameDoc }) {
     const {title, target} = props
     const header = <header key={'the-header'}>{title ? props.title : 'props'}</header>
     if (!target) return <div className={'pane'} key={'nothing'}>{header}nothing selected</div>
@@ -121,7 +179,9 @@ export function PropSheet<T>(props: { title?: string, target: PropsBase<T> | nul
                 <PropEditor key={`editor_${name.toString()}`}
                             target={target}
                             name={name}
-                            def={def}/>
+                            def={def}
+                            doc={props.doc}
+                />
             </>
         })}
     </div>

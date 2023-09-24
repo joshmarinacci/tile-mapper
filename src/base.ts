@@ -15,8 +15,9 @@ export type ToJSONner<T> = (v: T) => JSONValue;
 export type FromJSONner<T> = (v: JSONValue) => T
 export type ToFormatString<T> = (v: T) => string;
 export type PropDef<T> = {
-    type: 'string' | 'integer' | 'float' | 'Size' | 'Point' | 'Bounds' | 'boolean' | 'array' | 'object',
+    type: 'string' | 'integer' | 'float' | 'Size' | 'Point' | 'Bounds' | 'boolean' | 'array' | 'object' | 'reference',
     editable: boolean,
+    custom?:'tile-reference'
     default: Getter<T>,
     toJSON: ToJSONner<T>,
     fromJSON?: FromJSONner<T>
