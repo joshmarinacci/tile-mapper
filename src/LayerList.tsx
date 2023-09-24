@@ -3,7 +3,7 @@ import {DialogContext} from "josh_react_util"
 import React, {useContext} from "react"
 
 import {appendToList, PropsBase, useWatchProp} from "./base"
-import {GameMap, MapLayerType, TileLayer} from "./datamodel"
+import {ActorLayer, GameMap, MapLayerType, TileLayer} from "./datamodel"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 import {ResizeLayerDialog} from "./ResizeLayerDialog"
 
@@ -28,14 +28,22 @@ export function LayerList(props: {
     const dm = useContext(DialogContext)
     useWatchProp(props.map,"layers")
     const add_tile_layer = () => {
-        const layer = new TileLayer({name:'new tile layer', size: new Size(20,10), type:'tile-layer'})
+        const layer = new TileLayer({name:'new tile layer', size: new Size(20,10), scrollSpeed: 1,visible: true,wrapping:false})
         appendToList(props.map,"layers", layer)
     }
     const add_actor_layer = () => {
-
+        const layer = new ActorLayer({name:'new actor layer', visible:true,blocking:true})
+        appendToList(props.map, 'layers',layer)
     }
     const delete_layer = () => {
-
+        if(!props.layer) return
+        let layers = props.map.getPropValue('layers') as PropsBase<MapLayerType>[]
+        layers = layers.slice()
+        const n = layers.indexOf(props.layer)
+        if(n >= 0) {
+            layers.splice(n,1)
+        }
+        props.map.setPropValue('layers',layers)
     }
     const move_layer_up = () => {
         if(!props.layer) return

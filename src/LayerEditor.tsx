@@ -5,9 +5,19 @@ import {toClass} from "josh_react_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {useWatchProp} from "./base"
+import {appendToList, PropsBase, useWatchProp} from "./base"
 import {drawEditableSprite} from "./common"
-import {ActorLayer, GameDoc, GameMap, MapCell, Tile, TileLayer} from "./datamodel"
+import {
+    ActorInstance,
+    ActorLayer,
+    GameDoc,
+    GameMap,
+    MapCell,
+    MapLayerType,
+    Tile,
+    TileLayer
+} from "./datamodel"
+import {fillBounds, strokeBounds} from "./engine/util"
 
 function calculateDirections() {
     return [
@@ -112,18 +122,87 @@ function drawTileLayer(ctx: CanvasRenderingContext2D,
 
 }
 
+function findActorForInstance(inst:ActorInstance,doc:GameDoc) {
+    const actor_id = inst.getPropValue('actor')
+    return doc.getPropValue('actors').find(act => act._id === actor_id)
+}
+function drawActorlayer(ctx: CanvasRenderingContext2D, doc: GameDoc, layer: ActorLayer, scale: number, grid: boolean) {
+    ctx.fillStyle = 'rgba(255,0,0,0.5)'
+    ctx.fillRect(0,0,100,100)
+    layer.getPropValue('actors').forEach(inst => {
+        const position = inst.getPropValue('position')
+        const source = findActorForInstance(inst,doc)
+        if(source) {
+            const box = source.getPropValue('viewbox')
+            fillBounds(ctx,box.add(position).scale(scale),'red')
+        }
+    })
+}
+
+function TileLayerToolbar(props:{doc:GameDoc, layer:TileLayer}) {
+    return <div className={'toolbar'}>
+        <label>tiles</label>
+    </div>
+}
+
+function ActorLayerToolbar(props:{doc:GameDoc, layer:ActorLayer, onSelect:(act:ActorInstance) => void}) {
+    const [selected, setSelected] = useState<string>("nothing")
+    const add_actor = () => {
+        const player = new ActorInstance({name:'new ref', actor:selected, position: new Point(50,30)})
+        appendToList(props.layer,"actors", player)
+        props.onSelect(player)
+    }
+    return <div className={'toolbar'}>
+        <label>actors</label>
+        <select value={selected} onChange={(e) => {
+            setSelected(e.target.value)
+        }}><option key={'nothing'} value={'nothing'}>unselected</option>
+            {
+                props.doc.getPropValue('actors').map(act => {
+                    return <option key={act._id} value={act._id}>{act.getPropValue('name')}</option>
+                })
+            }
+        </select>
+        <button disabled={selected === 'nothing'} onClick={add_actor}>add actor</button>
+    </div>
+}
+
+function drawSelectedActor(ctx: CanvasRenderingContext2D, doc: GameDoc, inst: ActorInstance, scale: number, grid: boolean) {
+    const position = inst.getPropValue('position')
+    const source = findActorForInstance(inst,doc)
+    if(source) {
+        const box = source.getPropValue('viewbox')
+        strokeBounds(ctx,box.add(position).scale(scale),'orange',3)
+    }
+}
+
+function findActorAtPosition(doc:GameDoc, layer: ActorLayer, point: Point) {
+    return layer.getPropValue('actors').find(inst => {
+        const actt = findActorForInstance(inst,doc)
+        if(actt) {
+            const box = actt.getPropValue('viewbox').add(inst.getPropValue('position'))
+            console.log("box is",box)
+            if(box.contains(point)) {
+                return true
+            }
+        }
+        return false
+    })
+}
+
 export function LayerEditor(props: {
     doc: GameDoc,
     map: GameMap,
-    layer: TileLayer,
+    layer: PropsBase<MapLayerType>,
     tile: Tile,
     setSelectedTile: (sprite: Tile) => void,
 }) {
     const {map, layer, tile, doc} = props
     const [grid, setGrid] = useState<boolean>(false)
+    const [selectedActor, setSelectedActor] = useState<ActorInstance|undefined>(undefined)
     const ref = useRef<HTMLCanvasElement>(null)
     const [down, setDown] = useState<boolean>(false)
-    useEffect(() => redraw(), [grid, layer])
+    useEffect(() => redraw(), [grid, layer, selectedActor])
 
     const [zoom, setZoom] = useState(2)
     const scale = Math.pow(2, zoom)
@@ -137,15 +216,19 @@ export function LayerEditor(props: {
             ctx.imageSmoothingEnabled = false
             ctx.fillStyle = 'magenta'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
-            map.getPropValue('layers').forEach((layer:TileLayer) => {
+            map.getPropValue('layers').forEach((layer:PropsBase<MapLayerType>) => {
                 if(!layer.getPropValue('visible')) return
+                // console.log("layer is",layer, layer.getPropValue('type'), layer instanceof TileLayer, layer instanceof ActorLayer)
                 if (layer instanceof TileLayer) {
                     drawTileLayer(ctx, doc, layer as TileLayer, scale, grid)
                 }
                 if (layer instanceof ActorLayer) {
-                    // drawActorlayer(ctx)
+                    drawActorlayer(ctx, doc, layer as ActorLayer, scale, grid)
                 }
             })
+            if(selectedActor) {
+                drawSelectedActor(ctx,doc,selectedActor,scale,grid)
+            }
         }
     }
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
@@ -154,6 +237,13 @@ export function LayerEditor(props: {
             .subtract(new Point(rect.left, rect.top))
             .scale(1 / scale)
         pt = new Point(pt.x / tileSize.w, pt.y / tileSize.h).floor()
+        return pt
+    }
+    const canvasToLayer = (e:MouseEvent<HTMLCanvasElement>) => {
+        const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
+        const pt = new Point(e.clientX, e.clientY)
+            .subtract(new Point(rect.left, rect.top))
+            .scale(1 / scale)
         return pt
     }
     const [fillOnce, setFillOnce] = useState<boolean>(false)
@@ -183,6 +273,9 @@ export function LayerEditor(props: {
             const cells = layer.getPropValue('data') as ArrayGrid<MapCell>
             cells.set(canvasToImage(e), {tile: tile._id})
         }
+        if (layer instanceof ActorLayer) {
+            setSelectedActor(findActorAtPosition(doc,layer,canvasToLayer(e)))
+        }
         redraw()
     }
     const onMouseMove = (e: MouseEvent<HTMLCanvasElement>) => {
@@ -190,6 +283,10 @@ export function LayerEditor(props: {
             if (layer instanceof TileLayer) {
                 const cells = layer.getPropValue('data') as ArrayGrid<MapCell>
                 cells.set(canvasToImage(e), {tile: tile._id})
+            }
+            if (layer instanceof ActorLayer && selectedActor) {
+                const pt = canvasToLayer(e)
+                selectedActor.setPropValue('position',pt)
             }
             redraw()
         }
@@ -210,6 +307,8 @@ export function LayerEditor(props: {
             <button onClick={() => exportPNG(doc, map, 2)}>png 2x</button>
             <button onClick={() => exportPNG(doc, map, 4)}>png 4x</button>
         </div>
+        {layer.getPropValue('type') === 'tile-layer' && <TileLayerToolbar layer={layer as TileLayer} doc={doc}/>}
+        {layer.getPropValue('type') === 'actor-layer' && <ActorLayerToolbar layer={layer as ActorLayer} doc={doc} onSelect={setSelectedActor}/>}
         <div className={'map-editor-canvas-wrapper'}>
             <canvas ref={ref}
                     width={biggest.w * scale * tileSize.w}

@@ -29,10 +29,20 @@ export const PointDef: PropDef<Point> = {
 export const BoundsDef: PropDef<Bounds> = {
     type:'Bounds',
     editable:false,
+    hidden:false,
     default: () => new Bounds(0,0,10,10),
     toJSON: (v) => v.toJSON(),
     format: (v) => `${v.w} x ${v.h}`,
     fromJSON: (v) => Bounds.fromJSON(v)
+}
+export const EditableBoundsDef: PropDef<Bounds> = {
+    type:'Bounds',
+    editable:true,
+    hidden:false,
+    default: () => new Bounds(0,0, 16,16),
+    toJSON: (v) => v.toJSON(),
+    fromJSON: (v) => Bounds.fromJSON(v),
+    format: (v) => `${v.x}, ${v.y} -> ${v.w} x ${v.h}`,
 }
 export const PaletteDef: PropDef<ImagePalette> = {
     type:'object',
@@ -41,6 +51,26 @@ export const PaletteDef: PropDef<ImagePalette> = {
     toJSON: (v) => PICO8,
     format: (v) => 'unknown',
     fromJSON: (v) => v,
+}
+const BooleanDef:PropDef<boolean> = {
+    type:'boolean',
+    hidden:false,
+    editable:true,
+    expandable:false,
+    default: () => true,
+    format:(v)=>v?'true':'false',
+    toJSON:(v) => v,
+    fromJSON:(v) => v as boolean,
+}
+const NumberDef:PropDef<number> = {
+    type:'float',
+    hidden:false,
+    editable:true,
+    expandable:false,
+    default: () => 0.0,
+    format:(v)=>v.toFixed(2),
+    toJSON:(v) => v,
+    fromJSON:(v) => v as number,
 }
 
 const JumpDef: PropDef<number> = {
@@ -78,7 +108,6 @@ const FrictionDef:PropDef<number> = {
     toJSON: (v) => v,
     format: (v) => v.toFixed(2),
 }
-const CURRENT_VERSION = 4
 export type MapCell = {
     tile: string, //id of the sprite used to draw this
 }
@@ -276,16 +305,25 @@ CLASS_REGISTRY.register('Sheet',Sheet,SheetDefs)
 
 
 
-
-
-const LayerTypeDef:PropDef<string> = {
-    type:'string',
-    default: () => 'unknown-type',
-    format: (v) => v,
-    editable: false,
-    toJSON:(v) => v,
-    fromJSON: (v) => v,
+export type MapLayerType = {
+    name: string,
+    type: string,
+    blocking: boolean,
+    visible: boolean,
 }
+type TileMapLayerType = {
+    type: 'tile-layer',
+    size: Size,
+    data: ArrayGrid<MapCell>,
+    wrapping: boolean,
+    scrollSpeed: number,
+} & MapLayerType
+type ActorMapLayerType = {
+    type: 'actor-layer',
+    actors:ActorInstance[]
+} & MapLayerType
+
+
 type ArrayGridMapCellJSON = {
     w:number,
     h:number,
@@ -310,39 +348,18 @@ const TileDataGridDef: PropDef<ArrayGrid<MapCell>> = {
     expandable: false,
     hidden: true,
 }
-type TileLayerType = {
-    name: string,
-    type: 'tile-layer',
-    blocking:boolean,
-    visible:boolean,
-    size: Size,
-    data: ArrayGrid<MapCell>,
-    wrapping: boolean,
-    scrollSpeed: number,
-}
-const BooleanDef:PropDef<boolean> = {
-    type:'boolean',
-    hidden:false,
-    editable:true,
-    expandable:false,
-    default: () => true,
-    format:(v)=>v?'true':'false',
-    toJSON:(v) => v,
-    fromJSON:(v) => v as boolean,
-}
-const NumberDef:PropDef<number> = {
-    type:'float',
-    hidden:false,
-    editable:true,
-    expandable:false,
-    default: () => 0.0,
-    format:(v)=>v.toFixed(2),
-    toJSON:(v) => v,
-    fromJSON:(v) => v as number,
-}
-const TileLayerDefs:DefList<TileLayerType> = {
+const TileLayerDefs:DefList<TileMapLayerType> = {
     name: NameDef,
-    type: LayerTypeDef,
+    type: {
+        type:"string",
+        default: () => 'tile-layer',
+        toJSON: v => v,
+        format: v => v,
+        fromJSON: (v) => v,
+        editable: false,
+        hidden: false,
+        expandable: false,
+    } as PropDef<string>,
     blocking: BlockingDef,
     visible: BlockingDef,
     size: SizeDef,
@@ -350,8 +367,8 @@ const TileLayerDefs:DefList<TileLayerType> = {
     wrapping: BooleanDef,
     scrollSpeed:NumberDef,
 }
-export class TileLayer extends PropsBase<TileLayerType> {
-    constructor(opts?: PropValues<TileLayerType>) {
+export class TileLayer extends PropsBase<TileMapLayerType> {
+    constructor(opts?: PropValues<TileMapLayerType>) {
         super(TileLayerDefs, opts)
         const size = this.getPropValue('size')
         const data = this.getPropValue('data')
@@ -365,33 +382,32 @@ export class TileLayer extends PropsBase<TileLayerType> {
 }
 CLASS_REGISTRY.register('TileLayer',TileLayer,TileLayerDefs)
 
-type ActorLayerType = {
-    type: 'actor-layer',
-    actors: string[]
-}
-const ActorLayerDefs:DefList<ActorLayerType> = {
+const ActorLayerDefs:DefList<ActorMapLayerType> = {
     name: NameDef,
-    type: LayerTypeDef,
+    type: {
+        type:"string",
+        default: () => 'actor-layer',
+        toJSON: v => v,
+        format: v => v,
+        fromJSON: (v) => v,
+        editable: false,
+        hidden: false,
+        expandable: false,
+    } as PropDef<string>,
     blocking: BlockingDef,
     visible: BlockingDef,
     actors: GenericDataArrayDef,
 }
-export class ActorLayer extends PropsBase<ActorLayerType> {
-    constructor(opts?: PropValues<ActorLayerType>) {
+export class ActorLayer extends PropsBase<ActorMapLayerType> {
+    constructor(opts?: PropValues<ActorMapLayerType>) {
         super(ActorLayerDefs, opts)
     }
 }
 CLASS_REGISTRY.register('ActorLayer',ActorLayer, ActorLayerDefs)
 
-export type MapLayerType = {
-    name: string,
-    type: string,
-    blocking: boolean,
-    visible: boolean,
-}
 type GameMapType = {
     name: string,
-    layers: MapLayerType[]
+    layers: PropsBase<MapLayerType>[]
 }
 const GameMapDefs:DefList<GameMapType> = {
     name: NameDef,
@@ -423,8 +439,8 @@ type ActorType = {
 }
 const ActorDefs:DefList<ActorType> = {
     name: NameDef,
-    hitbox: BoundsDef,
-    viewbox: BoundsDef,
+    hitbox: EditableBoundsDef,
+    viewbox: EditableBoundsDef,
 }
 export class Actor extends PropsBase<ActorType> {
     constructor(opts?: PropValues<ActorType>) {
@@ -432,6 +448,30 @@ export class Actor extends PropsBase<ActorType> {
     }
 }
 CLASS_REGISTRY.register('Actor',Actor,ActorDefs)
+
+type ActorInstanceType = {
+    name:string,
+    actor:string,
+    position:Point,
+}
+const ActorInstanceDefs:DefList<ActorInstanceType> = {
+    name: NameDef,
+    position:PointDef,
+    actor: {
+        type:"string",
+        default: () => "unknown",
+        expandable:false,
+        hidden:false,
+        editable:false,
+        format: (v) => v,
+    },
+}
+export class ActorInstance extends PropsBase<ActorInstanceType> {
+    constructor(opts?: PropValues<ActorInstanceType>) {
+        super(ActorInstanceDefs, opts)
+    }
+}
+CLASS_REGISTRY.register('ActorInstance',ActorInstance,ActorInstanceDefs)
 
 const EditableSizeDef: PropDef<Size> = {
     type:'Size',
@@ -442,6 +482,7 @@ const EditableSizeDef: PropDef<Size> = {
     fromJSON: (v) => Size.fromJSON(v),
     format: (v) => `${v.w} x ${v.h}`,
 }
+
 
 const ViewportDef: PropDef<Size> = {
     type: 'Size',

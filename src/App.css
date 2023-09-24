@@ -67,6 +67,10 @@ button.selected:hover {
 button.selected:active {
   background: #fff;
 }
+button:disabled {
+    background: #aaa;
+    color: #999;
+}
 
 .logo {
     text-transform: uppercase;
