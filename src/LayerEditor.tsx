@@ -8,6 +8,7 @@ import React, {MouseEvent, useEffect, useRef, useState} from "react"
 import {appendToList, PropsBase, useWatchProp} from "./base"
 import {drawEditableSprite} from "./common"
 import {
+    Actor,
     ActorInstance,
     ActorLayer,
     GameDoc,
@@ -18,6 +19,7 @@ import {
     TileLayer
 } from "./datamodel"
 import {fillBounds, strokeBounds} from "./engine/util"
+import {ListSelect} from "./ListSelect"
 
 function calculateDirections() {
     return [
@@ -145,25 +147,25 @@ function TileLayerToolbar(props:{doc:GameDoc, layer:TileLayer}) {
     </div>
 }
 
+
 function ActorLayerToolbar(props:{doc:GameDoc, layer:ActorLayer, onSelect:(act:ActorInstance) => void}) {
-    const [selected, setSelected] = useState<string>("nothing")
+    const {doc,layer,onSelect} = props
+    const [selected, setSelected] = useState<Actor|undefined>(undefined)
     const add_actor = () => {
-        const player = new ActorInstance({name:'new ref', actor:selected, position: new Point(50,30)})
-        appendToList(props.layer,"actors", player)
-        props.onSelect(player)
+        if(!selected) return
+        const player = new ActorInstance({name:'new ref', actor:selected._id, position: new Point(50,30)})
+        appendToList(layer,"actors", player)
+        onSelect(player)
     }
     return <div className={'toolbar'}>
         <label>actors</label>
-        <select value={selected} onChange={(e) => {
-            setSelected(e.target.value)
-        }}><option key={'nothing'} value={'nothing'}>unselected</option>
-            {
-                props.doc.getPropValue('actors').map(act => {
-                    return <option key={act._id} value={act._id}>{act.getPropValue('name')}</option>
-                })
-            }
-        </select>
-        <button disabled={selected === 'nothing'} onClick={add_actor}>add actor</button>
+        <ListSelect
+            data={doc.getPropValue('actors')}
+            selected={selected}
+            setSelected={setSelected}
+            renderer={(actor)=>actor.getPropValue('name')}
+            />
+        <button disabled={!selected} onClick={add_actor}>add actor</button>
     </div>
 }
 
