@@ -21,7 +21,7 @@ function SelectionList<T extends PropsBase<unknown>>(props:{
     </div>
 }
 
-export function ListSelect<T extends PropsBase<unknown>>(props:{
+export function ListSelect<T extends PropsBase<any>>(props:{
     selected: T|undefined,
     setSelected: (v: T|undefined) => void,
     renderer: ListViewRenderer<T>|undefined,

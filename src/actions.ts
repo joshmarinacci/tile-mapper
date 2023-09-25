@@ -1,9 +1,9 @@
-import {ArrayGrid, Point} from "josh_js_util"
+import {ArrayGrid, Point, Size} from "josh_js_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
-import {SimpleMenuAction} from "./base"
+import {appendToList, PropsBase, SimpleMenuAction} from "./base"
 import {canvas_to_bmp, drawEditableSprite, sheet_to_canvas} from "./common"
-import {GameDoc, GameMap, Sheet, Tile, TileLayer} from "./datamodel"
+import {ActorLayer, GameDoc, GameMap, MapLayerType, Sheet, Tile, TileLayer} from "./datamodel"
 import {docToJSON, fileToJson, jsonObjToBlob, make_doc_from_json} from "./json"
 import {GlobalState} from "./state"
 
@@ -140,4 +140,44 @@ export async function exportPNG(doc: GameDoc, map: GameMap, scale: number) {
     const can = map_to_canvas(map, doc, scale)
     const blob = await canvas_to_blob(can)
     forceDownloadBlob(`${map.getPropValue('name') as string}.${scale}x.png`, blob)
+}
+
+export const add_tile_layer = (map: GameMap) => {
+    const layer = new TileLayer({name: 'new tile layer', size: new Size(20, 10), scrollSpeed: 1, visible: true, wrapping: false})
+    appendToList(map, "layers", layer)
+}
+export const add_actor_layer = (map: GameMap) => {
+    const layer = new ActorLayer({name: 'new actor layer', visible: true, blocking: true})
+    appendToList(map, 'layers', layer)
+}
+export const delete_layer = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
+    if (!layer) return
+    let layers = map.getPropValue('layers') as PropsBase<MapLayerType>[]
+    layers = layers.slice()
+    const n = layers.indexOf(layer)
+    if (n >= 0) {
+        layers.splice(n, 1)
+    }
+    map.setPropValue('layers', layers)
+}
+export const move_layer_up = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
+    if (!layer) return
+    let layers = map.getPropValue('layers') as PropsBase<MapLayerType>[]
+    layers = layers.slice()
+    const n = layers.indexOf(layer)
+    if (n >= layers.length) return
+    layers.splice(n, 1)
+    layers.splice(n + 1, 0, layer)
+    map.setPropValue('layers', layers)
+}
+export const move_layer_down = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
+    if (!layer) return
+    let layers = map.getPropValue('layers') as PropsBase<MapLayerType>[]
+    layers = layers.slice()
+    const n = layers.indexOf(layer)
+    if (n <= 0) return
+    layers.splice(n, 1)
+    layers.splice(n - 1, 0, layer)
+    map.setPropValue('layers', layers)
+
 }

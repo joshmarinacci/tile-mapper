@@ -409,7 +409,7 @@ type GameMapType = {
     name: string,
     layers: PropsBase<MapLayerType>[]
 }
-const LayerListDef:PropDef<MapLayerType[]> = {
+const LayerListDef:PropDef<PropsBase<MapLayerType>[]> = {
     type:"array",
     editable:false,
     expandable: false,

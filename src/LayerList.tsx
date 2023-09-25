@@ -1,9 +1,15 @@
-import {Size} from "josh_js_util"
 import {DialogContext} from "josh_react_util"
 import React, {useContext} from "react"
 
-import {appendToList, PropsBase, useWatchProp} from "./base"
-import {ActorLayer, GameMap, MapLayerType, TileLayer} from "./datamodel"
+import {
+    add_actor_layer,
+    add_tile_layer,
+    delete_layer,
+    move_layer_down,
+    move_layer_up
+} from "./actions"
+import {PropsBase, useWatchProp} from "./base"
+import {GameMap, MapLayerType, TileLayer} from "./datamodel"
 import {ListView, ListViewDirection, ListViewOptions, ListViewRenderer} from "./ListView"
 import {ResizeLayerDialog} from "./ResizeLayerDialog"
 
@@ -33,45 +39,6 @@ export function LayerList(props: {
     const {layer} = props
     const dm = useContext(DialogContext)
     useWatchProp(props.map,"layers")
-    const add_tile_layer = () => {
-        const layer = new TileLayer({name:'new tile layer', size: new Size(20,10), scrollSpeed: 1,visible: true,wrapping:false})
-        appendToList(props.map,"layers", layer)
-    }
-    const add_actor_layer = () => {
-        const layer = new ActorLayer({name:'new actor layer', visible:true,blocking:true})
-        appendToList(props.map, 'layers',layer)
-    }
-    const delete_layer = () => {
-        if(!layer) return
-        let layers = props.map.getPropValue('layers') as PropsBase<MapLayerType>[]
-        layers = layers.slice()
-        const n = layers.indexOf(layer)
-        if(n >= 0) {
-            layers.splice(n,1)
-        }
-        props.map.setPropValue('layers',layers)
-    }
-    const move_layer_up = () => {
-        if(!layer) return
-        let layers = props.map.getPropValue('layers') as PropsBase<MapLayerType>[]
-        layers = layers.slice()
-        const n = layers.indexOf(layer)
-        if(n>= layers.length) return
-        layers.splice(n,1)
-        layers.splice(n+1,0,layer)
-        props.map.setPropValue('layers',layers)
-    }
-    const move_layer_down = () => {
-        if(!layer) return
-        let layers = props.map.getPropValue('layers') as PropsBase<MapLayerType>[]
-        layers = layers.slice()
-        const n = layers.indexOf(layer)
-        if(n<=0) return
-        layers.splice(n,1)
-        layers.splice(n-1,0,layer)
-        props.map.setPropValue('layers',layers)
-
-    }
     const resize = () => {
         if(layer instanceof  TileLayer) dm.show(<ResizeLayerDialog layer={layer}/>)
     }
@@ -80,12 +47,12 @@ export function LayerList(props: {
         <header>Layers</header>
         {props.editable &&
             <div className={'toolbar'}>
-                <button onClick={add_tile_layer}>+ tile layer</button>
-                <button onClick={add_actor_layer}>+ actor layer</button>
-                <button onClick={delete_layer}>del layer</button>
-                <button onClick={move_layer_up}>▼</button>
-                <button onClick={move_layer_down}>▲</button>
-                <button onClick={resize}>resize</button>
+                <button onClick={()=>add_tile_layer(props.map)}>+ tile layer</button>
+                <button onClick={()=>add_actor_layer(props.map)}>+ actor layer</button>
+                <button onClick={()=>delete_layer(layer,props.map)}>del layer</button>
+                <button onClick={()=>move_layer_up(layer,props.map)}>▼</button>
+                <button onClick={()=>move_layer_down(layer,props.map)}>▲</button>
+                <button onClick={()=>resize()}>resize</button>
             </div>}
         <ListView selected={layer}
                   setSelected={props.setSelectedLayer}
