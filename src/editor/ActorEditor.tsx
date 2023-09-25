@@ -47,8 +47,6 @@ export function drawActorlayer(ctx: CanvasRenderingContext2D, doc: GameDoc, laye
 const ActorPreviewRenderer: ListViewRenderer<Actor> = (props: {
     value: Actor,
     selected: boolean,
-    index: number,
-    doc?: GameDoc,
     options?:ListViewOptions,
 }) => {
     const {selected, value } = props
@@ -85,11 +83,11 @@ export function ActorLayerToolbar(props: {
     return <div className={'toolbar'}>
         <label>actors</label>
         <ListSelect
-            doc={doc}
-            data={doc.getPropValue('actors')}
             selected={selected}
+            data={doc.getPropValue('actors')}
             setSelected={setSelected}
             renderer={ActorPreviewRenderer}
+            options={{}}
         />
         <button disabled={!selected} onClick={add_actor}>add actor</button>
     </div>

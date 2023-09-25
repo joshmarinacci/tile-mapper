@@ -154,7 +154,6 @@ export function TileListView(props: {
                       sheet
                   }}
                   direction={ListViewDirection.HorizontalWrap}
-                  style={{}}
         />
         {editable &&
             <div className={'toolbar'}>
@@ -176,9 +175,11 @@ export function CompactSheetAndTileSelector(props: {
             <label>Tile Sheet</label>
             <Spacer/>
             <ListSelect selected={selectedSheet}
+                        renderer={SheetPreviewRenderer}
                         setSelected={setSelectedSheet}
                         data={sheets}
-                        renderer={SheetPreviewRenderer}/>
+                        options={{}}
+            />
         </header>
     }>
         {selectedSheet && <TileListView

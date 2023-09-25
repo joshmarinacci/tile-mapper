@@ -24,7 +24,7 @@ const PaletteColorRenderer = (props:{value:string, selected:boolean}) => {
 
 export function PaletteColorPickerPane(props: {
     drawColor: string,
-    setDrawColor: (v: string) => void,
+    setDrawColor: (v: string|undefined) => void,
     palette:ImagePalette,
 }) {
     const {drawColor, setDrawColor, palette} = props
@@ -36,6 +36,7 @@ export function PaletteColorPickerPane(props: {
                   renderer={PaletteColorRenderer}
                   selected={drawColor}
                   setSelected={setDrawColor}
+                  options={{}}
                   style={{
                       minWidth: '94px',
                       maxWidth: '300px'

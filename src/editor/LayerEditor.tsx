@@ -14,8 +14,8 @@ import {drawTileLayer, TileLayerMouseHandler, TileLayerToolbar} from "./TileEdit
 
 export function LayerEditor(props: {
     map: GameMap,
-    layer: PropsBase<MapLayerType>,
-    tile: Tile,
+    layer: PropsBase<MapLayerType>|undefined,
+    tile: Tile|undefined,
     setSelectedTile: (sprite: Tile) => void,
 }) {
     const {map, layer, tile, setSelectedTile} = props

@@ -9,7 +9,7 @@ const SheetNameRender:ListViewRenderer<Sheet> = (props:{value:Sheet, selected:bo
 export function SheetList(props: {
     doc: GameDoc,
     sheet: Sheet,
-    setSheet: (s: Sheet) => void,
+    setSheet: (s: Sheet|undefined) => void,
     editable: boolean
 }) {
     const {doc, sheet, setSheet} = props
@@ -34,7 +34,8 @@ export function SheetList(props: {
                   renderer={SheetNameRender}
                   data={doc.getPropValue('sheets')}
                   direction={ListViewDirection.VerticalFill}
-                  style={{}}
-                  className={'sheet-list'}/>
+                  className={'sheet-list'}
+                  options={{}}
+        />
     </div>
 }

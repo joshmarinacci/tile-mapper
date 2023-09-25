@@ -3,8 +3,9 @@ import "./MapEditor.css"
 import {HBox} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
+import {PropsBase} from "./base"
 import {DocContext} from "./common-components"
-import {GameMap, Sheet, Tile} from "./datamodel"
+import {GameMap, MapLayerType, Sheet, Tile} from "./datamodel"
 import {LayerEditor} from "./editor/LayerEditor"
 import {LayerList} from "./LayerList"
 import {PropSheet} from "./propsheet"
@@ -19,8 +20,8 @@ export function MapModeView(props: {
     const selectedMap = props.map
     const layers = selectedMap.getPropValue('layers')
     const sheets = doc.getPropValue('sheets') as Sheet[]
-    const [selectedTile, setSelectedTile] = useState<Tile>(sheets[0].getPropValue('tiles')[0])
-    const [selectedLayer, setSelectedLayer] = useState(layers[0])
+    const [selectedTile, setSelectedTile] = useState<Tile|undefined>(sheets[0].getPropValue('tiles')[0])
+    const [selectedLayer, setSelectedLayer] = useState<PropsBase<MapLayerType>|undefined>(layers[0])
 
 
     return <div className={'map-editor'}>

@@ -8,7 +8,7 @@ export type MouseEventArgs<T> = {
     layer: T,
     pt: Point,
     doc: GameDoc,
-    tile: Tile,
+    tile: Tile|undefined,
     setSelectedTile: (tile: Tile) => void,
     selectedActor?: ActorInstance,
     setSelectedActor: (act: ActorInstance | undefined) => void,
@@ -18,7 +18,7 @@ export type MouseEventArgs<T> = {
 export type DrawArgs<T> = {
     layer: T,
     doc: GameDoc,
-    tile: Tile,
+    tile: Tile|undefined,
     selectedActor?: ActorInstance,
     ctx: CanvasRenderingContext2D
     scale: number,

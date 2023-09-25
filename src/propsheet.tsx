@@ -163,7 +163,7 @@ function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDe
     return <label key={'nothing'}>no editor for it</label>
 }
 
-export function PropSheet<T>(props: { title?: string, target: PropsBase<T> | null }) {
+export function PropSheet<T>(props: { title?: string, target: PropsBase<T> | undefined }) {
     const {title, target} = props
     const header = <header key={'the-header'}>{title ? title : 'props'}</header>
     if (!target) return <div className={'pane'} key={'nothing'}>{header}nothing selected</div>

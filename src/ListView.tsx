@@ -20,7 +20,7 @@ export function ListView<T>(props: {
     setSelected: (v: T|undefined) => void,
     renderer: ListViewRenderer<T>|undefined,
     data: T[],
-    style: object
+    style?: object
     className:string,
     direction: ListViewDirection,
     options:ListViewOptions
