@@ -1,14 +1,16 @@
 import {Point} from "josh_js_util"
 import {toClass} from "josh_react_util"
-import React, {useState} from "react"
+import React, {useContext, useState} from "react"
 
 import {appendToList} from "../base"
 import {drawEditableSprite} from "../common"
+import {DocContext} from "../common-components"
 import {Actor, ActorInstance, ActorLayer, GameDoc} from "../datamodel"
 import {fillBounds, strokeBounds} from "../engine/util"
 import {ListSelect} from "../ListSelect"
-import {ListViewRenderer} from "../ListView"
+import {ListViewOptions, ListViewRenderer} from "../ListView"
 import {TileReferenceView} from "../propsheet"
+import {DrawArgs, MouseEventArgs, MouseHandler} from "./editorbase"
 
 function findActorForInstance(inst: ActorInstance, doc: GameDoc) {
     const actor_id = inst.getPropValue('actor')
@@ -46,7 +48,8 @@ const ActorPreviewRenderer: ListViewRenderer<Actor> = (props: {
     value: Actor,
     selected: boolean,
     index: number,
-    doc: GameDoc
+    doc?: GameDoc,
+    options?:ListViewOptions,
 }) => {
     const {selected, value } = props
     if (!value) return <div>nothing selected</div>
@@ -67,11 +70,11 @@ const ActorPreviewRenderer: ListViewRenderer<Actor> = (props: {
 }
 
 export function ActorLayerToolbar(props: {
-    doc: GameDoc,
     layer: ActorLayer,
     onSelect: (act: ActorInstance) => void
 }) {
-    const {doc, layer, onSelect} = props
+    const {layer, onSelect} = props
+    const doc = useContext(DocContext)
     const [selected, setSelected] = useState<Actor | undefined>(undefined)
     const add_actor = () => {
         if (!selected) return
@@ -113,4 +116,26 @@ export function findActorAtPosition(doc: GameDoc, layer: ActorLayer, point: Poin
         }
         return false
     })
+}
+
+export class ActorLayerMouseHandler implements MouseHandler<ActorLayer> {
+    onMouseDown(v: MouseEventArgs<ActorLayer>): void {
+        v.setSelectedActor(findActorAtPosition(v.doc, v.layer, v.pt))
+    }
+
+    onMouseMove(v: MouseEventArgs<ActorLayer>): void {
+        if (v.selectedActor) {
+            const pt = v.pt
+            v.selectedActor.setPropValue('position', pt)
+        }
+    }
+
+    onMouseUp(v: MouseEventArgs<ActorLayer>): void {
+    }
+
+    drawOverlay(v: DrawArgs<ActorLayer>): void {
+        if (v.selectedActor) {
+            drawSelectedActor(v.ctx, v.doc, v.selectedActor, v.scale, v.grid)
+        }
+    }
 }

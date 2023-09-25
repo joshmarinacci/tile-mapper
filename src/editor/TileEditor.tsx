@@ -4,6 +4,7 @@ import React from "react"
 
 import {drawEditableSprite} from "../common"
 import {GameDoc, MapCell, TileLayer} from "../datamodel"
+import {DrawArgs, MouseEventArgs, MouseHandler} from "./editorbase"
 
 function calculateDirections() {
     return [
@@ -63,7 +64,6 @@ export function drawTileLayer(ctx: CanvasRenderingContext2D,
 }
 
 export function TileLayerToolbar(props: {
-    doc: GameDoc,
     layer: TileLayer,
     fillOnce: boolean,
     setFillOnce: (fw: boolean) => void
@@ -75,4 +75,42 @@ export function TileLayerToolbar(props: {
                 className={toClass({selected: fillOnce})}>fill
         </button>
     </div>
+}
+
+export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
+    onMouseDown(args: MouseEventArgs<TileLayer>) {
+        const {e, layer, tile, doc, setSelectedTile} = args
+        const tileSize = doc.getPropValue('tileSize')
+        const pt = new Point(args.pt.x / tileSize.w, args.pt.y / tileSize.h).floor()
+        if (e.button === 2) {
+            const cell = layer.getPropValue('data').get(pt)
+            const tile = doc.lookup_sprite(cell.tile)
+            if (tile) setSelectedTile(tile)
+            e.stopPropagation()
+            e.preventDefault()
+            return
+        }
+        // if (fillOnce) {
+        //     const lyr = layer as TileLayer
+        //     const cell = lyr.getPropValue('data').get(pt)
+        //     bucketFill(lyr, cell.tile, tile._id, pt)
+        //     setFillOnce(false)
+        //     redraw()
+        //     return
+        // }
+        layer.getPropValue('data').set(pt, {tile: tile._id})
+    }
+
+    onMouseMove(args: MouseEventArgs<TileLayer>) {
+        const {layer, tile, doc} = args
+        const tileSize = doc.getPropValue('tileSize')
+        const pt = new Point(args.pt.x / tileSize.w, args.pt.y / tileSize.h).floor()
+        layer.getPropValue('data').set(pt, {tile: tile._id})
+    }
+
+    onMouseUp(v: MouseEventArgs<TileLayer>): void {
+    }
+
+    drawOverlay(v: DrawArgs<TileLayer>) {
+    }
 }
