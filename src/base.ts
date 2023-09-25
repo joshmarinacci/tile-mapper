@@ -24,6 +24,7 @@ export type PropDef<T> = {
     format: ToFormatString<T>
     expandable?:boolean
     hidden?:boolean,
+    watchChildren?:boolean,
 }
 type WrapperCallback<Value> = (v:Value) => void
 type WrapperAnyCallback<Type> = (t:Type) => void
@@ -38,12 +39,16 @@ export class PropsBase<Type> {
     private values: Map<keyof Type,Type[keyof Type]>
     private defs: Map<keyof Type,PropDef<Type[keyof Type]>>
     _id: string
+    private child_watcher:WrapperAnyCallback<any>
     constructor(defs:DefList<Type>, options?:PropValues<Type>) {
         this._id = genId("Wrapper")
         this.values = new Map()
         this.defs = new Map()
         this.listeners = new Map()
         this.all_listeners = []
+        this.child_watcher = (ch) => {
+            console.log('child changed',ch)
+        }
         for(const [k,d] of Object.entries(defs)) {
             this.setPropDef(k as keyof Type,d as PropDef<Type[keyof Type]>)
             this.setPropValue(k as keyof Type,this.getPropDef(k as keyof Type).default())
@@ -63,7 +68,7 @@ export class PropsBase<Type> {
     }
 
     getPropDef<Key extends keyof Type>(name:Key):PropDef<Type[Key]> {
-        if(!this.defs.has(name)) throw new Error("")
+        if(!this.defs.has(name)) throw new Error(`object does not have key ${name}`)
         return this.defs.get(name) as unknown as PropDef<Type[Key]>
     }
     setPropDef<Key extends keyof Type>(name:Key, def:PropDef<Type[Key]>) {
@@ -73,17 +78,34 @@ export class PropsBase<Type> {
         return this.values.get(name) as Type[K]
     }
     setPropValue<K extends keyof Type>(name:K, value:Type[K]) {
+        const old_value = this.values.get(name)
+        const def = this.getPropDef(name)
+        if(def.watchChildren && old_value && old_value.length) {
+            old_value.forEach((v:PropsBase<any>) => {
+                v.offAny(this.child_watcher)
+            })
+        }
         this.values.set(name,value)
+        if(this.getPropDef(name).watchChildren) {
+            if(value && value.length) {
+                value.forEach((v:PropsBase<any>) => {
+                    v.onAny(this.child_watcher)
+                })
+            }
+        }
         this._fire(name,value)
     }
     _fire<K extends keyof Type>(name:K, value:Type[K]) {
-        this._get_listeners(name).forEach(cb => cb(value))
+        this._get_listeners(name).forEach(cb => {
+            cb(value)
+        })
         this._fireAll()
     }
     on<K extends keyof Type>(name:K, cb:WrapperCallback<Type[K]>){
         this._get_listeners(name).push(cb)
     }
     onAny(hand: WrapperAnyCallback<Type>) {
+        if(!hand) throw new Error('cannot pass null callback to onAny')
         this.all_listeners.push(hand)
     }
     off<K extends keyof Type>(name:K, cb:WrapperCallback<Type[K]>){

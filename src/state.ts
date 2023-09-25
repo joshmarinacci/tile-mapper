@@ -1,6 +1,6 @@
 import {Size} from "josh_js_util"
 
-import {PropDef, PropsBase} from "./base"
+import {DefList, PropDef, PropsBase} from "./base"
 import {PICO8} from "./common"
 import {GameDoc} from "./datamodel"
 
@@ -36,12 +36,13 @@ const SelectedDef:PropDef<object> = {
     editable:false,
     format: (o) => 'unknown',
 }
+const StateDef:DefList<GlobalStateType> = {
+    doc:DocDef,
+    mode: ModeDef,
+    selection: SelectedDef,
+}
 export class GlobalState extends PropsBase<GlobalStateType> {
     constructor() {
-        super({
-            doc:DocDef,
-            mode: ModeDef,
-            selected: SelectedDef,
-        })
+        super(StateDef)
     }
 }

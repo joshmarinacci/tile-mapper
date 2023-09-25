@@ -409,9 +409,23 @@ type GameMapType = {
     name: string,
     layers: PropsBase<MapLayerType>[]
 }
+const LayerListDef:PropDef<MapLayerType[]> = {
+    type:"array",
+    editable:false,
+    expandable: false,
+    default: () => [],
+    hidden: true,
+    format: (v) => "layers",
+    watchChildren:true,
+    toJSON: (v) => v.map(a => {
+        if ('toJSON' in a) return a.toJSON()
+        return a
+    }),
+    fromJSON: (v) => v.map(a => restoreClassFromJSON(a)),
+}
 const GameMapDefs:DefList<GameMapType> = {
     name: NameDef,
-    layers: GenericDataArrayDef,
+    layers: LayerListDef,
 }
 export class GameMap extends PropsBase<GameMapType> {
     constructor(opts?: PropValues<GameMapType>) {
