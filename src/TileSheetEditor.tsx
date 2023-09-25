@@ -2,10 +2,10 @@ import "./TileSheetEditor.css"
 
 import {ArrayGrid} from "josh_js_util"
 import {VBox} from "josh_react_util"
-import React, {useEffect, useState} from "react"
+import React, {useContext, useEffect, useState} from "react"
 
-import {Pane} from "./common-components"
-import {GameDoc, Sheet, Tile} from "./datamodel"
+import {DocContext, Pane} from "./common-components"
+import {Sheet, Tile} from "./datamodel"
 import {PaletteColorPickerPane} from "./Palette"
 import {PixelGridEditor} from "./PixelGridEditor"
 import {PropSheet} from "./propsheet"
@@ -16,16 +16,16 @@ import {TileListView} from "./TileListView"
 export function TileSheetEditor(props: {
     sheet: Sheet,
     state: GlobalState,
-    doc: GameDoc
 }) {
-    const {doc, state, sheet} = props
+    const {sheet} = props
+    const doc = useContext(DocContext)
     const palette: string[] = doc.getPropValue('palette') as string[]
     const [drawColor, setDrawColor] = useState<string>(palette[0])
     const [tile, setTile] = useState<Tile | undefined>(undefined)
     const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20))
     useEffect(() => {
         const tiles = sheet.getPropValue('tiles')
-        setTile(tiles.length > 0?tiles[0]:null)
+        setTile(tiles.length > 0?tiles[0]:undefined)
     }, [sheet])
 
     return (<div className={'tile-sheet-editor'}>

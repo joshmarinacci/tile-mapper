@@ -42,18 +42,18 @@ AR.register([
 const STATE = new GlobalState()
 STATE.setPropValue('doc', make_doc_from_json(Example))
 
-function getEditView(STATE: GlobalState, doc: GameDoc, selection: unknown) {
+function getEditView(state: GlobalState, selection: unknown) {
     if (selection instanceof Sheet) {
-        return <TileSheetEditor state={STATE} doc={doc} sheet={selection as Sheet}/>
+        return <TileSheetEditor state={state} sheet={selection as Sheet}/>
     }
     if (selection instanceof Actor) {
-        return <ActorEditView state={STATE} doc={doc} actor={selection as Actor}/>
+        return <ActorEditView state={state} actor={selection as Actor}/>
     }
     if (selection instanceof GameMap) {
-        return <MapModeView state={STATE} doc={doc} map={selection as GameMap}/>
+        return <MapModeView state={state} map={selection as GameMap}/>
     }
     if (selection instanceof GameTest) {
-        return <TestModeView state={STATE} doc={doc} test={selection as GameTest}/>
+        return <TestModeView state={state} test={selection as GameTest}/>
     }
     return <div style={{padding: '1rem'}}><h3>Select item from the left</h3></div>
 }
@@ -85,12 +85,12 @@ function Main2() {
         <header>Document</header>
         <ObjectTreeView obj={doc} state={STATE} selection={selection}/>
     </div>
-    const editView = getEditView(STATE, doc, selection)
+    const editView = getEditView(STATE, selection)
     const center_column = <div className={'editor-view'} style={{
         overflow: "auto",
         alignSelf: 'stretch',
     }}>{editView}</div>
-    const right_column = <PropSheet target={selection} doc={doc}/>
+    const right_column = <PropSheet target={selection}/>
     return <MainView left={left_column} center={center_column} right={right_column} toolbar={toolbar}/>
 }
 

@@ -2,8 +2,8 @@ import {ArrayGrid, Point} from "josh_js_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
 import {SimpleMenuAction} from "./base"
-import {canvas_to_bmp, sheet_to_canvas} from "./common"
-import {GameDoc, Sheet, Tile} from "./datamodel"
+import {canvas_to_bmp, drawEditableSprite, sheet_to_canvas} from "./common"
+import {GameDoc, GameMap, Sheet, Tile, TileLayer} from "./datamodel"
 import {docToJSON, fileToJson, jsonObjToBlob, make_doc_from_json} from "./json"
 import {GlobalState} from "./state"
 
@@ -96,4 +96,48 @@ export function rotateTile90Clock(value: Tile) {
 
 export function rotateTile90CounterClock(value: Tile) {
     value.setPropValue('data', cloneAndRemap(value.getPropValue('data'), (n: Point, data: ArrayGrid<number>) => data.get_at(data.h - 1 - n.y, n.x)))
+}
+
+function map_to_canvas(map: GameMap, doc: GameDoc, scale: number): HTMLCanvasElement {
+    const canvas = document.createElement('canvas')
+    const mapSize = map.calcBiggestLayer()
+    const size = doc.getPropValue('tileSize')
+    canvas.width = mapSize.w * scale * size.w
+    canvas.height = mapSize.h * scale * size.h
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+    ctx.imageSmoothingEnabled = false
+    map.getPropValue('layers').forEach(layer => {
+        if (layer instanceof TileLayer) {
+            const cells = layer.getPropValue('data')
+            cells.forEach((v, n) => {
+                if (v) {
+                    const x = n.x * size.w * scale
+                    const y = n.y * size.w * scale
+                    const tile = doc.lookup_sprite(v.tile)
+                    if (tile) {
+                        if (tile.cache_canvas) {
+                            ctx.drawImage(tile.cache_canvas,
+                                //src
+                                0, 0, tile.cache_canvas.width, tile.cache_canvas.height,
+                                //dst
+                                x,
+                                y,
+                                size.w * scale, size.h * scale
+                            )
+                        } else {
+                            drawEditableSprite(ctx, scale, tile)
+                        }
+                    }
+                }
+
+            })
+        }
+    })
+    return canvas
+}
+
+export async function exportPNG(doc: GameDoc, map: GameMap, scale: number) {
+    const can = map_to_canvas(map, doc, scale)
+    const blob = await canvas_to_blob(can)
+    forceDownloadBlob(`${map.getPropValue('name') as string}.${scale}x.png`, blob)
 }

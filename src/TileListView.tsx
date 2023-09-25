@@ -14,7 +14,7 @@ import {
 } from "./actions"
 import {useWatchProp} from "./base"
 import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "./common"
-import {DropdownButton, MenuList, Pane} from "./common-components"
+import {DocContext, DropdownButton, MenuList, Pane} from "./common-components"
 import {GameDoc, Sheet, Tile} from "./datamodel"
 import {ListSelect} from "./ListSelect"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
@@ -168,9 +168,9 @@ export function TileListView(props: {
 export function CompactSheetAndTileSelector(props: {
     selectedTile: Tile,
     setSelectedTile: (t: Tile) => void,
-    doc: GameDoc,
 }) {
-    const {selectedTile, setSelectedTile, doc} = props
+    const {selectedTile, setSelectedTile} = props
+    const doc = useContext(DocContext)
     const sheets = doc.getPropValue('sheets')
     const [selectedSheet, setSelectedSheet] = useState<Sheet>(sheets[0])
     return <Pane header={
