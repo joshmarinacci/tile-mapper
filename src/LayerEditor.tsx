@@ -20,6 +20,8 @@ import {
 } from "./datamodel"
 import {fillBounds, strokeBounds} from "./engine/util"
 import {ListSelect} from "./ListSelect"
+import {ListViewRenderer} from "./ListView"
+import {TileReferenceView} from "./propsheet"
 
 function calculateDirections() {
     return [
@@ -46,7 +48,6 @@ function bucketFill(layer: TileLayer, target: string, replace: string, at: Point
 
 
 function map_to_canvas(map: GameMap, doc: GameDoc, scale: number): HTMLCanvasElement {
-    console.log("doc is", doc)
     const canvas = document.createElement('canvas')
     const mapSize = map.calcBiggestLayer()
     const size = doc.getPropValue('tileSize')
@@ -124,19 +125,20 @@ function drawTileLayer(ctx: CanvasRenderingContext2D,
 
 }
 
-function findActorForInstance(inst:ActorInstance,doc:GameDoc) {
+function findActorForInstance(inst: ActorInstance, doc: GameDoc) {
     const actor_id = inst.getPropValue('actor')
     return doc.getPropValue('actors').find(act => act._id === actor_id)
 }
+
 function drawActorlayer(ctx: CanvasRenderingContext2D, doc: GameDoc, layer: ActorLayer, scale: number, grid: boolean) {
     layer.getPropValue('actors').forEach(inst => {
         const position = inst.getPropValue('position')
-        const source = findActorForInstance(inst,doc)
-        if(source) {
+        const source = findActorForInstance(inst, doc)
+        if (source) {
             const box = source.getPropValue('viewbox').add(position).scale(scale)
             const tileRef = source.getPropValue('tile')
-            fillBounds(ctx,box,'red')
-            if(tileRef) {
+            fillBounds(ctx, box, 'red')
+            if (tileRef) {
                 const tile = doc.lookup_sprite(tileRef)
                 if (tile) {
                     if (tile.cache_canvas) {
@@ -155,50 +157,82 @@ function drawActorlayer(ctx: CanvasRenderingContext2D, doc: GameDoc, layer: Acto
     })
 }
 
-function TileLayerToolbar(props:{doc:GameDoc, layer:TileLayer}) {
+function TileLayerToolbar(props: {
+    doc: GameDoc,
+    layer: TileLayer
+}) {
     return <div className={'toolbar'}>
         <label>tiles</label>
     </div>
 }
 
 
-function ActorLayerToolbar(props:{doc:GameDoc, layer:ActorLayer, onSelect:(act:ActorInstance) => void}) {
-    const {doc,layer,onSelect} = props
-    const [selected, setSelected] = useState<Actor|undefined>(undefined)
+const ActorPreviewRenderer: ListViewRenderer<Actor> = (props: {
+    value: Actor,
+    selected: boolean,
+    index: number,
+    doc: GameDoc
+}) => {
+    const {selected, value, index} = props
+    if (!value) return <div>nothing selected</div>
+    return <div
+        className={toClass({
+            'std-list-item': true,
+            selected:selected,
+        })}
+        style={{
+            'minWidth': '10rem',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+        }}
+    >
+        <b>{value.getPropValue('name')}</b>
+        <TileReferenceView tileRef={value.getPropValue('tile')} doc={props.doc}/>
+    </div>
+}
+
+function ActorLayerToolbar(props: {
+    doc: GameDoc,
+    layer: ActorLayer,
+    onSelect: (act: ActorInstance) => void
+}) {
+    const {doc, layer, onSelect} = props
+    const [selected, setSelected] = useState<Actor | undefined>(undefined)
     const add_actor = () => {
-        if(!selected) return
-        const player = new ActorInstance({name:'new ref', actor:selected._id, position: new Point(50,30)})
-        appendToList(layer,"actors", player)
+        if (!selected) return
+        const player = new ActorInstance({name: 'new ref', actor: selected._id, position: new Point(50, 30)})
+        appendToList(layer, "actors", player)
         onSelect(player)
     }
     return <div className={'toolbar'}>
         <label>actors</label>
         <ListSelect
+            doc={doc}
             data={doc.getPropValue('actors')}
             selected={selected}
             setSelected={setSelected}
-            renderer={(actor)=>actor.getPropValue('name')}
-            />
+            renderer={ActorPreviewRenderer}
+        />
         <button disabled={!selected} onClick={add_actor}>add actor</button>
     </div>
 }
 
 function drawSelectedActor(ctx: CanvasRenderingContext2D, doc: GameDoc, inst: ActorInstance, scale: number, grid: boolean) {
     const position = inst.getPropValue('position')
-    const source = findActorForInstance(inst,doc)
-    if(source) {
+    const source = findActorForInstance(inst, doc)
+    if (source) {
         const box = source.getPropValue('viewbox')
-        strokeBounds(ctx,box.add(position).scale(scale),'orange',3)
+        strokeBounds(ctx, box.add(position).scale(scale), 'orange', 3)
     }
 }
 
-function findActorAtPosition(doc:GameDoc, layer: ActorLayer, point: Point) {
+function findActorAtPosition(doc: GameDoc, layer: ActorLayer, point: Point) {
     return layer.getPropValue('actors').find(inst => {
-        const actt = findActorForInstance(inst,doc)
-        if(actt) {
+        const actt = findActorForInstance(inst, doc)
+        if (actt) {
             const box = actt.getPropValue('viewbox').add(inst.getPropValue('position'))
-            console.log("box is",box)
-            if(box.contains(point)) {
+            console.log("box is", box)
+            if (box.contains(point)) {
                 return true
             }
         }
@@ -215,7 +249,7 @@ export function LayerEditor(props: {
 }) {
     const {map, layer, tile, doc} = props
     const [grid, setGrid] = useState<boolean>(false)
-    const [selectedActor, setSelectedActor] = useState<ActorInstance|undefined>(undefined)
+    const [selectedActor, setSelectedActor] = useState<ActorInstance | undefined>(undefined)
     const ref = useRef<HTMLCanvasElement>(null)
     const [down, setDown] = useState<boolean>(false)
     useEffect(() => redraw(), [grid, layer, selectedActor])
@@ -224,7 +258,7 @@ export function LayerEditor(props: {
     const scale = Math.pow(2, zoom)
     const biggest = map.calcBiggestLayer()
     const tileSize = doc.getPropValue('tileSize')
-    useWatchProp(map,"layers")
+    useWatchProp(map, "layers")
     const redraw = () => {
         if (ref.current) {
             const canvas = ref.current
@@ -232,8 +266,8 @@ export function LayerEditor(props: {
             ctx.imageSmoothingEnabled = false
             ctx.fillStyle = 'magenta'
             ctx.fillRect(0, 0, canvas.width, canvas.height)
-            map.getPropValue('layers').forEach((layer:PropsBase<MapLayerType>) => {
-                if(!layer.getPropValue('visible')) return
+            map.getPropValue('layers').forEach((layer: PropsBase<MapLayerType>) => {
+                if (!layer.getPropValue('visible')) return
                 // console.log("layer is",layer, layer.getPropValue('type'), layer instanceof TileLayer, layer instanceof ActorLayer)
                 if (layer instanceof TileLayer) {
                     drawTileLayer(ctx, doc, layer as TileLayer, scale, grid)
@@ -242,8 +276,8 @@ export function LayerEditor(props: {
                     drawActorlayer(ctx, doc, layer as ActorLayer, scale, grid)
                 }
             })
-            if(selectedActor) {
-                drawSelectedActor(ctx,doc,selectedActor,scale,grid)
+            if (selectedActor) {
+                drawSelectedActor(ctx, doc, selectedActor, scale, grid)
             }
         }
     }
@@ -255,7 +289,7 @@ export function LayerEditor(props: {
         pt = new Point(pt.x / tileSize.w, pt.y / tileSize.h).floor()
         return pt
     }
-    const canvasToLayer = (e:MouseEvent<HTMLCanvasElement>) => {
+    const canvasToLayer = (e: MouseEvent<HTMLCanvasElement>) => {
         const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
         const pt = new Point(e.clientX, e.clientY)
             .subtract(new Point(rect.left, rect.top))
@@ -290,7 +324,7 @@ export function LayerEditor(props: {
             cells.set(canvasToImage(e), {tile: tile._id})
         }
         if (layer instanceof ActorLayer) {
-            setSelectedActor(findActorAtPosition(doc,layer,canvasToLayer(e)))
+            setSelectedActor(findActorAtPosition(doc, layer, canvasToLayer(e)))
         }
         redraw()
     }
@@ -302,7 +336,7 @@ export function LayerEditor(props: {
             }
             if (layer instanceof ActorLayer && selectedActor) {
                 const pt = canvasToLayer(e)
-                selectedActor.setPropValue('position',pt)
+                selectedActor.setPropValue('position', pt)
             }
             redraw()
         }
@@ -323,8 +357,10 @@ export function LayerEditor(props: {
             <button onClick={() => exportPNG(doc, map, 2)}>png 2x</button>
             <button onClick={() => exportPNG(doc, map, 4)}>png 4x</button>
         </div>
-        {layer.getPropValue('type') === 'tile-layer' && <TileLayerToolbar layer={layer as TileLayer} doc={doc}/>}
-        {layer.getPropValue('type') === 'actor-layer' && <ActorLayerToolbar layer={layer as ActorLayer} doc={doc} onSelect={setSelectedActor}/>}
+        {layer.getPropValue('type') === 'tile-layer' &&
+            <TileLayerToolbar layer={layer as TileLayer} doc={doc}/>}
+        {layer.getPropValue('type') === 'actor-layer' &&
+            <ActorLayerToolbar layer={layer as ActorLayer} doc={doc} onSelect={setSelectedActor}/>}
         <div className={'map-editor-canvas-wrapper'}>
             <canvas ref={ref}
                     width={biggest.w * scale * tileSize.w}

@@ -85,3 +85,9 @@ export function DropdownButton(props: { title:string,     children: ReactNode,
 }
 
 export const DocContext = React.createContext(new GameDoc())
+
+export function Pane(props:{children:ReactNode}) {
+    return <div className={'pane'}>
+        {props.children}
+    </div>
+}

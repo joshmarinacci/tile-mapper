@@ -23,7 +23,7 @@ function TileReferenceSelector<T>(props:{
     }} doc={doc}/>
 }
 
-function TileReferenceView(props: { tileRef: string, doc:GameDoc }) {
+export function TileReferenceView(props: { tileRef: string|undefined, doc:GameDoc }) {
     const { tileRef , doc} = props
     const canvasRef = useRef<HTMLCanvasElement>(null)
     useEffect(() => {
@@ -39,9 +39,7 @@ function TileReferenceView(props: { tileRef: string, doc:GameDoc }) {
             }
         }
     }, [props.tileRef])
-    return <div>
-        <canvas ref={canvasRef} width={32} height={32}/>
-    </div>
+    return  <canvas ref={canvasRef} width={32} height={32}/>
 }
 
 function TileReferenceEditor<T>(props: {

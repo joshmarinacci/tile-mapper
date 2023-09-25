@@ -47,3 +47,28 @@
     flex-direction: row;
     flex: 1.0;
 }
+
+.std-list-item:hover {
+    background-color: var(--selected-background-color);
+}
+
+.std-dropdown-item {
+    display: flex;
+    flex-direction: row;
+    flex: 1.0;
+    padding: 0.5rem;
+    min-width: 10rem;
+    justify-content: space-between;
+    border: 1px solid black;
+    border-width: 0 0 1px 0;
+}
+.std-dropdown-item:hover {
+    background-color: var(--selected-background-color);
+}
+.list-select-button .std-dropdown-item {
+    padding:0;
+    border-width: 0;
+}
+.list-select-button .std-dropdown-item:hover {
+    background-color: unset;
+}

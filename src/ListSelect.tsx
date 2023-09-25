@@ -1,35 +1,41 @@
-import React from "react"
+import {HBox, PopupContext, VBox} from "josh_react_util"
+import React, {JSX, useContext} from "react"
 
 import {PropsBase} from "./base"
+import {down_arrow_triangle} from "./common"
+import {GameDoc} from "./datamodel"
+import {DefaultListViewRenderer, ListViewRenderer} from "./ListView"
 
-export type ListSelectRenderer<T> = (value:T) => string
-
-function DefaultRenderer<T extends PropsBase<any>>(value:T)  {
-    if(value) return value._id
-    return "unknown"
+function SelectionList<T extends PropsBase<any>>(props:{
+    data:T[],
+    selected: T|undefined,
+    setSelected: (v: T|undefined) => void,
+    renderer: ListViewRenderer<T>,
+    doc?:GameDoc }) {
+    const Cell = props.renderer
+    const choose = (v:T) => props.setSelected(v)
+    return <div className={'list-view vertical-fill'}>
+        {props.data.map((v, i) => <div className={'list-item'} key={i} onClick={()=>choose(v)}><Cell key={i} value={v} doc={props.doc}/></div>)}
+    </div>
 }
 
 export function ListSelect<T extends PropsBase<any>>(props:{
     selected: T|undefined,
     setSelected: (v: T|undefined) => void,
-    renderer: ListSelectRenderer<T>|undefined,
+    renderer: ListViewRenderer<T>|undefined,
     data: T[],
+    doc?:GameDoc
     }):JSX.Element {
     const {selected, setSelected, data, renderer} = props
-    const rend = renderer || DefaultRenderer
-    const value = selected?selected._id:"nothing"
-    return <select value={value}
-                   onChange={(e) => {
-                       setSelected(data.find(v => v._id === e.target.value))
-                   }}
-            >
-        {!selected && <option key={'nothing'} value={'nothing'}>unselected</option>}
-        {
-            data.map((act:T) => {
-                const val = act?rend(act):"unknown"
-                return <option key={act._id} value={act._id}>{val}</option>
-            })
-        }
-    </select>
-
+    const Cell = renderer || DefaultListViewRenderer
+    const pm =useContext(PopupContext)
+    const showDropdown = (e) => {
+        pm.show_at(<SelectionList data={data} renderer={Cell} selected={selected} setSelected={setSelected} doc={props.doc} />,e.target,"below")
+    }
+    return <button onClick={showDropdown} className={'list-select-button'}>
+        <HBox>
+            <Cell value={selected} selected={false} index={0} doc={props.doc}/>
+            {down_arrow_triangle}
+            </HBox>
+    </button>
 }

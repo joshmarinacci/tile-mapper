@@ -9,7 +9,7 @@
     height: 200px;
 }
 .map-editor .layer-list-view {
-    width: 250px;
+    /*width: 250px;*/
 }
 .map-editor-canvas-wrapper {
     overflow: scroll;

@@ -1,16 +1,17 @@
 import "./TileSheetView.css"
 
-import {HBox, toClass, VBox} from "josh_react_util"
+import {Spacer, toClass} from "josh_react_util"
 import {forceDownloadBlob} from "josh_web_util"
 import React, {useEffect, useRef, useState} from "react"
 
 import {useWatchProp} from "./base"
 import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "./common"
+import {Pane} from "./common-components"
 import {GameDoc, Sheet, Tile} from "./datamodel"
 import {ListSelect} from "./ListSelect"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
-const TilePreviewRenderer: ListViewRenderer<Tile> = (props: { value: Tile, selected: boolean, index: number }) => {
+export const TilePreviewRenderer: ListViewRenderer<Tile> = (props: { value: Tile, selected: boolean, index: number }) => {
     const {selected, value, index} = props
     const scale = 4
     const ref = useRef<HTMLCanvasElement>(null)
@@ -24,8 +25,8 @@ const TilePreviewRenderer: ListViewRenderer<Tile> = (props: { value: Tile, selec
         }
     }
     useEffect(() => redraw(), [value])
-    useWatchProp(value,'data',() => redraw())
-    useWatchProp(value,'name')
+    useWatchProp(value, 'data', () => redraw())
+    useWatchProp(value, 'name')
     return <div className={'tile-preview-wrapper'}>
         <canvas ref={ref} className={toClass({
             'tile-preview': true,
@@ -41,11 +42,22 @@ const TilePreviewRenderer: ListViewRenderer<Tile> = (props: { value: Tile, selec
     </div>
 }
 
+const SheetPreviewRenderer: ListViewRenderer<Sheet> = (props: { value: Sheet, selected: boolean, index: number }) => {
+    const {selected, value, index} = props
+    return <div className={toClass({
+        'std-dropdown-item': true,
+        selected: selected,
+    })}
+    >
+        <b>{value.getPropValue('name')}</b>
+        <i>{value.getPropValue('tiles').length} tiles</i>
+    </div>
+}
 
 export function TileListView(props: {
     sheet: Sheet,
-    tile: Tile | null,
-    setTile: (tile: Tile) => void,
+    tile: Tile | undefined,
+    setTile: (tile: Tile | undefined) => void,
     palette: ImagePalette,
     editable: boolean,
 }) {
@@ -53,7 +65,7 @@ export function TileListView(props: {
     const tiles = sheet.getPropValue('tiles')
     const add_tile = () => {
         const size = sheet.getPropValue('tileSize')
-        const tile = new Tile({size: size, palette:PICO8})
+        const tile = new Tile({size: size, palette: PICO8})
         sheet.addTile(tile)
         setTile(tile)
     }
@@ -68,18 +80,17 @@ export function TileListView(props: {
         if (sheet.getPropValue('tiles').length > 0) {
             setTile(sheet.getPropValue('tiles')[0])
         } else {
-            setTile(null)
+            setTile(undefined)
         }
     }
     const export_bmp = () => {
         const canvas = sheet_to_canvas(sheet)
         const rawData = canvas_to_bmp(canvas, palette)
-        const blob = new Blob([rawData.data], {type:'image/bmp'})
-        forceDownloadBlob(`${sheet.getPropValue('name')}.bmp`,blob)
+        const blob = new Blob([rawData.data], {type: 'image/bmp'})
+        forceDownloadBlob(`${sheet.getPropValue('name')}.bmp`, blob)
     }
     useWatchProp(sheet, 'tiles')
-    return <div className={'pane tile-list-view'}>
-        <header>Tile Sheet</header>
+    return <div className={'tile-list-view'}>
         {editable &&
             <div className={'toolbar'}>
                 <button onClick={add_tile}>add tile</button>
@@ -109,17 +120,20 @@ export function CompactSheetAndTileSelector(props: {
     const {selectedTile, setSelectedTile, doc} = props
     const sheets = doc.getPropValue('sheets')
     const [selectedSheet, setSelectedSheet] = useState<Sheet>(sheets[0])
-    return <VBox>
-        <HBox>
-            <label>sheet</label>
-            <ListSelect selected={selectedSheet} setSelected={setSelectedSheet} data={sheets}
-                        renderer={(sh) => sh.getPropValue('name')}/>
-        </HBox>
+    return <Pane>
+        <header>
+            <label>Tile Sheet</label>
+            <Spacer/>
+            <ListSelect selected={selectedSheet}
+                        setSelected={setSelectedSheet}
+                        data={sheets}
+                        renderer={SheetPreviewRenderer}/>
+        </header>
         {selectedSheet && <TileListView
             sheet={selectedSheet}
             tile={selectedTile}
             editable={false}
             setTile={(t: Tile) => setSelectedTile(t)}
             palette={doc.getPropValue('palette')}/>}
-    </VBox>
+    </Pane>
 }

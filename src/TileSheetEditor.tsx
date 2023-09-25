@@ -4,6 +4,7 @@ import {ArrayGrid} from "josh_js_util"
 import {VBox} from "josh_react_util"
 import React, {useEffect, useState} from "react"
 
+import {Pane} from "./common-components"
 import {GameDoc, Sheet, Tile} from "./datamodel"
 import {PaletteColorPickerPane} from "./Palette"
 import {PixelGridEditor} from "./PixelGridEditor"
@@ -29,7 +30,10 @@ export function TileSheetEditor(props: {
 
     return (<div className={'tile-sheet-editor'}>
         <VBox>
-            {sheet && <TileListView editable={true} sheet={sheet} tile={tile} setTile={setTile}  palette={palette}/>}
+            {sheet && <Pane>
+                <header>Tile Sheet</header>
+                <TileListView editable={true} sheet={sheet} tile={tile} setTile={setTile}  palette={palette}/>
+            </Pane>}
             {tile && <PropSheet target={tile} title={'Tile Info'}/>}
         </VBox>
         <VBox>
