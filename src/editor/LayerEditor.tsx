@@ -1,207 +1,29 @@
 import "../MapEditor.css"
 
 import {ArrayGrid, Point} from "josh_js_util"
-import {Spacer, toClass} from "josh_react_util"
+import {Spacer} from "josh_react_util"
 import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
 
 import {exportPNG} from "../actions"
-import {appendToList, PropsBase, useWatchAllProps, useWatchProp} from "../base"
-import {drawEditableSprite} from "../common"
+import {PropsBase, useWatchAllProps, useWatchProp} from "../base"
 import {DocContext} from "../common-components"
 import {
-    Actor,
     ActorInstance,
     ActorLayer,
-    GameDoc,
     GameMap,
     MapCell,
     MapLayerType,
     Tile,
     TileLayer
 } from "../datamodel"
-import {fillBounds, strokeBounds} from "../engine/util"
-import {ListSelect} from "../ListSelect"
-import {ListViewRenderer} from "../ListView"
-import {TileReferenceView} from "../propsheet"
+import {
+    ActorLayerToolbar,
+    drawActorlayer,
+    drawSelectedActor,
+    findActorAtPosition
+} from "./ActorEditor"
+import {bucketFill, drawTileLayer, TileLayerToolbar} from "./TileEditor"
 
-function calculateDirections() {
-    return [
-        new Point(-1, 0),
-        new Point(1, 0),
-        new Point(0, -1),
-        new Point(0, 1)
-    ]
-}
-
-function bucketFill(layer: TileLayer, target: string, replace: string, at: Point,) {
-    if (target === replace) return
-    const cells = layer.getPropValue('data') as ArrayGrid<MapCell>
-    const v = cells.get(at)
-    if (v.tile !== target) return
-    if (v.tile === target) {
-        cells.set(at, {tile: replace})
-        calculateDirections().forEach(dir => {
-            const pt = at.add(dir)
-            if (cells.isValidIndex(pt)) bucketFill(layer, target, replace, pt)
-        })
-    }
-}
-
-
-function drawTileLayer(ctx: CanvasRenderingContext2D,
-                       doc: GameDoc,
-                       layer: TileLayer,
-                       scale: number, grid: boolean) {
-    const size = doc.getPropValue('tileSize')
-    const cells = layer.getPropValue('data') as ArrayGrid<MapCell>
-    cells.forEach((v, n) => {
-        if (v) {
-            const x = n.x * size.w * scale
-            const y = n.y * size.w * scale
-            const tile = doc.lookup_sprite(v.tile)
-            if (tile) {
-                if (tile.cache_canvas) {
-                    ctx.drawImage(tile.cache_canvas,
-                        //src
-                        0, 0, tile.cache_canvas.width, tile.cache_canvas.height,
-                        //dst
-                        x,
-                        y,
-                        size.w * scale, size.h * scale
-                    )
-                } else {
-                    drawEditableSprite(ctx, scale, tile)
-                }
-            }
-            if (grid) {
-                ctx.strokeStyle = 'gray'
-                ctx.strokeRect(x, y, size.w * scale - 1, size.h * scale - 1)
-            }
-        }
-    })
-
-}
-
-function findActorForInstance(inst: ActorInstance, doc: GameDoc) {
-    const actor_id = inst.getPropValue('actor')
-    return doc.getPropValue('actors').find(act => act._id === actor_id)
-}
-
-function drawActorlayer(ctx: CanvasRenderingContext2D, doc: GameDoc, layer: ActorLayer, scale: number, grid: boolean) {
-    layer.getPropValue('actors').forEach(inst => {
-        const position = inst.getPropValue('position')
-        const source = findActorForInstance(inst, doc)
-        if (source) {
-            const box = source.getPropValue('viewbox').add(position).scale(scale)
-            const tileRef = source.getPropValue('tile')
-            fillBounds(ctx, box, 'red')
-            if (tileRef) {
-                const tile = doc.lookup_sprite(tileRef)
-                if (tile) {
-                    if (tile.cache_canvas) {
-                        ctx.drawImage(tile.cache_canvas,
-                            //src
-                            0, 0, tile.cache_canvas.width, tile.cache_canvas.height,
-                            //dst
-                            box.x, box.y, box.w, box.h
-                        )
-                    } else {
-                        drawEditableSprite(ctx, scale, tile)
-                    }
-                }
-            }
-        }
-    })
-}
-
-function TileLayerToolbar(props: {
-    doc: GameDoc,
-    layer: TileLayer,
-    fillOnce: boolean,
-    setFillOnce: (fw:boolean)=>void
-}) {
-    const {fillOnce, setFillOnce} = props
-    return <div className={'toolbar'}>
-        <label>tiles</label>
-        <button onClick={() => setFillOnce(true)}
-                className={toClass({selected: fillOnce})}>fill
-        </button>
-    </div>
-}
-
-
-const ActorPreviewRenderer: ListViewRenderer<Actor> = (props: {
-    value: Actor,
-    selected: boolean,
-    index: number,
-    doc: GameDoc
-}) => {
-    const {selected, value, index} = props
-    if (!value) return <div>nothing selected</div>
-    return <div
-        className={toClass({
-            'std-list-item': true,
-            selected:selected,
-        })}
-        style={{
-            'minWidth': '10rem',
-            justifyContent: 'space-between',
-            alignItems: 'center'
-        }}
-    >
-        <b>{value.getPropValue('name')}</b>
-        <TileReferenceView tileRef={value.getPropValue('tile')} doc={props.doc}/>
-    </div>
-}
-
-function ActorLayerToolbar(props: {
-    doc: GameDoc,
-    layer: ActorLayer,
-    onSelect: (act: ActorInstance) => void
-}) {
-    const {doc, layer, onSelect} = props
-    const [selected, setSelected] = useState<Actor | undefined>(undefined)
-    const add_actor = () => {
-        if (!selected) return
-        const player = new ActorInstance({name: 'new ref', actor: selected._id, position: new Point(50, 30)})
-        appendToList(layer, "actors", player)
-        onSelect(player)
-    }
-    return <div className={'toolbar'}>
-        <label>actors</label>
-        <ListSelect
-            doc={doc}
-            data={doc.getPropValue('actors')}
-            selected={selected}
-            setSelected={setSelected}
-            renderer={ActorPreviewRenderer}
-        />
-        <button disabled={!selected} onClick={add_actor}>add actor</button>
-    </div>
-}
-
-function drawSelectedActor(ctx: CanvasRenderingContext2D, doc: GameDoc, inst: ActorInstance, scale: number, grid: boolean) {
-    const position = inst.getPropValue('position')
-    const source = findActorForInstance(inst, doc)
-    if (source) {
-        const box = source.getPropValue('viewbox')
-        strokeBounds(ctx, box.add(position).scale(scale), 'orange', 3)
-    }
-}
-
-function findActorAtPosition(doc: GameDoc, layer: ActorLayer, point: Point) {
-    return layer.getPropValue('actors').find(inst => {
-        const actt = findActorForInstance(inst, doc)
-        if (actt) {
-            const box = actt.getPropValue('viewbox').add(inst.getPropValue('position'))
-            console.log("box is", box)
-            if (box.contains(point)) {
-                return true
-            }
-        }
-        return false
-    })
-}
 
 export function LayerEditor(props: {
     map: GameMap,
