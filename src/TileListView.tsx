@@ -15,21 +15,19 @@ import {
 import {useWatchProp} from "./base"
 import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "./common"
 import {DocContext, DropdownButton, MenuList, Pane} from "./common-components"
-import {GameDoc, Sheet, Tile} from "./datamodel"
+import {Sheet, Tile} from "./datamodel"
 import {ListSelect} from "./ListSelect"
-import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
+import {ListView, ListViewDirection, ListViewOptions, ListViewRenderer} from "./ListView"
 
 type TilePreviewOptions = {
     sheet:Sheet,
     showNames:boolean,
     scale:number
-}
+} & ListViewOptions
 
 export const TilePreviewRenderer: ListViewRenderer<Tile> = (props: {
     value: Tile,
     selected: boolean,
-    index: number,
-    doc?:GameDoc,
     options: TilePreviewOptions
 }) => {
     const {value, options} = props
@@ -80,9 +78,9 @@ export const TilePreviewRenderer: ListViewRenderer<Tile> = (props: {
 const SheetPreviewRenderer: ListViewRenderer<Sheet> = (props: {
     value: Sheet,
     selected: boolean,
-    index: number
+    options: ListViewOptions,
 }) => {
-    const {selected, value, index} = props
+    const {selected, value} = props
     return <div className={toClass({
         'std-dropdown-item': true,
         selected: selected,
@@ -166,13 +164,13 @@ export function TileListView(props: {
 }
 
 export function CompactSheetAndTileSelector(props: {
-    selectedTile: Tile,
-    setSelectedTile: (t: Tile) => void,
+    selectedTile: Tile|undefined,
+    setSelectedTile: (t: Tile|undefined) => void,
 }) {
     const {selectedTile, setSelectedTile} = props
     const doc = useContext(DocContext)
     const sheets = doc.getPropValue('sheets')
-    const [selectedSheet, setSelectedSheet] = useState<Sheet>(sheets[0])
+    const [selectedSheet, setSelectedSheet] = useState<Sheet|undefined>(sheets[0])
     return <Pane header={
         <header>
             <label>Tile Sheet</label>
@@ -187,7 +185,7 @@ export function CompactSheetAndTileSelector(props: {
             sheet={selectedSheet}
             tile={selectedTile}
             editable={false}
-            setTile={(t: Tile) => setSelectedTile(t)}
+            setTile={t => setSelectedTile(t)}
             palette={doc.getPropValue('palette')}/>}
     </Pane>
 }

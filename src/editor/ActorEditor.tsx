@@ -65,7 +65,7 @@ const ActorPreviewRenderer: ListViewRenderer<Actor> = (props: {
         }}
     >
         <b>{value.getPropValue('name')}</b>
-        <TileReferenceView tileRef={value.getPropValue('tile')} doc={props.doc}/>
+        <TileReferenceView tileRef={value.getPropValue('tile')}/>
     </div>
 }
 
