@@ -1,19 +1,38 @@
 import "./TileSheetView.css"
 
-import {Spacer, toClass} from "josh_react_util"
+import {PopupContext, Spacer, toClass} from "josh_react_util"
 import {forceDownloadBlob} from "josh_web_util"
-import React, {useEffect, useRef, useState} from "react"
+import React, {useContext, useEffect, useRef, useState} from "react"
 
+import {
+    deleteTile,
+    duplicate_tile,
+    flipTileAroundHorizontal,
+    flipTileAroundVertical,
+    rotateTile90Clock,
+    rotateTile90CounterClock
+} from "./actions"
 import {useWatchProp} from "./base"
 import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "./common"
-import {DropdownButton, Pane} from "./common-components"
+import {DropdownButton, MenuList, Pane} from "./common-components"
 import {GameDoc, Sheet, Tile} from "./datamodel"
 import {ListSelect} from "./ListSelect"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
-export const TilePreviewRenderer: ListViewRenderer<Tile> = (props: { value: Tile, selected: boolean, index: number, options:unknown }) => {
-    const {selected, value, index} = props
-    const scale = props.options?props.options.scale:4
+type TilePreviewOptions = {
+    sheet:Sheet,
+    showNames:boolean,
+    scale:number
+}
+
+export const TilePreviewRenderer: ListViewRenderer<Tile> = (props: {
+    value: Tile,
+    selected: boolean,
+    index: number,
+    doc?:GameDoc,
+    options: TilePreviewOptions
+}) => {
+    const {value, options} = props
     const ref = useRef<HTMLCanvasElement>(null)
     const redraw = () => {
         if (ref.current) {
@@ -27,22 +46,42 @@ export const TilePreviewRenderer: ListViewRenderer<Tile> = (props: { value: Tile
     useEffect(() => redraw(), [value])
     useWatchProp(value, 'data', () => redraw())
     useWatchProp(value, 'name')
-    return <div className={'tile-preview-wrapper'}>
-        <canvas ref={ref} className={toClass({
-            'tile-preview': true,
-            selected: props.selected,
-        })} style={{
-            width: `${value.width() * scale}px`,
-            height: `${value.height() * scale}px`,
-        }}
+    const pm = useContext(PopupContext)
+    return <div className={'tile-preview-wrapper'}
+                onContextMenu={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    pm.show_at(<MenuList>
+                        <button onClick={()=>flipTileAroundVertical(value)}>flip left / right</button>
+                        <button onClick={()=>flipTileAroundHorizontal(value)}>flip top / bottom</button>
+                        <button onClick={()=>rotateTile90Clock(value)}>rotate 90 clock</button>
+                        <button onClick={()=>rotateTile90CounterClock(value)}>rotate 90 counter-clock</button>
+                        <button onClick={()=>duplicate_tile(options.sheet,value)}>duplicate</button>
+                        <button onClick={()=>deleteTile(options.sheet,value)}>delete</button>
+                    </MenuList>,e.target,"below")
+                }}
+    >
+        <canvas ref={ref}
+                className={toClass({
+                    'tile-preview': true,
+                    selected: props.selected,
+                })}
+                style={{
+                    width: `${value.width() * options.scale}px`,
+                    height: `${value.height() * options.scale}px`,
+                }}
                 width={value.width()}
                 height={value.height()}
         ></canvas>
-        <b>{props.options && props.options.showNames && props.value.getPropValue('name')}</b>
+        <b>{options.showNames && props.value.getPropValue('name')}</b>
     </div>
 }
 
-const SheetPreviewRenderer: ListViewRenderer<Sheet> = (props: { value: Sheet, selected: boolean, index: number }) => {
+const SheetPreviewRenderer: ListViewRenderer<Sheet> = (props: {
+    value: Sheet,
+    selected: boolean,
+    index: number
+}) => {
     const {selected, value, index} = props
     return <div className={toClass({
         'std-dropdown-item': true,
@@ -53,6 +92,7 @@ const SheetPreviewRenderer: ListViewRenderer<Sheet> = (props: { value: Sheet, se
         <i>{value.getPropValue('tiles').length} tiles</i>
     </div>
 }
+
 
 export function TileListView(props: {
     sheet: Sheet,
@@ -72,13 +112,10 @@ export function TileListView(props: {
         setTile(tile)
     }
     const dup_tile = () => {
-        if (!tile) return
-        const new_tile = tile.clone()
-        sheet.addTile(new_tile)
-        setTile(new_tile)
+        if(tile)  setTile(duplicate_tile(sheet,tile))
     }
     const delete_tile = () => {
-        if (tile) sheet.removeTile(tile)
+        if(tile) deleteTile(sheet,tile)
         if (sheet.getPropValue('tiles').length > 0) {
             setTile(sheet.getPropValue('tiles')[0])
         } else {
@@ -116,6 +153,7 @@ export function TileListView(props: {
                   options={{
                       showNames,
                       scale,
+                      sheet
                   }}
                   direction={ListViewDirection.HorizontalWrap}
                   style={{}}

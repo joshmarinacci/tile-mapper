@@ -1,8 +1,9 @@
+import {ArrayGrid, Point} from "josh_js_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
 import {SimpleMenuAction} from "./base"
 import {canvas_to_bmp, sheet_to_canvas} from "./common"
-import {GameDoc} from "./datamodel"
+import {GameDoc, Sheet, Tile} from "./datamodel"
 import {docToJSON, fileToJson, jsonObjToBlob, make_doc_from_json} from "./json"
 import {GlobalState} from "./state"
 
@@ -65,3 +66,34 @@ export const LoadFileAction:SimpleMenuAction = {
     }
 }
 
+export function deleteTile(sheet: Sheet, tile: Tile) {
+    if (tile) sheet.removeTile(tile)
+}
+
+export function duplicate_tile(sheet: Sheet, tile: Tile): Tile {
+    const new_tile = tile.clone()
+    sheet.addTile(new_tile)
+    return new_tile
+}
+
+function cloneAndRemap<T>(data: ArrayGrid<T>, cb: (index: Point, source: ArrayGrid<T>) => T): ArrayGrid<T> {
+    const data2 = new ArrayGrid<T>(data.w, data.h)
+    data2.fill((n) => cb(n, data))
+    return data2
+}
+
+export function flipTileAroundVertical(value: Tile) {
+    value.setPropValue('data', cloneAndRemap(value.getPropValue('data'), (n: Point, data: ArrayGrid<number>) => data.get_at(data.w - 1 - n.x, n.y)))
+}
+
+export function flipTileAroundHorizontal(value: Tile) {
+    value.setPropValue('data', cloneAndRemap(value.getPropValue('data'), (n: Point, data: ArrayGrid<number>) => data.get_at(n.x, data.h - 1 - n.y)))
+}
+
+export function rotateTile90Clock(value: Tile) {
+    value.setPropValue('data', cloneAndRemap(value.getPropValue('data'), (n: Point, data: ArrayGrid<number>) => data.get_at(n.y, data.w - 1 - n.x)))
+}
+
+export function rotateTile90CounterClock(value: Tile) {
+    value.setPropValue('data', cloneAndRemap(value.getPropValue('data'), (n: Point, data: ArrayGrid<number>) => data.get_at(data.h - 1 - n.y, n.x)))
+}
