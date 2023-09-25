@@ -260,7 +260,7 @@ class ClassRegistry {
     }
 
     private log(...args:unknown[]) {
-        console.log("ClassRegistry",...args)
+        // console.log("ClassRegistry",...args)
     }
 }
 
@@ -275,7 +275,7 @@ const CLASS_NAME_MAP:Record<string, string> = {
     'Test2':'GameTest',
 }
 export function restoreClassFromJSON<Type>(json: JsonOut<Type>): PropsBase<Type> {
-    console.log("restoring class", json)
+    // console.log("restoring class", json)
     if(CLASS_NAME_MAP[json.class]) json.class = CLASS_NAME_MAP[json.class]
     const Clazz = CLASS_REGISTRY.classByName.get(json.class)
     if(!Clazz) throw new Error(`class missing for ${json.class}`)
@@ -287,7 +287,7 @@ export function restoreClassFromJSON<Type>(json: JsonOut<Type>): PropsBase<Type>
         if(json.props.hasOwnProperty(key)) {
             const val = def.fromJSON ? def.fromJSON(json.props[key]) : json.props[key]
             args[key] = val
-            console.log("setting",key,'to',val)
+            // console.log("setting",key,'to',val)
         } else {
             console.log(`prop missing in json: ${key}. using default: ${def.default()}`)
             args[key] = def.default()
@@ -295,7 +295,7 @@ export function restoreClassFromJSON<Type>(json: JsonOut<Type>): PropsBase<Type>
     }
     const obj = new Clazz(args)
     obj._id = json.id
-    console.log("created object is",obj)
+    // console.log("created object is",obj)
     return obj
 }
 

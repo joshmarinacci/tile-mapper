@@ -8,7 +8,7 @@ import {
     PopupContext,
     PopupContextImpl,
 } from "josh_react_util"
-import React, {useState} from 'react'
+import React, {useContext, useState} from 'react'
 
 import {DocToBMP, DocToPNG, LoadFileAction, SaveAction} from "./actions"
 import {ActorEditView} from "./ActorEditView"
@@ -58,12 +58,18 @@ function getEditView(STATE: GlobalState, doc: GameDoc, selection: unknown) {
     return <div style={{padding: '1rem'}}><h3>Select item from the left</h3></div>
 }
 
-function Main2() {
-    const [selection, setSelection] = useState<PropsBase<any> | null>(null)
-    const [doc, setDoc] = useState(STATE.getPropValue('doc') as GameDoc)
-    useWatchAllProps(STATE, (s) => setSelection(s.getPropValue('selection')))
-    useWatchProp(STATE, 'doc', () => setDoc(STATE.getPropValue('doc')))
+function MainWrapper(props:{state:GlobalState}): JSX.Element {
+    const [doc, setDoc] = useState(props.state.getPropValue('doc') as GameDoc)
+    useWatchProp(props.state, 'doc', () => setDoc(props.state.getPropValue('doc')))
+    return <DocContext.Provider value={doc}>
+        <Main2/>
+    </DocContext.Provider>
 
+}
+function Main2() {
+    const doc = useContext(DocContext)
+    const [selection, setSelection] = useState<PropsBase<any> | null>(null)
+    useWatchAllProps(STATE, (s) => setSelection(s.getPropValue('selection')))
     const toolbar = <div className={'toolbar across'}>
         <button className={'logo'}>Tile-Mapper</button>
         <ToolbarActionButton action={NewDocAction} state={STATE}/>
@@ -72,7 +78,6 @@ function Main2() {
         <ToolbarActionButton action={DocToPNG} state={STATE}/>
         <ToolbarActionButton action={DocToBMP} state={STATE}/>
     </div>
-
     const left_column = <div className={'tree-wrapper pane'} style={{
         alignSelf: 'stretch',
         overflow: "auto"
@@ -86,16 +91,14 @@ function Main2() {
         alignSelf: 'stretch',
     }}>{editView}</div>
     const right_column = <PropSheet target={selection} doc={doc}/>
-    return <DocContext.Provider value={doc}>
-        <MainView left={left_column} center={center_column} right={right_column} toolbar={toolbar}/>
-    </DocContext.Provider>
+    return <MainView left={left_column} center={center_column} right={right_column} toolbar={toolbar}/>
 }
 
 function App() {
     return <DialogContext.Provider value={new DialogContextImpl()}>
         <PopupContext.Provider value={new PopupContextImpl()}>
             <ActionRegistryContext.Provider value={AR}>
-                <Main2/>
+                <MainWrapper state={STATE}/>
                 <PopupContainer/>
                 <DialogContainer/>
             </ActionRegistryContext.Provider>

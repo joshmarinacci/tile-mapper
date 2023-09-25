@@ -615,7 +615,7 @@ export class GameDoc extends PropsBase<Doc2Type> {
         for (const sheet of this.getPropValue('sheets') as Sheet[]) {
             for (const tile of sheet.getPropValue('tiles') as Tile[]) {
                 if (tile._id === id) {
-                    console.log("caching",id,tile.getPropValue('name'), tile.cache_canvas)
+                    // console.log("caching",id,tile.getPropValue('name'), tile.cache_canvas)
                     tile.rebuild_cache()
                     this.sprite_lookup.set(tile._id, tile)
                     return tile

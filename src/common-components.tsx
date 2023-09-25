@@ -80,7 +80,7 @@ export function DropdownButton(props: { title:string,     children: ReactNode,
 }) {
     const pm = useContext(PopupContext)
     return <button onClick={(e)=>{
-        pm.show_at(<MenuList>{props.children}</MenuList>,e.target)
+        pm.show_at(<MenuList>{props.children}</MenuList>,e.target,'below')
     }}>{props.title}</button>
 }
 

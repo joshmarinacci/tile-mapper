@@ -6,14 +6,14 @@ import React, {useEffect, useRef, useState} from "react"
 
 import {useWatchProp} from "./base"
 import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "./common"
-import {Pane} from "./common-components"
+import {DropdownButton, Pane} from "./common-components"
 import {GameDoc, Sheet, Tile} from "./datamodel"
 import {ListSelect} from "./ListSelect"
 import {ListView, ListViewDirection, ListViewRenderer} from "./ListView"
 
-export const TilePreviewRenderer: ListViewRenderer<Tile> = (props: { value: Tile, selected: boolean, index: number }) => {
+export const TilePreviewRenderer: ListViewRenderer<Tile> = (props: { value: Tile, selected: boolean, index: number, options:unknown }) => {
     const {selected, value, index} = props
-    const scale = 4
+    const scale = props.options?props.options.scale:4
     const ref = useRef<HTMLCanvasElement>(null)
     const redraw = () => {
         if (ref.current) {
@@ -38,7 +38,7 @@ export const TilePreviewRenderer: ListViewRenderer<Tile> = (props: { value: Tile
                 width={value.width()}
                 height={value.height()}
         ></canvas>
-        <b>{props.value.getPropValue('name')}</b>
+        <b>{props.options && props.options.showNames && props.value.getPropValue('name')}</b>
     </div>
 }
 
@@ -62,6 +62,8 @@ export function TileListView(props: {
     editable: boolean,
 }) {
     const {sheet, tile, setTile, palette, editable} = props
+    const [showNames, setShowNamess] = useState(true)
+    const [scale, setScale] = useState(4)
     const tiles = sheet.getPropValue('tiles')
     const add_tile = () => {
         const size = sheet.getPropValue('tileSize')
@@ -96,12 +98,25 @@ export function TileListView(props: {
                 <button onClick={add_tile}>add tile</button>
                 <button onClick={dup_tile}>dup tile</button>
                 <button onClick={delete_tile}>del tile</button>
+                <Spacer/>
+                <DropdownButton title={'options'}>
+                    <button onClick={() => setShowNamess(!showNames)}>show names</button>
+                    <button onClick={() => setScale(1)}>1x</button>
+                    <button onClick={() => setScale(2)}>2x</button>
+                    <button onClick={() => setScale(4)}>4x</button>
+                    <button onClick={() => setScale(8)}>8x</button>
+                    <button onClick={() => setScale(16)}>16x</button>
+                </DropdownButton>
             </div>}
         <ListView className={'tile-list'}
                   selected={tile}
                   setSelected={setTile}
                   renderer={TilePreviewRenderer}
                   data={tiles}
+                  options={{
+                      showNames,
+                      scale,
+                  }}
                   direction={ListViewDirection.HorizontalWrap}
                   style={{}}
         />

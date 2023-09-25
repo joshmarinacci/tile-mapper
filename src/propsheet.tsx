@@ -6,6 +6,7 @@ import React, {useContext, useEffect, useRef, useState} from "react"
 
 import {PropDef, PropsBase, useWatchProp} from "./base"
 import {drawEditableSprite} from "./common"
+import {DocContext} from "./common-components"
 import {GameDoc, Tile} from "./datamodel"
 import {CompactSheetAndTileSelector} from "./TileListView"
 
@@ -70,7 +71,6 @@ function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDe
         return <input key={`editor_${name.toString()}`} type={'text'}
                       value={new_val + ""}
                       onChange={(e) => {
-                          console.log("setting", name, 'to', e.target.value)
                           target.setPropValue(name, e.target.value as T[keyof T])
                       }}/>
     }
@@ -163,9 +163,10 @@ function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDe
     return <label key={'nothing'}>no editor for it</label>
 }
 
-export function PropSheet<T>(props: { title?: string, target: PropsBase<T> | null, doc:GameDoc }) {
+export function PropSheet<T>(props: { title?: string, target: PropsBase<T> | null }) {
+    const doc = useContext(DocContext)
     const {title, target} = props
-    const header = <header key={'the-header'}>{title ? props.title : 'props'}</header>
+    const header = <header key={'the-header'}>{title ? title : 'props'}</header>
     if (!target) return <div className={'pane'} key={'nothing'}>{header}nothing selected</div>
     const propnames = Array.from(target.getAllPropDefs())
         .filter(([a, b]) => !b.hidden)
@@ -178,7 +179,7 @@ export function PropSheet<T>(props: { title?: string, target: PropsBase<T> | nul
                             target={target}
                             name={name}
                             def={def}
-                            doc={props.doc}
+                            doc={doc}
                 />
             </>
         })}

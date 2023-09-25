@@ -13,7 +13,6 @@ export function MainView(props: {
     const [showRight, setShowRight] = useState(true)
     const style = {
         display: 'grid',
-        'main-content': true,
         gridTemplateColumns: `${showLeft ? '[left-column] 10rem' : ''} [center-column] 1fr ${showRight ? '[right-column] 15rem' : ''} [end-column]`,
         gridTemplateRows: 'auto 1fr',
         width: '99vw',

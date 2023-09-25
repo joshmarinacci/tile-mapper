@@ -21,7 +21,7 @@ export function TileSheetEditor(props: {
     const {doc, state, sheet} = props
     const palette: string[] = doc.getPropValue('palette') as string[]
     const [drawColor, setDrawColor] = useState<string>(palette[0])
-    const [tile, setTile] = useState<Tile | null>(null)
+    const [tile, setTile] = useState<Tile | undefined>(undefined)
     const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20))
     useEffect(() => {
         const tiles = sheet.getPropValue('tiles')
