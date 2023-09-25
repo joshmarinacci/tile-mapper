@@ -5,7 +5,7 @@ import {Spacer, toClass} from "josh_react_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {appendToList, PropsBase, useWatchProp} from "./base"
+import {appendToList, PropsBase, useWatchAllProps, useWatchProp} from "./base"
 import {drawEditableSprite} from "./common"
 import {
     Actor,
@@ -287,6 +287,7 @@ export function LayerEditor(props: {
             }
         }
     }
+    useWatchAllProps(map, () => redraw())
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
         const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
         let pt = new Point(e.clientX, e.clientY)

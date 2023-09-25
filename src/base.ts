@@ -47,7 +47,7 @@ export class PropsBase<Type> {
         this.listeners = new Map()
         this.all_listeners = []
         this.child_watcher = (ch) => {
-            console.log('child changed',ch)
+            this._fireAll()
         }
         for(const [k,d] of Object.entries(defs)) {
             this.setPropDef(k as keyof Type,d as PropDef<Type[keyof Type]>)
