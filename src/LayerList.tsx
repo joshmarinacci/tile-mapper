@@ -12,9 +12,14 @@ const LayerNameRenderer: ListViewRenderer<PropsBase<MapLayerType>> = (props: {
     selected: boolean
 }) => {
     useWatchProp(props.value,'name')
+    useWatchProp(props.value,'visible')
     return <div className={'std-list-item'} style={{
         justifyContent:'space-between'
-    }}><b>{props.value.getPropValue('name')}</b> <i>{props.value.getPropValue('type')}</i></div>
+    }}>
+        <b>{props.value.getPropValue('name')}</b>
+        <i>{props.value.getPropValue('type')}</i>
+        <b>{props.value.getPropValue('visible')?"visible":"hidden"}</b>
+    </div>
 }
 
 

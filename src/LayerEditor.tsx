@@ -1,7 +1,7 @@
 import "./MapEditor.css"
 
 import {ArrayGrid, Point} from "josh_js_util"
-import {toClass} from "josh_react_util"
+import {Spacer, toClass} from "josh_react_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
@@ -159,10 +159,16 @@ function drawActorlayer(ctx: CanvasRenderingContext2D, doc: GameDoc, layer: Acto
 
 function TileLayerToolbar(props: {
     doc: GameDoc,
-    layer: TileLayer
+    layer: TileLayer,
+    fillOnce: boolean,
+    setFillOnce: (fw:boolean)=>void
 }) {
+    const {fillOnce, setFillOnce} = props
     return <div className={'toolbar'}>
         <label>tiles</label>
+        <button onClick={() => setFillOnce(true)}
+                className={toClass({selected: fillOnce})}>fill
+        </button>
     </div>
 }
 
@@ -348,17 +354,15 @@ export function LayerEditor(props: {
     return <div className={'vbox'}>
         <div className={'toolbar'}>
             <button onClick={() => setGrid(!grid)}>grid</button>
-            <button onClick={() => setFillOnce(true)}
-                    className={toClass({selected: fillOnce})}>fill
-            </button>
             <button onClick={() => setZoom(zoom + 1)}>+</button>
             <button onClick={() => setZoom(zoom - 1)}>-</button>
+            <Spacer/>
             <button onClick={() => exportPNG(doc, map, 1)}>png 1x</button>
             <button onClick={() => exportPNG(doc, map, 2)}>png 2x</button>
             <button onClick={() => exportPNG(doc, map, 4)}>png 4x</button>
         </div>
         {layer.getPropValue('type') === 'tile-layer' &&
-            <TileLayerToolbar layer={layer as TileLayer} doc={doc}/>}
+            <TileLayerToolbar layer={layer as TileLayer} doc={doc} fillOnce={fillOnce} setFillOnce={setFillOnce}/>}
         {layer.getPropValue('type') === 'actor-layer' &&
             <ActorLayerToolbar layer={layer as ActorLayer} doc={doc} onSelect={setSelectedActor}/>}
         <div className={'map-editor-canvas-wrapper'}>

@@ -86,8 +86,14 @@ export function DropdownButton(props: { title:string,     children: ReactNode,
 
 export const DocContext = React.createContext(new GameDoc())
 
-export function Pane(props:{children:ReactNode}) {
+export function Pane(props:{title?:string, header?:ReactNode, children:ReactNode}) {
     return <div className={'pane'}>
+        {props.header?props.header: (props.title && <header>{props.title}</header>)}
+        <div style={{
+            border:'0px solid red',
+            overflowY:'scroll',
+        }}>
         {props.children}
+        </div>
     </div>
 }

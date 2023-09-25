@@ -120,7 +120,7 @@ export function CompactSheetAndTileSelector(props: {
     const {selectedTile, setSelectedTile, doc} = props
     const sheets = doc.getPropValue('sheets')
     const [selectedSheet, setSelectedSheet] = useState<Sheet>(sheets[0])
-    return <Pane>
+    return <Pane header={
         <header>
             <label>Tile Sheet</label>
             <Spacer/>
@@ -129,6 +129,7 @@ export function CompactSheetAndTileSelector(props: {
                         data={sheets}
                         renderer={SheetPreviewRenderer}/>
         </header>
+    }>
         {selectedSheet && <TileListView
             sheet={selectedSheet}
             tile={selectedTile}
