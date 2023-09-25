@@ -79,7 +79,7 @@ export function TileLayerToolbar(props: {
 
 export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
     onMouseDown(args: MouseEventArgs<TileLayer>) {
-        const {e, layer, tile, doc, setSelectedTile} = args
+        const {e, layer, tile, doc, setSelectedTile, fillOnce} = args
         const tileSize = doc.getPropValue('tileSize')
         const pt = new Point(args.pt.x / tileSize.w, args.pt.y / tileSize.h).floor()
         if (e.button === 2) {
@@ -90,14 +90,12 @@ export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
             e.preventDefault()
             return
         }
-        // if (fillOnce) {
-        //     const lyr = layer as TileLayer
-        //     const cell = lyr.getPropValue('data').get(pt)
-        //     bucketFill(lyr, cell.tile, tile._id, pt)
-        //     setFillOnce(false)
-        //     redraw()
-        //     return
-        // }
+        if (fillOnce) {
+            const cell = layer.getPropValue('data').get(pt)
+            bucketFill(layer, cell.tile, tile._id, pt)
+            args.setFillOnce(false)
+            return
+        }
         layer.getPropValue('data').set(pt, {tile: tile._id})
     }
 

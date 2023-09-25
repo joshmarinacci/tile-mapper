@@ -12,6 +12,8 @@ export type MouseEventArgs<T> = {
     setSelectedTile: (tile: Tile) => void,
     selectedActor?: ActorInstance,
     setSelectedActor: (act: ActorInstance | undefined) => void,
+    fillOnce:boolean,
+    setFillOnce: (fillOnce:boolean) => void,
 }
 export type DrawArgs<T> = {
     layer: T,

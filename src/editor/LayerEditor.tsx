@@ -67,18 +67,18 @@ export function LayerEditor(props: {
     useEffect(() => redraw(), [zoom, layer])
     const onMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
         setDown(true)
-        if(handler) handler.onMouseDown({e, layer, pt:canvasToLayer(e), doc, tile, setSelectedTile, selectedActor, setSelectedActor} )
+        if(handler) handler.onMouseDown({e, layer, pt:canvasToLayer(e), doc, tile, setSelectedTile, selectedActor, setSelectedActor, fillOnce, setFillOnce} )
         redraw()
     }
     const onMouseMove = (e: MouseEvent<HTMLCanvasElement>) => {
         if (down) {
-            if(handler) handler.onMouseMove({e, layer, pt:canvasToLayer(e), doc, tile, setSelectedTile, selectedActor, setSelectedActor})
+            if(handler) handler.onMouseMove({e, layer, pt:canvasToLayer(e), doc, tile, setSelectedTile, selectedActor, setSelectedActor, fillOnce, setFillOnce})
             redraw()
         }
     }
     const onMouseUp = (e: MouseEvent<HTMLCanvasElement>) => {
         setDown(false)
-        if(handler) handler.onMouseUp({e, layer, pt:canvasToLayer(e), doc, tile, setSelectedTile, selectedActor, setSelectedActor})
+        if(handler) handler.onMouseUp({e, layer, pt:canvasToLayer(e), doc, tile, setSelectedTile, selectedActor, setSelectedActor, fillOnce, setFillOnce})
     }
     if (!layer) return <div>select a map</div>
     return <div className={'vbox'}>
