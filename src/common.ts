@@ -1,7 +1,7 @@
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
 import {ArrayGrid, Point} from "josh_js_util"
 
-import {Sheet2, Tile2} from "./data2"
+import {Sheet, Tile} from "./datamodel"
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -57,7 +57,7 @@ export const MINECRAFT:ImagePalette = [
 export function drawEditableSprite(
     ctx: CanvasRenderingContext2D,
     scale: number,
-    image: Tile2) {
+    image: Tile) {
     for (let i = 0; i < image.width(); i++) {
         for (let j = 0; j < image.height(); j++) {
             const v: number = image.getPixel(new Point(i, j))
@@ -67,8 +67,8 @@ export function drawEditableSprite(
     }
 }
 
-export function sheet_to_canvas(sheet: Sheet2) {
-    const tiles = sheet.getPropValue('tiles') as Tile2[]
+export function sheet_to_canvas(sheet: Sheet) {
+    const tiles = sheet.getPropValue('tiles') as Tile[]
     const sprite = tiles[0]
     const canvas = document.createElement('canvas')
     canvas.width = sprite.width() * tiles.length

@@ -1,11 +1,10 @@
 import {HBox, PopupContext} from "josh_react_util"
 import React, {JSX, MouseEvent,useContext} from "react"
 
-import {PropsBase} from "./base"
 import {down_arrow_triangle} from "./common"
 import {DefaultListViewRenderer, ListViewOptions, ListViewRenderer} from "./ListView"
 
-function SelectionList<T extends PropsBase<unknown>>(props:{
+function SelectionList<T>(props:{
     data:T[],
     selected: T|undefined,
     setSelected: (v: T|undefined) => void,
@@ -21,7 +20,7 @@ function SelectionList<T extends PropsBase<unknown>>(props:{
     </div>
 }
 
-export function ListSelect<T extends PropsBase<any>>(props:{
+export function ListSelect<T>(props:{
     selected: T|undefined,
     setSelected: (v: T|undefined) => void,
     renderer: ListViewRenderer<T>|undefined,

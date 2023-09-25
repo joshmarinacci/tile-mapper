@@ -11,7 +11,7 @@ enum ArrayGridResizeAlignment {
 
 function resizeArrayGrid<T>(data: ArrayGrid<MapCell>, size: Size, alignment: ArrayGridResizeAlignment, empty: MapCell):ArrayGrid<T> {
     const d2 = new ArrayGrid<T>(size.w,size.h)
-    d2.fill(n => {
+    d2.fill((n) => {
         if(data.isValidIndex(n)) return data.get(n)
         return empty
     })

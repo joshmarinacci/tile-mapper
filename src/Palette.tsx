@@ -4,9 +4,9 @@ import {toClass} from "josh_react_util"
 import React from "react"
 
 import {ImagePalette} from "./common"
-import {ListView, ListViewDirection} from "./ListView"
+import {ListView, ListViewDirection, ListViewOptions} from "./ListView"
 
-const PaletteColorRenderer = (props:{value:string, selected:boolean}) => {
+const PaletteColorRenderer = (props:{value:string, selected:boolean, options:ListViewOptions}) => {
     const {value, selected} = props
     return <div
         className={toClass({
@@ -24,7 +24,7 @@ const PaletteColorRenderer = (props:{value:string, selected:boolean}) => {
 
 export function PaletteColorPickerPane(props: {
     drawColor: string,
-    setDrawColor: (v: string|undefined) => void,
+    setDrawColor: (v: string) => void,
     palette:ImagePalette,
 }) {
     const {drawColor, setDrawColor, palette} = props

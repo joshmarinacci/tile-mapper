@@ -50,7 +50,7 @@ function TileReferenceEditor<T>(props: {
     target: PropsBase<T>
 }) {
     const pm = useContext(PopupContext)
-    const value = props.target.getPropValue(props.name)
+    const value = props.target.getPropValue(props.name) as string
     return <HBox>
         <button onClick={(e) => {
             pm.show_at(<TileReferenceSelector name={props.name} target={props.target} def={props.def} />,e.target,'below')
@@ -163,7 +163,7 @@ function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDe
     return <label key={'nothing'}>no editor for it</label>
 }
 
-export function PropSheet<T>(props: { title?: string, target: PropsBase<T> | undefined }) {
+export function PropSheet<T extends PropsBase<any>>(props: { title?: string, target: T | undefined}) {
     const {title, target} = props
     const header = <header key={'the-header'}>{title ? title : 'props'}</header>
     if (!target) return <div className={'pane'} key={'nothing'}>{header}nothing selected</div>

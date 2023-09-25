@@ -24,6 +24,8 @@ export function bucketFill(layer: TileLayer, target: string, replace: string, at
         cells.set(at, {tile: replace})
         calculateDirections().forEach(dir => {
             const pt = at.add(dir)
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
             if (cells.isValidIndex(pt)) bucketFill(layer, target, replace, pt)
         })
     }
@@ -90,20 +92,20 @@ export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
             e.preventDefault()
             return
         }
-        if (fillOnce) {
+        if (fillOnce && tile) {
             const cell = layer.getPropValue('data').get(pt)
             bucketFill(layer, cell.tile, tile._id, pt)
             args.setFillOnce(false)
             return
         }
-        layer.getPropValue('data').set(pt, {tile: tile._id})
+        if(tile) layer.getPropValue('data').set(pt, {tile: tile._id})
     }
 
     onMouseMove(args: MouseEventArgs<TileLayer>) {
         const {layer, tile, doc} = args
         const tileSize = doc.getPropValue('tileSize')
         const pt = new Point(args.pt.x / tileSize.w, args.pt.y / tileSize.h).floor()
-        layer.getPropValue('data').set(pt, {tile: tile._id})
+        if(tile) layer.getPropValue('data').set(pt, {tile: tile._id})
     }
 
     onMouseUp(v: MouseEventArgs<TileLayer>): void {

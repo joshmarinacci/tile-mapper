@@ -13,9 +13,9 @@ export function TestModeView(props: {
     state: GlobalState
     test: GameTest
 }) {
-    const {state, test} = props
+    const { test} = props
     const doc = useContext(DocContext)
-    const [map, setMap] = useState<GameMap>(doc.getPropValue('maps')[0])
+    const [map] = useState<GameMap>(doc.getPropValue('maps')[0])
 
     return <div>
         <HBox>

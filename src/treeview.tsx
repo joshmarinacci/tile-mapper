@@ -18,7 +18,7 @@ function PropertyList<T, K extends keyof T>(props: {
     def: PropDef<T[K]>,
     selection: unknown,
 }) {
-    const {value, name, def, target} = props
+    const {value, name,  target} = props
     const values = value as []
     const [open, setOpen] = useState(true)
     const toggle = () => setOpen(!open)

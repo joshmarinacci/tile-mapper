@@ -68,7 +68,7 @@ function MainWrapper(props:{state:GlobalState}): JSX.Element {
 }
 function Main2() {
     const doc = useContext(DocContext)
-    const [selection, setSelection] = useState<PropsBase<any> | null>(null)
+    const [selection, setSelection] = useState<PropsBase<unknown> | null>(null)
     useWatchAllProps(STATE, (s) => setSelection(s.getPropValue('selection')))
     const toolbar = <div className={'toolbar across'}>
         <button className={'logo'}>Tile-Mapper</button>

@@ -31,9 +31,9 @@ export const TilePreviewRenderer: ListViewRenderer<Tile> = (props: {
     options: TilePreviewOptions
 }) => {
     const {value, options} = props
-    const ref = useRef<HTMLCanvasElement>(null)
+        const ref = useRef<HTMLCanvasElement>(null)
     const redraw = () => {
-        if (ref.current) {
+        if (ref.current && value) {
             const canvas = ref.current
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.fillStyle = 'red'

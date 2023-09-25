@@ -17,7 +17,7 @@ export enum ListViewDirection {
 
 export function ListView<T>(props: {
     selected: T|undefined,
-    setSelected: (v: T|undefined) => void,
+    setSelected: (v: T) => void,
     renderer: ListViewRenderer<T>|undefined,
     data: T[],
     style?: object
