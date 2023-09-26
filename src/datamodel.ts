@@ -3,6 +3,36 @@ import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
 import {CLASS_REGISTRY, DefList, PropDef, PropsBase, PropValues, restoreClassFromJSON} from "./base"
 import {drawEditableSprite, ImagePalette, PICO8} from "./common"
 
+export const BooleanDef:PropDef<boolean> = {
+    type:'boolean',
+    hidden:false,
+    editable:true,
+    expandable:false,
+    default: () => true,
+    format:(v)=>v?'true':'false',
+    toJSON:(v) => v,
+    fromJSON:(v) => v as boolean,
+}
+export const FloatDef:PropDef<number> = {
+    type:'float',
+    hidden:false,
+    editable:true,
+    expandable:false,
+    default: () => 0.0,
+    format:(v)=>v.toFixed(2),
+    toJSON:(v) => v,
+    fromJSON:(v) => v as number,
+}
+export const IntegerDef:PropDef<number> = {
+    type:'integer',
+    hidden:false,
+    editable:true,
+    expandable:false,
+    default: () => 0,
+    format:(v)=>v.toFixed(0),
+    toJSON:(v) => v,
+    fromJSON:(v) => v as number,
+}
 export const NameDef: PropDef<string> = {
     type: 'string',
     editable: true,
@@ -15,7 +45,7 @@ export const SizeDef: PropDef<Size> = {
     editable:false,
     default: () => new Size(10,10),
     toJSON: (v) => v.toJSON(),
-    fromJSON: (v) => Size.fromJSON(v),
+    fromJSON: (v) => Size.fromJSON(v as {w:number, h:number}),
     format: (v) => `${v.w} x ${v.h}`,
 }
 export const PointDef: PropDef<Point> = {
@@ -23,7 +53,7 @@ export const PointDef: PropDef<Point> = {
     editable:false,
     default: () => new Point(0,0),
     toJSON: (v) => v.toJSON(),
-    fromJSON: (v) => Point.fromJSON(v),
+    fromJSON: (v) => Point.fromJSON(v as{x:number, y:number}),
     format: (v) => `${v.x} , ${v.y}`,
 }
 export const BoundsDef: PropDef<Bounds> = {
@@ -33,7 +63,7 @@ export const BoundsDef: PropDef<Bounds> = {
     default: () => new Bounds(0,0,10,10),
     toJSON: (v) => v.toJSON(),
     format: (v) => `${v.w} x ${v.h}`,
-    fromJSON: (v) => Bounds.fromJSON(v)
+    fromJSON: (v) => Bounds.fromJSON(v as {x:number, y:number, w:number, h:number})
 }
 export const EditableBoundsDef: PropDef<Bounds> = {
     type:'Bounds',
@@ -41,7 +71,7 @@ export const EditableBoundsDef: PropDef<Bounds> = {
     hidden:false,
     default: () => new Bounds(0,0, 16,16),
     toJSON: (v) => v.toJSON(),
-    fromJSON: (v) => Bounds.fromJSON(v),
+    fromJSON: (v) => Bounds.fromJSON(v as {x:number, y:number, w:number, h:number}),
     format: (v) => `${v.x}, ${v.y} -> ${v.w} x ${v.h}`,
 }
 export const PaletteDef: PropDef<ImagePalette> = {
@@ -51,26 +81,6 @@ export const PaletteDef: PropDef<ImagePalette> = {
     toJSON: (v) => PICO8,
     format: (v) => 'unknown',
     fromJSON: (v) => v,
-}
-const BooleanDef:PropDef<boolean> = {
-    type:'boolean',
-    hidden:false,
-    editable:true,
-    expandable:false,
-    default: () => true,
-    format:(v)=>v?'true':'false',
-    toJSON:(v) => v,
-    fromJSON:(v) => v as boolean,
-}
-const NumberDef:PropDef<number> = {
-    type:'float',
-    hidden:false,
-    editable:true,
-    expandable:false,
-    default: () => 0.0,
-    format:(v)=>v.toFixed(2),
-    toJSON:(v) => v,
-    fromJSON:(v) => v as number,
 }
 
 const JumpDef: PropDef<number> = {
@@ -304,7 +314,6 @@ export class Sheet extends PropsBase<SheetType> {
 CLASS_REGISTRY.register('Sheet',Sheet,SheetDefs)
 
 
-
 export type MapLayerType = {
     name: string,
     type: string,
@@ -365,7 +374,7 @@ const TileLayerDefs:DefList<TileMapLayerType> = {
     size: SizeDef,
     data: TileDataGridDef,
     wrapping: BooleanDef,
-    scrollSpeed:NumberDef,
+    scrollSpeed:FloatDef,
 }
 export class TileLayer extends PropsBase<TileMapLayerType> {
     constructor(opts?: PropValues<TileMapLayerType>) {
@@ -533,9 +542,9 @@ const TestDefs:DefList<TestType> = {
     viewport: ViewportDef,
     gravity: GravityDef,
     jump_power: JumpDef,
-    move_speed: NumberDef,
-    move_speed_max: NumberDef,
-    friction: NumberDef,
+    move_speed: FloatDef,
+    move_speed_max: FloatDef,
+    friction: FloatDef,
 }
 export class GameTest extends PropsBase<TestType> {
     constructor(opts?: PropValues<TestType>) {
