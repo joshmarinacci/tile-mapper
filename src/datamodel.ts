@@ -78,9 +78,9 @@ export const PaletteDef: PropDef<ImagePalette> = {
     type:'object',
     editable:false,
     default: () => PICO8,
-    toJSON: (v) => PICO8,
-    format: (v) => 'unknown',
-    fromJSON: (v) => v,
+    toJSON: (v) => v,
+    format: () => 'unknown',
+    fromJSON: (v) => v as ImagePalette,
 }
 
 const JumpDef: PropDef<number> = {
@@ -135,9 +135,9 @@ const GenericDataArrayDef: PropDef<object[]> = {
     editable: false,
     default: () => [],
     expandable: false,
-    format: (v) => 'unknown',
+    format: () => 'unknown',
     toJSON: (v) => v.map(a => {
-        if('toJSON' in a) return a.toJSON()
+        if('toJSON' in a) return (a.toJSON() as unknown as object)
         return a
     }),
     fromJSON: (v) => v.map(a => restoreClassFromJSON(a)),
@@ -593,7 +593,7 @@ const MapsListDef: PropDef<GameMap[]> = {
     fromJSON:(v => v.map(map => restoreClassFromJSON(map))),
     expandable: true
 }
-type Doc2Type = {
+export type DocType = {
     name: string,
     sheets: Sheet[]
     maps: GameMap[],
@@ -602,7 +602,7 @@ type Doc2Type = {
     palette: ImagePalette,
     tileSize: Size,
 }
-const GameDocDefs:DefList<Doc2Type> = {
+const GameDocDefs:DefList<DocType> = {
     name: NameDef,
     sheets: SheetsListDef,
     maps: MapsListDef,
@@ -611,10 +611,10 @@ const GameDocDefs:DefList<Doc2Type> = {
     palette: PaletteDef,
     tileSize: SizeDef,
 }
-export class GameDoc extends PropsBase<Doc2Type> {
+export class GameDoc extends PropsBase<DocType> {
     private sprite_lookup: Map<string, Tile>
 
-    constructor(opts?: PropValues<Doc2Type>) {
+    constructor(opts?: PropValues<DocType>) {
         super(GameDocDefs, opts)
         this.sprite_lookup = new Map()
     }

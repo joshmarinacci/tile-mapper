@@ -5,7 +5,7 @@ import {GlobalState} from "./state"
 
 export type UUID = string
 export type Getter<T> = () => T;
-export type JSONValue = string | number | object | boolean | []
+export type JSONValue = string | number | object | boolean | object[]
 export type JsonOut<Type> = {
     id: string,
     class: string,
@@ -27,7 +27,7 @@ export type PropDef<T> = {
     watchChildren?: boolean,
 }
 type WrapperCallback<Value> = (v: Value) => void
-type WrapperAnyCallback<Type> = (t: Type) => void
+type WrapperAnyCallback<Type> = (t: PropsBase<Type>) => void
 
 
 export type DefList<Type> = Record<keyof Type, PropDef<Type[keyof Type]>>
@@ -42,10 +42,10 @@ type Flatten<Type> = Type extends Array<infer Item> ? Item : never;
 export class PropsBase<Type> {
     _id: UUID
     private listeners: Map<keyof Type, WrapperCallback<Type[keyof Type]>[]>
-    private all_listeners: WrapperAnyCallback<PropsBase<Type>>[]
+    private all_listeners: WrapperAnyCallback<Type>[]
     private values: Map<keyof Type, Type[keyof Type]>
     private defs: Map<keyof Type, PropDef<Type[keyof Type]>>
-    private child_watcher: WrapperAnyCallback<PropsBase<any>>
+    private child_watcher: WrapperAnyCallback<unknown>
 
     constructor(defs: DefList<Type>, options?: PropValues<Type>) {
         this._id = genId("Wrapper")
@@ -53,7 +53,7 @@ export class PropsBase<Type> {
         this.defs = new Map()
         this.listeners = new Map()
         this.all_listeners = []
-        this.child_watcher = (ch) => {
+        this.child_watcher = () => {
             this._fireAll()
         }
         for (const [k, d] of Object.entries(defs)) {
@@ -63,7 +63,7 @@ export class PropsBase<Type> {
         if (options) this.setProps(options)
     }
 
-    getUUID():UUID {
+    getUUID(): UUID {
         return this._id
     }
 
@@ -82,7 +82,7 @@ export class PropsBase<Type> {
     }
 
     getPropDef<Key extends keyof Type>(name: Key): PropDef<Type[Key]> {
-        if (!this.defs.has(name)) throw new Error(`object does not have key ${name}`)
+        if (!this.defs.has(name)) throw new Error(`object does not have key ${String(name)}`)
         return this.defs.get(name) as unknown as PropDef<Type[Key]>
     }
 
@@ -95,17 +95,21 @@ export class PropsBase<Type> {
     }
 
     setPropValue<K extends keyof Type>(name: K, value: Type[K]) {
-        const old_value = this.values.get(name)
         const def = this.getPropDef(name)
-        if (def.watchChildren && old_value && old_value.length) {
-            old_value.forEach((v: PropsBase<any>) => {
-                v.offAny(this.child_watcher)
-            })
+        {
+            const val = this.values.get(name)
+            if (def.watchChildren && val && Array.isArray(val)) {
+                const arr = val as []
+                arr.forEach((v: PropsBase<unknown>) => {
+                    v.offAny(this.child_watcher)
+                })
+            }
         }
         this.values.set(name, value)
-        if (this.getPropDef(name).watchChildren) {
-            if (value && value.length) {
-                value.forEach((v: PropsBase<any>) => {
+        {
+            const val = this.values.get(name)
+            if (def.watchChildren && val && Array.isArray(val)) {
+                val.forEach((v: PropsBase<unknown>) => {
                     v.onAny(this.child_watcher)
                 })
             }
@@ -140,8 +144,10 @@ export class PropsBase<Type> {
     }
 
     toJSON() {
+        const clazz = CLASS_REGISTRY.lookupNameForObject(this)
+        if(!clazz) throw new Error('class not found')
         const obj: JsonOut<Type> = {
-            class: CLASS_REGISTRY.lookupNameForObject(this),
+            class: clazz,
             props: {} as Record<keyof Type, JSONValue>,
             id: this._id,
         }
@@ -252,8 +258,8 @@ export function useWatchProp<Type, Key extends keyof Type>(target: PropsBase<Typ
 
 class ClassRegistry {
     classByName: Map<string, unknown>
-    defsByName: Map<string, DefList<any>>
-    private namesByClass: Map<any, string>
+    defsByName: Map<string, DefList<unknown>>
+    private namesByClass: Map<unknown, string>
 
     constructor() {
         this.classByName = new Map()
@@ -268,7 +274,7 @@ class ClassRegistry {
         this.namesByClass.set(clazz, name)
     }
 
-    lookupNameForObject(target: PropsBase<any>) {
+    lookupNameForObject<Type>(target: PropsBase<Type>) {
         const clazz = target.constructor
         this.log("checking name", clazz)
         if (this.namesByClass.has(clazz)) {

@@ -18,7 +18,7 @@ function TileReferenceSelector<T>(props:{
     const [tile, setTile] = useState<Tile|undefined>(undefined)
     return<CompactSheetAndTileSelector selectedTile={tile} setSelectedTile={(tile)=>{
         if(tile) {
-            props.target.setPropValue(props.name, tile._id)
+            props.target.setPropValue(props.name, tile.getUUID())
             setTile(tile)
         }
     }}/>
@@ -168,7 +168,7 @@ export function PropSheet<T extends PropsBase<any>>(props: { title?: string, tar
     const header = <header key={'the-header'}>{title ? title : 'props'}</header>
     if (!target) return <div className={'pane'} key={'nothing'}>{header}nothing selected</div>
     const propnames = Array.from(target.getAllPropDefs())
-        .filter(([a, b]) => !b.hidden)
+        .filter(([, b]) => !b.hidden)
     return <div className={'prop-sheet pane'} key={'prop-sheet'}>
         {header}
         {propnames.map(([name, def]) => {

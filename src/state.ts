@@ -7,7 +7,7 @@ import {GameDoc} from "./datamodel"
 type GlobalStateType = {
     doc: GameDoc,
     mode: string,
-    selection: PropsBase<any>,
+    selection: PropsBase<unknown>,
 }
 
 const DocDef:PropDef<GameDoc> = {
@@ -29,12 +29,12 @@ const ModeDef:PropDef<string> = {
     editable: false,
     format: (o) => o,
 }
-const SelectedDef:PropDef<object> = {
+const SelectedDef:PropDef<unknown> = {
     type:'object',
     default: () => null,
-    toJSON: (o) => 'uknown',
+    toJSON: () => 'unknown',
     editable:false,
-    format: (o) => 'unknown',
+    format: () => 'unknown',
 }
 const StateDef:DefList<GlobalStateType> = {
     doc:DocDef,

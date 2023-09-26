@@ -147,6 +147,7 @@ export function make_doc_from_json(raw_data: object):GameDoc {
     if (json_doc.version === 4) {
         return load_v4json(json_doc)
     }
+    throw new Error("cannot load this document")
 }
 
 export function fileToJson(file: File) {

@@ -25,7 +25,7 @@ type TilePreviewOptions = {
     scale:number
 } & ListViewOptions
 
-export const TilePreviewRenderer: ListViewRenderer<Tile> = (props: {
+export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (props: {
     value: Tile,
     selected: boolean,
     options: TilePreviewOptions
@@ -75,7 +75,7 @@ export const TilePreviewRenderer: ListViewRenderer<Tile> = (props: {
     </div>
 }
 
-const SheetPreviewRenderer: ListViewRenderer<Sheet> = (props: {
+const SheetPreviewRenderer: ListViewRenderer<Sheet, never> = (props: {
     value: Sheet,
     selected: boolean,
     options: ListViewOptions,
