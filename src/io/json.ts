@@ -174,7 +174,7 @@ export async function stateToCanvas(state:GlobalState) {
     // just save the first sheet
     const maps = doc.getPropValue('maps')
     if(maps.length > 0) {
-        const can = map_to_canvas(maps[0], doc, 2)
+        const can = map_to_canvas(maps[0], doc, 4)
         return Promise.resolve(can)
     }
 
@@ -198,10 +198,7 @@ export async function savePNGJSON(state: GlobalState) {
 
     const out_buffer = writeMetadata(uint8buffer as Buffer,{ tEXt: { SOURCE:json_string,  } })
     const final_blob = new Blob([out_buffer as BlobPart], {type:'image/png'})
-    // let url = buffer_to_dataurl(out_buffer,"image/png")
-    forceDownloadBlob('final_blob.json.png',final_blob)
-    // let url = buffer_to_dataurl(out_buffer,"image/png")
-    // force_download(url,filename)
+    forceDownloadBlob(state.getPropValue('doc').getPropValue('name')+'.json.png',final_blob)
 }
 
 export type Metadata = {tEXt: {keyword: any, SOURCE:any}}

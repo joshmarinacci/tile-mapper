@@ -4,28 +4,26 @@ import {
     DialogContainer,
     DialogContext,
     DialogContextImpl,
-    PopupContainer,
-    PopupContext,
-    PopupContextImpl,
+    Spacer,
 } from "josh_react_util"
 import React, {useContext, useState} from 'react'
 
 import {
     DocToBMP,
-    DocToPNG,
     LoadFileAction,
     SaveAction,
     SaveLocalStorageAction,
     SavePNGJSONAction
 } from "./actions/actions"
-import {LoadLocalStorageAction, NewDocAction, UploadAction} from "./actions/reactactions"
+import {LoadLocalStorageAction, NewDocAction, UploadPNGJSONAction} from "./actions/reactactions"
 import {ActorEditView} from "./ActorEditView"
 import {
     ActionRegistryContext,
-    DocContext,
+    DocContext, DropdownButton,
     ToolbarActionButton
 } from "./common/common-components"
 import {MainView} from "./common/MainView"
+import {PopupContainer, PopupContext, PopupContextImpl} from "./common/popup"
 import {PropSheet} from "./common/propsheet"
 import {ObjectTreeView} from "./common/treeview"
 import Example from "./example.json"
@@ -80,14 +78,17 @@ function Main2() {
     const toolbar = <div className={'toolbar across'}>
         <button className={'logo'}>Tile-Mapper</button>
         <ToolbarActionButton action={NewDocAction} state={STATE}/>
-        <ToolbarActionButton action={SaveAction} state={STATE}/>
-        <ToolbarActionButton action={LoadFileAction} state={STATE}/>
-        <ToolbarActionButton action={DocToPNG} state={STATE}/>
-        <ToolbarActionButton action={DocToBMP} state={STATE}/>
+        {/*<ToolbarActionButton action={SaveAction} state={STATE}/>*/}
+        {/*<ToolbarActionButton action={LoadFileAction} state={STATE}/>*/}
+        {/*<ToolbarActionButton action={DocToPNG} state={STATE}/>*/}
+        {/*<ToolbarActionButton action={DocToBMP} state={STATE}/>*/}
         <ToolbarActionButton state={STATE} action={LoadLocalStorageAction}/>
         <ToolbarActionButton action={SaveLocalStorageAction} state={STATE}/>
-        <ToolbarActionButton state={STATE} action={SavePNGJSONAction}/>
-        <ToolbarActionButton state={STATE} action={UploadAction}/>
+        <Spacer/>
+        <DropdownButton title={'Export'}>
+            <ToolbarActionButton state={STATE} action={SavePNGJSONAction}/>
+            <ToolbarActionButton state={STATE} action={UploadPNGJSONAction}/>
+        </DropdownButton>
     </div>
     const left_column = <div className={'tree-wrapper pane'} style={{
         alignSelf: 'stretch',

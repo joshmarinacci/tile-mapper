@@ -64,7 +64,7 @@ const StateDef:DefList<GlobalStateType> = {
 }
 export class GlobalState extends PropsBase<GlobalStateType> {
     localStorage: Storage
-    constructor(opts:PropValues<GlobalStateType>) {
+    constructor(opts?:PropValues<GlobalStateType>) {
         super(StateDef)
         if (typeof localStorage !== 'undefined') {
             this.localStorage = localStorage

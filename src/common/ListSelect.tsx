@@ -1,8 +1,9 @@
-import {HBox, PopupContext} from "josh_react_util"
+import {HBox} from "josh_react_util"
 import React, {JSX, MouseEvent,useContext} from "react"
 
 import {down_arrow_triangle} from "./common"
 import {DefaultListViewRenderer, ListViewOptions, ListViewRenderer} from "./ListView"
+import {PopupContext} from "./popup"
 
 function SelectionList<T>(props:{
     data:T[],

@@ -1,6 +1,6 @@
 import "./TileSheetView.css"
 
-import {PopupContext, Spacer, toClass} from "josh_react_util"
+import {Spacer, toClass} from "josh_react_util"
 import {forceDownloadBlob} from "josh_web_util"
 import React, {useContext, useEffect, useRef, useState} from "react"
 
@@ -16,6 +16,7 @@ import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas}
 import {DocContext, DropdownButton, MenuList, Pane} from "../common/common-components"
 import {ListSelect} from "../common/ListSelect"
 import {ListView, ListViewDirection, ListViewOptions, ListViewRenderer} from "../common/ListView"
+import {PopupContext} from "../common/popup"
 import {useWatchProp} from "../model/base"
 import {Sheet, Tile} from "../model/datamodel"
 

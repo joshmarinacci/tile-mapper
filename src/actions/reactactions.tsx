@@ -54,7 +54,7 @@ function UploadButton(props: { state: GlobalState }) {
     return <button onClick={showLoadDialog}>Import doc.JSON.PNG</button>
 }
 
-export const UploadAction: ReactMenuAction = {
+export const UploadPNGJSONAction: ReactMenuAction = {
     type: "react",
     title: "Import Doc",
     makeComponent: (state: GlobalState) => {
