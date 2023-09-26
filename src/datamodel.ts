@@ -12,12 +12,14 @@ export const BooleanDef:PropDef<boolean> = {
     format:(v)=>v?'true':'false',
     toJSON:(v) => v,
     fromJSON:(v) => v as boolean,
+    watchChildren:false,
 }
 export const FloatDef:PropDef<number> = {
     type:'float',
     hidden:false,
     editable:true,
     expandable:false,
+    watchChildren:false,
     default: () => 0.0,
     format:(v)=>v.toFixed(2),
     toJSON:(v) => v,
@@ -28,6 +30,7 @@ export const IntegerDef:PropDef<number> = {
     hidden:false,
     editable:true,
     expandable:false,
+    watchChildren:false,
     default: () => 0,
     format:(v)=>v.toFixed(0),
     toJSON:(v) => v,
@@ -36,6 +39,10 @@ export const IntegerDef:PropDef<number> = {
 export const NameDef: PropDef<string> = {
     type: 'string',
     editable: true,
+    watchChildren:false,
+    hidden: false,
+    expandable: false,
+    fromJSON: (v) => v as string,
     default: () => 'unnamed',
     toJSON: (v: string) => v,
     format: (v) => v,
@@ -43,6 +50,9 @@ export const NameDef: PropDef<string> = {
 export const SizeDef: PropDef<Size> = {
     type:'Size',
     editable:false,
+    hidden: false,
+    expandable: false,
+    watchChildren: false,
     default: () => new Size(10,10),
     toJSON: (v) => v.toJSON(),
     fromJSON: (v) => Size.fromJSON(v as {w:number, h:number}),
@@ -51,6 +61,9 @@ export const SizeDef: PropDef<Size> = {
 export const PointDef: PropDef<Point> = {
     type:'Point',
     editable:false,
+    hidden: false,
+    expandable: false,
+    watchChildren: false,
     default: () => new Point(0,0),
     toJSON: (v) => v.toJSON(),
     fromJSON: (v) => Point.fromJSON(v as{x:number, y:number}),
@@ -60,6 +73,8 @@ export const BoundsDef: PropDef<Bounds> = {
     type:'Bounds',
     editable:false,
     hidden:false,
+    expandable: false,
+    watchChildren: false,
     default: () => new Bounds(0,0,10,10),
     toJSON: (v) => v.toJSON(),
     format: (v) => `${v.w} x ${v.h}`,
@@ -69,6 +84,8 @@ export const EditableBoundsDef: PropDef<Bounds> = {
     type:'Bounds',
     editable:true,
     hidden:false,
+    expandable: false,
+    watchChildren: false,
     default: () => new Bounds(0,0, 16,16),
     toJSON: (v) => v.toJSON(),
     fromJSON: (v) => Bounds.fromJSON(v as {x:number, y:number, w:number, h:number}),
@@ -76,7 +93,10 @@ export const EditableBoundsDef: PropDef<Bounds> = {
 }
 export const PaletteDef: PropDef<ImagePalette> = {
     type:'object',
+    hidden:false,
     editable:false,
+    expandable: false,
+    watchChildren: false,
     default: () => PICO8,
     toJSON: (v) => v,
     format: () => 'unknown',
@@ -86,36 +106,56 @@ export const PaletteDef: PropDef<ImagePalette> = {
 const JumpDef: PropDef<number> = {
     type: 'float',
     editable: true,
+    hidden: false,
+    watchChildren: false,
+    expandable: false,
     default: () => -5,
     toJSON: (v: number) => v,
+    fromJSON: (v) => v as number,
     format: (v) => v.toFixed(2),
 }
 const GravityDef: PropDef<number> = {
     type: 'float',
     editable: true,
+    hidden: false,
+    watchChildren: false,
+    expandable: false,
     default: () => 0.2,
     toJSON: (v) => v,
+    fromJSON: (v) => v as number,
     format: (v) => v.toFixed(2),
 }
 const MoveSpeedDef: PropDef<number> = {
     type: 'float',
     editable: true,
+    hidden: false,
+    watchChildren: false,
+    expandable: false,
     default: () => 0.5,
     toJSON: (v: number) => v,
+    fromJSON: (v) => v as number,
     format: (v) => v.toFixed(2),
 }
 const MaxFallSpeedDef: PropDef<number> = {
     type: 'float',
     editable: true,
+    hidden: false,
+    watchChildren: false,
+    expandable: false,
     default: () => 0.5,
     toJSON: (v: number) => v,
+    fromJSON: (v) => v as number,
     format: (v) => v.toFixed(2),
 }
 const FrictionDef:PropDef<number> = {
     type:"float",
     default: () => 0.99,
     editable:true,
+    hidden: false,
+    watchChildren: false,
+    expandable: false,
     toJSON: (v) => v,
+    fromJSON: (v) => v as number,
     format: (v) => v.toFixed(2),
 }
 export type MapCell = {
@@ -125,8 +165,12 @@ export type MapCell = {
 export const BlockingDef:PropDef<boolean> = {
     type:"boolean",
     editable:true,
+    hidden: false,
+    watchChildren: false,
+    expandable: false,
     default: () => false,
     toJSON: (v) => v,
+    fromJSON: (v) => v as boolean,
     format: (v) => v?'true':'false',
 }
 
@@ -135,6 +179,7 @@ const GenericDataArrayDef: PropDef<object[]> = {
     editable: false,
     default: () => [],
     expandable: false,
+    watchChildren: false,
     format: () => 'unknown',
     toJSON: (v) => v.map(a => {
         if('toJSON' in a) return (a.toJSON() as unknown as object)
@@ -161,8 +206,9 @@ const TileDataDef:PropDef<ArrayGrid<number>> = {
     editable: false,
     expandable: false,
     hidden: true,
+    watchChildren: false,
     default: () => new ArrayGrid<number>(1,1),
-    format: (v) => 'array number data',
+    format: () => 'array number data',
     toJSON: (v):ArrayGridNumberJSON => ({w:v.w, h:v.h, data:v.data}),
     fromJSON:(value) => {
         const v = value as ArrayGridNumberJSON
@@ -277,13 +323,14 @@ const TileArrayDef:PropDef<Tile[]> = {
     type:'array',
     editable:false,
     hidden: true,
+    expandable:false,
+    watchChildren: true,
     default: () => [],
     toJSON: (v) => v.map(t => t.toJSON()),
     format: (v) => "list of tiles",
-    expandable:false,
     fromJSON: (value) => {
-        const v = value as any[]
-        return v.map(d => restoreClassFromJSON(d))
+        const v = value as []
+        return v.map(d => restoreClassFromJSON(d)) as Tile[]
     }
 }
 const SheetDefs:DefList<SheetType> = {
@@ -341,6 +388,7 @@ type ArrayGridMapCellJSON = {
 const TileDataGridDef: PropDef<ArrayGrid<MapCell>> = {
     type: 'object',
     editable: false,
+    watchChildren: false,
     toJSON: (v) => ({
             w:v.w,
             h:v.h,
@@ -510,6 +558,8 @@ const EditableSizeDef: PropDef<Size> = {
     type:'Size',
     editable:true,
     hidden:false,
+    expandable: false,
+    watchChildren: false,
     default: () => new Size(10,10),
     toJSON: (v) => v.toJSON(),
     fromJSON: (v) => Size.fromJSON(v),
@@ -521,9 +571,11 @@ const ViewportDef: PropDef<Size> = {
     type: 'Size',
     editable: true,
     hidden:false,
+    expandable: false,
+    watchChildren: false,
     default: () => new Size(10, 10),
     toJSON: (v: Size) => v.toJSON(),
-    fromJSON: (v) => Size.fromJSON(v),
+    fromJSON: (v) => Size.fromJSON(v as {w:number, h:number}),
     format: (v) => `${v.w} x ${v.h}`,
 }
 type TestType = {
@@ -556,6 +608,7 @@ CLASS_REGISTRY.register('GameTest',GameTest, TestDefs)
 const ActorsListDef: PropDef<Actor[]> = {
     type: 'array',
     editable: false,
+    watchChildren: false,
     default: () => [],
     toJSON: (v) => v.map(actor => actor.toJSON()),
     format: (v) => 'actors list',
@@ -567,6 +620,7 @@ const TestsListDef: PropDef<GameTest[]> = {
     type: 'array',
     editable: false,
     hidden:true,
+    watchChildren: false,
     default: () => [],
     format: (v) => 'tests list',
     toJSON: (v) => v.map(n => n.toJSON()),
@@ -577,6 +631,7 @@ const SheetsListDef: PropDef<Sheet[]> = {
     type: 'array',
     editable: false,
     hidden:true,
+    watchChildren: false,
     default: () => [],
     toJSON: (v) => v.map(sheet => sheet.toJSON()),
     format: (v) => 'sheets list',
@@ -587,6 +642,7 @@ const MapsListDef: PropDef<GameMap[]> = {
     type: 'array',
     editable: false,
     hidden:true,
+    watchChildren: false,
     default: () => [],
     toJSON: (v) => v.map(map => map.toJSON()),
     format: (v) => 'maps list',

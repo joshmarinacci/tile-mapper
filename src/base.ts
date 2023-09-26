@@ -20,11 +20,11 @@ export type PropDef<T> = {
     custom?: 'tile-reference'
     default: Getter<T>,
     toJSON: ToJSONner<T>,
-    fromJSON?: FromJSONner<T>,
+    fromJSON: FromJSONner<T>,
     format: ToFormatString<T>,
-    expandable?: boolean,
-    hidden?: boolean,
-    watchChildren?: boolean,
+    expandable: boolean,
+    hidden: boolean,
+    watchChildren: boolean,
 }
 type WrapperCallback<Value> = (v: Value) => void
 type WrapperAnyCallback<Type> = (t: PropsBase<Type>) => void
