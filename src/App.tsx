@@ -10,7 +10,7 @@ import {
 } from "josh_react_util"
 import React, {useContext, useState} from 'react'
 
-import {DocToBMP, DocToPNG, LoadFileAction, SaveAction} from "./actions"
+import {DocToBMP, DocToPNG, LoadFileAction, SaveAction, SaveLocalStorageAction} from "./actions"
 import {ActorEditView} from "./ActorEditView"
 import {ActionRegistry, PropsBase, useWatchAllProps, useWatchProp} from "./base"
 import {
@@ -24,7 +24,7 @@ import {make_doc_from_json} from "./json"
 import {MainView} from "./MainView"
 import {MapModeView} from "./MapModeView"
 import {PropSheet} from "./propsheet"
-import {NewDocAction} from "./reactactions"
+import {LoadLocalStorageAction,NewDocAction} from "./reactactions"
 import {GlobalState} from "./state"
 import {TestModeView} from "./TestModeView"
 import {TileSheetEditor} from "./TileSheetEditor"
@@ -77,6 +77,8 @@ function Main2() {
         <ToolbarActionButton action={LoadFileAction} state={STATE}/>
         <ToolbarActionButton action={DocToPNG} state={STATE}/>
         <ToolbarActionButton action={DocToBMP} state={STATE}/>
+        <ToolbarActionButton state={STATE} action={LoadLocalStorageAction}/>
+        <ToolbarActionButton action={SaveLocalStorageAction} state={STATE}/>
     </div>
     const left_column = <div className={'tree-wrapper pane'} style={{
         alignSelf: 'stretch',

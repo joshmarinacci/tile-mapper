@@ -4,6 +4,7 @@ import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import {appendToList, PropsBase, SimpleMenuAction} from "./base"
 import {canvas_to_bmp, drawEditableSprite, sheet_to_canvas} from "./common"
 import {ActorLayer, GameDoc, GameMap, MapLayerType, Sheet, Tile, TileLayer} from "./datamodel"
+import {saveLocalStorage} from "./io/local"
 import {docToJSON, fileToJson, jsonObjToBlob, make_doc_from_json} from "./json"
 import {GlobalState} from "./state"
 
@@ -65,6 +66,18 @@ export const LoadFileAction:SimpleMenuAction = {
         state.setPropValue('doc',new_doc)
     }
 }
+
+export const SaveLocalStorageAction:SimpleMenuAction = {
+    type:'simple',
+    // icon:SupportedIcons.SaveDocument,
+    title:'Save',
+    description:'save the document in the browsers internal storage',
+    tags:['save','local'],
+    perform:async(state) => {
+        await saveLocalStorage(state, false)
+    }
+}
+
 
 export function deleteTile(sheet: Sheet, tile: Tile) {
     if (tile) sheet.removeTile(tile)

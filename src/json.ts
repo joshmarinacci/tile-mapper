@@ -47,8 +47,10 @@ export type JSONDocV4 = {
     name: string
 }
 
-type JSONDocV5 = {
-    name: string
+export const TILE_MAPPER_DOCUMENT = 'tile-mapper-document'
+export type JSONDocV5 = {
+    name: string,
+    kind:typeof TILE_MAPPER_DOCUMENT,
     version: 5
     doc: object
 }
@@ -57,6 +59,7 @@ export function docToJSON(doc: GameDoc):JSONDocV5 {
     return {
         version:5,
         name:    doc.getPropValue('name'),
+        kind: TILE_MAPPER_DOCUMENT,
         doc: doc.toJSON(),
     }
 }

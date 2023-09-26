@@ -521,6 +521,8 @@ const ActorDefs:DefList<ActorType> = {
         expandable:false,
         default: () => undefined,
         format:(v) => v?v:'unknown',
+        toJSON:(v) => v,
+        fromJson:(v) => v,
     }
 }
 export class Actor extends PropsBase<ActorType> {

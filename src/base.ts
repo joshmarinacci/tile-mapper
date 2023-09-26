@@ -152,6 +152,7 @@ export class PropsBase<Type> {
             id: this._id,
         }
         for (const [k, d] of this.getAllPropDefs()) {
+            if(!d.toJSON) throw new Error(`prop def for ${k} in class ${clazz} is missing toJSON function`)
             obj.props[k] = d.toJSON(this.getPropValue(k))
         }
         return obj
