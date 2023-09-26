@@ -1,8 +1,12 @@
 import {ArrayGrid, Size} from "josh_js_util"
+import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
+import {map_to_canvas} from "../actions/actions"
 import {PICO8} from "../common/common"
 import {appendToList, restoreClassFromJSON} from "../model/base"
 import {GameDoc, GameMap, MapCell, Sheet, Tile, TileLayer} from "../model/datamodel"
+import {GlobalState} from "../state"
+import {writeMetadata} from "./vendor"
 
 export type JSONSprite = {
     name: string
@@ -165,3 +169,39 @@ export function fileToJson(file: File) {
 }
 
 
+export async function stateToCanvas(state:GlobalState) {
+    const doc = state.getPropValue('doc')
+    // just save the first sheet
+    const maps = doc.getPropValue('maps')
+    if(maps.length > 0) {
+        const can = map_to_canvas(maps[0], doc, 2)
+        return Promise.resolve(can)
+    }
+
+    const canvas = document.createElement('canvas')
+    canvas.width = 256
+    canvas.height = 256
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+    ctx.fillStyle = 'red'
+    ctx.fillRect(0,0,canvas.width,canvas.height)
+    return Promise.resolve(canvas)
+}
+
+export async function savePNGJSON(state: GlobalState) {
+    const canvas = await stateToCanvas(state)
+    const json_obj = docToJSON(state.getPropValue('doc'))
+    const json_string = JSON.stringify(json_obj,null,'    ')
+
+    const blob = await canvas_to_blob(canvas)
+    const array_buffer = await blob.arrayBuffer()
+    const uint8buffer = new Uint8Array(array_buffer)
+
+    const out_buffer = writeMetadata(uint8buffer as Buffer,{ tEXt: { SOURCE:json_string,  } })
+    const final_blob = new Blob([out_buffer as BlobPart], {type:'image/png'})
+    // let url = buffer_to_dataurl(out_buffer,"image/png")
+    forceDownloadBlob('final_blob.json.png',final_blob)
+    // let url = buffer_to_dataurl(out_buffer,"image/png")
+    // force_download(url,filename)
+}
+
+export type Metadata = {tEXt: {keyword: any, SOURCE:any}}

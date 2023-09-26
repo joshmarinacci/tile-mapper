@@ -2,8 +2,17 @@ import {ArrayGrid, Point, Size} from "josh_js_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
 import {canvas_to_bmp, drawEditableSprite, sheet_to_canvas} from "../common/common"
-import {docToJSON, fileToJson, jsonObjToBlob, make_doc_from_json} from "../io/json"
+import {
+    docToJSON,
+    fileToJson,
+    JSONDocV5,
+    jsonObjToBlob,
+    make_doc_from_json,
+    Metadata,
+    savePNGJSON,
+} from "../io/json"
 import {saveLocalStorage} from "../io/local"
+import {readMetadata} from "../io/vendor"
 import {appendToList, PropsBase, SimpleMenuAction} from "../model/base"
 import {ActorLayer, GameDoc, GameMap, MapLayerType, Sheet, Tile, TileLayer} from "../model/datamodel"
 import {GlobalState} from "../state"
@@ -77,6 +86,34 @@ export const SaveLocalStorageAction:SimpleMenuAction = {
         await saveLocalStorage(state, false)
     }
 }
+export const SavePNGJSONAction:SimpleMenuAction = {
+    type:'simple',
+    // icon:SupportedIcons.SaveDocument,
+    title:'Save As doc.JSON.PNG',
+    description:'Save the document as a PNG with the document embedded inside of the PNG as JSON.',
+    tags:['save','export','download','png'],
+    perform:async (state) => {
+        await savePNGJSON(state)
+    },
+}
+
+export async function loadPNGJSON(state:GlobalState, file:File):Promise<GameDoc> {
+    return new Promise((res,rej) => {
+        const reader = new FileReader()
+        reader.addEventListener('load', () => {
+            const buffer = new Uint8Array(reader.result as ArrayBufferLike)
+            const metadata = readMetadata(buffer as Buffer) as unknown as Metadata
+            console.log("metadata is",metadata)
+            if(metadata && metadata.tEXt && metadata.tEXt.SOURCE) {
+                const json = JSON.parse(metadata.tEXt.SOURCE)
+                const obj = make_doc_from_json(json as JSONDocV5)
+                res(obj)
+            }
+        })
+        reader.addEventListener('error', () => rej())
+        reader.readAsArrayBuffer(file)
+    })
+}
 
 
 export function deleteTile(sheet: Sheet, tile: Tile) {
@@ -111,7 +148,7 @@ export function rotateTile90CounterClock(value: Tile) {
     value.setPropValue('data', cloneAndRemap(value.getPropValue('data'), (n: Point, data: ArrayGrid<number>) => data.get_at(data.h - 1 - n.y, n.x)))
 }
 
-function map_to_canvas(map: GameMap, doc: GameDoc, scale: number): HTMLCanvasElement {
+export function map_to_canvas(map: GameMap, doc: GameDoc, scale: number): HTMLCanvasElement {
     const canvas = document.createElement('canvas')
     const mapSize = map.calcBiggestLayer()
     const size = doc.getPropValue('tileSize')

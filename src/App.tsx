@@ -10,8 +10,15 @@ import {
 } from "josh_react_util"
 import React, {useContext, useState} from 'react'
 
-import {DocToBMP, DocToPNG, LoadFileAction, SaveAction, SaveLocalStorageAction} from "./actions/actions"
-import {LoadLocalStorageAction,NewDocAction} from "./actions/reactactions"
+import {
+    DocToBMP,
+    DocToPNG,
+    LoadFileAction,
+    SaveAction,
+    SaveLocalStorageAction,
+    SavePNGJSONAction
+} from "./actions/actions"
+import {LoadLocalStorageAction, NewDocAction, UploadAction} from "./actions/reactactions"
 import {ActorEditView} from "./ActorEditView"
 import {
     ActionRegistryContext,
@@ -79,6 +86,8 @@ function Main2() {
         <ToolbarActionButton action={DocToBMP} state={STATE}/>
         <ToolbarActionButton state={STATE} action={LoadLocalStorageAction}/>
         <ToolbarActionButton action={SaveLocalStorageAction} state={STATE}/>
+        <ToolbarActionButton state={STATE} action={SavePNGJSONAction}/>
+        <ToolbarActionButton state={STATE} action={UploadAction}/>
     </div>
     const left_column = <div className={'tree-wrapper pane'} style={{
         alignSelf: 'stretch',
