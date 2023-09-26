@@ -38,7 +38,8 @@ export function PixelGridEditor(props: {
     const [down, setDown] = useState<boolean>(false)
     const [grid, setGrid] = useState<boolean>(false)
     const [fillOnce, setFillOnce] = useState<boolean>(false)
-    const scale = 25
+    const [zoom, setZoom] = useState<number>(5)
+    const scale = Math.pow(2,zoom)
     const ref = useRef<HTMLCanvasElement>(null)
     const redraw = () => {
         if (ref.current) {
@@ -59,7 +60,7 @@ export function PixelGridEditor(props: {
             }
         }
     }
-    useEffect(() => redraw(), [down, grid])
+    useEffect(() => redraw(), [down, grid, zoom])
     useEffect(() => {
         redraw()
         const hand = () => redraw()
@@ -90,6 +91,15 @@ export function PixelGridEditor(props: {
                 className={toClass({ selected:fillOnce })}
                 onClick={()=>setFillOnce(true)}
             >fill once</button>
+            <button
+                className={toClass({ selected:fillOnce })}
+                onClick={()=>setZoom(zoom+1)}
+            >+</button>
+            <label>{zoom}</label>
+            <button
+                className={toClass({ selected:fillOnce })}
+                onClick={()=>setZoom(zoom-1)}
+            >-</button>
         </HBox>
         <canvas ref={ref}
                 style={{
