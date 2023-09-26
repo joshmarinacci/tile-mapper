@@ -259,17 +259,6 @@ export class Tile extends PropsBase<TileType> {
         return this.getPropValue('data').get(point)
     }
 
-    // toJSONSprite(): JSONSprite {
-    //     return {
-    //         id: this._id,
-    //         name: this.getPropValue('name'),
-    //         w: this.getPropValue('size').w,
-    //         h: this.getPropValue('size').h,
-    //         blocking: this.getPropValue('blocking'),
-    //         data: this.data.data
-    //     }
-    // }
-
     isValidIndex(pt: Point) {
         if (pt.x < 0) return false
         if (pt.y < 0) return false
@@ -671,10 +660,12 @@ const GameDocDefs:DefList<DocType> = {
 }
 export class GameDoc extends PropsBase<DocType> {
     private sprite_lookup: Map<string, Tile>
+    private sprite_lookup_by_name: Map<string, Tile>
 
     constructor(opts?: PropValues<DocType>) {
         super(GameDocDefs, opts)
         this.sprite_lookup = new Map()
+        this.sprite_lookup_by_name = new Map()
     }
 
     lookup_sprite(id: string) {
@@ -691,6 +682,22 @@ export class GameDoc extends PropsBase<DocType> {
         }
         console.log("missing", id)
         return null
+    }
+    lookup_sprite_by_name(name:string):Tile|undefined {
+        if (this.sprite_lookup_by_name.has(name)) return this.sprite_lookup_by_name.get(name)
+        for (const sheet of this.getPropValue('sheets') as Sheet[]) {
+            for (const tile of sheet.getPropValue('tiles') as Tile[]) {
+                if (tile.getPropValue('name') === name) {
+                    // console.log("caching",id,tile.getPropValue('name'), tile.cache_canvas)
+                    tile.rebuild_cache()
+                    this.sprite_lookup.set(tile._id, tile)
+                    this.sprite_lookup_by_name.set(tile.getPropValue('name'),tile)
+                    return tile
+                }
+            }
+        }
+        console.log("missing", name)
+        return undefined
     }
 }
 CLASS_REGISTRY.register('Doc',GameDoc,GameDocDefs)

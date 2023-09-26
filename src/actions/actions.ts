@@ -13,13 +13,13 @@ import {
 } from "../io/json"
 import {saveLocalStorage} from "../io/local"
 import {readMetadata} from "../io/vendor"
-import {appendToList, PropsBase, SimpleMenuAction} from "../model/base"
+import {appendToList, PropsBase, removeFromList, SimpleMenuAction} from "../model/base"
 import {ActorLayer, GameDoc, GameMap, MapLayerType, Sheet, Tile, TileLayer} from "../model/datamodel"
 import {GlobalState} from "../state"
 
-export const SaveAction:SimpleMenuAction = {
+export const ExportToJSONAction:SimpleMenuAction = {
     type: "simple",
-    title: "Save",
+    title: "Export to JSON",
     async perform(state): Promise<void> {
         const doc = state.getPropValue('doc') as GameDoc
         const blob = jsonObjToBlob(docToJSON(doc))
@@ -54,9 +54,9 @@ export const DocToBMP:SimpleMenuAction = {
     }
 }
 
-export const LoadFileAction:SimpleMenuAction = {
+export const ImportFromJSONAction:SimpleMenuAction = {
     type:"simple",
-    title:'load',
+    title:'import plain JSON',
     async perform (state:GlobalState ) {
         const input_element = document.createElement('input')
         input_element.setAttribute('type','file')
@@ -73,6 +73,7 @@ export const LoadFileAction:SimpleMenuAction = {
         })
         console.log('new doc is',new_doc)
         state.setPropValue('doc',new_doc)
+        state.setPropValue('selection',new_doc)
     }
 }
 
@@ -230,4 +231,27 @@ export const move_layer_down = (layer: PropsBase<MapLayerType> | undefined, map:
     layers.splice(n - 1, 0, layer)
     map.setPropValue('layers', layers)
 
+}
+
+export const DeleteSheetAction:SimpleMenuAction = {
+    type:"simple",
+    title:'delete sheet',
+    perform:async (state) => {
+        const sel = state.getPropValue('selection')
+        if(sel instanceof Sheet) {
+            removeFromList(state.getPropValue('doc'),'sheets',sel as Sheet)
+            state.setPropValue('selection',null)
+        }
+    }
+}
+export const DeleteMapAction:SimpleMenuAction = {
+    type:"simple",
+    title:'delete map',
+    perform:async (state) => {
+        const sel = state.getPropValue('selection')
+        if(sel instanceof GameMap) {
+            removeFromList(state.getPropValue('doc'),'maps',sel as GameMap)
+            state.setPropValue('selection',null)
+        }
+    }
 }

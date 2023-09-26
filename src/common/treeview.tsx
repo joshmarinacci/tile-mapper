@@ -2,13 +2,15 @@ import "./treeview.css"
 
 import {Size} from "josh_js_util"
 import {toClass} from "josh_react_util"
-import React, {MouseEvent,useState} from "react"
+import React, {MouseEvent, ReactNode, useContext, useState} from "react"
 
+import {DeleteMapAction, DeleteSheetAction} from "../actions/actions"
 import {appendToList, PropDef, PropsBase, useWatchProp} from "../model/base"
 import {Actor, DocType, GameDoc, GameMap, GameTest, Sheet} from "../model/datamodel"
 import {GlobalState} from "../state"
 import {down_arrow_triangle, right_arrow_triangle} from "./common"
-import {DropdownButton} from "./common-components"
+import {DropdownButton, MenuList, ToolbarActionButton} from "./common-components"
+import {PopupContext} from "./popup"
 
 function PropertyList<T extends DocType, K extends keyof T>(props: {
     target: PropsBase<T>,
@@ -66,8 +68,8 @@ function PropertyList<T extends DocType, K extends keyof T>(props: {
     </li>
 }
 
-export function ObjectTreeView(props: {
-    obj: GameDoc,
+export function ObjectTreeView<T>(props: {
+    obj: PropsBase<T>,
     state: GlobalState,
     selection: unknown
 }) {
@@ -88,8 +90,21 @@ export function ObjectTreeView(props: {
         selected: state.getPropValue('selection') === obj,
     }
     useWatchProp(obj,'name')
+    const pm = useContext(PopupContext)
+    const showContextMenu = (e:React.MouseEvent<HTMLElement>) => {
+        e.preventDefault()
+        select(e)
+        const items:ReactNode[] = []
+        if(obj instanceof Sheet) {
+            items.push(<ToolbarActionButton key={'delete-sheet'} state={state} action={DeleteSheetAction} icon={'trashcan'}/>)
+        }
+        if(obj instanceof GameMap) {
+            items.push(<ToolbarActionButton key={'delete-map'} state={state} action={DeleteMapAction}/>)
+        }
+        pm.show_at(<MenuList>{items}</MenuList>,e.target,"right")
+    }
     return <ul key={obj._id} className={toClass(style)}>
-        <p key={obj._id+'description'} className={'description'} onClick={select}>
+        <p key={obj._id+'description'} className={'description'} onClick={select} onContextMenu={showContextMenu}>
             {obj.getPropValue('name') as string}
         </p>
         {

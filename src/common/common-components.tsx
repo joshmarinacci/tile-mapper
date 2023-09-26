@@ -4,6 +4,7 @@ import React, {ReactNode, useContext, useState} from "react"
 import {ActionRegistry, MenuAction, SimpleMenuAction} from "../model/base"
 import {GameDoc} from "../model/datamodel"
 import {GlobalState} from "../state"
+import {down_arrow_triangle} from "./common"
 import {PopupContext} from "./popup"
 
 export function EditableLabel(props: { onChange: (str: string) => void, value: string }) {
@@ -82,7 +83,7 @@ export function DropdownButton(props: { title:string,     children: ReactNode,
     const pm = useContext(PopupContext)
     return <button onClick={(e)=>{
         pm.show_at(<MenuList>{props.children}</MenuList>,e.target,"right")
-    }}>{props.title}</button>
+    }}>{props.title} {down_arrow_triangle}</button>
 }
 
 export const DocContext = React.createContext(new GameDoc())

@@ -10,8 +10,8 @@ import React, {useContext, useState} from 'react'
 
 import {
     DocToBMP,
-    LoadFileAction,
-    SaveAction,
+    ExportToJSONAction,
+    ImportFromJSONAction,
     SaveLocalStorageAction,
     SavePNGJSONAction
 } from "./actions/actions"
@@ -37,10 +37,10 @@ import {TestModeView} from "./testeditor/TestModeView"
 
 const AR = new ActionRegistry()
 AR.register([
-    SaveAction,
+    ExportToJSONAction,
     DocToBMP,
     DocToBMP,
-    LoadFileAction,
+    ImportFromJSONAction,
     NewDocAction,
 ])
 
@@ -77,17 +77,17 @@ function Main2() {
     useWatchAllProps(STATE, (s) => setSelection(s.getPropValue('selection')))
     const toolbar = <div className={'toolbar across'}>
         <button className={'logo'}>Tile-Mapper</button>
-        <ToolbarActionButton action={NewDocAction} state={STATE}/>
-        {/*<ToolbarActionButton action={SaveAction} state={STATE}/>*/}
-        {/*<ToolbarActionButton action={LoadFileAction} state={STATE}/>*/}
+        <ToolbarActionButton action={NewDocAction} state={STATE} />
         {/*<ToolbarActionButton action={DocToPNG} state={STATE}/>*/}
         {/*<ToolbarActionButton action={DocToBMP} state={STATE}/>*/}
         <ToolbarActionButton state={STATE} action={LoadLocalStorageAction}/>
-        <ToolbarActionButton action={SaveLocalStorageAction} state={STATE}/>
+        <ToolbarActionButton action={SaveLocalStorageAction} state={STATE} icon={'save'}/>
         <Spacer/>
         <DropdownButton title={'Export'}>
             <ToolbarActionButton state={STATE} action={SavePNGJSONAction}/>
             <ToolbarActionButton state={STATE} action={UploadPNGJSONAction}/>
+            <ToolbarActionButton action={ExportToJSONAction} state={STATE}/>
+            <ToolbarActionButton action={ImportFromJSONAction} state={STATE}/>
         </DropdownButton>
     </div>
     const left_column = <div className={'tree-wrapper pane'} style={{

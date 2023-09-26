@@ -334,3 +334,13 @@ export function appendToList<Type, Key extends keyof Type, Value extends Type[Ke
     data.push(value)
     target.setPropValue(key, data as Value)
 }
+
+export function removeFromList<Type, Key extends keyof Type, Value extends Type[Key]>(target:PropsBase<Type>, key: Key, value: Flatten<Value>) {
+    const data = (target.getPropValue(key) as unknown[]).slice()
+    const n = data.indexOf(value)
+    if(n >= 0) {
+        data.splice(n,1)
+    }
+    target.setPropValue(key, data as Value)
+}
+

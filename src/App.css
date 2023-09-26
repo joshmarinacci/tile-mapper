@@ -4,13 +4,14 @@ body {
     --pane-border: #444;
     font-size: 10pt;
     font-family: sans-serif;
-    padding:0;
-    margin:0;
+    padding: 0;
+    margin: 0;
 }
 
 .editor-view {
     border: 0px solid black;
 }
+
 .across {
     grid-column-start: 1;
     grid-column-end: 4;
@@ -23,6 +24,7 @@ body {
     /*max-width: 20rem;*/
     border-width: 0 1px 1px 0;
 }
+
 .pane header {
     background-color: #333333;
     color: white;
@@ -48,24 +50,31 @@ button, label {
     box-sizing: border-box;
     padding: 0.25rem 0.5rem;
 }
+
 button {
-  border: 1px solid #333;
-  background: #ddd;
-  color: #333;
+    border: 1px solid #333;
+    background: #ddd;
+    color: #333;
+    white-space: nowrap;
 }
+
 button:hover {
-  background: #fff;
+    background: #fff;
 }
+
 button.selected {
-  background: var(--selected-background-color);
-  color: #333;
+    background: var(--selected-background-color);
+    color: #333;
 }
+
 button.selected:hover {
-  background: aquamarine;
+    background: aquamarine;
 }
+
 button.selected:active {
-  background: #fff;
+    background: #fff;
 }
+
 button:disabled {
     background: #aaa;
     color: #999;
@@ -86,20 +95,22 @@ button:disabled {
     border-width: 0px 1px 1px 0px;
     align-items: center;
 }
+
 .toolbar > * {
     border-width: 0px 1px 0px 0px;
 }
 
 .standard-form {
-  border: 0px solid red;
-  display: grid;
-  grid-template-columns: 1fr 2fr;
-  justify-content: center;
-  align-items: baseline;
+    border: 0px solid red;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    justify-content: center;
+    align-items: baseline;
 }
+
 .standard-form label {
-  justify-self: end;
-  padding-right: 1rem;
+    justify-self: end;
+    padding-right: 1rem;
 }
 
 

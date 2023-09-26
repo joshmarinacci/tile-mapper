@@ -13,7 +13,12 @@ import {
     rotateTile90CounterClock
 } from "../actions/actions"
 import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "../common/common"
-import {DocContext, DropdownButton, MenuList, Pane} from "../common/common-components"
+import {
+    DocContext,
+    DropdownButton,
+    MenuList,
+    Pane
+} from "../common/common-components"
 import {ListSelect} from "../common/ListSelect"
 import {ListView, ListViewDirection, ListViewOptions, ListViewRenderer} from "../common/ListView"
 import {PopupContext} from "../common/popup"
