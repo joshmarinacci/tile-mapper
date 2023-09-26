@@ -32,6 +32,12 @@ type WrapperAnyCallback<Type> = (t: Type) => void
 
 export type DefList<Type> = Record<keyof Type, PropDef<Type[keyof Type]>>
 export type PropValues<Type> = Partial<Record<keyof Type, Type[keyof Type]>>
+// export type ExcludeNonArrayValue<T> = {[K in keyof T as T[K] extends Array<infer Item> ? K : never]: T[K] }
+// export type ExcludeNonArrayValue<T> = {[K in keyof T as T[K] extends readonly unknown[] ? K : never]: T[K] }
+// export type ArrayElement<ArrayType extends readonly unknown[]> =
+//     ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
+// type ArrayElementType<ArrayType extends Array> = ArrayType[number];
+type Flatten<Type> = Type extends Array<infer Item> ? Item : never;
 
 export class PropsBase<Type> {
     _id: UUID
@@ -313,8 +319,11 @@ export function restoreClassFromJSON<Type>(json: JsonOut<Type>): PropsBase<Type>
     return obj
 }
 
-export function appendToList<Type, Key extends keyof Type>(target: PropsBase<Type>, key: Key, value: Type[keyof Type]) {
+export function appendToList<Type, Key extends keyof Type, Value extends Type[Key]>(
+    target: PropsBase<Type>,
+    key: Key,
+    value: Flatten<Value>) {
     const data = (target.getPropValue(key) as unknown[]).slice()
     data.push(value)
-    target.setPropValue(key, data as Type[keyof Type])
+    target.setPropValue(key, data as Value)
 }

@@ -416,9 +416,9 @@ CLASS_REGISTRY.register('ActorLayer',ActorLayer, ActorLayerDefs)
 
 type GameMapType = {
     name: string,
-    layers: PropsBase<MapLayerType>[]
+    layers: PropsBase<any>[]
 }
-const LayerListDef:PropDef<PropsBase<MapLayerType>[]> = {
+const LayerListDef:PropDef<PropsBase<any>[]> = {
     type:"array",
     editable:false,
     expandable: false,
