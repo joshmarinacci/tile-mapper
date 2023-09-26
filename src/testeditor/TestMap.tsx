@@ -1,8 +1,8 @@
 import {ArrayGrid, Point} from "josh_js_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {drawEditableSprite} from "./common"
-import {Tile} from "./datamodel"
+import {drawEditableSprite} from "../common/common"
+import {Tile} from "../model/datamodel"
 
 export function TestMap(props: { tile: Tile|null, mapArray: ArrayGrid<Tile> }) {
     const {tile, mapArray} = props

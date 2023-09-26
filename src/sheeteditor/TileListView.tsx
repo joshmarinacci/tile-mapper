@@ -11,13 +11,13 @@ import {
     flipTileAroundVertical,
     rotateTile90Clock,
     rotateTile90CounterClock
-} from "./actions"
-import {useWatchProp} from "./base"
-import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "./common"
-import {DocContext, DropdownButton, MenuList, Pane} from "./common-components"
-import {Sheet, Tile} from "./datamodel"
-import {ListSelect} from "./ListSelect"
-import {ListView, ListViewDirection, ListViewOptions, ListViewRenderer} from "./ListView"
+} from "../actions/actions"
+import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "../common/common"
+import {DocContext, DropdownButton, MenuList, Pane} from "../common/common-components"
+import {ListSelect} from "../common/ListSelect"
+import {ListView, ListViewDirection, ListViewOptions, ListViewRenderer} from "../common/ListView"
+import {useWatchProp} from "../model/base"
+import {Sheet, Tile} from "../model/datamodel"
 
 type TilePreviewOptions = {
     sheet:Sheet,

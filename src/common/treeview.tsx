@@ -4,11 +4,11 @@ import {Size} from "josh_js_util"
 import {toClass} from "josh_react_util"
 import React, {MouseEvent,useState} from "react"
 
-import {appendToList, PropDef, PropsBase, useWatchProp} from "./base"
+import {appendToList, PropDef, PropsBase, useWatchProp} from "../model/base"
+import {Actor, DocType, GameDoc, GameMap, GameTest, Sheet} from "../model/datamodel"
+import {GlobalState} from "../state"
 import {down_arrow_triangle, right_arrow_triangle} from "./common"
 import {DropdownButton} from "./common-components"
-import {Actor, DocType, GameDoc, GameMap, GameTest, Sheet} from "./datamodel"
-import {GlobalState} from "./state"
 
 function PropertyList<T extends DocType, K extends keyof T>(props: {
     target: PropsBase<T>,

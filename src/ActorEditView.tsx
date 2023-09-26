@@ -1,6 +1,6 @@
 import React from "react"
 
-import {Actor} from "./datamodel"
+import {Actor} from "./model/datamodel"
 import {GlobalState} from "./state"
 
 export function ActorEditView(props: {

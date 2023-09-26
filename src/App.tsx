@@ -10,25 +10,25 @@ import {
 } from "josh_react_util"
 import React, {useContext, useState} from 'react'
 
-import {DocToBMP, DocToPNG, LoadFileAction, SaveAction, SaveLocalStorageAction} from "./actions"
+import {DocToBMP, DocToPNG, LoadFileAction, SaveAction, SaveLocalStorageAction} from "./actions/actions"
+import {LoadLocalStorageAction,NewDocAction} from "./actions/reactactions"
 import {ActorEditView} from "./ActorEditView"
-import {ActionRegistry, PropsBase, useWatchAllProps, useWatchProp} from "./base"
 import {
     ActionRegistryContext,
     DocContext,
     ToolbarActionButton
-} from "./common-components"
-import {Actor, GameDoc, GameMap, GameTest, Sheet} from "./datamodel"
+} from "./common/common-components"
+import {MainView} from "./common/MainView"
+import {PropSheet} from "./common/propsheet"
+import {ObjectTreeView} from "./common/treeview"
 import Example from "./example.json"
-import {make_doc_from_json} from "./json"
-import {MainView} from "./MainView"
-import {MapModeView} from "./MapModeView"
-import {PropSheet} from "./propsheet"
-import {LoadLocalStorageAction,NewDocAction} from "./reactactions"
+import {make_doc_from_json} from "./io/json"
+import {MapModeView} from "./mapeditor/MapModeView"
+import {ActionRegistry, PropsBase, useWatchAllProps, useWatchProp} from "./model/base"
+import {Actor, GameDoc, GameMap, GameTest, Sheet} from "./model/datamodel"
+import {TileSheetEditor} from "./sheeteditor/TileSheetEditor"
 import {GlobalState} from "./state"
-import {TestModeView} from "./TestModeView"
-import {TileSheetEditor} from "./TileSheetEditor"
-import {ObjectTreeView} from "./treeview"
+import {TestModeView} from "./testeditor/TestModeView"
 
 const AR = new ActionRegistry()
 AR.register([

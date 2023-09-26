@@ -2,8 +2,8 @@ import {ArrayGrid, Point} from "josh_js_util"
 import {toClass} from "josh_react_util"
 import React from "react"
 
-import {drawEditableSprite} from "../common"
-import {GameDoc, MapCell, TileLayer} from "../datamodel"
+import {drawEditableSprite} from "../common/common"
+import {GameDoc, MapCell, TileLayer} from "../model/datamodel"
 import {DrawArgs, MouseEventArgs, MouseHandler} from "./editorbase"
 
 function calculateDirections() {

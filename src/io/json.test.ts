@@ -1,13 +1,9 @@
 import {Point, Size} from "josh_js_util"
 import {describe, expect, it} from "vitest"
 
-import {appendToList, CLASS_REGISTRY, restoreClassFromJSON} from "./base"
-import {
-    Actor, Map2,
-    Sheet2,
-    Tile2, TileLayer2,
-} from "./data2"
-import {PICO8} from "./model"
+import {PICO8} from "../common/common"
+import {appendToList, CLASS_REGISTRY, restoreClassFromJSON} from "../model/base"
+import {Actor, GameMap, Sheet, Tile, TileLayer} from "../model/datamodel"
 
 function log(...args: unknown[]) {
     console.log("JSON TEST",...args)
@@ -16,7 +12,7 @@ function log(...args: unknown[]) {
 describe('simple test', () => {
 
     it('should save a tile class', async () => {
-        const tile = new Tile2({
+        const tile = new Tile({
             name:'my cool tile',
             size: new Size(4,3),
             blocking: true,
@@ -58,11 +54,11 @@ describe('simple test', () => {
         expect(actor._id).toBe(actor2._id)
     })
     it('should save a sheet class', async () => {
-        const tile = new Tile2({name:'sky',palette:PICO8,size:new Size(4,4)})
+        const tile = new Tile({name:'sky',palette:PICO8,size:new Size(4,4)})
         tile.setPixel(3,new Point(2,2))
         console.log(CLASS_REGISTRY)
 
-        const sheet = new Sheet2({name:'terrain',tileSize: new Size(4,4)})
+        const sheet = new Sheet({name:'terrain',tileSize: new Size(4,4)})
         appendToList(sheet,'tiles',tile)
         expect(sheet.getPropValue('tiles').length).toBe(1)
         expect(sheet.getPropValue('tiles')[0].getPropValue('name')).toBe('sky')
@@ -75,7 +71,7 @@ describe('simple test', () => {
         expect(json.props.name).toBe('terrain')
         expect(json.props.tiles.length).toBe(1)
         expect(json.props.tiles[0].props.name).toBe('sky')
-        expect(json.props.tiles[0]['class']).toBe('Tile2')
+        expect(json.props.tiles[0]['class']).toBe('Tile')
 
         const sheet2 = restoreClassFromJSON(json)
         console.log("tiles is",sheet2.getPropValue('tiles'))
@@ -87,7 +83,7 @@ describe('simple test', () => {
 
     })
     it('should save a tile layer', async () => {
-        const layer1 = new TileLayer2({
+        const layer1 = new TileLayer({
             type:'tile-layer',
             name:'first layer',
             size: new Size(2,2),
@@ -99,7 +95,7 @@ describe('simple test', () => {
         expect(layer1.getPropValue('data').get_at(1,1)).toStrictEqual({tile:'foo'})
         const json = layer1.toJSON()
         // log(json.props['data'])
-        expect(json.class).toBe('TileLayer2')
+        expect(json.class).toBe('TileLayer')
         expect(json.props['data']).toBeTruthy()
         expect(json.props['data'].w).toBe(2)
         expect(json.props['data']['data']).toBeTruthy()
@@ -119,8 +115,8 @@ describe('simple test', () => {
 
     })
     it('should save a map with a tile layer', async () => {
-        const map1 =new Map2({name:'my map'})
-        const layer1 = new TileLayer2({
+        const map1 =new GameMap({name:'my map'})
+        const layer1 = new TileLayer({
             type:'tile-layer',
             name:'first layer',
             size: new Size(2,2),
@@ -147,8 +143,8 @@ describe('simple test', () => {
         log(map2)
         expect(map2.getPropValue('name')).toBe('my map')
         expect(map2.getPropValue('layers').length).toBe(1)
-        expect(map2.getPropValue('layers')[0] instanceof TileLayer2).toBeTruthy()
-        const layer2 = map2.getPropValue('layers')[0] as TileLayer2
+        expect(map2.getPropValue('layers')[0] instanceof TileLayer).toBeTruthy()
+        const layer2 = map2.getPropValue('layers')[0] as TileLayer
         expect(layer2.getPropValue('name')).toBe('first layer')
         expect(layer2.getPropValue('blocking')).toBe(false)
         expect(layer2.getPropValue('data').w).toBe(2)

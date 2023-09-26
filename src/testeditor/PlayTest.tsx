@@ -1,14 +1,14 @@
 import {ArrayGrid, Size} from "josh_js_util"
 import React, {useEffect, useRef, useState} from "react"
 
-import {useWatchAllProps} from "./base"
-import {GameDoc, GameMap, GameTest, MapCell,TileLayer} from "./datamodel"
-import {ActorsLayer} from "./engine/actorslayer"
-import {TileCache} from "./engine/cache"
-import {GameState} from "./engine/gamestate"
-import {TileReference} from "./engine/globals"
-import {PhysicsConstants} from "./engine/physics"
-import {TilemapLayer} from "./engine/tilemaplayer"
+import {ActorsLayer} from "../engine/actorslayer"
+import {TileCache} from "../engine/cache"
+import {GameState} from "../engine/gamestate"
+import {TileReference} from "../engine/globals"
+import {PhysicsConstants} from "../engine/physics"
+import {TilemapLayer} from "../engine/tilemaplayer"
+import {useWatchAllProps} from "../model/base"
+import {GameDoc, GameMap, GameTest, MapCell,TileLayer} from "../model/datamodel"
 
 function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMap, size:Size, physicsDebug:boolean) {
     const gamestate = new GameState(current, size)

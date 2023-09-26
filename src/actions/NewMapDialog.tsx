@@ -2,8 +2,8 @@ import {Size} from "josh_js_util"
 import {DialogContext} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
-import {appendToList} from "./base"
-import {GameMap, TileLayer} from "./datamodel"
+import {appendToList} from "../model/base"
+import {GameMap, TileLayer} from "../model/datamodel"
 
 
 export function NewMapDialog(props: { onComplete: (map: GameMap) => void }) {

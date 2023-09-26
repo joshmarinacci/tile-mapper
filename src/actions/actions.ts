@@ -1,12 +1,12 @@
 import {ArrayGrid, Point, Size} from "josh_js_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
-import {appendToList, PropsBase, SimpleMenuAction} from "./base"
-import {canvas_to_bmp, drawEditableSprite, sheet_to_canvas} from "./common"
-import {ActorLayer, GameDoc, GameMap, MapLayerType, Sheet, Tile, TileLayer} from "./datamodel"
-import {saveLocalStorage} from "./io/local"
-import {docToJSON, fileToJson, jsonObjToBlob, make_doc_from_json} from "./json"
-import {GlobalState} from "./state"
+import {canvas_to_bmp, drawEditableSprite, sheet_to_canvas} from "../common/common"
+import {docToJSON, fileToJson, jsonObjToBlob, make_doc_from_json} from "../io/json"
+import {saveLocalStorage} from "../io/local"
+import {appendToList, PropsBase, SimpleMenuAction} from "../model/base"
+import {ActorLayer, GameDoc, GameMap, MapLayerType, Sheet, Tile, TileLayer} from "../model/datamodel"
+import {GlobalState} from "../state"
 
 export const SaveAction:SimpleMenuAction = {
     type: "simple",

@@ -2,7 +2,7 @@ import {ArrayGrid, Size} from "josh_js_util"
 import {DialogContext} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
-import {MapCell, TileLayer} from "./datamodel"
+import {MapCell, TileLayer} from "../model/datamodel"
 
 enum ArrayGridResizeAlignment {
     UPPER_LEFT,

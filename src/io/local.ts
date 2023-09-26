@@ -1,8 +1,8 @@
 import {make_logger, Size} from "josh_js_util"
 
-import {GameDoc} from "../datamodel"
-import {docToJSON, JSONDocV5, make_doc_from_json, TILE_MAPPER_DOCUMENT} from "../json"
+import {GameDoc} from "../model/datamodel"
 import {GlobalState} from "../state"
+import {docToJSON, JSONDocV5, make_doc_from_json, TILE_MAPPER_DOCUMENT} from "./json"
 
 export type JSONDocReference = {
     uuid:string,

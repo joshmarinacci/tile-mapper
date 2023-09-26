@@ -3,9 +3,9 @@ import "./TestView.css"
 import {HBox} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
-import {DocContext} from "./common-components"
-import {GameMap, GameTest} from "./datamodel"
-import {GlobalState} from "./state"
+import {DocContext} from "../common/common-components"
+import {GameMap, GameTest} from "../model/datamodel"
+import {GlobalState} from "../state"
 import {TestMapPlayer} from "./TestMapPlayer"
 
 

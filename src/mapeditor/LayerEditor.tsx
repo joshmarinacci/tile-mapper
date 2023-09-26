@@ -1,13 +1,13 @@
-import "../MapEditor.css"
+import "./MapEditor.css"
 
 import {Point} from "josh_js_util"
 import {Spacer} from "josh_react_util"
 import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
 
-import {exportPNG} from "../actions"
-import {PropsBase, useWatchAllProps, useWatchProp} from "../base"
-import {DocContext} from "../common-components"
-import {ActorInstance, ActorLayer, GameMap, MapLayerType, Tile, TileLayer} from "../datamodel"
+import {exportPNG} from "../actions/actions"
+import {DocContext} from "../common/common-components"
+import {PropsBase, useWatchAllProps, useWatchProp} from "../model/base"
+import {ActorInstance, ActorLayer, GameMap, MapLayerType, Tile, TileLayer} from "../model/datamodel"
 import {ActorLayerMouseHandler, ActorLayerToolbar, drawActorlayer,} from "./ActorEditor"
 import {MouseHandler} from "./editorbase"
 import {drawTileLayer, TileLayerMouseHandler, TileLayerToolbar} from "./TileEditor"

@@ -1,7 +1,7 @@
 import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
 
+import {drawEditableSprite, ImagePalette, PICO8} from "../common/common"
 import {CLASS_REGISTRY, DefList, PropDef, PropsBase, PropValues, restoreClassFromJSON} from "./base"
-import {drawEditableSprite, ImagePalette, PICO8} from "./common"
 
 export const BooleanDef:PropDef<boolean> = {
     type:'boolean',

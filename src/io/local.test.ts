@@ -1,9 +1,9 @@
 import {describe, expect, it} from "vitest"
 
-import {appendToList} from "../base"
-import {Sheet, Tile} from "../datamodel"
-import {docToJSON} from "../json"
+import {appendToList} from "../model/base"
+import {Sheet, Tile} from "../model/datamodel"
 import {GlobalState} from "../state"
+import {docToJSON} from "./json"
 import {deleteLocalDoc, listLocalDocs, loadLocalDoc, saveLocalStorage} from "./local"
 
 class FakeLocalStorage implements Storage{
@@ -25,7 +25,7 @@ class FakeLocalStorage implements Storage{
     }
 
     key(index: number): string | null {
-        return undefined
+        return null
     }
 
     removeItem(key: string): void {

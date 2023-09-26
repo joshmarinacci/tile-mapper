@@ -3,14 +3,14 @@ import "./MapEditor.css"
 import {HBox} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
-import {PropsBase} from "./base"
-import {DocContext} from "./common-components"
-import {GameMap, MapLayerType, Sheet, Tile} from "./datamodel"
-import {LayerEditor} from "./editor/LayerEditor"
+import {DocContext} from "../common/common-components"
+import {PropSheet} from "../common/propsheet"
+import {PropsBase} from "../model/base"
+import {GameMap, MapLayerType, Sheet, Tile} from "../model/datamodel"
+import {CompactSheetAndTileSelector} from "../sheeteditor/TileListView"
+import {GlobalState} from "../state"
+import {LayerEditor} from "./LayerEditor"
 import {LayerList} from "./LayerList"
-import {PropSheet} from "./propsheet"
-import {GlobalState} from "./state"
-import {CompactSheetAndTileSelector} from "./TileListView"
 
 export function MapModeView(props: {
     state: GlobalState,

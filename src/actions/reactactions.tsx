@@ -1,10 +1,10 @@
 import {DialogContext} from "josh_react_util"
 import {useContext} from "react"
 
-import {ReactMenuAction} from "./common-components"
-import {ListFilesDialog} from "./io/ListFilesDialog"
+import {ReactMenuAction} from "../common/common-components"
+import {ListFilesDialog} from "../io/ListFilesDialog"
+import {GlobalState} from "../state"
 import {NewDocDialog} from "./NewDocDialog"
-import {GlobalState} from "./state"
 
 
 function NewDocButton(props:{state:GlobalState}) {

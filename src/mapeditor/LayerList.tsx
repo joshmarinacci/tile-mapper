@@ -7,10 +7,10 @@ import {
     delete_layer,
     move_layer_down,
     move_layer_up
-} from "./actions"
-import {PropsBase, useWatchProp} from "./base"
-import {GameMap, MapLayerType, TileLayer} from "./datamodel"
-import {ListView, ListViewDirection, ListViewOptions, ListViewRenderer} from "./ListView"
+} from "../actions/actions"
+import {ListView, ListViewDirection, ListViewOptions, ListViewRenderer} from "../common/ListView"
+import {PropsBase, useWatchProp} from "../model/base"
+import {GameMap, MapLayerType, TileLayer} from "../model/datamodel"
 import {ResizeLayerDialog} from "./ResizeLayerDialog"
 
 const LayerNameRenderer: ListViewRenderer<PropsBase<MapLayerType>> = (props: {

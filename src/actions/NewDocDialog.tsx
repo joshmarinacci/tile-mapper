@@ -2,13 +2,13 @@ import {Size} from "josh_js_util"
 import {DialogContext} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
-import {appendToList} from "./base"
 import {
     ImagePalette,
     MINECRAFT,
     PICO8
-} from "./common"
-import {GameDoc, Sheet, Tile} from "./datamodel"
+} from "../common/common"
+import {appendToList} from "../model/base"
+import {GameDoc, Sheet, Tile} from "../model/datamodel"
 
 function make_new_doc(width: number, height: number, palette:ImagePalette) {
     const TS = new Size(width,height)

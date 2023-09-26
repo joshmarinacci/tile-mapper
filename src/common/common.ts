@@ -1,7 +1,7 @@
 import bmp, {BitsPerPixel, IImage} from "@wokwi/bmp-ts"
 import {ArrayGrid, Point} from "josh_js_util"
 
-import {Sheet, Tile} from "./datamodel"
+import {Sheet, Tile} from "../model/datamodel"
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

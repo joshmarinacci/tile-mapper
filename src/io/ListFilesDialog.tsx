@@ -1,9 +1,9 @@
 import {DialogContext, Spacer} from "josh_react_util"
 import React, {useContext, useEffect, useState} from "react"
 
-import {TILE_MAPPER_DOCUMENT} from "../json"
-import {ListView, ListViewDirection, ListViewRenderer} from "../ListView"
+import {ListView, ListViewDirection, ListViewRenderer} from "../common/ListView"
 import {GlobalState} from "../state"
+import {TILE_MAPPER_DOCUMENT} from "./json"
 import {deleteLocalDoc, JSONDocReference, listLocalDocs, loadLocalDoc} from "./local"
 
 

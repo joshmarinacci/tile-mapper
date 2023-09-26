@@ -1,7 +1,7 @@
 import {genId} from "josh_js_util"
 import {useEffect, useState} from "react"
 
-import {GlobalState} from "./state"
+import {GlobalState} from "../state"
 
 export type UUID = string
 export type Getter<T> = () => T;

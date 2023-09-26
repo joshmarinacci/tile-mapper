@@ -4,11 +4,11 @@ import {Bounds, Size} from "josh_js_util"
 import {HBox, PopupContext} from "josh_react_util"
 import React, {useContext, useEffect, useRef, useState} from "react"
 
-import {PropDef, PropsBase, useWatchProp} from "./base"
+import {PropDef, PropsBase, useWatchProp} from "../model/base"
+import {Tile} from "../model/datamodel"
+import {CompactSheetAndTileSelector} from "../sheeteditor/TileListView"
 import {drawEditableSprite} from "./common"
 import {DocContext} from "./common-components"
-import {Tile} from "./datamodel"
-import {CompactSheetAndTileSelector} from "./TileListView"
 
 function TileReferenceSelector<T>(props:{
     def: PropDef<T[keyof T]>,

@@ -1,9 +1,9 @@
 import {PopupContext, toClass} from "josh_react_util"
 import React, {ReactNode, useContext, useState} from "react"
 
-import {ActionRegistry, MenuAction, SimpleMenuAction} from "./base"
-import {GameDoc} from "./datamodel"
-import {GlobalState} from "./state"
+import {ActionRegistry, MenuAction, SimpleMenuAction} from "../model/base"
+import {GameDoc} from "../model/datamodel"
+import {GlobalState} from "../state"
 
 export function EditableLabel(props: { onChange: (str: string) => void, value: string }) {
     const [editing, setEditing] = useState(false)

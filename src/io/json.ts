@@ -1,8 +1,8 @@
 import {ArrayGrid, Size} from "josh_js_util"
 
-import {appendToList, restoreClassFromJSON} from "./base"
-import {PICO8} from "./common"
-import {GameDoc, GameMap, MapCell, Sheet, Tile, TileLayer} from "./datamodel"
+import {PICO8} from "../common/common"
+import {appendToList, restoreClassFromJSON} from "../model/base"
+import {GameDoc, GameMap, MapCell, Sheet, Tile, TileLayer} from "../model/datamodel"
 
 export type JSONSprite = {
     name: string

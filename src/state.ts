@@ -1,8 +1,8 @@
 import {Size} from "josh_js_util"
 
-import {DefList, PropDef, PropsBase, PropValues} from "./base"
-import {PICO8} from "./common"
-import {GameDoc} from "./datamodel"
+import {PICO8} from "./common/common"
+import {DefList, PropDef, PropsBase, PropValues} from "./model/base"
+import {GameDoc} from "./model/datamodel"
 
 type GlobalStateType = {
     doc: GameDoc,
