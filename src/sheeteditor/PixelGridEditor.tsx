@@ -2,7 +2,8 @@ import {Point} from "josh_js_util"
 import {HBox, toClass} from "josh_react_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {ImagePalette} from "../common/common"
+import {Icons, ImagePalette} from "../common/common"
+import {Icon} from "../common/common-components"
 import {ICON_CACHE} from "../iconcache"
 import {Tile} from "../model/datamodel"
 
@@ -93,7 +94,7 @@ export function PixelGridEditor(props: {
             <button
                 className={toClass({ selected:fillOnce })}
                 onClick={()=>setFillOnce(true)}
-            >fill once</button>
+            ><Icon name={Icons.PaintBucket}/></button>
             <button
                 className={toClass({ selected:fillOnce })}
                 onClick={()=>setZoom(zoom+1)}

@@ -149,5 +149,7 @@ export enum Icons {
     Resize='resize',
     EyeOpen='eye-open',
     EyeClosed='eye-closed',
+    Checkerboard='checkerboard',
+    PaintBucket='paint-bucket',
 }
 

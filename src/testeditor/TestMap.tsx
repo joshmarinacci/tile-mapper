@@ -1,7 +1,8 @@
 import {ArrayGrid, Point} from "josh_js_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
-import {drawEditableSprite} from "../common/common"
+import {drawEditableSprite, Icons} from "../common/common"
+import {ICON_CACHE} from "../iconcache"
 import {Tile} from "../model/datamodel"
 
 export function TestMap(props: { tile: Tile|null, mapArray: ArrayGrid<Tile> }) {
@@ -16,7 +17,7 @@ export function TestMap(props: { tile: Tile|null, mapArray: ArrayGrid<Tile> }) {
         if (ref.current) {
             const canvas = ref.current
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-            ctx.fillStyle = 'red'
+            ctx.fillStyle = ctx.createPattern(ICON_CACHE.getIconCanvas(Icons.Checkerboard),'repeat') as CanvasPattern
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             mapArray.forEach((v, n) => {
                 if (v) {
