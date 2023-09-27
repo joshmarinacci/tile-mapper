@@ -27,31 +27,31 @@ export function EditableLabel(props: { onChange: (str: string) => void, value: s
     }
 }
 
-function ToggleButton<T>(props: {
-    value: T,
-    selected: T,
-    children: ReactNode,
-    onSelect: (value: T) => void
-}) {
-    return <button className={toClass({
-        selected: props.value === props.selected
-    })}
-                   onClick={() => props.onSelect(props.value)}
-    >{props.children}</button>
-}
+// function ToggleButton<T>(props: {
+//     value: T,
+//     selected: T,
+//     children: ReactNode,
+//     onSelect: (value: T) => void
+// }) {
+//     return <button className={toClass({
+//         selected: props.value === props.selected
+//     })}
+//                    onClick={() => props.onSelect(props.value)}
+//     >{props.children}</button>
+// }
 
-export function ToggleButtonSet<T>(props: {
-    values: T[],
-    selected: T,
-    onSelect: (mode: T) => void
-}) {
-    return <>
-        {props.values.map(val => {
-            return <ToggleButton value={val} selected={props.selected}
-                                 onSelect={props.onSelect}>{""+val}</ToggleButton>
-        })}
-    </>
-}
+// export function ToggleButtonSet<T>(props: {
+//     values: T[],
+//     selected: T,
+//     onSelect: (mode: T) => void
+// }) {
+//     return <>
+//         {props.values.map(val => {
+//             return <ToggleButton value={val} selected={props.selected}
+//                                  onSelect={props.onSelect}>{""+val}</ToggleButton>
+//         })}
+//     </>
+// }
 const AR = new ActionRegistry()
 export const ActionRegistryContext =  React.createContext(AR)
 
@@ -105,4 +105,27 @@ export function Icon(props:{name:Icons}) {
     return <img src={ICON_CACHE.getIconUrl(props.name)} width={16} style={{
         imageRendering:'pixelated'
     }}/>
+}
+
+export function ToggleButton(props: {
+    onClick: () => void,
+    icon: Icons,
+    selected: boolean,
+    text?: string,
+}) {
+    return <button onClick={props.onClick}
+                   className={toClass({
+                       selected: props.selected
+                   })}
+    >
+        {props.text ? props.text : ""}
+        <Icon name={props.icon}/>
+    </button>
+}
+
+export function IconButton(props: { onClick: () => void, icon: Icons, text?: string }) {
+    return <button onClick={props.onClick}>
+        {props.text ? props.text : ""}
+        <Icon name={props.icon}/>
+    </button>
 }

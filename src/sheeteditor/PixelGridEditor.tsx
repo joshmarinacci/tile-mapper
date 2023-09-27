@@ -1,9 +1,9 @@
 import {Point} from "josh_js_util"
-import {HBox, toClass} from "josh_react_util"
+import {HBox} from "josh_react_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
 import {Icons, ImagePalette} from "../common/common"
-import {Icon} from "../common/common-components"
+import {IconButton, ToggleButton} from "../common/common-components"
 import {ICON_CACHE} from "../iconcache"
 import {Tile} from "../model/datamodel"
 
@@ -87,23 +87,11 @@ export function PixelGridEditor(props: {
     }}>
         <header>Edit</header>
         <HBox className={'hbox toolbar'}>
-            <button
-                className={toClass({ selected: grid, })}
-                onClick={() => setGrid(!grid)}
-            >grid</button>
-            <button
-                className={toClass({ selected:fillOnce })}
-                onClick={()=>setFillOnce(true)}
-            ><Icon name={Icons.PaintBucket}/></button>
-            <button
-                className={toClass({ selected:fillOnce })}
-                onClick={()=>setZoom(zoom+1)}
-            >+</button>
+            <ToggleButton onClick={()=>setGrid(!grid)} icon={Icons.Grid} selected={grid}/>
+            <ToggleButton onClick={()=>setFillOnce(true)} icon={Icons.PaintBucket} selected={fillOnce}/>
+            <IconButton onClick={()=>setZoom(zoom+1)} icon={Icons.Plus}/>
             <label>{zoom}</label>
-            <button
-                className={toClass({ selected:fillOnce })}
-                onClick={()=>setZoom(zoom-1)}
-            >-</button>
+            <IconButton onClick={()=>setZoom(zoom-1)} icon={Icons.Minus}/>
         </HBox>
         <canvas ref={ref}
                 style={{

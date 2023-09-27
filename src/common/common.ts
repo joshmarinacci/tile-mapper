@@ -144,12 +144,17 @@ export const left_arrow_triangle = '◀'
 export enum Icons {
     DownArrow='down-arrow',
     UpArrow='up-arrow',
+    LeftArrow='left-arrow',
+    RightArrow='right-arrow',
+    Plus='plus',
+    Minus='minus',
     Trashcan='trashcan',
-    AddTile='add-tile',
+    Tile='tile',
     Resize='resize',
     EyeOpen='eye-open',
     EyeClosed='eye-closed',
     Checkerboard='checkerboard',
     PaintBucket='paint-bucket',
+    Grid='grid',
 }
 
