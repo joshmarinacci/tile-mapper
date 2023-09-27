@@ -54,7 +54,7 @@ function TileReferenceEditor<T>(props: {
     const value = props.target.getPropValue(props.name) as string
     return <HBox>
         <button onClick={(e) => {
-            pm.show_at(<TileReferenceSelector name={props.name} target={props.target} def={props.def} />,e.target,'below')
+            pm.show_at(<TileReferenceSelector name={props.name} target={props.target} def={props.def} />,e.target,'right')
         }}>edit</button>
         <TileReferenceView tileRef={value}/>
     </HBox>

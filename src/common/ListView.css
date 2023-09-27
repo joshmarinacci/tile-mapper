@@ -33,7 +33,7 @@
 }
 
 .list-view > .list-item.selected {
-    background-color: var(--selected-background-color);
+    background-color: var(--selected-background);
     border-color: var(--selected-border-color);
     color: black;
 }
@@ -49,21 +49,22 @@
 }
 
 .std-list-item:hover {
-    background-color: var(--selected-background-color);
+    background-color: var(--selected-background);
 }
 
 .std-dropdown-item {
     display: flex;
     flex-direction: row;
     flex: 1.0;
-    padding: 0.5rem;
-    min-width: 10rem;
+    padding: var(--std-padding);
+    /*min-width: 10rem;*/
     justify-content: space-between;
-    border: 1px solid black;
-    border-width: 0 0 1px 0;
+    /*border: 1px solid black;*/
+    /*border-width: 0 0 1px 0;*/
 }
 .std-dropdown-item:hover {
-    background-color: var(--selected-background-color);
+    background-color: var(--hover-background-color);
+    color: var(--hover-text-color);
 }
 .list-select-button .std-dropdown-item {
     padding:0;

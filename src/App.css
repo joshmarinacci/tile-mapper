@@ -1,7 +1,17 @@
-body {
-    --selected-background-color: cyan;
+html body {
+    --border-color: #382f2f;
+
+    --hover-background-color: #382f2f;
+    --hover-text-color: white;
+
+    --selected-background: linear-gradient(#464444,black, #626060);
+    --selected-text-color: red;
     --selected-border-color: white;
-    --pane-border: #444;
+
+    --menu-radius: 0.25rem;
+    --inverse-text-color: white;
+
+    --std-padding: 0.25rem 0.5rem;
     font-size: 10pt;
     font-family: sans-serif;
     padding: 0;
@@ -18,43 +28,31 @@ body {
 }
 
 .pane {
-    border: 1px solid var(--pane-border);
+    border: 1px solid var(--border-color);
     display: flex;
     flex-direction: column;
-    /*max-width: 20rem;*/
     border-width: 0 1px 1px 0;
 }
 
 .pane header {
-    background-color: #333333;
-    color: white;
-    padding: 0.5rem;
+    background-color: var(--border-color);
+    color: var(--inverse-text-color);
+    padding: var(--std-padding);
     display: flex;
     flex-direction: row;
 }
-
-/*#root {*/
-/*  border: 0px solid red;*/
-/*  box-sizing: border-box;*/
-/*  width: 90vw;*/
-/*  height: 100vh;*/
-/*  max-height: 100vh;*/
-/*  display: flex;*/
-/*  flex-direction: column;*/
-/*}*/
-
 
 /* general */
 
 button, label {
     box-sizing: border-box;
-    padding: 0.25rem 0.5rem;
+    padding: var(--std-padding);
 }
 
 button {
-    border: 1px solid #333;
+    border: 1px solid var(--border-color);
     background: #ddd;
-    color: #333;
+    color: var(--text-color);
     white-space: nowrap;
     display: flex;
     flex-direction: row;
@@ -63,12 +61,13 @@ button {
 }
 
 button:hover {
-    background: #fff;
+    background: var(--hover-background-color);
+    color:var(--hover-text-color);
 }
 
 button.selected {
-    background: var(--selected-background-color);
-    color: #333;
+    background: var(--selected-background);
+    color: var(--selected-text-color);
 }
 
 button.selected:hover {
@@ -119,7 +118,17 @@ button:disabled {
 
 
 .menu-list {
-    border: 1px solid red;
+    border: 1px solid var(--border-color);
+    padding: 0.25rem;
     display: flex;
     flex-direction: column;
+    border-radius: var(--menu-radius);
+}
+.menu-list button {
+    border-width: 0 0 0 0;
+    border-radius: var(--menu-radius);
+}
+.menu-list button:hover {
+    background-color: var(--hover-background-color);
+    color: var(--hover-text-color);
 }

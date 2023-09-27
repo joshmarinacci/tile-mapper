@@ -15,7 +15,7 @@
     font-weight: bold;
 }
 .tree-object.selected > .description {
-    background-color: black;
+    background: var(--selected-background);
     color: white;
 }
 
@@ -33,10 +33,6 @@
 }
 .tree-object:last-child {
     border-bottom-width: 0;
-}
-.tree-object.selected {
-    background-color: var(--pane-background);
-    color: black;
 }
 
 .tree-item {
