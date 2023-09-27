@@ -19,7 +19,7 @@ export type PopupEvent = {
 }
 export type ShowPopupType = (e:PopupEvent) => void
 export interface PopupContextInterface {
-    show_at(view: JSX.Element, owner: HTMLElement, direction?:PopupDirection, offset?:Point): void
+    show_at(view: JSX.Element, owner: EventTarget, direction?:PopupDirection, offset?:Point): void
     hide():void
     on_change(cb:ShowPopupType): void
 }

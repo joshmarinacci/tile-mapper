@@ -8,24 +8,24 @@ import {
     move_layer_down,
     move_layer_up
 } from "../actions/actions"
-import {ListView, ListViewDirection, ListViewOptions, ListViewRenderer} from "../common/ListView"
+import {Icons} from "../common/common"
+import {Icon} from "../common/common-components"
+import {ListView, ListViewDirection, ListViewRenderer} from "../common/ListView"
 import {PropsBase, useWatchProp} from "../model/base"
 import {GameMap, MapLayerType, TileLayer} from "../model/datamodel"
 import {ResizeLayerDialog} from "./ResizeLayerDialog"
 
-const LayerNameRenderer: ListViewRenderer<PropsBase<MapLayerType>> = (props: {
+const LayerNameRenderer: ListViewRenderer<PropsBase<MapLayerType>,never> = (props: {
     value: PropsBase<MapLayerType>,
     selected: boolean,
-    options:ListViewOptions,
+    options:never,
 }) => {
-    useWatchProp(props.value,'name')
-    useWatchProp(props.value,'visible')
-    return <div className={'std-list-item'} style={{
-        justifyContent:'space-between'
-    }}>
-        <b>{props.value.getPropValue('name')}</b>
-        <i>{props.value.getPropValue('type')}</i>
-        <b>{props.value.getPropValue('visible')?"visible":"hidden"}</b>
+    const {value} = props
+    useWatchProp(value,'name')
+    useWatchProp(value,'visible')
+    return <div className={'std-list-item'} style={{ justifyContent:'space-between' }}>
+        <b>{value.getPropValue('name')}</b>
+        <Icon name={value.getPropValue('visible')?Icons.EyeOpen:Icons.EyeClosed}/>
     </div>
 }
 
@@ -47,12 +47,12 @@ export function LayerList(props: {
         <header>Layers</header>
         {props.editable &&
             <div className={'toolbar'}>
-                <button onClick={()=>add_tile_layer(props.map)}>+ tile layer</button>
+                <button onClick={()=>add_tile_layer(props.map)}><Icon name={Icons.AddTile}/> Layer</button>
                 <button onClick={()=>add_actor_layer(props.map)}>+ actor layer</button>
-                <button onClick={()=>delete_layer(layer,props.map)}>del layer</button>
-                <button onClick={()=>move_layer_up(layer,props.map)}>▼</button>
-                <button onClick={()=>move_layer_down(layer,props.map)}>▲</button>
-                <button onClick={()=>resize()}>resize</button>
+                <button onClick={()=>delete_layer(layer,props.map)}><Icon name={Icons.Trashcan}/></button>
+                <button onClick={()=>move_layer_up(layer,props.map)}><Icon name={Icons.DownArrow}/></button>
+                <button onClick={()=>move_layer_down(layer,props.map)}><Icon name={Icons.UpArrow}/></button>
+                <button onClick={()=>resize()}><Icon name={Icons.Resize}/></button>
             </div>}
         <ListView selected={layer}
                   setSelected={props.setSelectedLayer}

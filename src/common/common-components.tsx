@@ -1,10 +1,11 @@
 import {toClass} from "josh_react_util"
 import React, {ReactNode, useContext, useState} from "react"
 
+import {ICON_CACHE} from "../iconcache"
 import {ActionRegistry, MenuAction, SimpleMenuAction} from "../model/base"
 import {GameDoc} from "../model/datamodel"
 import {GlobalState} from "../state"
-import {down_arrow_triangle} from "./common"
+import {down_arrow_triangle, Icons} from "./common"
 import {PopupContext} from "./popup"
 
 export function EditableLabel(props: { onChange: (str: string) => void, value: string }) {
@@ -98,4 +99,10 @@ export function Pane(props:{title?:string, header?:ReactNode, children:ReactNode
         {props.children}
         </div>
     </div>
+}
+
+export function Icon(props:{name:Icons}) {
+    return <img src={ICON_CACHE.getIconUrl(props.name)} width={16} style={{
+        imageRendering:'pixelated'
+    }}/>
 }

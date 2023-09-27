@@ -6,6 +6,7 @@ import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
 
 import {exportPNG} from "../actions/actions"
 import {DocContext} from "../common/common-components"
+import {ICON_CACHE} from "../iconcache"
 import {PropsBase, useWatchAllProps, useWatchProp} from "../model/base"
 import {ActorInstance, ActorLayer, GameMap, MapLayerType, Tile, TileLayer} from "../model/datamodel"
 import {ActorLayerMouseHandler, ActorLayerToolbar, drawActorlayer,} from "./ActorEditor"
@@ -41,7 +42,7 @@ export function LayerEditor(props: {
             const canvas = ref.current
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.imageSmoothingEnabled = false
-            ctx.fillStyle = 'magenta'
+            ctx.fillStyle = ctx.createPattern(ICON_CACHE.getIconCanvas('checkerboard'), 'repeat') as CanvasPattern
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             map.getPropValue('layers').forEach((layer: PropsBase<MapLayerType>) => {
                 if (!layer.getPropValue('visible')) return

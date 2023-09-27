@@ -3,6 +3,7 @@ import {HBox, toClass} from "josh_react_util"
 import React, {MouseEvent, useEffect, useRef, useState} from "react"
 
 import {ImagePalette} from "../common/common"
+import {ICON_CACHE} from "../iconcache"
 import {Tile} from "../model/datamodel"
 
 
@@ -46,6 +47,8 @@ export function PixelGridEditor(props: {
             const canvas = ref.current
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.fillStyle = 'magenta'
+            const pat = ctx.createPattern(ICON_CACHE.getIconCanvas('checkerboard'),'repeat') as CanvasPattern
+            ctx.fillStyle = pat
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             for (let i = 0; i < tile.width(); i++) {
                 for (let j = 0; j < tile.height(); j++) {

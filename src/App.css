@@ -56,6 +56,10 @@ button {
     background: #ddd;
     color: #333;
     white-space: nowrap;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
 }
 
 button:hover {

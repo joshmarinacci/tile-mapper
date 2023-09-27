@@ -140,3 +140,14 @@ export const down_arrow_triangle = '▼'
 export const up_arrow_triangle = '▲'
 export const right_arrow_triangle = '▶'
 export const left_arrow_triangle = '◀'
+
+export enum Icons {
+    DownArrow='down-arrow',
+    UpArrow='up-arrow',
+    Trashcan='trashcan',
+    AddTile='add-tile',
+    Resize='resize',
+    EyeOpen='eye-open',
+    EyeClosed='eye-closed',
+}
+

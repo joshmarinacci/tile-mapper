@@ -22,6 +22,7 @@ import {
 import {ListSelect} from "../common/ListSelect"
 import {ListView, ListViewDirection, ListViewOptions, ListViewRenderer} from "../common/ListView"
 import {PopupContext} from "../common/popup"
+import {ICON_CACHE} from "../iconcache"
 import {useWatchProp} from "../model/base"
 import {Sheet, Tile} from "../model/datamodel"
 
@@ -42,7 +43,7 @@ export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (
         if (ref.current && value) {
             const canvas = ref.current
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-            ctx.fillStyle = 'red'
+            ctx.fillStyle = ctx.createPattern(ICON_CACHE.getIconCanvas('checkerboard'), 'repeat') as CanvasPattern
             ctx.fillRect(0, 0, canvas.width, canvas.height)
             drawEditableSprite(ctx, 1, value)
         }
@@ -52,7 +53,7 @@ export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (
     useWatchProp(value, 'name')
     const pm = useContext(PopupContext)
     return <div className={'tile-preview-wrapper'}
-                onContextMenu={(e) => {
+                onContextMenu={(e:React.MouseEvent<HTMLElement>) => {
                     e.preventDefault()
                     e.stopPropagation()
                     pm.show_at(<MenuList>
@@ -62,7 +63,7 @@ export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (
                         <button onClick={()=>rotateTile90CounterClock(value)}>rotate 90 counter-clock</button>
                         <button onClick={()=>duplicate_tile(options.sheet,value)}>duplicate</button>
                         <button onClick={()=>deleteTile(options.sheet,value)}>delete</button>
-                    </MenuList>,e.target,"below")
+                    </MenuList>,e.target,"left")
                 }}
     >
         <canvas ref={ref}
