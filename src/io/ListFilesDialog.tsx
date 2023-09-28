@@ -1,18 +1,15 @@
 import {DialogContext, Spacer} from "josh_react_util"
 import React, {useContext, useEffect, useState} from "react"
 
-import {ListView, ListViewDirection, ListViewRenderer} from "../common/ListView"
+import {ListView, ListViewDirection} from "../common/ListView"
 import {GlobalState} from "../state"
 import {TILE_MAPPER_DOCUMENT} from "./json"
-import {deleteLocalDoc, JSONDocReference, listLocalDocs, loadLocalDoc} from "./local"
+import {JSONDocReference, listLocalDocs, loadLocalDoc} from "./local"
 
 
 function FileItemRenderer(props:{value:JSONDocReference}) {
-    return <div>
+    return <div className={'std-list-item'}>
         <b>{props.value.name}</b>
-        {/*<button  onClick={() => load(file)}>load</button>*/}
-        {/*<button  onClick={() => deleteFile(file)}>delete</button>*/}
-        {/*<img src={file.thumbnail}/>*/}
     </div>
 
 }
@@ -32,13 +29,10 @@ export function ListFilesDialog(props: { state: GlobalState }) {
     const load = async (file: JSONDocReference) => {
         const doc = await loadLocalDoc(state, file.uuid)
         state.setPropValue('doc',doc)
+        state.setPropValue('selection',doc)
         dm.hide()
     }
-    // const deleteFile = async (file: JSONDocReference) => {
-    //     await deleteLocalDoc(state, file.uuid)
-    //     const files = await listLocalDocs(state)
-    //     setFiles(files)
-    // }
+
     return <div className={'dialog'}>
         <header>Open Document</header>
         <section className={'scroll'}>

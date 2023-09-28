@@ -14,6 +14,7 @@ function NewDocButton(props:{state:GlobalState}) {
     const show = () => {
         dm.show(<NewDocDialog onComplete={(doc)=>{
             props.state.setPropValue('doc',doc)
+            props.state.setPropValue('selection',doc)
         }}/>)
     }
     return <button onClick={show}>New</button>

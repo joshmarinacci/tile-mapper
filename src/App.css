@@ -5,7 +5,7 @@ html body {
     --hover-text-color: white;
 
     --selected-background: linear-gradient(#464444,black, #626060);
-    --selected-text-color: red;
+    --selected-text-color: white;
     --selected-border-color: white;
 
     --menu-radius: 0.25rem;
