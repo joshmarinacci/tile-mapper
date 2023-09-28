@@ -1,18 +1,17 @@
 import "./TileSheetView.css"
 
 import {Spacer, toClass} from "josh_react_util"
-import {forceDownloadBlob} from "josh_web_util"
 import React, {useContext, useEffect, useRef, useState} from "react"
 
 import {
     deleteTile,
-    duplicate_tile,
+    duplicate_tile, export_bmp,
     flipTileAroundHorizontal,
     flipTileAroundVertical,
     rotateTile90Clock,
     rotateTile90CounterClock
 } from "../actions/actions"
-import {canvas_to_bmp, drawEditableSprite, ImagePalette, PICO8, sheet_to_canvas} from "../common/common"
+import {drawEditableSprite, ImagePalette} from "../common/common"
 import {
     DocContext,
     DropdownButton,
@@ -29,6 +28,7 @@ import {Sheet, Tile} from "../model/datamodel"
 type TilePreviewOptions = {
     sheet:Sheet,
     showNames:boolean,
+    showGrid:boolean,
     scale:number
 } & ListViewOptions
 
@@ -37,7 +37,7 @@ export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (
     selected: boolean,
     options: TilePreviewOptions
 }) => {
-    const {value, options} = props
+    const {value, options, selected} = props
         const ref = useRef<HTMLCanvasElement>(null)
     const redraw = () => {
         if (ref.current && value) {
@@ -52,33 +52,31 @@ export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (
     useWatchProp(value, 'data', () => redraw())
     useWatchProp(value, 'name')
     const pm = useContext(PopupContext)
+    const showPopup = (e:React.MouseEvent<HTMLElement>) => {
+        e.preventDefault()
+        e.stopPropagation()
+        pm.show_at(<MenuList>
+            <button onClick={()=>flipTileAroundVertical(value)}>flip left / right</button>
+            <button onClick={()=>flipTileAroundHorizontal(value)}>flip top / bottom</button>
+            <button onClick={()=>rotateTile90Clock(value)}>rotate 90 clock</button>
+            <button onClick={()=>rotateTile90CounterClock(value)}>rotate 90 counter-clock</button>
+            <button onClick={()=>duplicate_tile(options.sheet,value)}>duplicate</button>
+            <button onClick={()=>deleteTile(options.sheet,value)}>delete</button>
+        </MenuList>,e.target,"left")
+    }
     return <div className={'tile-preview-wrapper'}
-                onContextMenu={(e:React.MouseEvent<HTMLElement>) => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    pm.show_at(<MenuList>
-                        <button onClick={()=>flipTileAroundVertical(value)}>flip left / right</button>
-                        <button onClick={()=>flipTileAroundHorizontal(value)}>flip top / bottom</button>
-                        <button onClick={()=>rotateTile90Clock(value)}>rotate 90 clock</button>
-                        <button onClick={()=>rotateTile90CounterClock(value)}>rotate 90 counter-clock</button>
-                        <button onClick={()=>duplicate_tile(options.sheet,value)}>duplicate</button>
-                        <button onClick={()=>deleteTile(options.sheet,value)}>delete</button>
-                    </MenuList>,e.target,"left")
-                }}
-    >
+                onContextMenu={showPopup}>
         <canvas ref={ref}
-                className={toClass({
-                    'tile-preview': true,
-                    selected: props.selected,
-                })}
+                className={toClass({ 'tile-preview': true, selected, })}
                 style={{
                     width: `${value.width() * options.scale}px`,
                     height: `${value.height() * options.scale}px`,
+                    border: options.showGrid?'3px solid transparent':'0px solid transparent',
                 }}
                 width={value.width()}
                 height={value.height()}
         ></canvas>
-        <b>{options.showNames && props.value.getPropValue('name')}</b>
+        {options.showNames && <b>{props.value.getPropValue('name')}</b>}
     </div>
 }
 
@@ -107,7 +105,8 @@ export function TileListView(props: {
     editable: boolean,
 }) {
     const {sheet, tile, setTile, palette, editable} = props
-    const [showNames, setShowNamess] = useState(true)
+    const [showNames, setShowNames] = useState(true)
+    const [showGrid, setShowGrid] = useState(true)
     const [scale, setScale] = useState(4)
     const tiles = sheet.getPropValue('tiles')
     const add_tile = () => {
@@ -127,12 +126,6 @@ export function TileListView(props: {
             setTile(undefined)
         }
     }
-    const export_bmp = () => {
-        const canvas = sheet_to_canvas(sheet)
-        const rawData = canvas_to_bmp(canvas, palette)
-        const blob = new Blob([rawData.data], {type: 'image/bmp'})
-        forceDownloadBlob(`${sheet.getPropValue('name')}.bmp`, blob)
-    }
     useWatchProp(sheet, 'tiles')
     return <div className={'tile-list-view'}>
         {editable &&
@@ -142,7 +135,8 @@ export function TileListView(props: {
                 <button onClick={delete_tile}>del tile</button>
                 <Spacer/>
                 <DropdownButton title={'options'}>
-                    <button onClick={() => setShowNamess(!showNames)}>show names</button>
+                    <button onClick={() => setShowNames(!showNames)}>show names</button>
+                    <button onClick={() => setShowGrid(!showGrid)}>show grid</button>
                     <button onClick={() => setScale(1)}>1x</button>
                     <button onClick={() => setScale(2)}>2x</button>
                     <button onClick={() => setScale(4)}>4x</button>
@@ -155,16 +149,12 @@ export function TileListView(props: {
                   setSelected={setTile}
                   renderer={TilePreviewRenderer}
                   data={tiles}
-                  options={{
-                      showNames,
-                      scale,
-                      sheet
-                  }}
+                  options={{ showNames, scale, sheet, showGrid }}
                   direction={ListViewDirection.HorizontalWrap}
         />
         {editable &&
             <div className={'toolbar'}>
-                <button onClick={export_bmp}>to BMP</button>
+                <button onClick={()=>export_bmp(sheet,palette)}>to BMP</button>
             </div>}
     </div>
 }

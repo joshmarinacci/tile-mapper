@@ -6,7 +6,6 @@
     background-color: blue;
 }
 .tile-preview {
-    border: 3px solid transparent;
     margin:0;
     padding: 0;
     background: black;
@@ -14,13 +13,16 @@
     display: block;
 }
 .tile-preview.selected {
-    border-color: white;
+    /*border-color: white;*/
+    outline: 3px solid #ff8102;
+    outline-offset: -3px;
 }
 .tile-preview-wrapper b {
     position: absolute;
     color: white;
-    right:0.5rem;
-    bottom:0.5rem;
+    background-color: black;
+    padding: 0.25rem;
+    right:0.0rem;
+    bottom:0.0rem;
     font-size: 10px;
-    text-shadow: 1px 1px black, -1px -1px black;
 }

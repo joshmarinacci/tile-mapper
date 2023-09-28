@@ -1,7 +1,7 @@
 import {ArrayGrid, Point, Size} from "josh_js_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
-import {canvas_to_bmp, drawEditableSprite, sheet_to_canvas} from "../common/common"
+import {canvas_to_bmp, drawEditableSprite, ImagePalette, sheet_to_canvas} from "../common/common"
 import {
     docToJSON,
     fileToJson,
@@ -116,6 +116,13 @@ export async function loadPNGJSON(state:GlobalState, file:File):Promise<GameDoc>
     })
 }
 
+
+export const export_bmp = (sheet:Sheet, palette:ImagePalette) => {
+    const canvas = sheet_to_canvas(sheet)
+    const rawData = canvas_to_bmp(canvas, palette)
+    const blob = new Blob([rawData.data], {type: 'image/bmp'})
+    forceDownloadBlob(`${sheet.getPropValue('name')}.bmp`, blob)
+}
 
 export function deleteTile(sheet: Sheet, tile: Tile) {
     if (tile) sheet.removeTile(tile)
