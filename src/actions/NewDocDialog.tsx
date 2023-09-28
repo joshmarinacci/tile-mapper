@@ -5,7 +5,8 @@ import React, {useContext, useState} from "react"
 import {
     ImagePalette,
     MINECRAFT,
-    PICO8
+    PICO8,
+    RESURRECT64,
 } from "../common/common"
 import {appendToList} from "../model/base"
 import {GameDoc, Sheet, Tile} from "../model/datamodel"
@@ -36,6 +37,10 @@ const PALS:Pal[] = [
     {
         name:'Minecraft 16',
         pal:MINECRAFT,
+    },
+    {
+        name:'Resurrect 64',
+        pal:RESURRECT64,
     }
 ]
 

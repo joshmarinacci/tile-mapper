@@ -1,13 +1,14 @@
 import "./Palette.css"
 
-import {toClass} from "josh_react_util"
-import React from "react"
+import {Spacer, toClass} from "josh_react_util"
+import React, {useState} from "react"
 
 import {ImagePalette} from "./common"
+import {DropdownButton, Pane} from "./common-components"
 import {ListView, ListViewDirection, ListViewOptions} from "./ListView"
 
 const PaletteColorRenderer = (props:{value:string, selected:boolean, options:ListViewOptions}) => {
-    const {value, selected} = props
+    const {value, selected, options} = props
     return <div
         className={toClass({
             'palette-color': true,
@@ -16,8 +17,8 @@ const PaletteColorRenderer = (props:{value:string, selected:boolean, options:Lis
         })}
         style={{
             backgroundColor: value === 'transparent' ? 'magenta' : value,
-            width: '32px',
-            height: '32px',
+            width: `${options.size}px`,
+            height: `${options.size}px`,
         }}
     />
 }
@@ -28,18 +29,26 @@ export function PaletteColorPickerPane(props: {
     palette:ImagePalette,
 }) {
     const {drawColor, setDrawColor, palette} = props
-    return <div className={'pane'}>
-        <header>Palette</header>
+    const [size, setSize] =useState(16)
+    return <Pane>
+        <header>
+            <label>Palette</label>
+            <Spacer/>
+            <DropdownButton title={'options'}>
+                <button onClick={() => setSize(16)}>16px</button>
+                <button onClick={() => setSize(32)}>32px</button>
+                <button onClick={() => setSize(64)}>64px</button>
+                <button onClick={() => setSize(128)}>128px</button>
+            </DropdownButton>
+
+        </header>
         <ListView className={'palette'}
                   direction={ListViewDirection.HorizontalWrap}
                   data={palette}
                   renderer={PaletteColorRenderer}
                   selected={drawColor}
                   setSelected={setDrawColor}
-                  options={{}}
-                  style={{
-                      minWidth: '94px',
-                      maxWidth: '300px'
-                    }}/>
-    </div>
+                  options={{size:size}}
+        />
+    </Pane>
 }

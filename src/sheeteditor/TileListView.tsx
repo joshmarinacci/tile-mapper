@@ -112,7 +112,7 @@ export function TileListView(props: {
     const tiles = sheet.getPropValue('tiles')
     const add_tile = () => {
         const size = sheet.getPropValue('tileSize')
-        const tile = new Tile({size: size, palette: PICO8})
+        const tile = new Tile({size: size, palette: palette})
         sheet.addTile(tile)
         setTile(tile)
     }
