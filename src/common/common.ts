@@ -5,129 +5,142 @@ import {Sheet, Tile} from "../model/datamodel"
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-ArrayGrid.prototype.isValidIndex = function(pt: Point) {
-    if(pt.x < 0) return false
-    if(pt.y < 0) return false
-    if(pt.x >= this.w) return false
-    if(pt.y >= this.h) return false
+ArrayGrid.prototype.isValidIndex = function (pt: Point) {
+    if (pt.x < 0) return false
+    if (pt.y < 0) return false
+    if (pt.x >= this.w) return false
+    if (pt.y >= this.h) return false
     return true
 }
 
 
-export type ImagePalette = string[]
-export const PICO8:ImagePalette = [
-    '#000000',
-    '#1D2B53',
-    '#7E2553',
-    '#008751',
-    '#AB5236',
-    '#5F574F',
-    '#C2C3C7',
-    '#FFF1E8',
-    '#FF004D',
-    '#FFA300',
-    '#FFEC27',
-    '#00E436',
-    '#29ADFF',
-    '#83769C',
-    '#FF77A8',
-    '#FFCCAA',
-    'transparent',
-]
-export const MINECRAFT:ImagePalette = [
-    '#ffffff',
-    '#999999',
-    '#4c4c4c',
-    '#191919',
-    '#664c33',
-    '#993333',
-    '#d87f33',
-    '#e5e533',
-    '#7fcc19',
-    '#667f33',
-    '#4c7f99',
-    '#6699d8',
-    '#334cb2',
-    '#7f3fb2',
-    '#b24cd8',
-    '#f27fa5',
-]
-export const RESURRECT64:ImagePalette = [
-    "#2e222f",
-    "#3e3546",
-    "#625565",
-    "#966c6c",
-    "#ab947a",
-    "#694f62",
-    "#7f708a",
-    "#9babb2",
-    "#c7dcd0",
-    "#ffffff",
-    "#6e2727",
-    "#b33831",
-    "#ea4f36",
-    "#f57d4a",
-    "#ae2334",
-    "#e83b3b",
-    "#fb6b1d",
-    "#f79617",
-    "#f9c22b",
-    "#7a3045",
-    "#9e4539",
-    "#cd683d",
-    "#e6904e",
-    "#fbb954",
-    "#4c3e24",
-    "#676633",
-    "#a2a947",
-    "#d5e04b",
-    "#fbff86",
-    "#165a4c",
-    "#239063",
-    "#1ebc73",
-    "#91db69",
-    "#cddf6c",
-    "#313638",
-    "#374e4a",
-    "#547e64",
-    "#92a984",
-    "#b2ba90",
-    "#0b5e65",
-    "#0b8a8f",
-    "#0eaf9b",
-    "#30e1b9",
-    "#8ff8e2",
-    "#323353",
-    "#484a77",
-    "#4d65b4",
-    "#4d9be6",
-    "#8fd3ff",
-    "#45293f",
-    "#6b3e75",
-    "#905ea9",
-    "#a884f3",
-    "#eaaded",
-    "#753c54",
-    "#a24b6f",
-    "#cf657f",
-    "#ed8099",
-    "#831c5d",
-    "#c32454",
-    "#f04f78",
-    "#f68181",
-    "#fca790",
-    "#fdcbb0",
-]
+export type ImagePalette = {
+    name: string,
+    colors: string[],
+}
+export const PICO8: ImagePalette = {
+    name: 'PICO8',
+    colors: [
+        '#000000',
+        '#1D2B53',
+        '#7E2553',
+        '#008751',
+        '#AB5236',
+        '#5F574F',
+        '#C2C3C7',
+        '#FFF1E8',
+        '#FF004D',
+        '#FFA300',
+        '#FFEC27',
+        '#00E436',
+        '#29ADFF',
+        '#83769C',
+        '#FF77A8',
+        '#FFCCAA',
+        'transparent',
+    ]
+}
+export const MINECRAFT: ImagePalette = {
+    name: 'Minecraft', colors: [
+        '#ffffff',
+        '#999999',
+        '#4c4c4c',
+        '#191919',
+        '#664c33',
+        '#993333',
+        '#d87f33',
+        '#e5e533',
+        '#7fcc19',
+        '#667f33',
+        '#4c7f99',
+        '#6699d8',
+        '#334cb2',
+        '#7f3fb2',
+        '#b24cd8',
+        '#f27fa5',
+    ]
+}
+export const RESURRECT64: ImagePalette = {
+    name: 'Resurrect64',
+    colors: [
+        "#2e222f",
+        "#3e3546",
+        "#625565",
+        "#966c6c",
+        "#ab947a",
+        "#694f62",
+        "#7f708a",
+        "#9babb2",
+        "#c7dcd0",
+        "#ffffff",
+        "#6e2727",
+        "#b33831",
+        "#ea4f36",
+        "#f57d4a",
+        "#ae2334",
+        "#e83b3b",
+        "#fb6b1d",
+        "#f79617",
+        "#f9c22b",
+        "#7a3045",
+        "#9e4539",
+        "#cd683d",
+        "#e6904e",
+        "#fbb954",
+        "#4c3e24",
+        "#676633",
+        "#a2a947",
+        "#d5e04b",
+        "#fbff86",
+        "#165a4c",
+        "#239063",
+        "#1ebc73",
+        "#91db69",
+        "#cddf6c",
+        "#313638",
+        "#374e4a",
+        "#547e64",
+        "#92a984",
+        "#b2ba90",
+        "#0b5e65",
+        "#0b8a8f",
+        "#0eaf9b",
+        "#30e1b9",
+        "#8ff8e2",
+        "#323353",
+        "#484a77",
+        "#4d65b4",
+        "#4d9be6",
+        "#8fd3ff",
+        "#45293f",
+        "#6b3e75",
+        "#905ea9",
+        "#a884f3",
+        "#eaaded",
+        "#753c54",
+        "#a24b6f",
+        "#cf657f",
+        "#ed8099",
+        "#831c5d",
+        "#c32454",
+        "#f04f78",
+        "#f68181",
+        "#fca790",
+        "#fdcbb0",
+        'transparent',
+    ]
+}
 
 
 export function drawEditableSprite(
     ctx: CanvasRenderingContext2D,
     scale: number,
-    image: Tile) {
+    image: Tile,
+    palette:ImagePalette) {
     for (let i = 0; i < image.width(); i++) {
         for (let j = 0; j < image.height(); j++) {
             const v: number = image.getPixel(new Point(i, j))
-            ctx.fillStyle = image.getPropValue('palette')[v]
+            ctx.fillStyle = palette.colors[v]
             ctx.fillRect(i * scale, j * scale, scale, scale)
         }
     }
@@ -208,19 +221,19 @@ export const right_arrow_triangle = '▶'
 export const left_arrow_triangle = '◀'
 
 export enum Icons {
-    DownArrow='down-arrow',
-    UpArrow='up-arrow',
-    LeftArrow='left-arrow',
-    RightArrow='right-arrow',
-    Plus='plus',
-    Minus='minus',
-    Trashcan='trashcan',
-    Tile='tile',
-    Resize='resize',
-    EyeOpen='eye-open',
-    EyeClosed='eye-closed',
-    Checkerboard='checkerboard',
-    PaintBucket='paint-bucket',
-    Grid='grid',
+    DownArrow = 'down-arrow',
+    UpArrow = 'up-arrow',
+    LeftArrow = 'left-arrow',
+    RightArrow = 'right-arrow',
+    Plus = 'plus',
+    Minus = 'minus',
+    Trashcan = 'trashcan',
+    Tile = 'tile',
+    Resize = 'resize',
+    EyeOpen = 'eye-open',
+    EyeClosed = 'eye-closed',
+    Checkerboard = 'checkerboard',
+    PaintBucket = 'paint-bucket',
+    Grid = 'grid',
 }
 

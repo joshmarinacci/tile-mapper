@@ -89,13 +89,11 @@ function load_v4json(json_doc: JSONDocV4):GameDoc {
                 name: json_sprite.name,
                 blocking: json_sprite.blocking,
                 size: new Size(json_sprite.w, json_sprite.h),
-                palette: json_doc.color_palette,
             })
             tile._id = json_sprite.id
             console.log("loading tile", tile._id)
             const data = tile.getPropValue('data')
             data.data = json_sprite.data
-            tile.rebuild_cache()
             sheet.addTile(tile)
         })
         doc.getPropValue('sheets').push(sheet)

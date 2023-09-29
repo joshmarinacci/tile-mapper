@@ -119,7 +119,7 @@ export async function loadPNGJSON(state:GlobalState, file:File):Promise<GameDoc>
 
 export const export_bmp = (sheet:Sheet, palette:ImagePalette) => {
     const canvas = sheet_to_canvas(sheet)
-    const rawData = canvas_to_bmp(canvas, palette)
+    const rawData = canvas_to_bmp(canvas, palette.colors)
     const blob = new Blob([rawData.data], {type: 'image/bmp'})
     forceDownloadBlob(`${sheet.getPropValue('name')}.bmp`, blob)
 }

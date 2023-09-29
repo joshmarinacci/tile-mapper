@@ -29,7 +29,8 @@ type TilePreviewOptions = {
     sheet:Sheet,
     showNames:boolean,
     showGrid:boolean,
-    scale:number
+    scale:number,
+    palette:ImagePalette,
 } & ListViewOptions
 
 export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (props: {
@@ -45,7 +46,7 @@ export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.fillStyle = ctx.createPattern(ICON_CACHE.getIconCanvas('checkerboard'), 'repeat') as CanvasPattern
             ctx.fillRect(0, 0, canvas.width, canvas.height)
-            drawEditableSprite(ctx, 1, value)
+            drawEditableSprite(ctx, 1, value, options.palette)
         }
     }
     useEffect(() => redraw(), [value])
@@ -111,7 +112,7 @@ export function TileListView(props: {
     const tiles = sheet.getPropValue('tiles')
     const add_tile = () => {
         const size = sheet.getPropValue('tileSize')
-        const tile = new Tile({size: size, palette: palette})
+        const tile = new Tile({size: size})
         sheet.addTile(tile)
         setTile(tile)
     }
@@ -149,7 +150,7 @@ export function TileListView(props: {
                   setSelected={setTile}
                   renderer={TilePreviewRenderer}
                   data={tiles}
-                  options={{ showNames, scale, sheet, showGrid }}
+                  options={{ showNames, scale, sheet, showGrid, palette}}
                   direction={ListViewDirection.HorizontalWrap}
         />
         {editable &&

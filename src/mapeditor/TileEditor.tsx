@@ -34,35 +34,32 @@ export function bucketFill(layer: TileLayer, target: string, replace: string, at
 export function drawTileLayer(ctx: CanvasRenderingContext2D,
                               doc: GameDoc,
                               layer: TileLayer,
-                              scale: number, grid: boolean) {
+                              scale: number,
+                              grid: boolean) {
     const size = doc.getPropValue('tileSize')
     const cells = layer.getPropValue('data') as ArrayGrid<MapCell>
     cells.forEach((v, n) => {
-        if (v) {
-            const x = n.x * size.w * scale
-            const y = n.y * size.w * scale
-            const tile = doc.lookup_sprite(v.tile)
-            if (tile) {
-                if (tile.cache_canvas) {
-                    ctx.drawImage(tile.cache_canvas,
-                        //src
-                        0, 0, tile.cache_canvas.width, tile.cache_canvas.height,
-                        //dst
-                        x,
-                        y,
-                        size.w * scale, size.h * scale
-                    )
-                } else {
-                    drawEditableSprite(ctx, scale, tile)
+            if (v) {
+                const x = n.x * size.w * scale
+                const y = n.y * size.w * scale
+                const can = doc.lookup_canvas(v.tile)
+                if(can) {
+                        ctx.drawImage(can,
+                            //src
+                            0, 0, can.width, can.height,
+                            //dst
+                            x,
+                            y,
+                            size.w * scale, size.h * scale
+                        )
+                }
+                if (grid) {
+                    ctx.strokeStyle = 'gray'
+                    ctx.strokeRect(x, y, size.w * scale - 1, size.h * scale - 1)
                 }
             }
-            if (grid) {
-                ctx.strokeStyle = 'gray'
-                ctx.strokeRect(x, y, size.w * scale - 1, size.h * scale - 1)
-            }
         }
-    })
-
+    )
 }
 
 export function TileLayerToolbar(props: {
@@ -98,14 +95,14 @@ export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
             args.setFillOnce(false)
             return
         }
-        if(tile) layer.getPropValue('data').set(pt, {tile: tile._id})
+        if (tile) layer.getPropValue('data').set(pt, {tile: tile._id})
     }
 
     onMouseMove(args: MouseEventArgs<TileLayer>) {
         const {layer, tile, doc} = args
         const tileSize = doc.getPropValue('tileSize')
         const pt = new Point(args.pt.x / tileSize.w, args.pt.y / tileSize.h).floor()
-        if(tile) layer.getPropValue('data').set(pt, {tile: tile._id})
+        if (tile) layer.getPropValue('data').set(pt, {tile: tile._id})
     }
 
     onMouseUp(v: MouseEventArgs<TileLayer>): void {

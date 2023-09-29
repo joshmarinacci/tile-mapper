@@ -1,6 +1,6 @@
 import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
 
-import {drawEditableSprite, ImagePalette, PICO8} from "../common/common"
+import {drawEditableSprite, ImagePalette, PICO8, RESURRECT64} from "../common/common"
 import {CLASS_REGISTRY, DefList, PropDef, PropsBase, PropValues, restoreClassFromJSON} from "./base"
 
 export const BooleanDef:PropDef<boolean> = {
@@ -99,8 +99,19 @@ export const PaletteDef: PropDef<ImagePalette> = {
     watchChildren: false,
     default: () => PICO8,
     toJSON: (v) => v,
-    format: () => 'unknown',
-    fromJSON: (v) => v as ImagePalette,
+    format: (v) => v.name,
+    fromJSON: (v) => {
+        if('name' in v) {
+            return v as ImagePalette
+        } else {
+            if( v.length === 64) return RESURRECT64
+            if( v.length === 17) return PICO8
+            return {
+                name:'unknow',
+                colors:v as string[]
+            } as ImagePalette
+        }
+    },
 }
 
 const JumpDef: PropDef<number> = {
@@ -199,7 +210,6 @@ type TileType = {
     blocking: boolean,
     data: ArrayGrid<number>,
     size: Size,
-    palette: ImagePalette
 }
 const TileDataDef:PropDef<ArrayGrid<number>> = {
     type:'array',
@@ -222,13 +232,10 @@ const TileDefs:DefList<TileType> = {
     blocking: BlockingDef,
     data: TileDataDef,
     size: SizeDef,
-    palette: PaletteDef,
 }
 export class Tile extends PropsBase<TileType> {
-    cache_canvas: HTMLCanvasElement | null
     constructor(opts?: PropValues<TileType>) {
         super(TileDefs, opts)
-        this.cache_canvas = null
         const size = this.getPropValue('size')
         const data = this.getPropValue('data')
         if(data.w !== size.w || data.h !== size.h) {
@@ -236,25 +243,20 @@ export class Tile extends PropsBase<TileType> {
             const data = new ArrayGrid<number>(size.w,size.h)
             data.fill(() => 0)
             this.setPropValue('data',data)
-            this.rebuild_cache()
         }
     }
 
     setPixel(number: number, point: Point) {
         this.getPropValue('data').set(point, number)
-        this.rebuild_cache()
         this._fire('data',this.getPropValue('data'))
         this._fireAll()
     }
-
     width() {
         return this.getPropValue('size').w
     }
-
     height() {
         return this.getPropValue('size').h
     }
-
     getPixel(point: Point) {
         return this.getPropValue('data').get(point)
     }
@@ -270,26 +272,12 @@ export class Tile extends PropsBase<TileType> {
     clone() {
         const new_tile = new Tile({
             size: this.getPropValue('size'),
-            palette:this.getPropValue('palette')
-        })
+            })
         new_tile.getPropValue('data').data = this.data().data.slice()
         new_tile.setPropValue('blocking', this.getPropValue('blocking'))
         new_tile.setPropValue('name', this.getPropValue('name'))
         new_tile.setPropValue('size', this.getPropValue('size'))
-        new_tile.rebuild_cache()
         return new_tile
-    }
-
-    rebuild_cache() {
-        if(typeof document !== 'undefined') {
-            // console.log(`rebuilding ${this._id} ${this.getPropValue('name')} with palette is`,this.getPropValue('palette'))
-            // console.log(this.getPropValue('data').size())
-            this.cache_canvas = document.createElement('canvas')
-            this.cache_canvas.width = this.width()
-            this.cache_canvas.height = this.height()
-            const ctx = this.cache_canvas.getContext('2d') as CanvasRenderingContext2D
-            drawEditableSprite(ctx, 1, this)
-        }
     }
 
     private log(...args:unknown[]) {
@@ -658,14 +646,26 @@ const GameDocDefs:DefList<DocType> = {
     palette: PaletteDef,
     tileSize: SizeDef,
 }
+
+export function gen_canvas(tile: Tile, palette: ImagePalette) {
+    const cache_canvas = document.createElement('canvas')
+    cache_canvas.width = tile.getPropValue('size').w
+    cache_canvas.height = tile.getPropValue('size').h
+    const ctx = cache_canvas.getContext('2d') as CanvasRenderingContext2D
+    drawEditableSprite(ctx, 1, tile, palette)
+    return cache_canvas
+}
+
 export class GameDoc extends PropsBase<DocType> {
     private sprite_lookup: Map<string, Tile>
     private sprite_lookup_by_name: Map<string, Tile>
+    private image_cache: Map<Tile,HTMLCanvasElement>
 
     constructor(opts?: PropValues<DocType>) {
         super(GameDocDefs, opts)
         this.sprite_lookup = new Map()
         this.sprite_lookup_by_name = new Map()
+        this.image_cache = new Map()
     }
 
     lookup_sprite(id: string) {
@@ -673,8 +673,6 @@ export class GameDoc extends PropsBase<DocType> {
         for (const sheet of this.getPropValue('sheets') as Sheet[]) {
             for (const tile of sheet.getPropValue('tiles') as Tile[]) {
                 if (tile._id === id) {
-                    // console.log("caching",id,tile.getPropValue('name'), tile.cache_canvas)
-                    tile.rebuild_cache()
                     this.sprite_lookup.set(tile._id, tile)
                     return tile
                 }
@@ -689,7 +687,6 @@ export class GameDoc extends PropsBase<DocType> {
             for (const tile of sheet.getPropValue('tiles') as Tile[]) {
                 if (tile.getPropValue('name') === name) {
                     // console.log("caching",id,tile.getPropValue('name'), tile.cache_canvas)
-                    tile.rebuild_cache()
                     this.sprite_lookup.set(tile._id, tile)
                     this.sprite_lookup_by_name.set(tile.getPropValue('name'),tile)
                     return tile
@@ -698,6 +695,23 @@ export class GameDoc extends PropsBase<DocType> {
         }
         console.log("missing", name)
         return undefined
+    }
+
+    lookup_canvas(id: string) {
+        const tile = this.lookup_sprite(id)
+        if(tile) {
+            if(!this.image_cache.has(tile)) {
+                const can = gen_canvas(tile,this.getPropValue('palette'))
+                this.image_cache.set(tile,can)
+            }
+            return this.image_cache.get(tile)
+        }
+    }
+    markDirty(id:string) {
+        const tile = this.lookup_sprite(id)
+        if(tile) {
+            this.image_cache.delete(tile)
+        }
     }
 }
 CLASS_REGISTRY.register('Doc',GameDoc,GameDocDefs)

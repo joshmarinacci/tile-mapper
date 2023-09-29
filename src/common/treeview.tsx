@@ -26,7 +26,7 @@ function PropertyList<T extends DocType, K extends keyof T>(props: {
     const toggle = () => setOpen(!open)
     useWatchProp(target,name)
     const addSheet = () => {
-        const sheet = new Sheet({name:'unnamed sheet', tileSize: new Size(20,20)})
+        const sheet = new Sheet({name:'unnamed sheet', tileSize: target.getPropValue('tileSize')})
         appendToList(target,'sheets',sheet)
         props.state.setPropValue('selection',sheet)
     }

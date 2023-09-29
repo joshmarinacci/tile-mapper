@@ -29,20 +29,7 @@ type Pal = {
     name:string,
     pal:ImagePalette,
 }
-const PALS:Pal[] = [
-    {
-        name:'PICO8',
-        pal:PICO8
-    },
-    {
-        name:'Minecraft 16',
-        pal:MINECRAFT,
-    },
-    {
-        name:'Resurrect 64',
-        pal:RESURRECT64,
-    }
-]
+const PALS:ImagePalette[] = [PICO8, MINECRAFT, RESURRECT64]
 
 export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
     const [width, setWidth] = useState(10)
@@ -50,7 +37,7 @@ export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
     const [pal, setPal] = useState(PALS[0])
     const dc = useContext(DialogContext)
     const create = () => {
-        const doc = make_new_doc(width, height, pal.pal)
+        const doc = make_new_doc(width, height, pal)
         props.onComplete(doc)
         dc.hide()
     }
@@ -63,8 +50,7 @@ export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
                                          onChange={(e) => setHeight(parseInt(e.target.value))}/>
             <label>palette</label>
             <select value={pal.name} onChange={e => {
-                console.log("new val is",e.target.value)
-                const pp = PALS.find(p => p.name === e.target.value) as Pal
+                const pp = PALS.find(p => p.name === e.target.value) as ImagePalette
                 setPal(pp)
             }}>
                 {PALS.map(pal => {

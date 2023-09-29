@@ -44,7 +44,7 @@ export function PaletteColorPickerPane(props: {
         </header>
         <ListView className={'palette'}
                   direction={ListViewDirection.HorizontalWrap}
-                  data={palette}
+                  data={palette.colors}
                   renderer={PaletteColorRenderer}
                   selected={drawColor}
                   setSelected={setDrawColor}

@@ -19,8 +19,8 @@ export function TileSheetEditor(props: {
 }) {
     const {sheet} = props
     const doc = useContext(DocContext)
-    const palette: string[] = doc.getPropValue('palette') as string[]
-    const [drawColor, setDrawColor] = useState<string>(palette[0])
+    const palette = doc.getPropValue('palette')
+    const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
     const [tile, setTile] = useState<Tile | undefined>(undefined)
     const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20))
     useEffect(() => {
@@ -40,15 +40,15 @@ export function TileSheetEditor(props: {
             <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor}
                                     palette={palette}/>
             {tile && <PixelGridEditor
-                selectedColor={palette.indexOf(drawColor)}
-                setSelectedColor={(n) => setDrawColor(palette[n])}
+                selectedColor={palette.colors.indexOf(drawColor)}
+                setSelectedColor={(n) => setDrawColor(palette.colors[n])}
                 tile={tile} palette={palette}/>}
             {!tile && <div>no tile selected</div>}
         </VBox>
         {tile &&
             <div className={'pane'} style={{ maxWidth:'unset' }}>
                 <header>Test</header>
-                <TestMap tile={tile} mapArray={maparray}/>
+                <TestMap tile={tile} mapArray={maparray} palette={palette}/>
             </div>
         }
     </div>)

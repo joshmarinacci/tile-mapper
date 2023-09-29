@@ -31,9 +31,7 @@ export function ListView<T,O extends ListViewOptions>(props: {
             return <div className={toClass({
                 'list-item':true,
                 selected:props.selected === v
-            })} key={i}
-                        onClick={()=>props.setSelected(v)}
-            >
+            })} key={i} onClick={()=>props.setSelected(v)}>
                 <Cell value={v} selected={props.selected===v} options={props.options}/>
             </div>
         })}

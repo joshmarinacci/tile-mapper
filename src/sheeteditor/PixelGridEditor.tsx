@@ -1,9 +1,9 @@
 import {Point} from "josh_js_util"
 import {HBox} from "josh_react_util"
-import React, {MouseEvent, useEffect, useRef, useState} from "react"
+import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
 
 import {Icons, ImagePalette} from "../common/common"
-import {IconButton, ToggleButton} from "../common/common-components"
+import {DocContext, IconButton, ToggleButton} from "../common/common-components"
 import {ICON_CACHE} from "../iconcache"
 import {Tile} from "../model/datamodel"
 
@@ -36,6 +36,7 @@ export function PixelGridEditor(props: {
     palette: ImagePalette,
     setSelectedColor: (v:number)=>void
 }) {
+    const doc = useContext(DocContext)
     const {selectedColor, palette, tile} = props
     const [down, setDown] = useState<boolean>(false)
     const [grid, setGrid] = useState<boolean>(false)
@@ -54,7 +55,7 @@ export function PixelGridEditor(props: {
             for (let i = 0; i < tile.width(); i++) {
                 for (let j = 0; j < tile.height(); j++) {
                     const v: number = tile.getPixel(new Point(i, j))
-                    ctx.fillStyle = palette[v]
+                    ctx.fillStyle = palette.colors[v]
                     ctx.fillRect(i * scale, j * scale, scale, scale)
                     if (grid) {
                         ctx.strokeStyle = 'black'
@@ -120,6 +121,7 @@ export function PixelGridEditor(props: {
                     }
                     setDown(true)
                     tile.setPixel(selectedColor, canvasToImage(e))
+                    doc.markDirty(tile.getUUID())
                 }}
                 onMouseMove={(e) => {
                     if (down) {

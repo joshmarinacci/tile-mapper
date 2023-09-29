@@ -16,15 +16,15 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
     // pre-cache all of the tiles
     doc.getPropValue('sheets').forEach(sht => {
         sht.getPropValue('tiles').forEach(tile => {
-            tile.rebuild_cache()
-            if (tile.cache_canvas) {
-                cache.addCachedTile(tile.getPropValue('name'), tile._id, {
-                    name: tile.getPropValue('name'),
-                    id: tile._id,
-                    blocking: tile.getPropValue('blocking'),
-                    canvas: tile.cache_canvas
-                })
-            }
+            // tile.rebuild_cache()
+            // if (tile.cache_canvas) {
+            //     cache.addCachedTile(tile.getPropValue('name'), tile._id, {
+            //         name: tile.getPropValue('name'),
+            //         id: tile._id,
+            //         blocking: tile.getPropValue('blocking'),
+            //         canvas: tile.cache_canvas
+            //     })
+            // }
         })
     })
     // turn each layer of the map into a layer of the engine
