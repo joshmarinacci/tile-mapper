@@ -171,20 +171,16 @@ export function map_to_canvas(map: GameMap, doc: GameDoc, scale: number): HTMLCa
                 if (v) {
                     const x = n.x * size.w * scale
                     const y = n.y * size.w * scale
-                    const tile = doc.lookup_sprite(v.tile)
-                    if (tile) {
-                        if (tile.cache_canvas) {
-                            ctx.drawImage(tile.cache_canvas,
-                                //src
-                                0, 0, tile.cache_canvas.width, tile.cache_canvas.height,
-                                //dst
-                                x,
-                                y,
-                                size.w * scale, size.h * scale
-                            )
-                        } else {
-                            drawEditableSprite(ctx, scale, tile)
-                        }
+                    const can = doc.lookup_canvas(v.tile)
+                    if (can) {
+                        ctx.drawImage(can,
+                            //src
+                            0, 0, can.width, can.height,
+                            //dst
+                            x,
+                            y,
+                            size.w * scale, size.h * scale
+                        )
                     }
                 }
 
