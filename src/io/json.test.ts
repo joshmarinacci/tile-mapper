@@ -16,7 +16,6 @@ describe('simple test', () => {
             name:'my cool tile',
             size: new Size(4,3),
             blocking: true,
-            palette: PICO8,
         })
         tile.setPixel(1, new Point(1,1))
 
@@ -54,7 +53,7 @@ describe('simple test', () => {
         expect(actor._id).toBe(actor2._id)
     })
     it('should save a sheet class', async () => {
-        const tile = new Tile({name:'sky',palette:PICO8,size:new Size(4,4)})
+        const tile = new Tile({name:'sky',size:new Size(4,4)})
         tile.setPixel(3,new Point(2,2))
         console.log(CLASS_REGISTRY)
 
