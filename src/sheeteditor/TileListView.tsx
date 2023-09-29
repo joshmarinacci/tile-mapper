@@ -11,10 +11,12 @@ import {
     rotateTile90Clock,
     rotateTile90CounterClock
 } from "../actions/actions"
-import {drawEditableSprite, ImagePalette} from "../common/common"
+import {drawEditableSprite, Icons, ImagePalette} from "../common/common"
 import {
     DocContext,
     DropdownButton,
+    Icon,
+    IconButton,
     MenuList,
     Pane
 } from "../common/common-components"
@@ -131,11 +133,11 @@ export function TileListView(props: {
     return <div className={'tile-list-view'}>
         {editable &&
             <div className={'toolbar'}>
-                <button onClick={add_tile}>add tile</button>
-                <button onClick={dup_tile}>dup tile</button>
-                <button onClick={delete_tile}>del tile</button>
+                <IconButton onClick={add_tile} icon={Icons.Tile} text={'+'}/>
+                <IconButton onClick={dup_tile} icon={Icons.Duplicate}/>
+                <button onClick={delete_tile}><Icon name={Icons.Trashcan}/></button>
                 <Spacer/>
-                <DropdownButton title={'options'}>
+                <DropdownButton icon={Icons.Gear}>
                     <button onClick={() => setShowNames(!showNames)}>show names</button>
                     <button onClick={() => setShowGrid(!showGrid)}>show grid</button>
                     <button onClick={() => setScale(1)}>1x</button>

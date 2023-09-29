@@ -47,8 +47,8 @@ export function LayerList(props: {
         <header>Layers</header>
         {props.editable &&
             <div className={'toolbar'}>
-                <button onClick={()=>add_tile_layer(props.map)}><Icon name={Icons.AddTile}/> Layer</button>
-                <button onClick={()=>add_actor_layer(props.map)}>+ actor layer</button>
+                <button onClick={()=>add_tile_layer(props.map)}>+ <Icon name={Icons.Tile}/></button>
+                <button onClick={()=>add_actor_layer(props.map)}>+ <Icon name={Icons.Actor}/></button>
                 <button onClick={()=>delete_layer(layer,props.map)}><Icon name={Icons.Trashcan}/></button>
                 <button onClick={()=>move_layer_up(layer,props.map)}><Icon name={Icons.DownArrow}/></button>
                 <button onClick={()=>move_layer_down(layer,props.map)}><Icon name={Icons.UpArrow}/></button>

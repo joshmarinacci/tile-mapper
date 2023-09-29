@@ -88,7 +88,7 @@ export function PixelGridEditor(props: {
     }}>
         <header>Edit</header>
         <HBox className={'hbox toolbar'}>
-            <ToggleButton onClick={()=>setGrid(!grid)} icon={Icons.Grid} selected={grid}/>
+            <ToggleButton onClick={()=>setGrid(!grid)} icon={Icons.Grid} selected={grid} selectedIcon={Icons.GridSelected}/>
             <ToggleButton onClick={()=>setFillOnce(true)} icon={Icons.PaintBucket} selected={fillOnce}/>
             <IconButton onClick={()=>setZoom(zoom+1)} icon={Icons.Plus}/>
             <label>{zoom}</label>

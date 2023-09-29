@@ -235,5 +235,9 @@ export enum Icons {
     Checkerboard = 'checkerboard',
     PaintBucket = 'paint-bucket',
     Grid = 'grid',
+    GridSelected = 'grid-selected',
+    Actor = 'actor',
+    Duplicate= 'duplicate',
+    Gear = 'gear',
 }
 

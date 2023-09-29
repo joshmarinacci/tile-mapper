@@ -79,12 +79,13 @@ export function ToolbarActionButton(props:{state:GlobalState, action:MenuAction,
 export function MenuList(props: { children:ReactNode }) {
     return <div className={'menu-list'}>{props.children}</div>
 }
-export function DropdownButton(props: { title:string,     children: ReactNode,
+export function DropdownButton(props: { title?:string, icon?:Icons, children: ReactNode,
 }) {
+    const {title, icon, children} = props
     const pm = useContext(PopupContext)
     return <button onClick={(e)=>{
-        pm.show_at(<MenuList>{props.children}</MenuList>,e.target,"right")
-    }}>{props.title} {down_arrow_triangle}</button>
+        pm.show_at(<MenuList>{children}</MenuList>,e.target,"right")
+    }}>{icon?<Icon name={icon}/>:''}{title?title:""} {down_arrow_triangle}</button>
 }
 
 export const DocContext = React.createContext(new GameDoc())
@@ -111,15 +112,21 @@ export function ToggleButton(props: {
     onClick: () => void,
     icon: Icons,
     selected: boolean,
+    selectedIcon?: Icons,
     text?: string,
 }) {
+    let icon = props.icon
+    if(props.selected && props.selectedIcon) {
+        icon = props.selectedIcon
+    }
+    console.log("icon is",icon)
     return <button onClick={props.onClick}
                    className={toClass({
                        selected: props.selected
                    })}
     >
         {props.text ? props.text : ""}
-        <Icon name={props.icon}/>
+        <Icon name={icon}/>
     </button>
 }
 
