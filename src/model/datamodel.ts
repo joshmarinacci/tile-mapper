@@ -294,7 +294,8 @@ CLASS_REGISTRY.register('Tile',Tile,TileDefs)
 type SheetType = {
     name: string
     tileSize: Size,
-    tiles: Tile[]
+    tiles: Tile[],
+    selectedTile: Tile|undefined,
 }
 const TileArrayDef:PropDef<Tile[]> = {
     type:'array',
@@ -314,6 +315,15 @@ const SheetDefs:DefList<SheetType> = {
     name: NameDef,
     tileSize: SizeDef,
     tiles: TileArrayDef,
+    selectedTile: {
+        type:'object',
+        hidden: true,
+        default: () => undefined,
+        expandable: false,
+        editable: false,
+        watchChildren: false,
+        skipPersisting: true,
+    }
 }
 export class Sheet extends PropsBase<SheetType> {
     constructor(opts?: PropValues<SheetType>) {

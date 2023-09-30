@@ -150,4 +150,18 @@ describe('simple test', () => {
         expect(layer2.getPropValue('data').get_at(1,1)).toStrictEqual({tile:'foo'})
 
     })
+    it('should save a sheet but not persist the selection', async () => {
+        const tile = new Tile({name:'sky',size:new Size(4,4)})
+        tile.setPixel(3,new Point(2,2))
+        const sheet = new Sheet({name:'terrain',tileSize: new Size(4,4)})
+        appendToList(sheet,'tiles',tile)
+        expect(sheet.getPropValue('selectedTile')).toBeFalsy()
+        const json = sheet.toJSON()
+        console.log("sheet JSON",JSON.stringify(json,null,'  '))
+        const sheet2 = restoreClassFromJSON(json)
+        expect(sheet2).toBeTruthy()
+        expect(sheet2.getPropValue('selectedTile')).toBeFalsy()
+
+
+    })
 })

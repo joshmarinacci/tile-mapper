@@ -7,6 +7,7 @@ import React, {useContext, useEffect, useState} from "react"
 import {DocContext, Pane} from "../common/common-components"
 import {PaletteColorPickerPane} from "../common/Palette"
 import {PropSheet} from "../common/propsheet"
+import {useWatchProp} from "../model/base"
 import {Sheet, Tile} from "../model/datamodel"
 import {GlobalState} from "../state"
 import {TestMap} from "../testeditor/TestMap"
@@ -21,17 +22,20 @@ export function TileSheetEditor(props: {
     const doc = useContext(DocContext)
     const palette = doc.getPropValue('palette')
     const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
-    const [tile, setTile] = useState<Tile | undefined>(undefined)
+    const tile = sheet.getPropValue('selectedTile')
     const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20))
     useEffect(() => {
         const tiles = sheet.getPropValue('tiles')
-        setTile(tiles.length > 0 ? tiles[0] : undefined)
+        sheet.setPropValue('selectedTile',tiles.length > 0 ? tiles[0] : undefined)
     }, [sheet])
+    useWatchProp(sheet,"selectedTile")
 
     return (<div className={'tile-sheet-editor'}>
         <div className={'scrolling-column'}>
             {sheet && <Pane collapsable={true} title={'Tile Sheet'}>
-                <TileListView editable={true} sheet={sheet} tile={tile} setTile={setTile}
+                <TileListView editable={true}
+                              sheet={sheet} tile={tile}
+                              setTile={(tile) => sheet.setPropValue('selectedTile', tile)}
                               palette={palette}/>
             </Pane>}
             {tile && <PropSheet target={tile} title={'Tile Info'}/>}

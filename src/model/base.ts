@@ -25,6 +25,7 @@ export type PropDef<T> = {
     expandable: boolean,
     hidden: boolean,
     watchChildren: boolean,
+    skipPersisting?:boolean
 }
 type WrapperCallback<Value> = (v: Value) => void
 type WrapperAnyCallback<Type> = (t: PropsBase<Type>) => void
@@ -152,6 +153,7 @@ export class PropsBase<Type> {
             id: this._id,
         }
         for (const [k, d] of this.getAllPropDefs()) {
+            if(d.skipPersisting) continue
             if(!d.toJSON) throw new Error(`prop def for ${k} in class ${clazz} is missing toJSON function`)
             obj.props[k] = d.toJSON(this.getPropValue(k))
         }
