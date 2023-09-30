@@ -19,7 +19,7 @@ function make_new_doc(width: number, height: number, palette:ImagePalette) {
         tileSize: TS,
     })
     const sheet = new Sheet({tileSize:TS })
-    const tile = new Tile({size:TS, palette:palette})
+    const tile = new Tile({size:TS})
     appendToList(sheet,"tiles", tile)
     appendToList(doc,'sheets',sheet)
     return doc
