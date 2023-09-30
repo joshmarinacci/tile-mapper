@@ -25,7 +25,9 @@ const LayerNameRenderer: ListViewRenderer<PropsBase<MapLayerType>,never> = (prop
     useWatchProp(value,'visible')
     return <div className={'std-list-item'} style={{ justifyContent:'space-between' }}>
         <b>{value.getPropValue('name')}</b>
-        <Icon name={value.getPropValue('visible')?Icons.EyeOpen:Icons.EyeClosed}/>
+        <Icon
+            onClick={() => value.setPropValue('visible', !value.getPropValue('visible'))}
+            name={value.getPropValue('visible')?Icons.EyeOpen:Icons.EyeClosed}/>
     </div>
 }
 

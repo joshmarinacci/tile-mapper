@@ -102,10 +102,11 @@ export function Pane(props:{title?:string, header?:ReactNode, children:ReactNode
     </div>
 }
 
-export function Icon(props:{name:Icons}) {
-    return <img src={ICON_CACHE.getIconUrl(props.name)} width={16} style={{
-        imageRendering:'pixelated'
-    }}/>
+export function Icon(props:{name:Icons, onClick?:()=>void}) {
+    return <img
+        src={ICON_CACHE.getIconUrl(props.name)}
+        onClick={props.onClick} width={16}
+        style={{ imageRendering:'pixelated' }}/>
 }
 
 export function ToggleButton(props: {
