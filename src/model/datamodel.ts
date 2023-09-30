@@ -336,6 +336,10 @@ export class SImageLayer extends PropsBase<SImageLayerType> {
         this._fire('data',this.getPropValue('data'))
         this._fireAll()
     }
+
+    getPixel(pt: Point):number {
+        return this.getPropValue('data').get(pt)
+    }
 }
 CLASS_REGISTRY.register('SImageLayer',SImageLayer,SImageLayerDataDefs)
 

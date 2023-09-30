@@ -4,7 +4,7 @@ import React, {useContext} from "react"
 import {
     add_actor_layer,
     add_tile_layer,
-    delete_layer,
+    delete_map_layer,
     move_layer_down,
     move_layer_up
 } from "../actions/actions"
@@ -50,7 +50,7 @@ export function LayerList(props: {
             <div className={'toolbar'}>
                 <button onClick={()=>add_tile_layer(props.map)}>+ <Icon name={Icons.Tile}/></button>
                 <button onClick={()=>add_actor_layer(props.map)}>+ <Icon name={Icons.Actor}/></button>
-                <button onClick={()=>delete_layer(layer,props.map)}><Icon name={Icons.Trashcan}/></button>
+                <button onClick={()=>delete_map_layer(layer,props.map)}><Icon name={Icons.Trashcan}/></button>
                 <button onClick={()=>move_layer_up(layer,props.map)}><Icon name={Icons.DownArrow}/></button>
                 <button onClick={()=>move_layer_down(layer,props.map)}><Icon name={Icons.UpArrow}/></button>
                 <button onClick={()=>resize()}><Icon name={Icons.Resize}/></button>

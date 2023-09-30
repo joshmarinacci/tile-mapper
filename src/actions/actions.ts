@@ -212,7 +212,7 @@ export const add_actor_layer = (map: GameMap) => {
     const layer = new ActorLayer({name: 'new actor layer', visible: true, blocking: true})
     appendToList(map, 'layers', layer)
 }
-export const delete_layer = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
+export const delete_map_layer = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
     if (!layer) return
     let layers = map.getPropValue('layers') as PropsBase<MapLayerType>[]
     layers = layers.slice()

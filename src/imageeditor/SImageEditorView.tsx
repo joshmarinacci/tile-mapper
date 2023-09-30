@@ -7,6 +7,7 @@ import {Icons, ImagePalette} from "../common/common"
 import {DocContext, Icon, IconButton, Pane, ToggleButton} from "../common/common-components"
 import {ListView, ListViewDirection, ListViewRenderer} from "../common/ListView"
 import {PaletteColorPickerPane} from "../common/Palette"
+import {PropSheet} from "../common/propsheet"
 import {appendToList, useWatchAllProps, useWatchProp} from "../model/base"
 import {SImage, SImageLayer} from "../model/datamodel"
 import {GlobalState} from "../state"
@@ -144,7 +145,6 @@ class LineTool implements Tool {
 
     drawOverlay(ovr: ToolOverlayInfo): void {
         if (this._down) {
-            console.log('drawing overlay')
             ovr.ctx.strokeStyle = 'red'
             ovr.ctx.lineWidth = 5
             ovr.ctx.beginPath()
@@ -201,16 +201,16 @@ class RectTool implements Tool {
     constructor() {
         this.name = 'rect'
         this.down = false
-        this.start = new Point(0,0)
-        this.end = new Point(0,0)
+        this.start = new Point(0, 0)
+        this.end = new Point(0, 0)
     }
 
     drawOverlay(ovr: ToolOverlayInfo): void {
-        if(!this.down) return
+        if (!this.down) return
         ovr.ctx.strokeStyle = 'red'
         ovr.ctx.lineWidth = 4
         ovr.ctx.beginPath()
-        ovr.ctx.strokeRect(this.start.x*ovr.scale,this.start.y*ovr.scale,(this.end.x-this.start.x)*ovr.scale,(this.end.y-this.start.y)*ovr.scale)
+        ovr.ctx.strokeRect(this.start.x * ovr.scale, this.start.y * ovr.scale, (this.end.x - this.start.x) * ovr.scale, (this.end.y - this.start.y) * ovr.scale)
     }
 
     onMouseDown(evt: ToolEvent): void {
@@ -221,7 +221,7 @@ class RectTool implements Tool {
     }
 
     onMouseMove(evt: ToolEvent): void {
-        if(this.down) {
+        if (this.down) {
             this.end = evt.pt
             evt.markDirty()
         }
@@ -230,18 +230,18 @@ class RectTool implements Tool {
 
     onMouseUp(evt: ToolEvent): void {
         this.down = false
-        if(evt.layer) {
+        if (evt.layer) {
             const j = this.start.y
             const j2 = this.end.y
             const i1 = this.start.x
             const i2 = this.end.x
-            for(let i=this.start.x; i<this.end.x; i++) {
-                evt.layer.setPixel(new Point(i,j), evt.color)
-                evt.layer.setPixel(new Point(i,j2), evt.color)
+            for (let i = this.start.x; i < this.end.x; i++) {
+                evt.layer.setPixel(new Point(i, j), evt.color)
+                evt.layer.setPixel(new Point(i, j2), evt.color)
             }
-            for(let j = this.start.y; j<this.end.y; j++) {
-                evt.layer.setPixel(new Point(i1,j),evt.color)
-                evt.layer.setPixel(new Point(i2,j),evt.color)
+            for (let j = this.start.y; j < this.end.y; j++) {
+                evt.layer.setPixel(new Point(i1, j), evt.color)
+                evt.layer.setPixel(new Point(i2, j), evt.color)
             }
         }
     }
@@ -350,9 +350,9 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
     const [grid, setGrid] = useState(true)
     const [zoom, setZoom] = useState(0)
     const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
-    const [selectedLayer, setSelectedLayer] = useState<SImageLayer | undefined>()
+    const [layer, setLayer] = useState<SImageLayer | undefined>()
     const canvasRef = useRef(null)
-    const [tool, setTool] = useState<Tool>(() => new LineTool())
+    const [tool, setTool] = useState<Tool>(() => new PencilTool())
     const [count, setCount] = useState(0)
 
     const scale = Math.pow(2, zoom)
@@ -363,12 +363,8 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
         }
     }
 
-    useEffect(() => {
-        redraw()
-    }, [canvasRef, zoom, grid, count])
-    useWatchAllProps(image, () => {
-        setCount(count + 1)
-    })
+    useEffect(() => redraw(), [canvasRef, zoom, grid, count])
+    useWatchAllProps(image, () => setCount(count + 1))
 
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
         const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
@@ -377,29 +373,58 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
             .scale(1 / scale)
             .floor()
     }
+    const new_layer = () => {
+        const layer = new SImageLayer({name: 'unknown layer', opacity: 1.0, visible: true})
+        layer.rebuildFromCanvas(image)
+        appendToList(image, 'layers', layer)
+    }
+    const del_layer = () => {
+        if (!layer) return
+        let layers = image.getPropValue('layers')
+        layers = layers.slice()
+        const n = layers.indexOf(layer)
+        if (n >= 0) {
+            layers.splice(n, 1)
+        }
+        image.setPropValue('layers', layers)
+    }
+    const move_layer_down = () => {
+        if (!layer) return
+        let layers = image.getPropValue('layers')
+        layers = layers.slice()
+        const n = layers.indexOf(layer)
+        if (n >= layers.length) return
+        layers.splice(n, 1)
+        layers.splice(n + 1, 0, layer)
+        image.setPropValue('layers', layers)
+    }
+    const move_layer_up = () => {
+        if (!layer) return
+        let layers = image.getPropValue('layers')
+        layers = layers.slice()
+        const n = layers.indexOf(layer)
+        if (n <= 0) return
+        layers.splice(n, 1)
+        layers.splice(n - 1, 0, layer)
+        image.setPropValue('layers', layers)
+    }
+
 
     return <div className={'image-editor-view'}>
         <Pane key={'layer-list'} title={'layers'} collapsable={true}>
             <div className={'toolbar'}>
-                <IconButton onClick={() => {
-                    const layer = new SImageLayer({name: 'unknown layer', opacity: 1.0, visible: true})
-                    layer.rebuildFromCanvas(image)
-                    appendToList(image, 'layers', layer)
-                }} icon={Icons.Plus} text={'add layer'}/>
-                <IconButton onClick={() => console.log("")} icon={Icons.Trashcan}
-                            text={'del layer'}/>
-                <IconButton onClick={() => console.log("")} icon={Icons.UpArrow}
-                            text={'move layer up'}/>
-                <IconButton onClick={() => console.log("")} icon={Icons.DownArrow}
-                            text={'move layer down'}/>
+                <IconButton onClick={() => new_layer()} icon={Icons.Plus}/>
+                <IconButton onClick={() => del_layer()} icon={Icons.Trashcan}/>
+                <IconButton onClick={() => move_layer_down()} icon={Icons.UpArrow}/>
+                <IconButton onClick={() => move_layer_up()} icon={Icons.DownArrow}/>
             </div>
-            <ListView selected={selectedLayer} setSelected={setSelectedLayer}
+            <ListView selected={layer} setSelected={setLayer}
                       renderer={LayerItemRenderer}
                       data={props.image.getPropValue('layers')}
                       direction={ListViewDirection.VerticalFill}
                       options={{}}/>
         </Pane>
-        <div className={'layer-list'}>layer list</div>
+        <PropSheet target={layer} title={'Layer Info'}/>
         <div className={'toolbar'}>
             <IconButton onClick={() => setZoom(zoom + 1)} icon={Icons.Plus}/>
             <IconButton onClick={() => setZoom(zoom - 1)} icon={Icons.Minus}/>
@@ -412,8 +437,7 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
             <ToggleButton onClick={() => setTool(new LineTool())} icon={Icons.Line}
                           selected={tool.name === 'line'}/>
             <ToggleButton onClick={() => setTool(new RectTool())} icon={Icons.Rect}
-                          selected={tool.name === 'rect'}
-            />
+                          selected={tool.name === 'rect'}/>
             <ToggleButton onClick={() => setTool(new EllipseTool())} icon={Icons.Ellipse}
                           selected={tool.name === 'ellipse'}/>
             <ToggleButton onClick={() => setTool(new FillTool())} icon={Icons.PaintBucket}
@@ -424,12 +448,22 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
                                 palette={palette}/>
         <div className={'pixel-editor'}>main view</div>
         <canvas ref={canvasRef} width={512} height={512}
+                onContextMenu={e => {
+                    e.preventDefault()
+                    e.stopPropagation()
+                    const pt = canvasToImage(e)
+                    if(layer) {
+                        const color = layer.getPixel(pt)
+                        setDrawColor(palette.colors[color])
+                    }
+                }}
                 onMouseDown={(e) => {
+                    if(e.button == 2) return
                     tool.onMouseDown({
                         color: palette.colors.indexOf(drawColor),
                         pt: canvasToImage(e),
                         e: e,
-                        layer: selectedLayer,
+                        layer: layer,
                         palette: palette,
                         markDirty: () => {
 
@@ -441,7 +475,7 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
                         color: palette.colors.indexOf(drawColor),
                         pt: canvasToImage(e),
                         e: e,
-                        layer: selectedLayer,
+                        layer: layer,
                         palette: palette,
                         markDirty: () => {
                             setCount(count + 1)
@@ -453,7 +487,7 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
                         color: palette.colors.indexOf(drawColor),
                         pt: canvasToImage(e),
                         e: e,
-                        layer: selectedLayer,
+                        layer: layer,
                         palette: palette,
                         markDirty: () => {
 
