@@ -1,6 +1,7 @@
 import {ArrayGrid, Size} from "josh_js_util"
 import React, {useEffect, useRef, useState} from "react"
 
+import {drawGrid} from "../actions/actions"
 import {ActorsLayer} from "../engine/actorslayer"
 import {TileCache} from "../engine/cache"
 import {GameState} from "../engine/gamestate"
@@ -8,7 +9,7 @@ import {TileReference} from "../engine/globals"
 import {PhysicsConstants} from "../engine/physics"
 import {TilemapLayer} from "../engine/tilemaplayer"
 import {useWatchAllProps} from "../model/base"
-import {GameDoc, GameMap, GameTest, MapCell,TileLayer} from "../model/datamodel"
+import {GameDoc, GameMap, GameTest, MapCell, TileLayer} from "../model/datamodel"
 
 function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMap, size:Size, physicsDebug:boolean) {
     const gamestate = new GameState(current, size)
@@ -51,24 +52,6 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
     if(physicsDebug) gamestate.addLayer(gamestate.getPhysics())
     gamestate.getPlayers().forEach(ply => actors.addActor(ply))
     return {game_state: gamestate, cache}
-}
-
-function drawGrid(current: HTMLCanvasElement, zoom: number, tileSize: Size, viewport:Size) {
-    const ctx = current.getContext('2d') as CanvasRenderingContext2D
-    ctx.strokeStyle = '#000000'
-    ctx.lineWidth = 1
-    ctx.save()
-    ctx.beginPath()
-    for (let i = 0; i < viewport.w; i++) {
-        ctx.moveTo(i * zoom * tileSize.w, 0)
-        ctx.lineTo(i * zoom * tileSize.w, viewport.h * zoom * tileSize.h)
-    }
-    for (let i = 0; i < viewport.h; i++) {
-        ctx.moveTo(0, i * zoom * tileSize.h)
-        ctx.lineTo(viewport.w * zoom * tileSize.h, i * zoom * tileSize.w)
-    }
-    ctx.stroke()
-    ctx.restore()
 }
 
 

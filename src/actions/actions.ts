@@ -1,7 +1,7 @@
 import {ArrayGrid, Point, Size} from "josh_js_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 
-import {canvas_to_bmp, drawEditableSprite, ImagePalette, sheet_to_canvas} from "../common/common"
+import {canvas_to_bmp, ImagePalette, sheet_to_canvas} from "../common/common"
 import {
     docToJSON,
     fileToJson,
@@ -14,7 +14,15 @@ import {
 import {saveLocalStorage} from "../io/local"
 import {readMetadata} from "../io/vendor"
 import {appendToList, PropsBase, removeFromList, SimpleMenuAction} from "../model/base"
-import {ActorLayer, GameDoc, GameMap, MapLayerType, Sheet, Tile, TileLayer} from "../model/datamodel"
+import {
+    ActorLayer,
+    GameDoc,
+    GameMap,
+    MapLayerType,
+    Sheet,
+    Tile,
+    TileLayer
+} from "../model/datamodel"
 import {GlobalState} from "../state"
 
 export const ExportToJSONAction:SimpleMenuAction = {
@@ -257,4 +265,31 @@ export const DeleteMapAction:SimpleMenuAction = {
             state.setPropValue('selection',null)
         }
     }
+}
+
+export function drawGrid(current: HTMLCanvasElement, scale: number, tileSize: Size, viewport: Size) {
+    const ctx = current.getContext('2d') as CanvasRenderingContext2D
+    ctx.strokeStyle = '#000000'
+    ctx.lineWidth = 0.5
+    ctx.save()
+    ctx.beginPath()
+    for (let i = 0; i < viewport.w; i++) {
+        ctx.moveTo(i * scale * tileSize.w, 0)
+        ctx.lineTo(i * scale * tileSize.w, viewport.h * scale * tileSize.h)
+    }
+    for (let i = 0; i < viewport.h; i++) {
+        ctx.moveTo(0, i * scale * tileSize.h)
+        ctx.lineTo(viewport.w * scale * tileSize.h, i * scale * tileSize.w)
+    }
+    ctx.stroke()
+
+    ctx.beginPath()
+    ctx.lineWidth = 3.0
+    const mx = new Point(viewport.w/2,viewport.h/2).floor()
+    ctx.moveTo(mx.x*scale*tileSize.w,0)
+    ctx.lineTo(mx.x*scale*tileSize.w,viewport.h*scale*tileSize.h)
+    ctx.moveTo(0,mx.y*scale*tileSize.h)
+    ctx.lineTo(viewport.w*scale*tileSize.h, mx.x*scale*tileSize.h)
+    ctx.stroke()
+    ctx.restore()
 }

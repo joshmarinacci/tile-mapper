@@ -1,12 +1,12 @@
-import {Point} from "josh_js_util"
+import {Point, Size} from "josh_js_util"
 import {HBox} from "josh_react_util"
 import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
 
+import {drawGrid} from "../actions/actions"
 import {Icons, ImagePalette} from "../common/common"
 import {DocContext, IconButton, ToggleButton} from "../common/common-components"
 import {ICON_CACHE} from "../iconcache"
 import {Tile} from "../model/datamodel"
-
 
 function calculateDirections() {
     return [
@@ -42,6 +42,7 @@ export function PixelGridEditor(props: {
     const [grid, setGrid] = useState<boolean>(false)
     const [fillOnce, setFillOnce] = useState<boolean>(false)
     const [zoom, setZoom] = useState<number>(5)
+    const dpi = window.devicePixelRatio
     const scale = Math.pow(2,zoom)
     const ref = useRef<HTMLCanvasElement>(null)
     const redraw = () => {
@@ -49,20 +50,18 @@ export function PixelGridEditor(props: {
             const canvas = ref.current
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.fillStyle = 'magenta'
-            const pat = ctx.createPattern(ICON_CACHE.getIconCanvas('checkerboard'),'repeat') as CanvasPattern
-            ctx.fillStyle = pat
+            ctx.fillStyle = ctx.createPattern(ICON_CACHE.getIconCanvas('checkerboard'), 'repeat') as CanvasPattern
             ctx.fillRect(0, 0, canvas.width, canvas.height)
+            const sc = scale*dpi
+            const size = new Size(tile.width(),tile.height())
             for (let i = 0; i < tile.width(); i++) {
                 for (let j = 0; j < tile.height(); j++) {
                     const v: number = tile.getPixel(new Point(i, j))
                     ctx.fillStyle = palette.colors[v]
-                    ctx.fillRect(i * scale, j * scale, scale, scale)
-                    if (grid) {
-                        ctx.strokeStyle = 'black'
-                        ctx.strokeRect(i * scale, j * scale, scale, scale)
-                    }
+                    ctx.fillRect(i * sc, j * sc, sc, sc)
                 }
             }
+            drawGrid(canvas, scale/size.w*dpi, size, size)
         }
     }
     useEffect(() => redraw(), [down, grid, zoom])
@@ -81,6 +80,7 @@ export function PixelGridEditor(props: {
             .floor()
     }
 
+    const canSize = new Size(tile.width(),tile.height()).scale(scale)
 
     return <div className={'pane'} style={{
         overflow:'scroll',
@@ -97,11 +97,11 @@ export function PixelGridEditor(props: {
         <canvas ref={ref}
                 style={{
                     border: '1px solid black',
-                    width: `${tile.width()*scale}px`,
-                    height: `${tile.height()*scale}px`,
+                    width: `${canSize.w}px`,
+                    height: `${canSize.h}px`,
                 }}
-                width={tile.width() * scale}
-                height={tile.height() * scale}
+                width={canSize.w * dpi}
+                height={canSize.h * dpi}
                 onContextMenu={(e) => {
                     e.preventDefault()
                 }}
