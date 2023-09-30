@@ -135,7 +135,6 @@ export function ToggleButton(props: {
     if(props.selected && props.selectedIcon) {
         icon = props.selectedIcon
     }
-    console.log("icon is",icon)
     return <button onClick={props.onClick}
                    className={toClass({
                        selected: props.selected

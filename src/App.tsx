@@ -1,11 +1,6 @@
 import './App.css'
 
-import {
-    DialogContainer,
-    DialogContext,
-    DialogContextImpl,
-    Spacer,
-} from "josh_react_util"
+import {DialogContainer, DialogContext, DialogContextImpl, Spacer,} from "josh_react_util"
 import React, {useContext, useState} from 'react'
 
 import {
@@ -19,7 +14,8 @@ import {LoadLocalStorageAction, NewDocAction, UploadPNGJSONAction} from "./actio
 import {ActorEditView} from "./ActorEditView"
 import {
     ActionRegistryContext,
-    DocContext, DropdownButton,
+    DocContext,
+    DropdownButton,
     ToolbarActionButton
 } from "./common/common-components"
 import {MainView} from "./common/MainView"
@@ -27,10 +23,11 @@ import {PopupContainer, PopupContext, PopupContextImpl} from "./common/popup"
 import {PropSheet} from "./common/propsheet"
 import {ObjectTreeView} from "./common/treeview"
 import Example from "./example.json"
+import {SImageEditorView} from "./imageeditor/SImageEditorView"
 import {make_doc_from_json} from "./io/json"
 import {MapModeView} from "./mapeditor/MapModeView"
 import {ActionRegistry, PropsBase, useWatchAllProps, useWatchProp} from "./model/base"
-import {Actor, GameDoc, GameMap, GameTest, Sheet} from "./model/datamodel"
+import {Actor, GameDoc, GameMap, GameTest, Sheet, SImage} from "./model/datamodel"
 import {TileSheetEditor} from "./sheeteditor/TileSheetEditor"
 import {GlobalState} from "./state"
 import {TestModeView} from "./testeditor/TestModeView"
@@ -59,6 +56,9 @@ function getEditView(state: GlobalState, selection: unknown) {
     }
     if (selection instanceof GameTest) {
         return <TestModeView state={state} test={selection as GameTest}/>
+    }
+    if (selection instanceof SImage) {
+        return <SImageEditorView state={state} image={selection as SImage}/>
     }
     return <div style={{padding: '1rem'}}><h3>Select item from the left</h3></div>
 }

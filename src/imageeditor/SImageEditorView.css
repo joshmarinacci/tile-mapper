@@ -1,0 +1,7 @@
+.image-editor-view {
+    border: 5px solid red;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: start;
+}

@@ -290,6 +290,79 @@ export class Tile extends PropsBase<TileType> {
 }
 CLASS_REGISTRY.register('Tile',Tile,TileDefs)
 
+type SImageLayerType = {
+    name: string,
+    visible: boolean,
+    opacity: number,
+    data: ArrayGrid<number>,
+}
+const SImageLayerDataPropDef:PropDef<ArrayGrid<number>> = {
+    type:'array',
+    editable: false,
+    expandable: false,
+    hidden: true,
+    watchChildren: false,
+    default: () => new ArrayGrid<number>(1,1),
+    format: () => 'array number data',
+    toJSON: (v):ArrayGridNumberJSON => ({w:v.w, h:v.h, data:v.data}),
+    fromJSON:(value) => {
+        const v = value as ArrayGridNumberJSON
+        const arr = new ArrayGrid<number>(v.w,v.h)
+        arr.data = v.data
+        return arr
+    }
+}
+const SImageLayerDataDefs:DefList<SImageLayerType> = {
+    name: NameDef,
+    visible: BooleanDef,
+    opacity: FloatDef,
+    data: SImageLayerDataPropDef,
+}
+export class SImageLayer extends PropsBase<SImageLayerType> {
+    constructor(opts?: PropValues<SImageLayerType>) {
+        super(SImageLayerDataDefs, opts)
+    }
+
+    rebuildFromCanvas(canvas: SImage) {
+        const size = canvas.getPropValue('size')
+        const data = new ArrayGrid<number>(size.w,size.h)
+        data.fill(()=>0)
+        data.set_at(10,10,3)
+        this.setPropValue('data',data)
+    }
+
+    setPixel(pt: Point, color: number) {
+        this.getPropValue('data').set(pt, color)
+        this._fire('data',this.getPropValue('data'))
+        this._fireAll()
+    }
+}
+CLASS_REGISTRY.register('SImageLayer',SImageLayer,SImageLayerDataDefs)
+
+type SImageType = {
+    name: string,
+    layers: SImageLayer[],
+    size: Size,
+}
+const SImageDefs:DefList<SImageType> = {
+    name: NameDef,
+    layers: {
+        type:'array',
+        default: () => [],
+        editable:false,
+        expandable:false,
+        hidden:true,
+        watchChildren:true,
+    },
+    size: SizeDef,
+}
+export class SImage extends PropsBase<SImageType> {
+    constructor(opts?: PropValues<SImageType>) {
+        super(SImageDefs, opts)
+    }
+}
+CLASS_REGISTRY.register('SImage',SImage, SImageDefs)
+
 
 type SheetType = {
     name: string
@@ -638,12 +711,25 @@ const MapsListDef: PropDef<GameMap[]> = {
     fromJSON:(v => v.map(map => restoreClassFromJSON(map))),
     expandable: true
 }
+const CanvasesListDef:PropDef<SImage[]> = {
+    type: "array",
+    editable: false,
+    hidden: true,
+    watchChildren: false,
+    default: () => [],
+    toJSON: (v) => v.map(map => map.toJSON()),
+    format: (v) => 'canvases list',
+    fromJSON:(v => v.map(map => restoreClassFromJSON(map))),
+    expandable: true
+}
+
 export type DocType = {
     name: string,
     sheets: Sheet[]
     maps: GameMap[],
     actors: Actor[],
-    tests: GameTest[]
+    tests: GameTest[],
+    canvases: SImage[],
     palette: ImagePalette,
     tileSize: Size,
 }
@@ -653,6 +739,7 @@ const GameDocDefs:DefList<DocType> = {
     maps: MapsListDef,
     actors: ActorsListDef,
     tests: TestsListDef,
+    canvases: CanvasesListDef,
     palette: PaletteDef,
     tileSize: SizeDef,
 }

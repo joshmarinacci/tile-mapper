@@ -6,7 +6,16 @@ import React, {MouseEvent, ReactNode, useContext, useState} from "react"
 
 import {DeleteMapAction, DeleteSheetAction} from "../actions/actions"
 import {appendToList, PropDef, PropsBase, useWatchProp} from "../model/base"
-import {Actor, DocType, GameDoc, GameMap, GameTest, Sheet} from "../model/datamodel"
+import {
+    Actor,
+    DocType,
+    GameDoc,
+    GameMap,
+    GameTest,
+    Sheet,
+    SImage,
+    SImageLayer
+} from "../model/datamodel"
 import {GlobalState} from "../state"
 import {down_arrow_triangle, right_arrow_triangle} from "./common"
 import {DropdownButton, MenuList, ToolbarActionButton} from "./common-components"
@@ -45,6 +54,14 @@ function PropertyList<T extends DocType, K extends keyof T>(props: {
         appendToList(target,name,test)
         props.state.setPropValue('selection',test)
     }
+    const addCanvas = () => {
+        const canvas = new SImage({name:'blank canvas', size: new Size(32,32)})
+        const layer = new SImageLayer({name:'unnamed layer', opacity: 1.0, visible:true})
+        appendToList(canvas,'layers',layer)
+        layer.rebuildFromCanvas(canvas)
+        appendToList(target,'canvases',canvas)
+        props.state.setPropValue('selection',canvas)
+    }
 
     return <li className={'tree-item'}>
         <p key={'section-description'} className={'section'}>
@@ -55,6 +72,7 @@ function PropertyList<T extends DocType, K extends keyof T>(props: {
                 {name === 'maps' && <button onClick={addMap}>Add Map</button>}
                 {name === 'tests' && <button onClick={addTest}>Add Test</button>}
                 {name === 'actors' && <button onClick={addActor}>Add Actor</button>}
+                {name === 'canvases' && <button onClick={addCanvas}>Add Canvas</button>}
                 {/*<button onClick={() => add()}>Add</button>*/}
             </DropdownButton>
         </p>

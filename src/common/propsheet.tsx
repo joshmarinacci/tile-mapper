@@ -172,6 +172,7 @@ export function PropSheet<T extends PropsBase<any>>(props: { title?: string, tar
         .filter(([, b]) => !b.hidden)
     return <div className={'prop-sheet pane'} key={'prop-sheet'}>
         {header}
+        <label>UUID</label><label>{target?target.getUUID():"????"}</label>
         {propnames.map(([name, def]) => {
             return <>
                 <label key={`label_${name.toString()}`}>{name.toString()}</label>

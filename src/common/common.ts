@@ -239,5 +239,10 @@ export enum Icons {
     Actor = 'actor',
     Duplicate= 'duplicate',
     Gear = 'gear',
+    Pencil = 'pencil',
+    Eraser = 'eraser',
+    Line = 'line',
+    Rect = 'rect',
+    Ellipse = 'ellipse',
 }
 
