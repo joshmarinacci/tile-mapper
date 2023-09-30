@@ -82,7 +82,7 @@ export function LayerEditor(props: {
         if(handler) handler.onMouseUp({e, layer, pt:canvasToLayer(e), doc, tile, setSelectedTile, selectedActor, setSelectedActor, fillOnce, setFillOnce})
     }
     if (!layer) return <div>select a map</div>
-    return <div className={'vbox'}>
+    return <div className={'layer-editor'}>
         <div className={'toolbar'}>
             <button onClick={() => setGrid(!grid)}>grid</button>
             <button onClick={() => setZoom(zoom + 1)}>+</button>

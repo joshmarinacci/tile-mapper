@@ -1,7 +1,13 @@
 .tile-sheet-editor {
-    border: 1px solid black;
+    border: 0px solid red;
+    display: grid;
+    grid-template-columns: 250px 2fr;
+    grid-template-rows: auto;
+}
+.scrolling-column {
+    border: 0px solid green;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    overflow-y: scroll;
 }
 

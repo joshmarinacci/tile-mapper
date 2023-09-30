@@ -98,10 +98,7 @@ function Main2() {
         <ObjectTreeView obj={doc} state={STATE} selection={selection}/>
     </div>
     const editView = getEditView(STATE, selection)
-    const center_column = <div className={'editor-view'} style={{
-        overflow: "auto",
-        alignSelf: 'stretch',
-    }}>{editView}</div>
+    const center_column = <div className={'editor-view'}>{editView}</div>
     const right_column = <PropSheet target={selection}/>
     return <MainView left={left_column} center={center_column} right={right_column} toolbar={toolbar}/>
 }

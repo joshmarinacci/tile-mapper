@@ -1,4 +1,4 @@
-import {toClass} from "josh_react_util"
+import {Spacer, toClass} from "josh_react_util"
 import React, {ReactNode, useContext, useState} from "react"
 
 import {ICON_CACHE} from "../iconcache"
@@ -90,16 +90,31 @@ export function DropdownButton(props: { title?:string, icon?:Icons, children: Re
 
 export const DocContext = React.createContext(new GameDoc())
 
-export function Pane(props:{title?:string, header?:ReactNode, children:ReactNode}) {
-    return <div className={'pane'}>
-        {props.header?props.header: (props.title && <header>{props.title}</header>)}
-        <div style={{
-            border:'0px solid red',
-            overflowY:'scroll',
-        }}>
-        {props.children}
+export function Pane(props:{title?:string, header?:ReactNode, children:ReactNode, collapsable?:boolean, className?:string}) {
+    const {collapsable, className, title} = props
+    const [hide, setHide] = useState(false)
+
+    if(props.collapsable) {
+        return <div className={`pane ${className}`}>
+            <header>
+                <label>{title}</label>
+                <Spacer/>
+                <ToggleButton onClick={()=>setHide(!hide)} icon={Icons.DownArrow} selectedIcon={Icons.RightArrow} selected={hide}/>
+            </header>
+            <div style={{
+                overflowY: 'scroll',
+                display: collapsable ? (hide ? 'none' : 'block') : 'block'
+            }}>{props.children}</div>
         </div>
-    </div>
+    } else {
+        return <div className={`pane ${className}`}>
+            {props.header ? props.header : (props.title && <header>{props.title}</header>)}
+            <div style={{
+                overflowY: 'scroll',
+                display: props.collapsable ? (hide ? 'none' : 'block') : 'block'
+            }}>{props.children}</div>
+        </div>
+    }
 }
 
 export function Icon(props:{name:Icons, onClick?:()=>void}) {

@@ -19,7 +19,12 @@ html body {
 }
 
 .editor-view {
+    display: flex;
+    flex-direction: row;
     border: 0px solid black;
+    align-items: stretch;
+    overflow: auto;
+    align-self: stretch;
 }
 
 .across {
@@ -40,6 +45,7 @@ html body {
     padding: var(--std-padding);
     display: flex;
     flex-direction: row;
+    height: 1.5rem;
 }
 
 /* general */

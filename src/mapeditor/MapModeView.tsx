@@ -1,6 +1,6 @@
 import "./MapEditor.css"
 
-import {HBox} from "josh_react_util"
+import {HBox, VBox} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
 import {DocContext} from "../common/common-components"
@@ -25,8 +25,8 @@ export function MapModeView(props: {
 
 
     return <div className={'map-editor'}>
-        <HBox>
-            {!selectedMap && <div>no map selected</div>}
+        {!selectedMap && <div>no map selected</div>}
+        <div className={'left-column'}>
             <CompactSheetAndTileSelector selectedTile={selectedTile} setSelectedTile={setSelectedTile} />
             <LayerList
                 key={'layer-list'}
@@ -36,15 +36,13 @@ export function MapModeView(props: {
                 setSelectedLayer={setSelectedLayer}
             />
             <PropSheet target={selectedLayer} title={'Layer Info'}/>
-        </HBox>
-        <HBox>
-            <LayerEditor
-                key={'layer-editor'}
-                map={props.map}
-                layer={selectedLayer}
-                tile={selectedTile}
-                setSelectedTile={setSelectedTile}
-            />
-        </HBox>
+        </div>
+        <LayerEditor
+            key={'layer-editor'}
+            map={props.map}
+            layer={selectedLayer}
+            tile={selectedTile}
+            setSelectedTile={setSelectedTile}
+        />
     </div>
 }

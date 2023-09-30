@@ -9,7 +9,6 @@
     min-width: 15rem;
     align-self: stretch;
     align-content: start;
-    overflow: auto;
 }
 .prop-sheet > * {
     padding: 0.25rem 0.5rem;

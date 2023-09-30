@@ -1,20 +1,31 @@
 .map-editor {
-    border: 1px solid black;
+    justify-self: stretch;
+    align-self: stretch;
+    display: grid;
+    grid-template-columns: 250px 2fr;
+    border: 0px solid red;
 }
-.map-editor .sheet-list {
-    width: 100%;
-}
-.map-editor .tile-list-view {
-    width: 320px;
-    height: 200px;
-}
-.map-editor .layer-list-view {
-    /*width: 250px;*/
-}
-.map-editor-canvas-wrapper {
-    overflow: scroll;
+.left-column {
     border: 0px solid green;
-    /*flex: 1.0;*/
-    width: 800px;
-    height: 400px;
+    display: grid;
+    grid-template-rows: 1fr;
 }
+.layer-editor {
+    border: 0px solid green;
+    box-sizing: content-box;
+    flex: 1.0;
+    display: flex;
+    flex-direction: column;
+    overflow: clip;
+    align-content: stretch;
+    justify-content: stretch;
+}
+.layer-editor > * {
+    flex: 0.0;
+}
+.layer-editor .map-editor-canvas-wrapper {
+    flex: 1.0;
+    border: 0px solid yellow;
+    overflow: scroll;
+}
+

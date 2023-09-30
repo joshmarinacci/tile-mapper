@@ -9,7 +9,7 @@ import {
     move_layer_up
 } from "../actions/actions"
 import {Icons} from "../common/common"
-import {Icon} from "../common/common-components"
+import {Icon, Pane} from "../common/common-components"
 import {ListView, ListViewDirection, ListViewRenderer} from "../common/ListView"
 import {PropsBase, useWatchProp} from "../model/base"
 import {GameMap, MapLayerType, TileLayer} from "../model/datamodel"
@@ -45,8 +45,7 @@ export function LayerList(props: {
         if(layer instanceof  TileLayer) dm.show(<ResizeLayerDialog layer={layer}/>)
     }
 
-    return <div className={'pane layer-list-view'}>
-        <header>Layers</header>
+    return <Pane className={'layer-list-view'} collapsable={true} title={'Layers'}>
         {props.editable &&
             <div className={'toolbar'}>
                 <button onClick={()=>add_tile_layer(props.map)}>+ <Icon name={Icons.Tile}/></button>
@@ -64,5 +63,5 @@ export function LayerList(props: {
                   className={'sheet-list'}
                   options={{}}
         />
-    </div>
+    </Pane>
 }

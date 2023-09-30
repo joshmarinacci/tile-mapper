@@ -25,17 +25,20 @@ export function TileSheetEditor(props: {
     const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20))
     useEffect(() => {
         const tiles = sheet.getPropValue('tiles')
-        setTile(tiles.length > 0?tiles[0]:undefined)
+        setTile(tiles.length > 0 ? tiles[0] : undefined)
     }, [sheet])
 
     return (<div className={'tile-sheet-editor'}>
-        <VBox>
-            {sheet && <Pane>
-                <header>Tile Sheet</header>
-                <TileListView editable={true} sheet={sheet} tile={tile} setTile={setTile}  palette={palette}/>
+        <div className={'scrolling-column'}>
+            {sheet && <Pane collapsable={true} title={'Tile Sheet'}>
+                <TileListView editable={true} sheet={sheet} tile={tile} setTile={setTile}
+                              palette={palette}/>
             </Pane>}
             {tile && <PropSheet target={tile} title={'Tile Info'}/>}
-        </VBox>
+            {tile && <Pane collapsable={true} title={'Text'}>
+                <TestMap tile={tile} mapArray={maparray} palette={palette}/>
+            </Pane>}
+        </div>
         <VBox>
             <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor}
                                     palette={palette}/>
@@ -45,11 +48,5 @@ export function TileSheetEditor(props: {
                 tile={tile} palette={palette}/>}
             {!tile && <div>no tile selected</div>}
         </VBox>
-        {tile &&
-            <div className={'pane'} style={{ maxWidth:'unset' }}>
-                <header>Test</header>
-                <TestMap tile={tile} mapArray={maparray} palette={palette}/>
-            </div>
-        }
     </div>)
 }
