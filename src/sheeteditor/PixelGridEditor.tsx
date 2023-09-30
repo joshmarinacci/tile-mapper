@@ -6,6 +6,7 @@ import {drawGrid} from "../actions/actions"
 import {Icons, ImagePalette} from "../common/common"
 import {DocContext, IconButton, ToggleButton} from "../common/common-components"
 import {ICON_CACHE} from "../iconcache"
+import {useWatchProp} from "../model/base"
 import {Tile} from "../model/datamodel"
 
 function calculateDirections() {
@@ -64,13 +65,8 @@ export function PixelGridEditor(props: {
             drawGrid(canvas, scale/size.w*dpi, size, size)
         }
     }
-    useEffect(() => redraw(), [down, grid, zoom])
-    useEffect(() => {
-        redraw()
-        const hand = () => redraw()
-        tile.onAny(hand)
-        return () => tile.offAny(hand)
-    }, [tile])
+    useEffect(() => redraw(), [down, grid, zoom, tile])
+    useWatchProp(tile,'data', () => redraw())
 
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
         const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
