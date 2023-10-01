@@ -108,8 +108,10 @@ export function TileListView(props: {
     editable: boolean,
 }) {
     const {sheet, tile, setTile, palette, editable} = props
-    const [showNames, setShowNames] = useState(true)
-    const [showGrid, setShowGrid] = useState(true)
+    // const [showNames, setShowNames] = useState(true)
+    // const [showGrid, setShowGrid] = useState(true)
+    const showNames = sheet.getPropValue('showNames')
+    const showGrid = sheet.getPropValue('showGrid')
     const [scale, setScale] = useState(4)
     const tiles = sheet.getPropValue('tiles')
     const add_tile = () => {
@@ -130,6 +132,8 @@ export function TileListView(props: {
         }
     }
     useWatchProp(sheet, 'tiles')
+    useWatchProp(sheet,'showGrid')
+    useWatchProp(sheet,'showNames')
     return <div className={'tile-list-view'}>
         {editable &&
             <div className={'toolbar'}>
@@ -138,8 +142,8 @@ export function TileListView(props: {
                 <button onClick={delete_tile}><Icon name={Icons.Trashcan}/></button>
                 <Spacer/>
                 <DropdownButton icon={Icons.Gear}>
-                    <button onClick={() => setShowNames(!showNames)}>show names</button>
-                    <button onClick={() => setShowGrid(!showGrid)}>show grid</button>
+                    <button onClick={() => sheet.setPropValue('showNames', !showNames)}>show names</button>
+                    <button onClick={() => sheet.setPropValue('showGrid',!showGrid)}>show grid</button>
                     <button onClick={() => setScale(1)}>1x</button>
                     <button onClick={() => setScale(2)}>2x</button>
                     <button onClick={() => setScale(4)}>4x</button>

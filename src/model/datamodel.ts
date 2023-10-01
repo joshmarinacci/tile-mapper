@@ -381,6 +381,8 @@ type SheetType = {
     tileSize: Size,
     tiles: Tile[],
     selectedTile: Tile|undefined,
+    showNames:boolean,
+    showGrid:boolean,
 }
 const TileArrayDef:PropDef<Tile[]> = {
     type:'array',
@@ -396,6 +398,19 @@ const TileArrayDef:PropDef<Tile[]> = {
         return v.map(d => restoreClassFromJSON(d)) as Tile[]
     }
 }
+export const TransientBooleanDef:PropDef<boolean> = {
+    type:'boolean',
+    hidden:false,
+    editable:true,
+    expandable:false,
+    default: () => true,
+    format:(v)=>v?'true':'false',
+    toJSON:(v) => v,
+    fromJSON:(v) => v as boolean,
+    watchChildren:false,
+    skipPersisting: true,
+}
+
 const SheetDefs:DefList<SheetType> = {
     name: NameDef,
     tileSize: SizeDef,
@@ -408,7 +423,10 @@ const SheetDefs:DefList<SheetType> = {
         editable: false,
         watchChildren: false,
         skipPersisting: true,
-    }
+    },
+    showNames: TransientBooleanDef,
+    showGrid: TransientBooleanDef,
+
 }
 export class Sheet extends PropsBase<SheetType> {
     constructor(opts?: PropValues<SheetType>) {
