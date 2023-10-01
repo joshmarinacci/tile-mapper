@@ -3,7 +3,7 @@ import "./SImageEditorView.css"
 import {Point} from "josh_js_util"
 import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
 
-import {drawEllipse, drawRect} from "../actions/actions"
+import {drawEllipse, drawRect, new_bucketFill} from "../actions/actions"
 import {Icons, ImagePalette} from "../common/common"
 import {DocContext, Icon, IconButton, Pane, ToggleButton} from "../common/common-components"
 import {ListView, ListViewDirection, ListViewRenderer} from "../common/ListView"
@@ -39,7 +39,6 @@ the drawing subview draws every layer in the image using visibility
     transparent background
     draw each visible layer
     draw an overlay for the currently selected tool
-
 
  */
 
@@ -296,6 +295,10 @@ class FillTool implements Tool {
     }
 
     onMouseDown(evt: ToolEvent): void {
+        if(evt.layer) {
+            new_bucketFill(evt.layer, evt.layer.getPixel(evt.pt), evt.color, evt.pt.floor())
+            evt.markDirty()
+        }
     }
 
     onMouseMove(evt: ToolEvent): void {

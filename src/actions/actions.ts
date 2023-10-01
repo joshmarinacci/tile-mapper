@@ -369,3 +369,25 @@ export function drawEllipse(layer: SImageLayer, color: number, start: Point, end
     const b = end.y - start.y
     rasterize(x0, y0, a, b, color)
 }
+
+function calculateDirections() {
+    return [
+        new Point(-1, 0),
+        new Point(1, 0),
+        new Point(0, -1),
+        new Point(0, 1)
+    ]
+}
+
+export function new_bucketFill(layer: SImageLayer, target: number, replace: number, at: Point) {
+    if (target === replace) return
+    const v = layer.getPixel(at)
+    if (v !== target) return
+    if (v === target) {
+        layer.setPixel(at, replace)
+        calculateDirections().forEach(dir => {
+            const pt = at.add(dir)
+            if (layer.getPropValue('data').isValidIndex(pt)) new_bucketFill(layer, target, replace, pt)
+        })
+    }
+}
