@@ -326,8 +326,7 @@ export class SImageLayer extends PropsBase<SImageLayerType> {
     rebuildFromCanvas(canvas: SImage) {
         const size = canvas.getPropValue('size')
         const data = new ArrayGrid<number>(size.w,size.h)
-        data.fill(()=>0)
-        data.set_at(10,10,3)
+        data.fill(()=>-1)
         this.setPropValue('data',data)
     }
 

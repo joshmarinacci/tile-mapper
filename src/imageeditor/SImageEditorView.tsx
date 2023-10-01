@@ -321,17 +321,26 @@ const LayerItemRenderer: ListViewRenderer<SImageLayer, never> = (props: {
     </div>
 }
 
+function clamp(val: number, min: number, max: number) {
+    if(val < min) return min
+    if(val > max) return max
+    return val
+}
+
 function drawCanvas(canvas: HTMLCanvasElement, scale: number, grid: boolean, image: SImage, palette: ImagePalette, tool: Tool) {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     ctx.fillStyle = 'magenta'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
     image.getPropValue('layers').forEach(layer => {
         if (!layer.getPropValue('visible')) return
+        ctx.save()
+        ctx.globalAlpha = clamp(layer.getPropValue('opacity'),0,1)
         layer.getPropValue('data').forEach((n, p) => {
             ctx.fillStyle = palette.colors[n]
             if (n === -1) ctx.fillStyle = 'transparent'
             ctx.fillRect(p.x * scale, p.y * scale, 1 * scale, 1 * scale)
         })
+        ctx.restore()
     })
     const size = image.getPropValue('size')
     if (grid) {
