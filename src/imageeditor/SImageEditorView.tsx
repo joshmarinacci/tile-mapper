@@ -3,7 +3,7 @@ import "./SImageEditorView.css"
 import {Point} from "josh_js_util"
 import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
 
-import {drawEllipse, drawRect, new_bucketFill} from "../actions/actions"
+import {drawEllipse, drawLine, drawRect, new_bucketFill} from "../actions/actions"
 import {Icons, ImagePalette} from "../common/common"
 import {DocContext, Icon, IconButton, Pane, ToggleButton} from "../common/common-components"
 import {ListView, ListViewDirection, ListViewRenderer} from "../common/ListView"
@@ -170,22 +170,7 @@ class LineTool implements Tool {
     onMouseUp(evt: ToolEvent): void {
         this._down = false
         if (evt.layer) {
-            const x0 = this._start.x
-            const y0 = this._start.y
-            const x1 = this._current.x
-            const y1 = this._current.y
-            const dx = x1 - x0
-            const dy = y1 - y0
-            let D = 2 * dy - dx
-            let y = y0
-            for (let x = x0; x <= x1; x++) {
-                evt.layer.setPixel(new Point(x, y), evt.color)
-                if (D > 0) {
-                    y = y + 1
-                    D = D - 2 * dx
-                }
-                D = D + 2 * dy
-            }
+            drawLine(evt.layer, evt.color, this._start.floor(), this._current.floor())
         }
         evt.markDirty()
     }
@@ -204,6 +189,7 @@ class RectTool implements Tool {
         this.start = new Point(0, 0)
         this.end = new Point(0, 0)
     }
+
     drawOverlay(ovr: ToolOverlayInfo): void {
         if (!this.down) return
         ovr.ctx.strokeStyle = 'red'
@@ -211,18 +197,21 @@ class RectTool implements Tool {
         ovr.ctx.beginPath()
         ovr.ctx.strokeRect(this.start.x * ovr.scale, this.start.y * ovr.scale, (this.end.x - this.start.x) * ovr.scale, (this.end.y - this.start.y) * ovr.scale)
     }
+
     onMouseDown(evt: ToolEvent): void {
         this.down = true
         this.start = evt.pt
         this.end = evt.pt
         evt.markDirty()
     }
+
     onMouseMove(evt: ToolEvent): void {
         if (this.down) {
             this.end = evt.pt
             evt.markDirty()
         }
     }
+
     onMouseUp(evt: ToolEvent): void {
         this.down = false
         if (evt.layer) {
@@ -236,12 +225,14 @@ class EllipseTool implements Tool {
     private down: boolean
     private start: Point
     private end: Point
+
     constructor() {
         this.name = 'ellipse'
         this.down = false
         this.start = new Point(0, 0)
         this.end = new Point(0, 0)
     }
+
     drawOverlay(ovr: ToolOverlayInfo): void {
         if (!this.down) return
         ovr.ctx.strokeStyle = 'red'
@@ -254,28 +245,31 @@ class EllipseTool implements Tool {
         const i2 = Math.max(start.x, end.x)
         const j1 = Math.min(start.y, end.y)
         const j2 = Math.max(start.y, end.y)
-        ovr.ctx.moveTo(i1*scale,j1*scale)
-        ovr.ctx.lineTo(i2*scale,j2*scale)
+        ovr.ctx.moveTo(i1 * scale, j1 * scale)
+        ovr.ctx.lineTo(i2 * scale, j2 * scale)
         ovr.ctx.ellipse(
-            i1*scale,
-            j1*scale,
-            (i2-i1)*scale,
-            (j2-j1)*scale,
-            0,0, Math.PI*2)
+            i1 * scale,
+            j1 * scale,
+            (i2 - i1) * scale,
+            (j2 - j1) * scale,
+            0, 0, Math.PI * 2)
         ovr.ctx.stroke()
     }
+
     onMouseDown(evt: ToolEvent): void {
         this.down = true
         this.start = evt.pt
         this.end = evt.pt
         evt.markDirty()
     }
+
     onMouseMove(evt: ToolEvent): void {
         if (this.down) {
             this.end = evt.pt
             evt.markDirty()
         }
     }
+
     onMouseUp(evt: ToolEvent): void {
         this.down = false
         if (evt.layer) {
@@ -295,7 +289,7 @@ class FillTool implements Tool {
     }
 
     onMouseDown(evt: ToolEvent): void {
-        if(evt.layer) {
+        if (evt.layer) {
             new_bucketFill(evt.layer, evt.layer.getPixel(evt.pt), evt.color, evt.pt.floor())
             evt.markDirty()
         }
@@ -335,7 +329,7 @@ function drawCanvas(canvas: HTMLCanvasElement, scale: number, grid: boolean, ima
         if (!layer.getPropValue('visible')) return
         layer.getPropValue('data').forEach((n, p) => {
             ctx.fillStyle = palette.colors[n]
-            if(n === -1) ctx.fillStyle = 'transparent'
+            if (n === -1) ctx.fillStyle = 'transparent'
             ctx.fillRect(p.x * scale, p.y * scale, 1 * scale, 1 * scale)
         })
     })
@@ -472,13 +466,13 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
                     e.preventDefault()
                     e.stopPropagation()
                     const pt = canvasToImage(e)
-                    if(layer) {
+                    if (layer) {
                         const color = layer.getPixel(pt)
                         setDrawColor(palette.colors[color])
                     }
                 }}
                 onMouseDown={(e) => {
-                    if(e.button == 2) return
+                    if (e.button == 2) return
                     tool.onMouseDown({
                         color: palette.colors.indexOf(drawColor),
                         pt: canvasToImage(e),
