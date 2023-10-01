@@ -357,6 +357,9 @@ const SImageDefs:DefList<SImageType> = {
         expandable:false,
         hidden:true,
         watchChildren:true,
+        format: (v:SImageLayer[]) => `${v.length} layers`,
+        toJSON: (v:SImageLayer[]) => v.map(a => a.toJSON?a.toJSON():a),
+        fromJSON: (v) => v.map(a => restoreClassFromJSON(a)),
     },
     size: SizeDef,
 }
