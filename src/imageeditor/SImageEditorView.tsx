@@ -115,13 +115,13 @@ class EraserTool implements Tool {
     onMouseDown(evt: ToolEvent): void {
         this._down = true
         if (evt.layer) {
-            evt.layer.setPixel(evt.pt, evt.color)
+            evt.layer.setPixel(evt.pt, -1)
         }
     }
 
     onMouseMove(evt: ToolEvent): void {
         if (evt.layer && this._down) {
-            evt.layer.setPixel(evt.pt, evt.color)
+            evt.layer.setPixel(evt.pt, -1)
         }
     }
 
@@ -332,6 +332,7 @@ function drawCanvas(canvas: HTMLCanvasElement, scale: number, grid: boolean, ima
         if (!layer.getPropValue('visible')) return
         layer.getPropValue('data').forEach((n, p) => {
             ctx.fillStyle = palette.colors[n]
+            if(n === -1) ctx.fillStyle = 'transparent'
             ctx.fillRect(p.x * scale, p.y * scale, 1 * scale, 1 * scale)
         })
     })
