@@ -3,7 +3,7 @@ import "./SImageEditorView.css"
 import {Point} from "josh_js_util"
 import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
 
-import {drawRect} from "../actions/actions"
+import {drawEllipse, drawRect} from "../actions/actions"
 import {Icons, ImagePalette} from "../common/common"
 import {DocContext, Icon, IconButton, Pane, ToggleButton} from "../common/common-components"
 import {ListView, ListViewDirection, ListViewRenderer} from "../common/ListView"
@@ -205,7 +205,6 @@ class RectTool implements Tool {
         this.start = new Point(0, 0)
         this.end = new Point(0, 0)
     }
-
     drawOverlay(ovr: ToolOverlayInfo): void {
         if (!this.down) return
         ovr.ctx.strokeStyle = 'red'
@@ -213,50 +212,77 @@ class RectTool implements Tool {
         ovr.ctx.beginPath()
         ovr.ctx.strokeRect(this.start.x * ovr.scale, this.start.y * ovr.scale, (this.end.x - this.start.x) * ovr.scale, (this.end.y - this.start.y) * ovr.scale)
     }
-
     onMouseDown(evt: ToolEvent): void {
         this.down = true
         this.start = evt.pt
         this.end = evt.pt
         evt.markDirty()
     }
-
     onMouseMove(evt: ToolEvent): void {
         if (this.down) {
             this.end = evt.pt
             evt.markDirty()
         }
-
     }
-
     onMouseUp(evt: ToolEvent): void {
         this.down = false
         if (evt.layer) {
             drawRect(evt.layer, evt.color, this.start, this.end)
         }
     }
-
 }
 
 class EllipseTool implements Tool {
     name: string
-
+    private down: boolean
+    private start: Point
+    private end: Point
     constructor() {
         this.name = 'ellipse'
+        this.down = false
+        this.start = new Point(0, 0)
+        this.end = new Point(0, 0)
     }
-
     drawOverlay(ovr: ToolOverlayInfo): void {
+        if (!this.down) return
+        ovr.ctx.strokeStyle = 'red'
+        ovr.ctx.lineWidth = 4
+        ovr.ctx.beginPath()
+        const scale = ovr.scale
+        const start = this.start
+        const end = this.end
+        const i1 = Math.min(start.x, end.x)
+        const i2 = Math.max(start.x, end.x)
+        const j1 = Math.min(start.y, end.y)
+        const j2 = Math.max(start.y, end.y)
+        ovr.ctx.moveTo(i1*scale,j1*scale)
+        ovr.ctx.lineTo(i2*scale,j2*scale)
+        ovr.ctx.ellipse(
+            i1*scale,
+            j1*scale,
+            (i2-i1)*scale,
+            (j2-j1)*scale,
+            0,0, Math.PI*2)
+        ovr.ctx.stroke()
     }
-
     onMouseDown(evt: ToolEvent): void {
+        this.down = true
+        this.start = evt.pt
+        this.end = evt.pt
+        evt.markDirty()
     }
-
     onMouseMove(evt: ToolEvent): void {
+        if (this.down) {
+            this.end = evt.pt
+            evt.markDirty()
+        }
     }
-
     onMouseUp(evt: ToolEvent): void {
+        this.down = false
+        if (evt.layer) {
+            drawEllipse(evt.layer, evt.color, this.start, this.end)
+        }
     }
-
 }
 
 class FillTool implements Tool {

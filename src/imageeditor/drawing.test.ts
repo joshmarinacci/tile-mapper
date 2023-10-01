@@ -1,7 +1,7 @@
 import {Point, Size} from "josh_js_util"
 import {describe, expect, it} from "vitest"
 
-import {drawRect} from "../actions/actions"
+import {drawEllipse, drawRect} from "../actions/actions"
 import {appendToList} from "../model/base"
 import {SImage, SImageLayer} from "../model/datamodel"
 
@@ -60,5 +60,16 @@ describe('basic drawing', () => {
         }
 
 
+    })
+    it('should draw an ellipse', async () => {
+        const canvas = new SImage({size: new Size(50,50)})
+        const layer = new SImageLayer({visible:true, opacity:1.0})
+        appendToList(canvas,'layers',layer)
+        layer.rebuildFromCanvas(canvas)
+
+        {
+            layer.fillAll(0)
+            drawEllipse(layer, 13, new Point(0,0), new Point(20,20))
+        }
     })
 })

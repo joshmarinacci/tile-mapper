@@ -312,3 +312,60 @@ export function drawRect(layer: SImageLayer, color: number, start: Point, end: P
     }
 
 }
+
+export function drawEllipse(layer: SImageLayer, color: number, start: Point, end: Point) {
+    function ellipse_points(x0:number, y0:number, x:number, y:number, color:number) {
+        layer.setPixel(new Point(x0+x, y0+y),color)
+        layer.setPixel(new Point(x0-x, y0+y),color)
+        layer.setPixel(new Point(x0+x, y0-y),color)
+        layer.setPixel(new Point(x0-x, y0-y),color)
+    }
+    function rasterize(x0:number, y0:number, a:number, b:number, color:number) {
+        const a2 = a*a
+        const b2 = b*b
+
+        let d  = 4*b2 - 4*b*a2 + a2
+        let delta_A = 4*3*b2
+        let delta_B = 4*(3*b2 - 2*b*a2 + 2*a2)
+
+        const limit   = (a2*a2)/(a2+b2)
+
+        let x = 0
+        let y = b
+        while (true) {
+            // if (hw)
+            ellipse_points(x0, y0, x, y, color)
+            ellipse_points(x0, y0, y, x, color)
+            // else
+            //     ellipse_points(ctx, x0, y0, y, x, color)
+
+            if (x * x >= limit)
+                break
+
+            if (d > 0) {
+                d       += delta_B
+                delta_A += 4*2*b2
+                delta_B += 4*(2*b2 + 2*a2)
+
+                x += 1
+                y -= 1
+            }
+            else {
+                d       += delta_A
+                delta_A += 4*2*b2
+                delta_B += 4*2*b2
+
+                x += 1
+            }
+        }
+    }
+
+
+    start = start.floor()
+    end = end.floor()
+    const x0 = start.x
+    const y0 = start.y
+    const a = end.x - start.x
+    const b = end.y - start.y
+    rasterize(x0, y0, a, b, color)
+}
