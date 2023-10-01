@@ -361,13 +361,14 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
     const {image} = props
     const doc = useContext(DocContext)
     const palette = doc.getPropValue('palette')
-    const [grid, setGrid] = useState(true)
-    const [zoom, setZoom] = useState(0)
+    const [grid, setGrid] = useState(false)
+    const [zoom, setZoom] = useState(3)
     const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
     const [layer, setLayer] = useState<SImageLayer | undefined>()
     const canvasRef = useRef(null)
     const [tool, setTool] = useState<Tool>(() => new PencilTool())
     const [count, setCount] = useState(0)
+    const size = image.getPropValue('size')
 
     const scale = Math.pow(2, zoom)
     const redraw = () => {
@@ -377,7 +378,7 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
         }
     }
 
-    useEffect(() => redraw(), [canvasRef, zoom, grid, count])
+    useEffect(() => redraw(), [canvasRef, zoom, grid, count, image])
     useWatchAllProps(image, () => setCount(count + 1))
 
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
@@ -425,89 +426,92 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
 
 
     return <div className={'image-editor-view'}>
-        <Pane key={'layer-list'} title={'layers'} collapsable={true}>
+        <div className={'vbox'}>
+            <Pane key={'layer-list'} title={'layers'} collapsable={true}>
+                <div className={'toolbar'}>
+                    <IconButton onClick={() => new_layer()} icon={Icons.Plus}/>
+                    <IconButton onClick={() => del_layer()} icon={Icons.Trashcan}/>
+                    <IconButton onClick={() => move_layer_down()} icon={Icons.UpArrow}/>
+                    <IconButton onClick={() => move_layer_up()} icon={Icons.DownArrow}/>
+                </div>
+                <ListView selected={layer} setSelected={setLayer}
+                          renderer={LayerItemRenderer}
+                          data={props.image.getPropValue('layers')}
+                          direction={ListViewDirection.VerticalFill}
+                          options={{}}/>
+            </Pane>
+            <PropSheet target={layer} title={'Layer Info'}/>
             <div className={'toolbar'}>
-                <IconButton onClick={() => new_layer()} icon={Icons.Plus}/>
-                <IconButton onClick={() => del_layer()} icon={Icons.Trashcan}/>
-                <IconButton onClick={() => move_layer_down()} icon={Icons.UpArrow}/>
-                <IconButton onClick={() => move_layer_up()} icon={Icons.DownArrow}/>
+                <IconButton onClick={() => setZoom(zoom + 1)} icon={Icons.Plus}/>
+                <IconButton onClick={() => setZoom(zoom - 1)} icon={Icons.Minus}/>
+                <ToggleButton onClick={() => setGrid(!grid)} icon={Icons.Grid} selected={grid}
+                              selectedIcon={Icons.GridSelected}/>
+                <ToggleButton onClick={() => setTool(new PencilTool())} icon={Icons.Pencil}
+                              selected={tool.name === 'pencil'}/>
+                <ToggleButton onClick={() => setTool(new EraserTool())} icon={Icons.Eraser}
+                              selected={tool.name === 'eraser'}/>
+                <ToggleButton onClick={() => setTool(new LineTool())} icon={Icons.Line}
+                              selected={tool.name === 'line'}/>
+                <ToggleButton onClick={() => setTool(new RectTool())} icon={Icons.Rect}
+                              selected={tool.name === 'rect'}/>
+                <ToggleButton onClick={() => setTool(new EllipseTool())} icon={Icons.Ellipse}
+                              selected={tool.name === 'ellipse'}/>
+                <ToggleButton onClick={() => setTool(new FillTool())} icon={Icons.PaintBucket}
+                              selected={tool.name === 'fill'}
+                />
             </div>
-            <ListView selected={layer} setSelected={setLayer}
-                      renderer={LayerItemRenderer}
-                      data={props.image.getPropValue('layers')}
-                      direction={ListViewDirection.VerticalFill}
-                      options={{}}/>
-        </Pane>
-        <PropSheet target={layer} title={'Layer Info'}/>
-        <div className={'toolbar'}>
-            <IconButton onClick={() => setZoom(zoom + 1)} icon={Icons.Plus}/>
-            <IconButton onClick={() => setZoom(zoom - 1)} icon={Icons.Minus}/>
-            <ToggleButton onClick={() => setGrid(!grid)} icon={Icons.Grid} selected={grid}
-                          selectedIcon={Icons.GridSelected}/>
-            <ToggleButton onClick={() => setTool(new PencilTool())} icon={Icons.Pencil}
-                          selected={tool.name === 'pencil'}/>
-            <ToggleButton onClick={() => setTool(new EraserTool())} icon={Icons.Eraser}
-                          selected={tool.name === 'eraser'}/>
-            <ToggleButton onClick={() => setTool(new LineTool())} icon={Icons.Line}
-                          selected={tool.name === 'line'}/>
-            <ToggleButton onClick={() => setTool(new RectTool())} icon={Icons.Rect}
-                          selected={tool.name === 'rect'}/>
-            <ToggleButton onClick={() => setTool(new EllipseTool())} icon={Icons.Ellipse}
-                          selected={tool.name === 'ellipse'}/>
-            <ToggleButton onClick={() => setTool(new FillTool())} icon={Icons.PaintBucket}
-                          selected={tool.name === 'fill'}
+            <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor}
+                                    palette={palette}/>
+        </div>
+        <div className={'image-editor-canvas-wrapper'}>
+            <canvas ref={canvasRef} width={size.w*scale} height={size.h*scale}
+                    onContextMenu={e => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        const pt = canvasToImage(e)
+                        if (layer) {
+                            const color = layer.getPixel(pt)
+                            setDrawColor(palette.colors[color])
+                        }
+                    }}
+                    onMouseDown={(e) => {
+                        if (e.button == 2) return
+                        tool.onMouseDown({
+                            color: palette.colors.indexOf(drawColor),
+                            pt: canvasToImage(e),
+                            e: e,
+                            layer: layer,
+                            palette: palette,
+                            markDirty: () => {
+
+                            }
+                        })
+                    }}
+                    onMouseMove={(e) => {
+                        tool.onMouseMove({
+                            color: palette.colors.indexOf(drawColor),
+                            pt: canvasToImage(e),
+                            e: e,
+                            layer: layer,
+                            palette: palette,
+                            markDirty: () => {
+                                setCount(count + 1)
+                            }
+                        })
+                    }}
+                    onMouseUp={(e) => {
+                        tool.onMouseUp({
+                            color: palette.colors.indexOf(drawColor),
+                            pt: canvasToImage(e),
+                            e: e,
+                            layer: layer,
+                            palette: palette,
+                            markDirty: () => {
+
+                            }
+                        })
+                    }}
             />
         </div>
-        <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor}
-                                palette={palette}/>
-        <div className={'pixel-editor'}>main view</div>
-        <canvas ref={canvasRef} width={512} height={512}
-                onContextMenu={e => {
-                    e.preventDefault()
-                    e.stopPropagation()
-                    const pt = canvasToImage(e)
-                    if (layer) {
-                        const color = layer.getPixel(pt)
-                        setDrawColor(palette.colors[color])
-                    }
-                }}
-                onMouseDown={(e) => {
-                    if (e.button == 2) return
-                    tool.onMouseDown({
-                        color: palette.colors.indexOf(drawColor),
-                        pt: canvasToImage(e),
-                        e: e,
-                        layer: layer,
-                        palette: palette,
-                        markDirty: () => {
-
-                        }
-                    })
-                }}
-                onMouseMove={(e) => {
-                    tool.onMouseMove({
-                        color: palette.colors.indexOf(drawColor),
-                        pt: canvasToImage(e),
-                        e: e,
-                        layer: layer,
-                        palette: palette,
-                        markDirty: () => {
-                            setCount(count + 1)
-                        }
-                    })
-                }}
-                onMouseUp={(e) => {
-                    tool.onMouseUp({
-                        color: palette.colors.indexOf(drawColor),
-                        pt: canvasToImage(e),
-                        e: e,
-                        layer: layer,
-                        palette: palette,
-                        markDirty: () => {
-
-                        }
-                    })
-                }}
-        />
     </div>
 }

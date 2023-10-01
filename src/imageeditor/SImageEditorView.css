@@ -1,7 +1,11 @@
 .image-editor-view {
-    border: 5px solid red;
-    display: flex;
-    flex-direction: column;
-    align-items: start;
-    justify-content: start;
+    border: 0px solid red;
+    display: grid;
+    grid-template-columns: 1fr 2fr;
 }
+
+.image-editor-canvas-wrapper {
+    border: 1px solid var(--border-color);
+    overflow: scroll;
+}
+
