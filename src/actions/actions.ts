@@ -20,6 +20,7 @@ import {
     GameMap,
     MapLayerType,
     Sheet,
+    SImageLayer,
     Tile,
     TileLayer
 } from "../model/datamodel"
@@ -292,4 +293,22 @@ export function drawGrid(current: HTMLCanvasElement, scale: number, tileSize: Si
     ctx.lineTo(viewport.w*scale*tileSize.h, mx.x*scale*tileSize.h)
     ctx.stroke()
     ctx.restore()
+}
+
+
+export function drawRect(layer: SImageLayer, color: number, start: Point, end: Point) {
+    const i1 = Math.min(start.x, end.x)
+    const i2 = Math.max(start.x, end.x)
+    const j1 = Math.min(start.y, end.y)
+    const j2 = Math.max(start.y, end.y)
+
+    for (let i = i1; i <= i2; i++) {
+        layer.setPixel(new Point(i, j1), color)
+        layer.setPixel(new Point(i, j2), color)
+    }
+    for (let j = j1; j <= j2; j++) {
+        layer.setPixel(new Point(i1, j), color)
+        layer.setPixel(new Point(i2, j), color)
+    }
+
 }

@@ -3,6 +3,7 @@ import "./SImageEditorView.css"
 import {Point} from "josh_js_util"
 import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
 
+import {drawRect} from "../actions/actions"
 import {Icons, ImagePalette} from "../common/common"
 import {DocContext, Icon, IconButton, Pane, ToggleButton} from "../common/common-components"
 import {ListView, ListViewDirection, ListViewRenderer} from "../common/ListView"
@@ -231,18 +232,7 @@ class RectTool implements Tool {
     onMouseUp(evt: ToolEvent): void {
         this.down = false
         if (evt.layer) {
-            const j = this.start.y
-            const j2 = this.end.y
-            const i1 = this.start.x
-            const i2 = this.end.x
-            for (let i = this.start.x; i < this.end.x; i++) {
-                evt.layer.setPixel(new Point(i, j), evt.color)
-                evt.layer.setPixel(new Point(i, j2), evt.color)
-            }
-            for (let j = this.start.y; j < this.end.y; j++) {
-                evt.layer.setPixel(new Point(i1, j), evt.color)
-                evt.layer.setPixel(new Point(i2, j), evt.color)
-            }
+            drawRect(evt.layer, evt.color, this.start, this.end)
         }
     }
 
