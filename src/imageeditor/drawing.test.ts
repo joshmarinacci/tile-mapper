@@ -1,9 +1,10 @@
 import {Point, Size} from "josh_js_util"
 import {describe, expect, it} from "vitest"
 
-import {drawEllipse, drawRect} from "../actions/actions"
 import {appendToList} from "../model/base"
 import {SImage, SImageLayer} from "../model/datamodel"
+import {drawEllipse} from "./ellipse_tool"
+import {drawRect} from "./rect_tool"
 
 
 describe('basic drawing', () => {
