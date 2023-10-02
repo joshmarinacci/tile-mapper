@@ -2,6 +2,7 @@ import {ArrayGrid, Bounds, Point, Size} from "josh_js_util"
 
 import {TileCache} from "./cache"
 import {Layer, TileReference} from "./globals"
+import {fillBounds} from "./util"
 
 function wrapPoint(pt: Point, size: Size) {
     pt = pt.copy()
@@ -40,6 +41,7 @@ export class TilemapLayer implements Layer {
         const tw = cache.getTileSize().w
         ctx.save()
         ctx.imageSmoothingEnabled = false
+        // console.log('drawing tile layer', viewport, scale, 'tw is',tw)
         const w = Math.ceil(viewport.w / scale / tw) + 1
         const h = Math.ceil(viewport.h / scale / tw) + 1
         const xoff = viewport.x / scale / tw * this.scrollSpeed
@@ -47,7 +49,7 @@ export class TilemapLayer implements Layer {
         // this.log(`drawing ${w} x ${h} cells at ${xoff},${yoff}. scrollspeed=${this.scrollSpeed} tw=${tw} scale=${scale}`)
         for (let j = 0; j < h; j++) {
             for (let i = 0; i < w; i++) {
-                let tb = new Bounds(i, j, 1, 1).scale(tw)
+                let tb = new Bounds(i, j, 1, 1).scale(tw).scale(scale)
                 tb = tb.add(new Point(
                     (-xoff * tw % tw),
                     (-yoff * tw % tw)))
@@ -61,12 +63,12 @@ export class TilemapLayer implements Layer {
                     const cached = cache.getTileByName(tile)
                     if (cached) {
                         ctx.drawImage(cached.canvas,
-                            Math.floor(tb.x*scale),
-                            Math.floor(tb.y*scale),
-                            tb.w*scale,
-                            tb.h*scale)
+                            Math.floor(tb.x),
+                            Math.floor(tb.y),
+                            tb.w,
+                            tb.h)
                     } else {
-                        // fillBounds(ctx, tb, 'magenta')
+                        fillBounds(ctx, tb, 'magenta')
                     }
                 }
                 // strokeBounds(ctx,tb,'gray',0.5)

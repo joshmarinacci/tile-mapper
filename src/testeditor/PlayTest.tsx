@@ -17,15 +17,15 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
     // pre-cache all of the tiles
     doc.getPropValue('sheets').forEach(sht => {
         sht.getPropValue('tiles').forEach(tile => {
-            // tile.rebuild_cache()
-            // if (tile.cache_canvas) {
-            //     cache.addCachedTile(tile.getPropValue('name'), tile._id, {
-            //         name: tile.getPropValue('name'),
-            //         id: tile._id,
-            //         blocking: tile.getPropValue('blocking'),
-            //         canvas: tile.cache_canvas
-            //     })
-            // }
+            const can = doc.lookup_canvas(tile.getUUID())
+            if(can) {
+                cache.addCachedTile(tile.getPropValue('name'), tile._id, {
+                    name: tile.getPropValue('name'),
+                    id: tile._id,
+                    blocking: tile.getPropValue('blocking'),
+                    canvas: can
+                })
+            }
         })
     })
     // turn each layer of the map into a layer of the engine
@@ -118,7 +118,7 @@ class Anim {
         this.game_state.getPhysics().updateEnemies(this.game_state.getEnemies(), map.layers, this.cache)
         this.game_state.updateViewport(vp, players, this.zoom)
         // this.log("drawing", players.length, map.layers.length, vp.left())
-        ctx.fillStyle = 'black'
+        ctx.fillStyle = 'magenta'
         ctx.save()
         map.layers.forEach(layer => layer.drawSelf(ctx, vp, this.cache, this.zoom))
         ctx.restore()
@@ -191,7 +191,6 @@ export function PlayTest(props: {
     return <div>
         <canvas ref={ref}
                 tabIndex={0}
-
                 width={viewport.w * tileSize.w * zoom}
                 height={viewport.h * tileSize.h * zoom}></canvas>
     </div>

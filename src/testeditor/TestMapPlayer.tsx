@@ -1,18 +1,24 @@
 import React, {useState} from "react"
 
-import {GameDoc, GameMap, GameTest} from "../model/datamodel"
+import {Icons} from "../common/common"
+import {ToggleButton} from "../common/common-components"
+import {useWatchProp} from "../model/base"
+import {GameDoc, GameTest} from "../model/datamodel"
 import {PlayTest} from "./PlayTest"
+
 export function TestMapPlayer(props: {
     test: GameTest,
     doc: GameDoc,
-    map: GameMap
 }) {
-    const {test, map, doc} = props
+    const {test, doc} = props
+    const mapid = test.getPropValue('map')
+    const map = mapid?doc.getPropValue('maps').find(map => map.getUUID() === mapid):undefined
     const [playing, setPlaying] = useState(false)
     const [zoom, setZoom] = useState(3)
     const [grid, setGrid] = useState(false)
     const togglePlaying = () => setPlaying(!playing)
     const [physicsDebug, setPhysicsDebug] = useState(false)
+    useWatchProp(test,'map')
     return <>
         <div className={'toolbar'}>
             <button onClick={()=>togglePlaying()}>{playing?"pause":"play"}</button>
@@ -20,10 +26,10 @@ export function TestMapPlayer(props: {
             <button onClick={()=>setZoom(zoom+1)}>+</button>
             <label>{zoom}</label>
             <button onClick={()=>setZoom(zoom-1)}>-</button>
-            <button onClick={()=>setGrid(!grid)}>grid</button>
+            <ToggleButton onClick={()=>setGrid(!grid)} icon={Icons.Grid} selected={grid} selectedIcon={Icons.GridSelected}/>
             <button onClick={()=>setPhysicsDebug(!physicsDebug)}>collisons</button>
         </div>
-        <PlayTest
+        {map && <PlayTest
             playing={playing}
             doc={doc}
             map={map}
@@ -31,6 +37,6 @@ export function TestMapPlayer(props: {
             zoom={zoom}
             grid={grid}
             physicsDebug={physicsDebug}
-        />
+        />}
     </>
 }

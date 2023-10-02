@@ -15,16 +15,14 @@ export function TestModeView(props: {
 }) {
     const { test} = props
     const doc = useContext(DocContext)
-    const [map] = useState<GameMap>(doc.getPropValue('maps')[0])
 
     return <div>
         <HBox>
             hi
         </HBox>
-        {map && test && <TestMapPlayer
+        {test && <TestMapPlayer
             doc={doc}
             test={test}
-            map={map}
             />}
     </div>
 }
