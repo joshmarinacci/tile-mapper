@@ -60,10 +60,10 @@ export class RectTool extends PropsBase<RectToolSettingsType> implements Tool {
     drawOverlay(ovr: ToolOverlayInfo): void {
         if (!this.down) return
         if(this.getPropValue('filled')) {
-            ovr.ctx.fillStyle = 'red'
+            ovr.ctx.fillStyle = ovr.palette.colors[ovr.color]
             ovr.ctx.fillRect(this.start.x * ovr.scale, this.start.y * ovr.scale, (this.end.x - this.start.x) * ovr.scale, (this.end.y - this.start.y) * ovr.scale)
         } else {
-            ovr.ctx.strokeStyle = 'red'
+            ovr.ctx.strokeStyle = ovr.palette.colors[ovr.color]
             ovr.ctx.lineWidth = 4
             ovr.ctx.beginPath()
             ovr.ctx.strokeRect(this.start.x * ovr.scale, this.start.y * ovr.scale, (this.end.x - this.start.x) * ovr.scale, (this.end.y - this.start.y) * ovr.scale)

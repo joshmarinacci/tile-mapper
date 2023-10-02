@@ -86,7 +86,7 @@ export class EllipseTool extends PropsBase<EllipseToolSettingsType> implements T
 
     drawOverlay(ovr: ToolOverlayInfo): void {
         if (!this.down) return
-        ovr.ctx.strokeStyle = 'red'
+        ovr.ctx.strokeStyle = ovr.palette.colors[ovr.color]
         ovr.ctx.lineWidth = 4
         ovr.ctx.beginPath()
         const scale = ovr.scale
