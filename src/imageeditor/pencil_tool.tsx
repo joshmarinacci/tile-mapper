@@ -2,7 +2,7 @@ import {Point} from "josh_js_util"
 import React from "react"
 
 import {PropsBase, useWatchAllProps} from "../model/base"
-import {IntegerDef} from "../model/datamodel"
+import {IntegerDef, SImageLayer} from "../model/datamodel"
 import {Tool, ToolEvent, ToolOverlayInfo} from "./tool"
 
 type PencilSettingsType = {
@@ -18,7 +18,7 @@ export class PencilTool extends PropsBase<PencilSettingsType> implements Tool {
         super({
             tip_size: IntegerDef
         }, {
-            tip_size: 3,
+            tip_size: 1,
         })
         this.name = 'pencil'
         this._down = false
@@ -26,16 +26,23 @@ export class PencilTool extends PropsBase<PencilSettingsType> implements Tool {
     }
 
     drawOverlay(ovr: ToolOverlayInfo): void {
-        ovr.ctx.fillStyle = 'red'
+        if(this._down) return
+        ovr.ctx.fillStyle = ovr.palette.colors[ovr.color]
         const size = this.getPropValue('tip_size')
-        ovr.ctx.fillRect(this._cursor.x * ovr.scale, this._cursor.y * ovr.scale, size * ovr.scale, size * ovr.scale)
+        const rad = Math.floor(size/2)
+        ovr.ctx.fillRect(
+            (this._cursor.x - rad) * ovr.scale,
+            (this._cursor.y - rad) * ovr.scale,
+            size * ovr.scale,
+            size * ovr.scale
+        )
     }
 
     onMouseDown(evt: ToolEvent): void {
         this._down = true
         this._cursor = evt.pt
         if (evt.layer) {
-            evt.layer.setPixel(evt.pt, evt.color)
+            this.drawAtCursor(evt.layer, evt.pt,evt.color)
         }
     }
 
@@ -43,7 +50,7 @@ export class PencilTool extends PropsBase<PencilSettingsType> implements Tool {
         this._cursor = evt.pt
         evt.markDirty()
         if (evt.layer && this._down) {
-            evt.layer.setPixel(evt.pt, evt.color)
+            this.drawAtCursor(evt.layer, evt.pt,evt.color)
         }
     }
 
@@ -52,6 +59,16 @@ export class PencilTool extends PropsBase<PencilSettingsType> implements Tool {
         this._down = false
     }
 
+    private drawAtCursor(layer:SImageLayer, pt: Point, color: number) {
+        const size = this.getPropValue('tip_size')
+        const rad = Math.floor(size/2)
+        for(let i= pt.x-rad; i <= pt.x+rad; i++) {
+            for(let j= pt.y-rad; j <= pt.y+rad; j++) {
+                layer.setPixel(new Point(i,j),color)
+            }
+        }
+
+    }
 }
 
 export function PencilToolSettings(props: { tool: PencilTool }) {

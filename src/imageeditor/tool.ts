@@ -16,6 +16,8 @@ export type ToolOverlayInfo = {
     canvas: HTMLCanvasElement,
     ctx: CanvasRenderingContext2D,
     scale: number,
+    color: number,
+    palette: ImagePalette,
 }
 
 export interface Tool {

@@ -17,6 +17,7 @@ import {FillTool, FillToolSettings} from "./fill_tool"
 import {LineTool, LineToolSettings} from "./line_tool"
 import {PencilTool, PencilToolSettings} from "./pencil_tool"
 import {RectTool, RectToolSettings} from "./rect_tool"
+import {SelectionTool, SelectionToolSettings} from "./selection_tool"
 import {Tool} from "./tool"
 
 const LayerItemRenderer: ListViewRenderer<SImageLayer, never> = (props: {
@@ -43,7 +44,7 @@ function clamp(val: number, min: number, max: number) {
     return val
 }
 
-function drawCanvas(canvas: HTMLCanvasElement, scale: number, grid: boolean, image: SImage, palette: ImagePalette, tool: Tool) {
+function drawCanvas(canvas: HTMLCanvasElement, scale: number, grid: boolean, image: SImage, palette: ImagePalette, tool: Tool, drawColor:number) {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     ctx.fillStyle = 'magenta'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -78,11 +79,16 @@ function drawCanvas(canvas: HTMLCanvasElement, scale: number, grid: boolean, ima
             canvas: canvas,
             ctx: ctx,
             scale: scale,
+            color:drawColor,
+            palette: palette,
         })
     }
 }
 
-export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
+export function SImageEditorView(props: {
+    image: SImage,
+    state: GlobalState
+}) {
     const {image} = props
     const doc = useContext(DocContext)
     const palette = doc.getPropValue('palette')
@@ -105,7 +111,7 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
     const redraw = () => {
         if (canvasRef.current) {
             const scale = Math.pow(2, zoom)
-            drawCanvas(canvasRef.current, scale, grid, image, palette, tool)
+            drawCanvas(canvasRef.current, scale, grid, image, palette, tool, palette.colors.indexOf(drawColor))
         }
     }
 
@@ -158,10 +164,11 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
     let tool_settings = <div>no tool selected</div>
     if (tool instanceof PencilTool) tool_settings = <PencilToolSettings tool={tool}/>
     if (tool instanceof EraserTool) tool_settings = <EraserToolSettings tool={tool}/>
-    if (tool instanceof RectTool)   tool_settings = <RectToolSettings tool={tool}/>
-    if (tool instanceof LineTool)   tool_settings = <LineToolSettings tool={tool}/>
-    if (tool instanceof EllipseTool)   tool_settings = <EllipseToolSettings tool={tool}/>
-    if (tool instanceof FillTool)   tool_settings = <FillToolSettings tool={tool}/>
+    if (tool instanceof RectTool) tool_settings = <RectToolSettings tool={tool}/>
+    if (tool instanceof LineTool) tool_settings = <LineToolSettings tool={tool}/>
+    if (tool instanceof EllipseTool) tool_settings = <EllipseToolSettings tool={tool}/>
+    if (tool instanceof FillTool) tool_settings = <FillToolSettings tool={tool}/>
+    if (tool instanceof SelectionTool) tool_settings = <SelectionToolSettings tool={tool}/>
 
     return <div className={'image-editor-view'}>
         <div className={'vbox'}>
@@ -187,12 +194,15 @@ export function SImageEditorView(props: { image: SImage, state: GlobalState }) {
                 <ToggleButton onClick={() => setGrid(!grid)}
                               icon={Icons.Grid} selected={grid}
                               selectedIcon={Icons.GridSelected}/>
+                <ToggleButton icon={Icons.Rect}
+                              selected={tool.name === 'selection'}
+                              onClick={() => setTool(new SelectionTool())}/>
                 <ToggleButton icon={Icons.Pencil}
                               selected={tool.name === 'pencil'}
                               onClick={() => setTool(new PencilTool())}/>
-                <ToggleButton onClick={() => setTool(new EraserTool())}
-                              icon={Icons.Eraser}
-                              selected={tool.name === 'eraser'}/>
+                <ToggleButton icon={Icons.Eraser}
+                              selected={tool.name === 'eraser'}
+                              onClick={() => setTool(new EraserTool())}/>
                 <ToggleButton onClick={() => setTool(new LineTool())}
                               icon={Icons.Line}
                               selected={tool.name === 'line'}/>
