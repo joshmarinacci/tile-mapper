@@ -4,7 +4,6 @@ export function strokeBounds(ctx: CanvasRenderingContext2D, bounds: Bounds, colo
     ctx.strokeStyle = color
     ctx.lineWidth = lineWidth
     ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h)
-
 }
 
 export function fillBounds(ctx: CanvasRenderingContext2D, bounds: Bounds, color: string) {

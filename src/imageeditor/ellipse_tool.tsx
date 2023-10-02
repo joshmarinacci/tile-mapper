@@ -132,5 +132,12 @@ export class EllipseTool extends PropsBase<EllipseToolSettingsType> implements T
 export function EllipseToolSettings(props: { tool: EllipseTool }) {
     useWatchAllProps(props.tool)
     return <div>
+        <label>filled</label>
+        <input type={'checkbox'}
+               checked={props.tool.getPropValue('filled')}
+               onChange={(e) => {
+                   const v = e.target.checked
+                   props.tool.setPropValue("filled", v)
+               }}/>
     </div>
 }

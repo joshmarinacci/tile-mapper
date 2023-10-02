@@ -22,7 +22,9 @@ export class SelectionTool extends PropsBase<SelectionToolSettingsType> implemen
 
     drawOverlay(ovr: ToolOverlayInfo): void {
         const bounds = this.selection.scale(ovr.scale)
-        strokeBounds(ovr.ctx, bounds, 'black', 5)
+        ovr.ctx.setLineDash([5,5])
+        strokeBounds(ovr.ctx, bounds, 'black', 1)
+        ovr.ctx.setLineDash([])
     }
 
     onMouseDown(evt: ToolEvent): void {

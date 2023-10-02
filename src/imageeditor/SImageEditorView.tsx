@@ -194,7 +194,7 @@ export function SImageEditorView(props: {
                 <ToggleButton onClick={() => setGrid(!grid)}
                               icon={Icons.Grid} selected={grid}
                               selectedIcon={Icons.GridSelected}/>
-                <ToggleButton icon={Icons.Rect}
+                <ToggleButton icon={Icons.Selection}
                               selected={tool.name === 'selection'}
                               onClick={() => setTool(new SelectionTool())}/>
                 <ToggleButton icon={Icons.Pencil}

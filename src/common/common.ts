@@ -244,5 +244,6 @@ export enum Icons {
     Line = 'line',
     Rect = 'rect',
     Ellipse = 'ellipse',
+    Selection = 'selection',
 }
 
