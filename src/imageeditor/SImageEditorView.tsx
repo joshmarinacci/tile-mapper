@@ -44,10 +44,7 @@ function clamp(val: number, min: number, max: number) {
     return val
 }
 
-function drawCanvas(canvas: HTMLCanvasElement, scale: number, grid: boolean, image: SImage, palette: ImagePalette, tool: Tool, drawColor:number) {
-    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
-    ctx.fillStyle = 'magenta'
-    ctx.fillRect(0, 0, canvas.width, canvas.height)
+export function drawImage(ctx: CanvasRenderingContext2D, image: SImage, palette: ImagePalette, scale: number) {
     image.getPropValue('layers').forEach(layer => {
         if (!layer.getPropValue('visible')) return
         ctx.save()
@@ -59,6 +56,13 @@ function drawCanvas(canvas: HTMLCanvasElement, scale: number, grid: boolean, ima
         })
         ctx.restore()
     })
+}
+
+function drawCanvas(canvas: HTMLCanvasElement, scale: number, grid: boolean, image: SImage, palette: ImagePalette, tool: Tool, drawColor:number) {
+    const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+    ctx.fillStyle = 'magenta'
+    ctx.fillRect(0, 0, canvas.width, canvas.height)
+    drawImage(ctx,image,palette,scale)
     const size = image.getPropValue('size')
     if (grid) {
         ctx.strokeStyle = 'black'
