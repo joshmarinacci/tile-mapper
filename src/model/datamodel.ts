@@ -624,19 +624,21 @@ CLASS_REGISTRY.register('Actor',Actor,ActorDefs)
 
 type ActorInstanceType = {
     name:string,
-    actor:string,
     position:Point,
+    actor:string,
 }
 const ActorInstanceDefs:DefList<ActorInstanceType> = {
     name: NameDef,
     position:PointDef,
     actor: {
-        type:"string",
+        type:"reference",
         default: () => "unknown",
         expandable:false,
         hidden:false,
         editable:false,
-        format: (v) => v,
+        format: (v:string) => v,
+        toJSON: (v) => v,
+        fromJSON: (v) => v,
     },
 }
 export class ActorInstance extends PropsBase<ActorInstanceType> {

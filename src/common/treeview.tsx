@@ -1,6 +1,6 @@
 import "./treeview.css"
 
-import {Size} from "josh_js_util"
+import {Bounds, Size} from "josh_js_util"
 import {toClass} from "josh_react_util"
 import React, {MouseEvent, ReactNode, useContext, useState} from "react"
 
@@ -48,10 +48,11 @@ function PropertyList<T extends DocType, K extends keyof T>(props: {
         const size = new Size(16,16)
         const sprite = new SImage({name:'new actor sprite', size: size})
         const layer = new SImageLayer({name:'layer', opacity: 1.0, visible: true})
+        const bounds = new Bounds(0,0,size.w,size.h)
         layer.rebuildFromCanvas(sprite)
         appendToList(sprite,'layers',layer)
         appendToList(target,'canvases',sprite)
-        const actor = new Actor({name: 'new actor', viewbox:size, hitbox: size, sprite: sprite.getUUID()})
+        const actor = new Actor({name: 'new actor', viewbox:bounds, hitbox: bounds, sprite: sprite.getUUID()})
         appendToList(target, name, actor)
         props.state.setPropValue('selection', actor)
     }
