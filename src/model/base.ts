@@ -17,7 +17,7 @@ export type ToFormatString<T> = (v: T) => string;
 export type PropDef<T> = {
     type: 'string' | 'integer' | 'float' | 'Size' | 'Point' | 'Bounds' | 'boolean' | 'array' | 'object' | 'reference',
     editable: boolean,
-    custom?: 'tile-reference' | 'image-reference'
+    custom?: 'tile-reference' | 'image-reference' | 'map-reference' | 'actor-reference',
     default: Getter<T>,
     toJSON: ToJSONner<T>,
     fromJSON: FromJSONner<T>,

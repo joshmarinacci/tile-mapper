@@ -674,7 +674,7 @@ const ViewportDef: PropDef<Size> = {
 }
 type TestType = {
     name: string,
-    map: string,
+    map: string|undefined,
     viewport: Size,
     gravity: number,
     jump_power: number,
@@ -684,7 +684,17 @@ type TestType = {
 }
 const TestDefs:DefList<TestType> = {
     name: NameDef,
-    map: NameDef,
+    map: {
+        type:'reference',
+        custom:'map-reference',
+        editable: true,
+        hidden: false,
+        expandable: false,
+        default: () => undefined,
+        watchChildren: false,
+        skipPersisting: false,
+        format: (v) => `uuid ${v}`
+    },
     viewport: ViewportDef,
     gravity: GravityDef,
     jump_power: JumpDef,

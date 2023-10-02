@@ -5,44 +5,45 @@ import {HBox} from "josh_react_util"
 import React, {useContext, useEffect, useRef, useState} from "react"
 
 import {PropDef, PropsBase, useWatchProp} from "../model/base"
-import {Tile} from "../model/datamodel"
+import {GameMap, Tile} from "../model/datamodel"
 import {CompactSheetAndTileSelector} from "../sheeteditor/TileListView"
 import {drawEditableSprite} from "./common"
 import {DocContext} from "./common-components"
+import {ListSelect} from "./ListSelect"
 import {PopupContext} from "./popup"
 
-function TileReferenceSelector<T>(props:{
+function TileReferenceSelector<T>(props: {
     def: PropDef<T[keyof T]>,
     name: keyof T,
     target: PropsBase<T>,
 }) {
-    const [tile, setTile] = useState<Tile|undefined>(undefined)
-    return<CompactSheetAndTileSelector selectedTile={tile} setSelectedTile={(tile)=>{
-        if(tile) {
+    const [tile, setTile] = useState<Tile | undefined>(undefined)
+    return <CompactSheetAndTileSelector selectedTile={tile} setSelectedTile={(tile) => {
+        if (tile) {
             props.target.setPropValue(props.name, tile.getUUID())
             setTile(tile)
         }
     }}/>
 }
 
-export function TileReferenceView(props: { tileRef: string|undefined}) {
-    const { tileRef } = props
+export function TileReferenceView(props: { tileRef: string | undefined }) {
+    const {tileRef} = props
     const canvasRef = useRef<HTMLCanvasElement>(null)
     const doc = useContext(DocContext)
     useEffect(() => {
-        if(canvasRef.current) {
+        if (canvasRef.current) {
             const canvas = canvasRef.current
             const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
             ctx.fillStyle = 'blue'
-            ctx.fillRect(0,0,32,32)
+            ctx.fillRect(0, 0, 32, 32)
             ctx.fillRect(0, 0, canvas.width, canvas.height)
-            if(tileRef) {
+            if (tileRef) {
                 const tile = doc.lookup_sprite(tileRef)
                 if (tile) drawEditableSprite(ctx, 3, tile)
             }
         }
     }, [props.tileRef])
-    return  <canvas ref={canvasRef} width={32} height={32}/>
+    return <canvas ref={canvasRef} width={32} height={32}/>
 }
 
 function TileReferenceEditor<T>(props: {
@@ -54,13 +55,36 @@ function TileReferenceEditor<T>(props: {
     const value = props.target.getPropValue(props.name) as string
     return <HBox>
         <button onClick={(e) => {
-            pm.show_at(<TileReferenceSelector name={props.name} target={props.target} def={props.def} />,e.target,'right')
-        }}>edit</button>
+            pm.show_at(<TileReferenceSelector name={props.name} target={props.target}
+                                              def={props.def}/>, e.target, 'right')
+        }}>edit
+        </button>
         <TileReferenceView tileRef={value}/>
     </HBox>
 }
 
-function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDef<T[keyof T]>}) {
+function MapNameRenderer<T extends GameMap, O>(props:{value:T,selected:boolean, options:O}) {
+    if(!props.value) return <div>undefined</div>
+    return <div>{props.value.getPropValue('name')}</div>
+}
+function MapReferenceEditor<T>(props: {
+    def: PropDef<T[keyof T]>,
+    name: keyof T,
+    target: PropsBase<T>
+}) {
+    const doc = useContext(DocContext)
+    const {target, name } = props
+    const current = target.getPropValue(name)
+    const selected = doc.getPropValue('maps').find(mp => mp.getUUID() === current)
+    const data = doc.getPropValue('maps')
+    return <ListSelect selected={selected}
+                       setSelected={(v) => target.setPropValue(name, v.getUUID())}
+                       renderer={MapNameRenderer}
+                       data={data}
+                       options={{}}/>
+}
+
+function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDef<T[keyof T]> }) {
     const {target, def, name} = props
     const new_val = target.getPropValue(name)
     const doc = useContext(DocContext)
@@ -161,14 +185,20 @@ function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDe
     }
     if (def.type === 'reference' && def.custom === 'image-reference') {
         const image = doc.getPropValue('canvases').find(img => img.getUUID() === new_val)
-        return<label key={`editor${name.toString()}_value`} className={'value'}>
-            <b>{image?image.getPropValue('name'):'undefined'}</b>
+        return <label key={`editor${name.toString()}_value`} className={'value'}>
+            <b>{image ? image.getPropValue('name') : 'undefined'}</b>
         </label>
+    }
+    if (def.type === 'reference' && def.custom === 'map-reference') {
+        return <MapReferenceEditor target={target} def={def} name={name}/>
     }
     return <label key={'nothing'}>no editor for it</label>
 }
 
-export function PropSheet<T extends PropsBase<any>>(props: { title?: string, target: T | undefined}) {
+export function PropSheet<T extends PropsBase<any>>(props: {
+    title?: string,
+    target: T | undefined
+}) {
     const {title, target} = props
     const header = <header key={'the-header'}>{title ? title : 'props'}</header>
     if (!target) return <div className={'pane'} key={'nothing'}>{header}nothing selected</div>
@@ -176,7 +206,7 @@ export function PropSheet<T extends PropsBase<any>>(props: { title?: string, tar
         .filter(([, b]) => !b.hidden)
     return <div className={'prop-sheet pane'} key={'prop-sheet'}>
         {header}
-        <label>UUID</label><label className={'value'}>{target?target.getUUID():"????"}</label>
+        <label>UUID</label><label className={'value'}>{target ? target.getUUID() : "????"}</label>
         {propnames.map(([name, def]) => {
             return <>
                 <label key={`label_${name.toString()}`}>{name.toString()}</label>

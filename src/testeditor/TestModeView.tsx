@@ -19,6 +19,7 @@ export function TestModeView(props: {
 
     return <div>
         <HBox>
+            hi
         </HBox>
         {map && test && <TestMapPlayer
             doc={doc}
