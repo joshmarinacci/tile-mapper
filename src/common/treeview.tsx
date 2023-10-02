@@ -33,26 +33,32 @@ function PropertyList<T extends DocType, K extends keyof T>(props: {
     const values = value as []
     const [open, setOpen] = useState(true)
     const toggle = () => setOpen(!open)
-    useWatchProp(target,name)
+    useWatchProp(target, name)
     const addSheet = () => {
-        const sheet = new Sheet({name:'unnamed sheet', tileSize: target.getPropValue('tileSize')})
-        appendToList(target,'sheets',sheet)
-        props.state.setPropValue('selection',sheet)
+        const sheet = new Sheet({name: 'unnamed sheet', tileSize: target.getPropValue('tileSize')})
+        appendToList(target, 'sheets', sheet)
+        props.state.setPropValue('selection', sheet)
     }
     const addMap = () => {
-        const map = new GameMap({name:'new map'})
-        appendToList(target,'maps',map)
-        props.state.setPropValue('selection',map)
+        const map = new GameMap({name: 'new map'})
+        appendToList(target, 'maps', map)
+        props.state.setPropValue('selection', map)
     }
     const addActor = () => {
-        const actor = new Actor({name:'new actor'})
-        appendToList(target,name,actor)
-        props.state.setPropValue('selection',actor)
+        const size = new Size(16,16)
+        const sprite = new SImage({name:'new actor sprite', size: size})
+        const layer = new SImageLayer({name:'layer', opacity: 1.0, visible: true})
+        layer.rebuildFromCanvas(sprite)
+        appendToList(sprite,'layers',layer)
+        appendToList(target,'canvases',sprite)
+        const actor = new Actor({name: 'new actor', viewbox:size, hitbox: size, sprite: sprite.getUUID()})
+        appendToList(target, name, actor)
+        props.state.setPropValue('selection', actor)
     }
     const addTest = () => {
         const test = new GameTest({name: 'a new test'})
-        appendToList(target,name,test)
-        props.state.setPropValue('selection',test)
+        appendToList(target, name, test)
+        props.state.setPropValue('selection', test)
     }
     const addCanvas = () => {
         const canvas = new SImage({name:'blank canvas', size: new Size(32,32)})
@@ -65,7 +71,8 @@ function PropertyList<T extends DocType, K extends keyof T>(props: {
 
     return <li className={'tree-item'}>
         <p key={'section-description'} className={'section'}>
-            <button onClick={() => toggle()}>{open?down_arrow_triangle:right_arrow_triangle}</button>
+            <button
+                onClick={() => toggle()}>{open ? down_arrow_triangle : right_arrow_triangle}</button>
             <b>{name.toString()}</b>
             <DropdownButton title={"..."}>
                 {name === 'sheets' && <button onClick={addSheet}>Add Sheet</button>}
@@ -77,12 +84,12 @@ function PropertyList<T extends DocType, K extends keyof T>(props: {
             </DropdownButton>
         </p>
         {open &&
-        <ul key={'children'} className={'tree-list'}>{values.map((val) => {
-            return <ObjectTreeView key={val._id}
-                obj={val}
-                state={props.state}
-                selection={props.selection}/>
-        })}</ul>}
+            <ul key={'children'} className={'tree-list'}>{values.map((val) => {
+                return <ObjectTreeView key={val._id}
+                                       obj={val}
+                                       state={props.state}
+                                       selection={props.selection}/>
+            })}</ul>}
     </li>
 }
 
@@ -92,37 +99,39 @@ export function ObjectTreeView<T>(props: {
     selection: unknown
 }) {
     const {obj, state} = props
-    const select = (e:MouseEvent<HTMLElement>) => {
+    const select = (e: MouseEvent<HTMLElement>) => {
         e.preventDefault()
         e.stopPropagation()
         state.setPropValue('selection', obj)
     }
-    if(!obj.getAllPropDefs) {
+    if (!obj.getAllPropDefs) {
         console.log(obj)
         throw new Error(`trying to render an invalid object ${obj.constructor.name}`)
     }
     const expandable = obj.getAllPropDefs()
-        .filter(([a,b])=> b.expandable)
+        .filter(([a, b]) => b.expandable)
     const style = {
-        'tree-object':true,
+        'tree-object': true,
         selected: state.getPropValue('selection') === obj,
     }
-    useWatchProp(obj,'name')
+    useWatchProp(obj, 'name')
     const pm = useContext(PopupContext)
-    const showContextMenu = (e:React.MouseEvent<HTMLElement>) => {
+    const showContextMenu = (e: React.MouseEvent<HTMLElement>) => {
         e.preventDefault()
         select(e)
-        const items:ReactNode[] = []
-        if(obj instanceof Sheet) {
+        const items: ReactNode[] = []
+        if (obj instanceof Sheet) {
             items.push(<ToolbarActionButton key={'delete-sheet'} state={state} action={DeleteSheetAction} icon={'trashcan'}/>)
         }
-        if(obj instanceof GameMap) {
-            items.push(<ToolbarActionButton key={'delete-map'} state={state} action={DeleteMapAction}/>)
+        if (obj instanceof GameMap) {
+            items.push(<ToolbarActionButton key={'delete-map'} state={state}
+                                            action={DeleteMapAction}/>)
         }
-        pm.show_at(<MenuList>{items}</MenuList>,e.target,"right")
+        pm.show_at(<MenuList>{items}</MenuList>, e.target, "right")
     }
     return <ul key={obj._id} className={toClass(style)}>
-        <p key={obj._id+'description'} className={'description'} onClick={select} onContextMenu={showContextMenu}>
+        <p key={obj._id + 'description'} className={'description'} onClick={select}
+           onContextMenu={showContextMenu}>
             {obj.getPropValue('name') as string}
         </p>
         {

@@ -63,6 +63,7 @@ function TileReferenceEditor<T>(props: {
 function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDef<T[keyof T]>}) {
     const {target, def, name} = props
     const new_val = target.getPropValue(name)
+    const doc = useContext(DocContext)
     useWatchProp(target, name)
     if (!def.editable) {
         return <span key={`value_${name.toString()}`}
@@ -158,8 +159,11 @@ function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDe
                    }}/>
         </>
     }
-    if (def.type === 'reference' && def.custom === 'tile-reference') {
-        return <TileReferenceEditor target={target} name={name} def={def}/>
+    if (def.type === 'reference' && def.custom === 'image-reference') {
+        const image = doc.getPropValue('canvases').find(img => img.getUUID() === new_val)
+        return<label key={`editor${name.toString()}_value`} className={'value'}>
+            <b>{image?image.getPropValue('name'):'undefined'}</b>
+        </label>
     }
     return <label key={'nothing'}>no editor for it</label>
 }
@@ -172,7 +176,7 @@ export function PropSheet<T extends PropsBase<any>>(props: { title?: string, tar
         .filter(([, b]) => !b.hidden)
     return <div className={'prop-sheet pane'} key={'prop-sheet'}>
         {header}
-        <label>UUID</label><label>{target?target.getUUID():"????"}</label>
+        <label>UUID</label><label className={'value'}>{target?target.getUUID():"????"}</label>
         {propnames.map(([name, def]) => {
             return <>
                 <label key={`label_${name.toString()}`}>{name.toString()}</label>

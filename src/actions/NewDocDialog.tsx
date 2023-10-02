@@ -32,8 +32,8 @@ type Pal = {
 const PALS:ImagePalette[] = [PICO8, MINECRAFT, RESURRECT64]
 
 export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
-    const [width, setWidth] = useState(10)
-    const [height, setHeight] = useState(10)
+    const [width, setWidth] = useState(16)
+    const [height, setHeight] = useState(16)
     const [pal, setPal] = useState(PALS[0])
     const dc = useContext(DialogContext)
     const create = () => {
