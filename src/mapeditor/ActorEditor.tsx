@@ -2,12 +2,12 @@ import {Point} from "josh_js_util"
 import {toClass} from "josh_react_util"
 import React, {useContext, useState} from "react"
 
-import {drawEditableSprite} from "../common/common"
 import {DocContext} from "../common/common-components"
 import {ListSelect} from "../common/ListSelect"
 import {ListViewOptions, ListViewRenderer} from "../common/ListView"
 import {TileReferenceView} from "../common/propsheet"
 import {fillBounds, strokeBounds} from "../engine/util"
+import {drawImage} from "../imageeditor/SImageEditorView"
 import {appendToList} from "../model/base"
 import {Actor, ActorInstance, ActorLayer, GameDoc} from "../model/datamodel"
 import {DrawArgs, MouseEventArgs, MouseHandler} from "./editorbase"
@@ -23,21 +23,15 @@ export function drawActorlayer(ctx: CanvasRenderingContext2D, doc: GameDoc, laye
         const source = findActorForInstance(inst, doc)
         if (source) {
             const box = source.getPropValue('viewbox').add(position).scale(scale)
-            const tileRef = source.getPropValue('tile')
             fillBounds(ctx, box, 'red')
-            if (tileRef) {
-                const tile = doc.lookup_sprite(tileRef)
-                if (tile) {
-                    if (tile.cache_canvas) {
-                        ctx.drawImage(tile.cache_canvas,
-                            //src
-                            0, 0, tile.cache_canvas.width, tile.cache_canvas.height,
-                            //dst
-                            box.x, box.y, box.w, box.h
-                        )
-                    } else {
-                        drawEditableSprite(ctx, scale, tile)
-                    }
+            const imageRef = source.getPropValue('sprite')
+            if (imageRef) {
+                const img = doc.getPropValue('canvases').find(can => can.getUUID() === imageRef)
+                if(img) {
+                    ctx.save()
+                    ctx.translate(box.x,box.y)
+                    drawImage(ctx,img,doc.getPropValue('palette'),scale)
+                    ctx.restore()
                 }
             }
         }
