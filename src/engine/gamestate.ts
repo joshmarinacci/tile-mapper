@@ -34,23 +34,27 @@ export class GameState {
         this.canvas.style.border = '1px solid red'
         this.keyboard = new KeyboardManager()
         this.viewport = new Bounds(0, 0, size.w, size.h)
-        const player: Player = {
-            type: "player",
-            color: 'green',
-            tile: {
-                uuid: 'smileguy'
-            },
-            bounds: new Bounds(8, 8, 7, 7),
-            vx: 0,
-            vy: 0,
-            standing: false,
-            hidden: false,
-            name:'player',
-            hitable: true,
-        }
-        this.players = [player]
+        // const player: Player = {
+        //     type: "player",
+        //     color: 'green',
+        //     tile: {
+        //         uuid: 'smileguy'
+        //     },
+        //     bounds: new Bounds(8, 8, 7, 7),
+        //     vx: 0,
+        //     vy: 0,
+        //     standing: false,
+        //     hidden: false,
+        //     name:'player',
+        //     hitable: true,
+        // }
+        this.players = []
         this.enemies = []
         this.physics = new PhysicsManager()
+    }
+
+    addPlayer(player: Player) {
+        this.players.push(player)
     }
 
     getCurrentMap() {

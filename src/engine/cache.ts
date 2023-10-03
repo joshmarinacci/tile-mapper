@@ -64,7 +64,7 @@ export class TileCache {
         })
     }
 
-    getTileByName(tile: TileReference) {
+    getTileByUUID(tile: TileReference) {
         return this.cacheByTileUUID.get(tile.uuid)
     }
 

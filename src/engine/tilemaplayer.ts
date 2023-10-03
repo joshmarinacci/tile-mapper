@@ -60,7 +60,7 @@ export class TilemapLayer implements Layer {
                 }
                 if (this.isValidIndex(nn)) {
                     const tile = this.tiles.get(nn)
-                    const cached = cache.getTileByName(tile)
+                    const cached = cache.getTileByUUID(tile)
                     if (cached) {
                         ctx.drawImage(cached.canvas,
                             Math.floor(tb.x),

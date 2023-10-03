@@ -23,7 +23,7 @@ export class ActorsLayer implements Layer {
         ctx.translate(-viewport.x,0)
         this.actors.forEach(actor => {
             if(actor.hidden) return
-            const cached = cache.getTileByName(actor.tile)
+            const cached = cache.getTileByUUID(actor.tile)
             if (cached) {
                 ctx.drawImage(cached.canvas,
                     Math.floor(actor.bounds.x*scale),

@@ -61,7 +61,7 @@ export class PhysicsManager implements Layer {
         const isBlocking = (index: Point) => {
             const cell = tiles.tiles.get(index)
             if (cell) {
-                const tile = cache.getTileByName(cell)
+                const tile = cache.getTileByUUID(cell)
                 if (tile) {
                     if (tile.blocking) {
                         return true
@@ -243,7 +243,7 @@ export class PhysicsManager implements Layer {
                 const isBlocking = (index: Point) => {
                     const cell = tiles.tiles.get(index)
                     if (cell) {
-                        const tile = cache.getTileByName(cell)
+                        const tile = cache.getTileByUUID(cell)
                         if (tile) {
                             if (tile.blocking) {
                                 return true
@@ -277,5 +277,9 @@ export class PhysicsManager implements Layer {
                 })
             }
         }
+    }
+
+    private log(...args: unknown []) {
+        console.log("Physics",...args)
     }
 }

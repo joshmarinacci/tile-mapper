@@ -5,20 +5,14 @@ import {drawGrid} from "../actions/actions"
 import {ActorsLayer} from "../engine/actorslayer"
 import {TileCache} from "../engine/cache"
 import {GameState} from "../engine/gamestate"
-import {Actor, TileReference} from "../engine/globals"
+import {Actor, Player, TileReference} from "../engine/globals"
 import {PhysicsConstants} from "../engine/physics"
 import {TilemapLayer} from "../engine/tilemaplayer"
 import {drawImage} from "../imageeditor/SImageEditorView"
 import {findActorForInstance} from "../mapeditor/ActorEditor"
 import {useWatchAllProps} from "../model/base"
-import {
-    ActorLayer,
-    GameDoc,
-    GameMap,
-    GameTest,
-    MapCell,
-    TileLayer
-} from "../model/datamodel"
+import {ActorLayer, GameDoc, GameMap, GameTest, MapCell, TileLayer} from "../model/datamodel"
+import {Anim} from "./Anim"
 
 function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMap, size:Size, physicsDebug:boolean) {
     const gamestate = new GameState(current, size)
@@ -55,6 +49,7 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
         if (layer instanceof TileLayer) {
             const tl = new TilemapLayer()
             tl.type = 'tilemap'
+            tl.name = layer.getPropValue('name')
             tl.blocking = layer.getPropValue('blocking')
             tl.wrapping = layer.getPropValue('wrapping')
             tl.scrollSpeed = layer.getPropValue('scrollSpeed')
@@ -75,16 +70,24 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
                 const real_actor = findActorForInstance(inst, doc)
                 if(real_actor) {
                     const pos = inst.getPropValue('position')
-                    const val: Actor = {
+                    const val: Player = {
                         bounds: real_actor.getPropValue('viewbox').add(pos),
                         hidden:false,
                         type: "player",
                         color: 'blue',
                         tile: {
                             uuid: real_actor.getPropValue('sprite')
-                        }
+                        },
+                        name: inst.getPropValue('name'),
+                        hitable: true,
+                        vy:0,
+                        vx:0,
+                        standing:false,
                     }
                     actors.addActor(val)
+                    if(real_actor.getPropValue('kind') === 'player') {
+                        gamestate.addPlayer(val)
+                    }
                 }
             })
         }
@@ -93,96 +96,6 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
     return {game_state: gamestate, cache}
 }
 
-
-class Anim {
-    private cache: TileCache
-    private game_state: GameState
-    private zoom: number
-    private callback: () => void
-    private playing: boolean
-    private physics: PhysicsConstants
-    private target: HTMLCanvasElement
-    private keydown_handler: (e: KeyboardEvent) => void
-    private keyup_handler: (e: KeyboardEvent) => void
-    constructor() {
-        this.playing = false
-        this.zoom = 1
-        this.keydown_handler = (e:KeyboardEvent)  => {
-            this.game_state.getKeyboard().keydown(e.code)
-        }
-        this.keyup_handler = (e:KeyboardEvent)  => {
-            this.game_state.getKeyboard().keyup(e.code)
-        }
-
-        this.physics = {
-            gravity:0,
-            jump_power: 0,
-            friction:0,
-            move_speed_max: 0,
-            move_speed: 0,
-        }
-        this.callback = () => {
-            this.drawOnce()
-            if(this.playing) requestAnimationFrame(this.callback)
-        }
-    }
-
-    stop() {
-        this.playing= false
-        this.log("stopping")
-    }
-
-    play() {
-        this.log("playing")
-        this.playing = true
-        requestAnimationFrame(this.callback)
-    }
-
-    private log(...args:unknown[]) {
-        console.log('Anim',...args)
-    }
-
-    setGamestate(params: { cache: TileCache; game_state: GameState }) {
-        this.cache = params.cache
-        this.game_state = params.game_state
-    }
-
-    drawOnce() {
-        const map = this.game_state.getCurrentMap()
-        const ctx = this.game_state.getDrawingSurface()
-        const vp = this.game_state.getViewport()
-        // const vp = new Bounds(0,0,300,300)
-        const players = this.game_state.getPlayers()
-        this.game_state.getPhysics().updatePlayer(players, map.layers, this.game_state.getKeyboard(), this.cache, this.physics)
-        this.game_state.getPhysics().updateEnemies(this.game_state.getEnemies(), map.layers, this.cache)
-        this.game_state.updateViewport(vp, players, this.zoom)
-        // this.log("drawing", players.length, map.layers.length, vp.left())
-        ctx.fillStyle = 'magenta'
-        ctx.save()
-        map.layers.forEach(layer => layer.drawSelf(ctx, vp, this.cache, this.zoom))
-        ctx.restore()
-    }
-
-    setZoom(zoom: number) {
-        this.zoom = zoom
-    }
-
-    setPhysicsConstants(phs: PhysicsConstants) {
-        this.physics = phs
-    }
-
-    setKeyboardTarget(target: HTMLCanvasElement) {
-        if(this.target) {
-            this.target.removeEventListener('keydown',this.keydown_handler)
-            this.target.removeEventListener('keyup',this.keyup_handler)
-        }
-        this.target = target
-        if(this.target) {
-            this.target.addEventListener('keydown',this.keydown_handler)
-            this.target.addEventListener('keyup',this.keyup_handler)
-        }
-    }
-}
 
 export function PlayTest(props: {
     playing: boolean,

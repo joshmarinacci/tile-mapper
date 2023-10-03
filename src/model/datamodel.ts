@@ -593,11 +593,13 @@ export class GameMap extends PropsBase<GameMapType> {
 }
 CLASS_REGISTRY.register('Map',GameMap,GameMapDefs)
 
+type ActorKind = "player" | "enemy" | "item" | "other"
 type ActorType = {
     name: string,
     hitbox: Bounds,
     viewbox: Bounds,
     sprite: string|undefined,
+    kind: ActorKind,
 }
 const ActorDefs:DefList<ActorType> = {
     name: NameDef,
@@ -613,7 +615,19 @@ const ActorDefs:DefList<ActorType> = {
         format:(v) => v?v:'unknown',
         toJSON:(v:string) => v,
         fromJson:(v:string) => v,
-    }
+    },
+    kind: {
+        type:"string",
+        default: () => "item",
+        format: (v) => v,
+        editable: true,
+        hidden: false,
+        expandable: false,
+        fromJSON: (v) => v,
+        toJSON: (v) => v,
+        watchChildren: false,
+        skipPersisting: false,
+    },
 }
 export class Actor extends PropsBase<ActorType> {
     constructor(opts?: PropValues<ActorType>) {
