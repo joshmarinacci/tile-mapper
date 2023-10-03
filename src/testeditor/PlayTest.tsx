@@ -5,11 +5,20 @@ import {drawGrid} from "../actions/actions"
 import {ActorsLayer} from "../engine/actorslayer"
 import {TileCache} from "../engine/cache"
 import {GameState} from "../engine/gamestate"
-import {TileReference} from "../engine/globals"
+import {Actor, TileReference} from "../engine/globals"
 import {PhysicsConstants} from "../engine/physics"
 import {TilemapLayer} from "../engine/tilemaplayer"
+import {drawImage} from "../imageeditor/SImageEditorView"
+import {findActorForInstance} from "../mapeditor/ActorEditor"
 import {useWatchAllProps} from "../model/base"
-import {GameDoc, GameMap, GameTest, MapCell, TileLayer} from "../model/datamodel"
+import {
+    ActorLayer,
+    GameDoc,
+    GameMap,
+    GameTest,
+    MapCell,
+    TileLayer
+} from "../model/datamodel"
 
 function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMap, size:Size, physicsDebug:boolean) {
     const gamestate = new GameState(current, size)
@@ -19,13 +28,26 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
         sht.getPropValue('tiles').forEach(tile => {
             const can = doc.lookup_canvas(tile.getUUID())
             if(can) {
-                cache.addCachedTile(tile.getPropValue('name'), tile._id, {
+                cache.addCachedTile(tile.getPropValue('name'), tile.getUUID(), {
                     name: tile.getPropValue('name'),
-                    id: tile._id,
+                    id: tile.getUUID(),
                     blocking: tile.getPropValue('blocking'),
                     canvas: can
                 })
             }
+        })
+    })
+    doc.getPropValue('canvases').forEach(img => {
+        const canvas = document.createElement('canvas')
+        canvas.width = img.getPropValue('size').w
+        canvas.height = img.getPropValue('size').h
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+        drawImage(ctx,img,doc.getPropValue('palette'),1)
+        cache.addCachedTile(img.getPropValue('name'), img.getUUID(), {
+            name: img.getPropValue('name'),
+            id: img.getUUID(),
+            blocking: false,
+            canvas: canvas
         })
     })
     // turn each layer of the map into a layer of the engine
@@ -45,12 +67,29 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
             })
             gamestate.addLayer(tl)
         }
+        if (layer instanceof ActorLayer) {
+            const actors = new ActorsLayer()
+            actors.blocking = true
+            gamestate.addLayer(actors)
+            layer.getPropValue('actors').forEach(inst => {
+                const real_actor = findActorForInstance(inst, doc)
+                if(real_actor) {
+                    const pos = inst.getPropValue('position')
+                    const val: Actor = {
+                        bounds: real_actor.getPropValue('viewbox').add(pos),
+                        hidden:false,
+                        type: "player",
+                        color: 'blue',
+                        tile: {
+                            uuid: real_actor.getPropValue('sprite')
+                        }
+                    }
+                    actors.addActor(val)
+                }
+            })
+        }
     })
-    const actors = new ActorsLayer()
-    actors.blocking = true
-    gamestate.addLayer(actors)
     if(physicsDebug) gamestate.addLayer(gamestate.getPhysics())
-    gamestate.getPlayers().forEach(ply => actors.addActor(ply))
     return {game_state: gamestate, cache}
 }
 

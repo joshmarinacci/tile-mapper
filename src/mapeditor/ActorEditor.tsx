@@ -12,9 +12,9 @@ import {appendToList} from "../model/base"
 import {Actor, ActorInstance, ActorLayer, GameDoc} from "../model/datamodel"
 import {DrawArgs, MouseEventArgs, MouseHandler} from "./editorbase"
 
-function findActorForInstance(inst: ActorInstance, doc: GameDoc) {
+export function findActorForInstance(inst: ActorInstance, doc: GameDoc) {
     const actor_id = inst.getPropValue('actor')
-    return doc.getPropValue('actors').find(act => act._id === actor_id)
+    return doc.getPropValue('actors').find(act => act.getUUID() === actor_id)
 }
 
 export function drawActorlayer(ctx: CanvasRenderingContext2D, doc: GameDoc, layer: ActorLayer, scale: number, grid: boolean) {
@@ -23,7 +23,6 @@ export function drawActorlayer(ctx: CanvasRenderingContext2D, doc: GameDoc, laye
         const source = findActorForInstance(inst, doc)
         if (source) {
             const box = source.getPropValue('viewbox').add(position).scale(scale)
-            fillBounds(ctx, box, 'red')
             const imageRef = source.getPropValue('sprite')
             if (imageRef) {
                 const img = doc.getPropValue('canvases').find(can => can.getUUID() === imageRef)
@@ -32,8 +31,11 @@ export function drawActorlayer(ctx: CanvasRenderingContext2D, doc: GameDoc, laye
                     ctx.translate(box.x,box.y)
                     drawImage(ctx,img,doc.getPropValue('palette'),scale)
                     ctx.restore()
+                    return
                 }
             }
+            // if we get here then normal drawing failed, so just do a box
+            fillBounds(ctx, box, 'orange')
         }
     })
 }

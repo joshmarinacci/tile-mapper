@@ -693,7 +693,9 @@ const TestDefs:DefList<TestType> = {
         default: () => undefined,
         watchChildren: false,
         skipPersisting: false,
-        format: (v) => `uuid ${v}`
+        format: (v) => `uuid ${v}`,
+        toJSON:(v) => v,
+        fromJSON:(v) => v,
     },
     viewport: ViewportDef,
     gravity: GravityDef,
