@@ -1,6 +1,5 @@
 import {Bounds} from "josh_js_util"
 
-import {Layer} from "./globals"
 import {strokeBounds} from "./util"
 
 export class OverlayLayer implements Layer {

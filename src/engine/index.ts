@@ -1,9 +1,6 @@
 import {Bounds, Size} from "josh_js_util"
 
-import {JSONGameStruct, TileCache} from "./cache"
 import {GameMap, GameState} from "./gamestate"
-import {Player} from "./globals"
-import {TilemapLayer} from "./tilemaplayer"
 
 function updateViewport(viewport: Bounds, players: Player[], SCALE:number) {
     players.forEach(play => {

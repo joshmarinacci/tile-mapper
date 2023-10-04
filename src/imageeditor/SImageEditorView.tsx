@@ -1,6 +1,7 @@
 import "./SImageEditorView.css"
 
 import {Point} from "josh_js_util"
+import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
 
 import {Icons, ImagePalette} from "../common/common"
@@ -122,6 +123,19 @@ export function SImageEditorView(props: {
     useEffect(() => redraw(), [canvasRef, zoom, grid, count, image])
     useWatchAllProps(image, () => setCount(count + 1))
 
+    const exportPNG = async () => {
+        const scale = 4
+        const canvas = document.createElement('canvas')
+        const size = image.getPropValue('size').scale(scale)
+        canvas.width = size.w
+        canvas.height = size.h
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+        drawImage(ctx, image, palette, scale)
+
+        const blob = await canvas_to_blob(canvas)
+        forceDownloadBlob(`${image.getPropValue('name') as string}.${scale}x.png`, blob)
+
+    }
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
         const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
         return new Point(e.clientX, e.clientY)
@@ -227,6 +241,9 @@ export function SImageEditorView(props: {
             </div>
             <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor}
                                     palette={palette}/>
+            <div className={'toolbar'}>
+                <button onClick={exportPNG}>export PNG</button>
+            </div>
         </div>
         <div className={'image-editor-canvas-wrapper'}>
             <canvas ref={canvasRef} width={size.w * scale} height={size.h * scale}
