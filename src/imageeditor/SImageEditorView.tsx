@@ -2,7 +2,7 @@ import "./SImageEditorView.css"
 
 import {Point} from "josh_js_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
-import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
+import React, {MouseEvent, ReactNode, useContext, useEffect, useRef, useState} from "react"
 
 import {Icons, ImagePalette} from "../common/common"
 import {DocContext, Icon, IconButton, Pane, ToggleButton} from "../common/common-components"
@@ -90,6 +90,29 @@ function drawCanvas(canvas: HTMLCanvasElement, scale: number, grid: boolean, ima
     }
 }
 
+function DividerColumnBox(props: { value:number, onChange:(value:number) => void, children: ReactNode }) {
+    return <div className={'divider'} style={{
+        position:'relative'
+    }}>
+        {props.children}
+        <div className={'handler'}
+             onMouseDown={(e) => {
+                 const startX = e.screenX
+                 const initial_width = props.value
+                 const handler = (e) => {
+                     props.onChange(e.screenX - startX + initial_width)
+                 }
+                 window.addEventListener("mousemove", handler)
+                 const upHandler = () => {
+                     window.removeEventListener('mousemove',handler)
+                     window.removeEventListener('mouseup',upHandler)
+                 }
+                 window.addEventListener("mouseup",upHandler)
+             }}
+        > </div>
+    </div>
+}
+
 export function SImageEditorView(props: {
     image: SImage,
     state: GlobalState
@@ -111,6 +134,7 @@ export function SImageEditorView(props: {
     const [tool, setTool] = useState<Tool>(() => new PencilTool())
     const [count, setCount] = useState(0)
     const size = image.getPropValue('size')
+    const [columnWidth, setColumnWidth] = useState(200)
 
     const scale = Math.pow(2, zoom)
     const redraw = () => {
@@ -187,9 +211,12 @@ export function SImageEditorView(props: {
     if (tool instanceof EllipseTool) tool_settings = <EllipseToolSettings tool={tool}/>
     if (tool instanceof FillTool) tool_settings = <FillToolSettings tool={tool}/>
     if (tool instanceof SelectionTool) tool_settings = <SelectionToolSettings tool={tool}/>
-
-    return <div className={'image-editor-view'}>
-        <div className={'vbox'}>
+    return <div className={'image-editor-view'}
+                style={{
+                    gridTemplateColumns: `${columnWidth}px 1fr`
+                }}
+    >
+        <DividerColumnBox value={columnWidth} onChange={setColumnWidth}>
             <Pane key={'layer-list'} title={'layers'} collapsable={true}>
                 <div className={'toolbar'}>
                     <IconButton onClick={() => new_layer()} icon={Icons.Plus}/>
@@ -244,7 +271,7 @@ export function SImageEditorView(props: {
             <div className={'toolbar'}>
                 <button onClick={exportPNG}>export PNG</button>
             </div>
-        </div>
+        </DividerColumnBox>
         <div className={'image-editor-canvas-wrapper'}>
             <canvas ref={canvasRef} width={size.w * scale} height={size.h * scale}
                     onContextMenu={e => {
