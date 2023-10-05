@@ -345,6 +345,19 @@ export class SImageLayer extends PropsBase<SImageLayerType> {
         this._fire('data',this.getPropValue('data'))
         this._fireAll()
     }
+
+    crop(rect: Bounds) {
+        const data = this.getPropValue('data')
+        console.log('cropping',data.w,data.h,'to',rect)
+        const newData = new ArrayGrid<number>(rect.w,rect.h)
+        for(let i=rect.left(); i<rect.right(); i++) {
+            for(let j = rect.top(); j<rect.bottom(); j++) {
+                const v = data.get_at(i,j)
+                newData.set_at(i-rect.left(),j-rect.top(),v)
+            }
+        }
+        this.setPropValue('data',newData)
+    }
 }
 CLASS_REGISTRY.register('SImageLayer',SImageLayer,SImageLayerDataDefs)
 
@@ -371,6 +384,11 @@ const SImageDefs:DefList<SImageType> = {
 export class SImage extends PropsBase<SImageType> {
     constructor(opts?: PropValues<SImageType>) {
         super(SImageDefs, opts)
+    }
+
+    crop(rect: Bounds) {
+        this.getPropValue('layers').forEach(lay => lay.crop(rect))
+        this.setPropValue('size', rect.size())
     }
 }
 CLASS_REGISTRY.register('SImage',SImage, SImageDefs)

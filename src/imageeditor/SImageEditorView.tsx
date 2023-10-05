@@ -177,6 +177,12 @@ export function SImageEditorView(props: {
         forceDownloadBlob(`${image.getPropValue('name') as string}.${scale}x.png`, blob)
 
     }
+    const crop = () => {
+        if(selectionRect) {
+            image.crop(selectionRect)
+            setSelectionRect(undefined)
+        }
+    }
     const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
         const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
         return new Point(e.clientX, e.clientY)
@@ -282,6 +288,7 @@ export function SImageEditorView(props: {
                               icon={Icons.PaintBucket}
                               selected={tool.name === 'fill'}
                 />
+                <button onClick={() => crop()}>crop</button>
             </div>
             <div className={'toolbar'}>
                 <b>{tool.name} settings</b>
