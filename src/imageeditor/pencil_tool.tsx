@@ -1,4 +1,4 @@
-import {Point} from "josh_js_util"
+import {Bounds, Point} from "josh_js_util"
 import React from "react"
 
 import {PropsBase, useWatchAllProps} from "../model/base"
@@ -42,7 +42,7 @@ export class PencilTool extends PropsBase<PencilSettingsType> implements Tool {
         this._down = true
         this._cursor = evt.pt
         if (evt.layer) {
-            this.drawAtCursor(evt.layer, evt.pt,evt.color)
+            this.drawAtCursor(evt.layer, evt.pt,evt.color, evt.selection)
         }
     }
 
@@ -50,7 +50,7 @@ export class PencilTool extends PropsBase<PencilSettingsType> implements Tool {
         this._cursor = evt.pt
         evt.markDirty()
         if (evt.layer && this._down) {
-            this.drawAtCursor(evt.layer, evt.pt,evt.color)
+            this.drawAtCursor(evt.layer, evt.pt,evt.color, evt.selection)
         }
     }
 
@@ -59,12 +59,18 @@ export class PencilTool extends PropsBase<PencilSettingsType> implements Tool {
         this._down = false
     }
 
-    private drawAtCursor(layer:SImageLayer, pt: Point, color: number) {
+    private drawAtCursor(layer:SImageLayer, pt: Point, color: number, selection:Bounds|undefined) {
         const size = this.getPropValue('tip_size')
         const rad = Math.floor(size/2)
         for(let i= pt.x-rad; i <= pt.x+rad; i++) {
             for(let j= pt.y-rad; j <= pt.y+rad; j++) {
-                layer.setPixel(new Point(i,j),color)
+                if(selection) {
+                    if(selection.contains(new Point(i,j))) {
+                        layer.setPixel(new Point(i, j), color)
+                    }
+                } else {
+                    layer.setPixel(new Point(i, j), color)
+                }
             }
         }
 

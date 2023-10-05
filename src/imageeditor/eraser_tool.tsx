@@ -1,4 +1,4 @@
-import {Point} from "josh_js_util"
+import {Bounds, Point} from "josh_js_util"
 import React from "react"
 
 import {PropsBase, useWatchAllProps} from "../model/base"
@@ -41,16 +41,13 @@ export class EraserTool extends PropsBase<EraserSettingsType> implements Tool {
     onMouseDown(evt: ToolEvent): void {
         this._down = true
         this._cursor = evt.pt
-        if (evt.layer) {
-            this.drawAtCursor(evt.layer, evt.pt,-1)
-        }
+        this.drawAtCursor(evt,-1)
     }
 
     onMouseMove(evt: ToolEvent): void {
         this._cursor = evt.pt
-        evt.markDirty()
-        if (evt.layer && this._down) {
-            this.drawAtCursor(evt.layer, evt.pt,-1)
+        if (this._down) {
+            this.drawAtCursor(evt, -1)
         }
     }
 
@@ -58,17 +55,26 @@ export class EraserTool extends PropsBase<EraserSettingsType> implements Tool {
         this._cursor = evt.pt
         this._down = false
     }
-    private drawAtCursor(layer:SImageLayer, pt: Point, color: number) {
+    private drawAtCursor(evt:ToolEvent, color:number) {
         const size = this.getPropValue('tip_size')
         const rad = Math.floor(size/2)
+        const pt = evt.pt
+        const selection = evt.selection
+        const layer = evt.layer
+        if(!layer) return
         for(let i= pt.x-rad; i <= pt.x+rad; i++) {
             for(let j= pt.y-rad; j <= pt.y+rad; j++) {
-                layer.setPixel(new Point(i,j),color)
+                if(selection) {
+                    if(selection.contains(new Point(i,j))) {
+                        layer.setPixel(new Point(i, j), color)
+                    }
+                } else {
+                    layer.setPixel(new Point(i, j), color)
+                }
             }
         }
-
+        evt.markDirty()
     }
-
 }
 
 export function EraserToolSettings(props: { tool: EraserTool }) {

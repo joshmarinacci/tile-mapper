@@ -10,28 +10,24 @@ type SelectionToolSettingsType = {}
 export class SelectionTool extends PropsBase<SelectionToolSettingsType> implements Tool {
     name: string
     private down: boolean
-    private selection: Bounds
 
     constructor() {
         super({}, {})
         this.name = 'selection'
         this.down = false
-        this.selection = new Bounds(-1, -1, 0, 0)
     }
 
 
     drawOverlay(ovr: ToolOverlayInfo): void {
-        const bounds = this.selection.scale(ovr.scale)
-        ovr.ctx.setLineDash([5,5])
-        strokeBounds(ovr.ctx, bounds, 'black', 1)
-        ovr.ctx.setLineDash([])
     }
 
     onMouseDown(evt: ToolEvent): void {
         if (!evt.layer) return
         this.down = true
-        this.selection.x = evt.pt.floor().x
-        this.selection.y = evt.pt.floor().y
+        const selection = new Bounds(evt.pt.floor().x,evt.pt.floor().y,0,0)
+        // this.selection.x = evt.pt.floor().x
+        // this.selection.y = evt.pt.floor().y
+        evt.setSelectionRect(selection)
         evt.markDirty()
     }
 
@@ -39,21 +35,30 @@ export class SelectionTool extends PropsBase<SelectionToolSettingsType> implemen
         if (!evt.layer) return
         if(!this.down) return
         const pt = evt.pt.floor()
-        this.selection = new Bounds(this.selection.x, this.selection.y,
-            pt.x - this.selection.x,
-            pt.y - this.selection.y)
-        evt.markDirty()
+        if(evt.selection) {
+            const selection = new Bounds(evt.selection.x, evt.selection.y,
+                pt.x - evt.selection.x,
+                pt.y - evt.selection.y)
+            evt.setSelectionRect(selection)
+            evt.markDirty()
+        }
     }
 
     onMouseUp(evt: ToolEvent): void {
         if (!evt.layer) return
         this.down = false
         const pt = evt.pt.floor()
-        this.selection = new Bounds(this.selection.x, this.selection.y,
-            pt.x - this.selection.x,
-            pt.y - this.selection.y)
-        evt.markDirty()
-        console.log("selection is",this.selection)
+        if(evt.selection) {
+            const selection = new Bounds(evt.selection.x, evt.selection.y,
+                pt.x - evt.selection.x,
+                pt.y - evt.selection.y)
+            if (selection.w < 1 || selection.h < 1) {
+                evt.setSelectionRect(undefined)
+            }else {
+                evt.setSelectionRect(selection)
+            }
+            evt.markDirty()
+        }
     }
 }
 

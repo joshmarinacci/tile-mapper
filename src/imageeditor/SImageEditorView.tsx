@@ -1,6 +1,6 @@
 import "./SImageEditorView.css"
 
-import {Point} from "josh_js_util"
+import {Bounds, Point} from "josh_js_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {MouseEvent, ReactNode, useContext, useEffect, useRef, useState} from "react"
 
@@ -9,6 +9,7 @@ import {DocContext, Icon, IconButton, Pane, ToggleButton} from "../common/common
 import {ListView, ListViewDirection, ListViewRenderer} from "../common/ListView"
 import {PaletteColorPickerPane} from "../common/Palette"
 import {PropSheet} from "../common/propsheet"
+import {strokeBounds} from "../engine/util"
 import {appendToList, useWatchAllProps, useWatchProp} from "../model/base"
 import {SImage, SImageLayer} from "../model/datamodel"
 import {GlobalState} from "../state"
@@ -59,11 +60,17 @@ export function drawImage(ctx: CanvasRenderingContext2D, image: SImage, palette:
     })
 }
 
-function drawCanvas(canvas: HTMLCanvasElement, scale: number, grid: boolean, image: SImage, palette: ImagePalette, tool: Tool, drawColor:number) {
+function drawCanvas(canvas: HTMLCanvasElement,
+                    scale: number, grid: boolean,
+                    image: SImage, palette: ImagePalette,
+                    tool: Tool,
+                    drawColor: number,
+                    selectionRect:Bounds|undefined
+                    ) {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     ctx.fillStyle = 'magenta'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
-    drawImage(ctx,image,palette,scale)
+    drawImage(ctx, image, palette, scale)
     const size = image.getPropValue('size')
     if (grid) {
         ctx.strokeStyle = 'black'
@@ -84,15 +91,23 @@ function drawCanvas(canvas: HTMLCanvasElement, scale: number, grid: boolean, ima
             canvas: canvas,
             ctx: ctx,
             scale: scale,
-            color:drawColor,
+            color: drawColor,
             palette: palette,
         })
     }
+
+    if(selectionRect) {
+        const bounds = selectionRect.scale(scale)
+        ctx.setLineDash([5, 5])
+        strokeBounds(ctx, bounds, 'black', 1)
+        ctx.setLineDash([])
+    }
+
 }
 
-function DividerColumnBox(props: { value:number, onChange:(value:number) => void, children: ReactNode }) {
+function DividerColumnBox(props: { value: number, onChange: (value: number) => void, children: ReactNode }) {
     return <div className={'divider'} style={{
-        position:'relative'
+        position: 'relative'
     }}>
         {props.children}
         <div className={'handler'}
@@ -104,12 +119,12 @@ function DividerColumnBox(props: { value:number, onChange:(value:number) => void
                  }
                  window.addEventListener("mousemove", handler)
                  const upHandler = () => {
-                     window.removeEventListener('mousemove',handler)
-                     window.removeEventListener('mouseup',upHandler)
+                     window.removeEventListener('mousemove', handler)
+                     window.removeEventListener('mouseup', upHandler)
                  }
-                 window.addEventListener("mouseup",upHandler)
+                 window.addEventListener("mouseup", upHandler)
              }}
-        > </div>
+        ></div>
     </div>
 }
 
@@ -135,12 +150,13 @@ export function SImageEditorView(props: {
     const [count, setCount] = useState(0)
     const size = image.getPropValue('size')
     const [columnWidth, setColumnWidth] = useState(200)
+    const [selectionRect, setSelectionRect] = useState<Bounds | undefined>()
 
     const scale = Math.pow(2, zoom)
     const redraw = () => {
         if (canvasRef.current) {
             const scale = Math.pow(2, zoom)
-            drawCanvas(canvasRef.current, scale, grid, image, palette, tool, palette.colors.indexOf(drawColor))
+            drawCanvas(canvasRef.current, scale, grid, image, palette, tool, palette.colors.indexOf(drawColor), selectionRect)
         }
     }
 
@@ -291,8 +307,10 @@ export function SImageEditorView(props: {
                             e: e,
                             layer: layer,
                             palette: palette,
+                            selection: selectionRect,
+                            setSelectionRect: (rect) => setSelectionRect(rect),
                             markDirty: () => {
-
+                                setCount(count + 1)
                             }
                         })
                     }}
@@ -303,6 +321,8 @@ export function SImageEditorView(props: {
                             e: e,
                             layer: layer,
                             palette: palette,
+                            selection: selectionRect,
+                            setSelectionRect: (rect) => setSelectionRect(rect),
                             markDirty: () => {
                                 setCount(count + 1)
                             }
@@ -315,8 +335,10 @@ export function SImageEditorView(props: {
                             e: e,
                             layer: layer,
                             palette: palette,
+                            selection: selectionRect,
+                            setSelectionRect: (rect) => setSelectionRect(rect),
                             markDirty: () => {
-
+                                setCount(count + 1)
                             }
                         })
                     }}
