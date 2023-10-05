@@ -1,7 +1,6 @@
 import {Size} from "josh_js_util"
+import {PhysicsConstants, TileCache} from "retrogami-engine"
 
-import {TileCache} from "../../../retrogami-engine/src/cache"
-import {PhysicsConstants} from "../../../retrogami-engine/src/physics"
 import {GameState} from "../engine/gamestate"
 
 export class Anim {

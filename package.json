@@ -19,7 +19,8 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4"
+    "web-vitals": "^2.1.4",
+    "retrogami-engine": "^0.0.4"
   },
   "scripts": {
     "start": "mkdir -p build && cp public/* build && esbuild src/index.tsx --bundle --outdir=build --watch --serve --servedir=build",

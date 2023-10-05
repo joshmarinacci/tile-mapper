@@ -1,5 +1,13 @@
 import {ArrayGrid, Size} from "josh_js_util"
 import React, {useEffect, useRef, useState} from "react"
+import {
+    ActorLayer as ACL,
+    PhysicsConstants,
+    Player,
+    TileCache,
+    TilemapLayer,
+    TileReference
+} from "retrogami-engine"
 
 import {drawGrid} from "../actions/actions"
 import {GameState} from "../engine/gamestate"
@@ -58,7 +66,7 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
             gamestate.addLayer(tl)
         }
         if (layer instanceof ActorLayer) {
-            const actors = new ActorsLayer()
+            const actors = new ACL()
             actors.blocking = true
             gamestate.addLayer(actors)
             layer.getPropValue('actors').forEach(inst => {
@@ -71,7 +79,7 @@ function generateGamestate(current: HTMLCanvasElement, doc: GameDoc, map: GameMa
                         type: "player",
                         color: 'blue',
                         tile: {
-                            uuid: real_actor.getPropValue('sprite')
+                            uuid: real_actor.getPropValue('sprite') as string
                         },
                         name: inst.getPropValue('name'),
                         hitable: true,
