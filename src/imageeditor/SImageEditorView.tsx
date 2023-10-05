@@ -66,8 +66,8 @@ function drawCanvas(canvas: HTMLCanvasElement,
                     image: SImage, palette: ImagePalette,
                     tool: Tool,
                     drawColor: number,
-                    selectionRect:Bounds|undefined
-                    ) {
+                    selectionRect: Bounds | undefined
+) {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
     ctx.fillStyle = 'magenta'
     ctx.fillRect(0, 0, canvas.width, canvas.height)
@@ -97,7 +97,7 @@ function drawCanvas(canvas: HTMLCanvasElement,
         })
     }
 
-    if(selectionRect) {
+    if (selectionRect) {
         const bounds = selectionRect.scale(scale)
         ctx.setLineDash([5, 5])
         strokeBounds(ctx, bounds, 'black', 1)
@@ -257,10 +257,10 @@ export function SImageEditorView(props: {
                 <ToggleButton onClick={() => setGrid(!grid)}
                               icon={Icons.Grid} selected={grid}
                               selectedIcon={Icons.GridSelected}/>
-                <ToggleButton icon={Icons.Selection}
+                <ToggleButton icon={Icons.Selection} selectedIcon={Icons.SelectionSelected}
                               selected={tool.name === 'selection'}
                               onClick={() => setTool(new SelectionTool())}/>
-                <ToggleButton icon={Icons.Grid}
+                <ToggleButton icon={Icons.Move}
                               selected={tool.name === 'move'}
                               onClick={() => setTool(new MoveTool())}/>
                 <ToggleButton icon={Icons.Pencil}
@@ -273,7 +273,7 @@ export function SImageEditorView(props: {
                               icon={Icons.Line}
                               selected={tool.name === 'line'}/>
                 <ToggleButton onClick={() => setTool(new RectTool())}
-                              icon={Icons.Rect}
+                              icon={Icons.Rect} selectedIcon={Icons.RectSelected}
                               selected={tool.name === 'rect'}/>
                 <ToggleButton onClick={() => setTool(new EllipseTool())}
                               icon={Icons.Ellipse}

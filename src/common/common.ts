@@ -243,7 +243,10 @@ export enum Icons {
     Eraser = 'eraser',
     Line = 'line',
     Rect = 'rect',
+    RectSelected = 'rect-selected',
     Ellipse = 'ellipse',
     Selection = 'selection',
+    SelectionSelected = 'selection-selected',
+    Move = 'move',
 }
 
