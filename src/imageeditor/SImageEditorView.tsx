@@ -17,6 +17,7 @@ import {EllipseTool, EllipseToolSettings} from "./ellipse_tool"
 import {EraserTool, EraserToolSettings} from "./eraser_tool"
 import {FillTool, FillToolSettings} from "./fill_tool"
 import {LineTool, LineToolSettings} from "./line_tool"
+import {MoveTool, MoveToolSettings} from "./move_tool"
 import {PencilTool, PencilToolSettings} from "./pencil_tool"
 import {RectTool, RectToolSettings} from "./rect_tool"
 import {SelectionTool, SelectionToolSettings} from "./selection_tool"
@@ -227,6 +228,7 @@ export function SImageEditorView(props: {
     if (tool instanceof EllipseTool) tool_settings = <EllipseToolSettings tool={tool}/>
     if (tool instanceof FillTool) tool_settings = <FillToolSettings tool={tool}/>
     if (tool instanceof SelectionTool) tool_settings = <SelectionToolSettings tool={tool}/>
+    if (tool instanceof MoveTool) tool_settings = <MoveToolSettings tool={tool}/>
     return <div className={'image-editor-view'}
                 style={{
                     gridTemplateColumns: `${columnWidth}px 1fr`
@@ -258,6 +260,9 @@ export function SImageEditorView(props: {
                 <ToggleButton icon={Icons.Selection}
                               selected={tool.name === 'selection'}
                               onClick={() => setTool(new SelectionTool())}/>
+                <ToggleButton icon={Icons.Grid}
+                              selected={tool.name === 'move'}
+                              onClick={() => setTool(new MoveTool())}/>
                 <ToggleButton icon={Icons.Pencil}
                               selected={tool.name === 'pencil'}
                               onClick={() => setTool(new PencilTool())}/>

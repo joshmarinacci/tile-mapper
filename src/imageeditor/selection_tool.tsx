@@ -1,7 +1,6 @@
 import {Bounds} from "josh_js_util"
 import React from "react"
 
-import {strokeBounds} from "../engine/util"
 import {PropsBase, useWatchAllProps} from "../model/base"
 import {Tool, ToolEvent, ToolOverlayInfo} from "./tool"
 
