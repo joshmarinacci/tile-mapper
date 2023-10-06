@@ -5,6 +5,7 @@ import {VBox} from "josh_react_util"
 import React, {useContext, useEffect, useState} from "react"
 
 import {DocContext, Pane} from "../common/common-components"
+import {DividerColumnBox} from "../common/DividerColumnBox"
 import {PaletteColorPickerPane} from "../common/Palette"
 import {PropSheet} from "../common/propsheet"
 import {useWatchProp} from "../model/base"
@@ -24,14 +25,20 @@ export function TileSheetEditor(props: {
     const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
     const tile = sheet.getPropValue('selectedTile')
     const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20))
+    const [columnWidth, setColumnWidth] = useState(300)
+
     useEffect(() => {
         const tiles = sheet.getPropValue('tiles')
         sheet.setPropValue('selectedTile',tiles.length > 0 ? tiles[0] : undefined)
     }, [sheet])
     useWatchProp(sheet,"selectedTile")
 
-    return (<div className={'tile-sheet-editor'}>
-        <div className={'scrolling-column'}>
+    return (<div className={'tile-sheet-editor'}
+                 style={{
+                     gridTemplateColumns: `${columnWidth}px 1fr`
+                 }}
+    >
+        <DividerColumnBox value={columnWidth} onChange={setColumnWidth}>
             {sheet && <Pane collapsable={true} title={'Tile Sheet'}>
                 <TileListView editable={true}
                               sheet={sheet} tile={tile}
@@ -39,10 +46,10 @@ export function TileSheetEditor(props: {
                               palette={palette}/>
             </Pane>}
             {tile && <PropSheet target={tile} title={'Tile Info'}/>}
-            {tile && <Pane collapsable={true} title={'Text'}>
+            {tile && <Pane collapsable={true} title={'Scratch'}>
                 <TestMap tile={tile} mapArray={maparray} palette={palette}/>
             </Pane>}
-        </div>
+        </DividerColumnBox>
         <VBox>
             <PaletteColorPickerPane drawColor={drawColor} setDrawColor={setDrawColor}
                                     palette={palette}/>

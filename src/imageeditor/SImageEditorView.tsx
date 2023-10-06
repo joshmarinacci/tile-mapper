@@ -2,10 +2,11 @@ import "./SImageEditorView.css"
 
 import {Bounds, Point} from "josh_js_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
-import React, {MouseEvent, ReactNode, useContext, useEffect, useRef, useState} from "react"
+import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
 
 import {Icons, ImagePalette} from "../common/common"
 import {DocContext, Icon, IconButton, Pane, ToggleButton} from "../common/common-components"
+import {DividerColumnBox} from "../common/DividerColumnBox"
 import {ListView, ListViewDirection, ListViewRenderer} from "../common/ListView"
 import {PaletteColorPickerPane} from "../common/Palette"
 import {PropSheet} from "../common/propsheet"
@@ -106,29 +107,6 @@ function drawCanvas(canvas: HTMLCanvasElement,
 
 }
 
-function DividerColumnBox(props: { value: number, onChange: (value: number) => void, children: ReactNode }) {
-    return <div className={'divider'} style={{
-        position: 'relative'
-    }}>
-        {props.children}
-        <div className={'handler'}
-             onMouseDown={(e) => {
-                 const startX = e.screenX
-                 const initial_width = props.value
-                 const handler = (e) => {
-                     props.onChange(e.screenX - startX + initial_width)
-                 }
-                 window.addEventListener("mousemove", handler)
-                 const upHandler = () => {
-                     window.removeEventListener('mousemove', handler)
-                     window.removeEventListener('mouseup', upHandler)
-                 }
-                 window.addEventListener("mouseup", upHandler)
-             }}
-        ></div>
-    </div>
-}
-
 export function SImageEditorView(props: {
     image: SImage,
     state: GlobalState
@@ -150,7 +128,7 @@ export function SImageEditorView(props: {
     const [tool, setTool] = useState<Tool>(() => new PencilTool())
     const [count, setCount] = useState(0)
     const size = image.getPropValue('size')
-    const [columnWidth, setColumnWidth] = useState(200)
+    const [columnWidth, setColumnWidth] = useState(300)
     const [selectionRect, setSelectionRect] = useState<Bounds | undefined>()
 
     const scale = Math.pow(2, zoom)

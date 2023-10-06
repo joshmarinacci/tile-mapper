@@ -248,5 +248,6 @@ export enum Icons {
     Selection = 'selection',
     SelectionSelected = 'selection-selected',
     Move = 'move',
+    DividerHandle = 'divider-handle',
 }
 
