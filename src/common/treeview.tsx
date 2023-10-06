@@ -1,7 +1,7 @@
 import "./treeview.css"
 
 import {Bounds, Size} from "josh_js_util"
-import {toClass} from "josh_react_util"
+import {DialogContext, toClass} from "josh_react_util"
 import React, {MouseEvent, ReactNode, useContext, useState} from "react"
 
 import {DeleteMapAction, DeleteSheetAction} from "../actions/actions"
@@ -20,6 +20,30 @@ import {GlobalState} from "../state"
 import {down_arrow_triangle, right_arrow_triangle} from "./common"
 import {DropdownButton, MenuList, ToolbarActionButton} from "./common-components"
 import {PopupContext} from "./popup"
+
+function AddSImageDialog(props:{onComplete:(size:Size)=>void}) {
+    const dm = useContext(DialogContext)
+    const [width, setWidth] = useState(16)
+    const [height, setHeight] = useState(16)
+    return <div className={'dialog'}>
+        <header>create new drawing canvas</header>
+        <section className={'standard-form'}>
+            <label>width</label> <input type={'number'} value={width}
+                                        onChange={(e) => setWidth(parseInt(e.target.value))}/>
+            <label>height</label> <input type={'number'} value={height}
+                                         onChange={(e) => setHeight(parseInt(e.target.value))}/>
+        </section>
+        <footer>
+            <button onClick={() => {
+                dm.hide()
+            }}>cancel</button>
+            <button onClick={() => {
+                dm.hide()
+                props.onComplete(new Size(width,height))
+            }}>create</button>
+        </footer>
+    </div>
+}
 
 function PropertyList<T extends DocType, K extends keyof T>(props: {
     target: PropsBase<T>,
@@ -61,13 +85,17 @@ function PropertyList<T extends DocType, K extends keyof T>(props: {
         appendToList(target, name, test)
         props.state.setPropValue('selection', test)
     }
+
+    const dm = useContext(DialogContext)
     const addCanvas = () => {
-        const canvas = new SImage({name:'blank canvas', size: new Size(32,32)})
-        const layer = new SImageLayer({name:'unnamed layer', opacity: 1.0, visible:true})
-        appendToList(canvas,'layers',layer)
-        layer.rebuildFromCanvas(canvas)
-        appendToList(target,'canvases',canvas)
-        props.state.setPropValue('selection',canvas)
+        dm.show(<AddSImageDialog onComplete={(size) => {
+            const canvas = new SImage({name:'blank canvas', size: size})
+            const layer = new SImageLayer({name:'unnamed layer', opacity: 1.0, visible:true})
+            appendToList(canvas,'layers',layer)
+            layer.rebuildFromCanvas(canvas)
+            appendToList(target,'canvases',canvas)
+            props.state.setPropValue('selection',canvas)
+        }}/>)
     }
 
     return <li className={'tree-item'}>

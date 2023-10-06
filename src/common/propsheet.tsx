@@ -5,7 +5,7 @@ import {HBox} from "josh_react_util"
 import React, {useContext, useEffect, useRef, useState} from "react"
 
 import {PropDef, PropsBase, useWatchProp} from "../model/base"
-import {GameMap, Tile} from "../model/datamodel"
+import {ActorKind, ActorType, GameMap, SImage, Tile} from "../model/datamodel"
 import {CompactSheetAndTileSelector} from "../sheeteditor/TileListView"
 import {drawEditableSprite} from "./common"
 import {DocContext} from "./common-components"
@@ -84,6 +84,46 @@ function MapReferenceEditor<T>(props: {
                        options={{}}/>
 }
 
+function SImageNameRenderer<T extends SImage, O>(props:{value:T,selected:boolean, options:O}) {
+    if(!props.value) return <div>undefined</div>
+    return <div>{props.value.getPropValue('name')}</div>
+}
+function SImageReferenceEditor<T>(props: {
+    def: PropDef<T[keyof T]>,
+    name: keyof T,
+    target: PropsBase<T>
+}) {
+    const doc = useContext(DocContext)
+    const current = props.target.getPropValue(props.name)
+    const selected = doc.getPropValue('canvases').find(mp => mp.getUUID() === current)
+    const data = doc.getPropValue('canvases')
+    return <ListSelect selected={selected}
+                       setSelected={v => props.target.setPropValue(props.name,v.getUUID())}
+                       renderer={SImageNameRenderer}
+                       data={data}
+                       options={{}}/>
+}
+
+function ActorTypeRenderer<T extends ActorKind, O>(props:{value: T, selected:boolean, options:O}) {
+    if(!props.value) return <div>undefined</div>
+    return <div>{props.value}</div>
+}
+
+function ActorTypeEditor<T extends ActorType>(props: {
+    def: PropDef<T[keyof T]>,
+    name: keyof T,
+    target: PropsBase<T>
+}) {
+    // const selected = props.target.getPropValue('kind')
+    return <ListSelect selected={props.target.getPropValue('kind')}
+                       setSelected={(kind:ActorKind)=> {
+                           props.target.setPropValue('kind',kind)
+                       }}
+                       renderer={ActorTypeRenderer}
+                       data={["item","player","enemy"]}
+                       options={{}}/>
+}
+
 function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDef<T[keyof T]> }) {
     const {target, def, name} = props
     const new_val = target.getPropValue(name)
@@ -94,6 +134,9 @@ function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDe
                      className={'value'}><b>{props.def.format(new_val)}</b></span>
     }
     if (def.type === 'string') {
+        if(def.custom === 'actor-type') {
+            return <ActorTypeEditor key={`editor_${name.toString()}`} target={target} def={def} name={name} />
+        }
         return <input key={`editor_${name.toString()}`} type={'text'}
                       value={new_val + ""}
                       onChange={(e) => {
@@ -184,13 +227,10 @@ function PropEditor<T>(props: { target: PropsBase<T>, name: keyof T, def: PropDe
         </>
     }
     if (def.type === 'reference' && def.custom === 'image-reference') {
-        const image = doc.getPropValue('canvases').find(img => img.getUUID() === new_val)
-        return <label key={`editor${name.toString()}_value`} className={'value'}>
-            <b>{image ? image.getPropValue('name') : 'undefined'}</b>
-        </label>
+        return <SImageReferenceEditor key={`editor_${name.toString()}`} target={target} def={def} name={name}/>
     }
     if (def.type === 'reference' && def.custom === 'map-reference') {
-        return <MapReferenceEditor target={target} def={def} name={name}/>
+        return <MapReferenceEditor key={`editor_${name.toString()}`} target={target} def={def} name={name}/>
     }
     return <label key={'nothing'}>no editor for it</label>
 }
