@@ -15,9 +15,11 @@ import {saveLocalStorage} from "../io/local"
 import {readMetadata} from "../io/vendor"
 import {appendToList, PropsBase, removeFromList, SimpleMenuAction} from "../model/base"
 import {
+    Actor,
     ActorLayer,
     GameDoc,
     GameMap,
+    GameTest,
     MapLayerType,
     Sheet,
     Tile,
@@ -262,6 +264,28 @@ export const DeleteMapAction:SimpleMenuAction = {
         const sel = state.getPropValue('selection')
         if(sel instanceof GameMap) {
             removeFromList(state.getPropValue('doc'),'maps',sel as GameMap)
+            state.setPropValue('selection',null)
+        }
+    }
+}
+export const DeleteActorAction:SimpleMenuAction = {
+    type:"simple",
+    title:'delete actor',
+    perform:async (state) => {
+        const sel = state.getPropValue('selection')
+        if(sel instanceof Actor) {
+            removeFromList(state.getPropValue('doc'),'actors',sel as Actor)
+            state.setPropValue('selection',null)
+        }
+    }
+}
+export const DeleteGameTestAction:SimpleMenuAction = {
+    type:"simple",
+    title:'delete test',
+    perform:async (state) => {
+        const sel = state.getPropValue('selection')
+        if(sel instanceof GameTest) {
+            removeFromList(state.getPropValue('doc'),'tests',sel as GameTest)
             state.setPropValue('selection',null)
         }
     }
