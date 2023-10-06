@@ -140,21 +140,3 @@ button:disabled {
 }
 
 
-.divider {
-    border: 4px solid black;
-    border-width: 0 2px 0 0;
-}
-
-.divider .handler {
-    border: 1px solid black;
-    background-color: black;
-    border-radius: 0rem;
-    user-select: none;
-    position:absolute;
-    right:0;
-    bottom:0;
-    width: 20px;
-    height:20px;
-}
-
-

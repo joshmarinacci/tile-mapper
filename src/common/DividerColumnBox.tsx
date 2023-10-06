@@ -1,3 +1,5 @@
+import "./DividerColumnBox.css"
+
 import React, {ReactNode} from "react"
 
 import {ICON_CACHE} from "../iconcache"
@@ -11,7 +13,9 @@ export function DividerColumnBox(props: {
     return <div className={'divider'} style={{
         position: 'relative'
     }}>
-        {props.children}
+        <div className={'container'}>
+            {props.children}
+        </div>
         <div className={'handler'}
              onMouseDown={(e) => {
                  const startX = e.screenX
