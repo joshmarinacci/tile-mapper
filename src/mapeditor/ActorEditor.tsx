@@ -6,10 +6,10 @@ import {DocContext} from "../common/common-components"
 import {ListSelect} from "../common/ListSelect"
 import {ListViewOptions, ListViewRenderer} from "../common/ListView"
 import {TileReferenceView} from "../common/propsheet"
-import {fillBounds, strokeBounds} from "../engine/util"
 import {drawImage} from "../imageeditor/SImageEditorView"
 import {appendToList} from "../model/base"
 import {Actor, ActorInstance, ActorLayer, GameDoc} from "../model/datamodel"
+import {fillBounds, strokeBounds} from "../util"
 import {DrawArgs, MouseEventArgs, MouseHandler} from "./editorbase"
 
 export function findActorForInstance(inst: ActorInstance, doc: GameDoc) {
