@@ -31,20 +31,6 @@ export class GameState {
         this.canvas.style.border = '1px solid red'
         this.keyboard = new KeyboardManager()
         this.viewport = new Bounds(0, 0, size.w, size.h)
-        // const player: Player = {
-        //     type: "player",
-        //     color: 'green',
-        //     tile: {
-        //         uuid: 'smileguy'
-        //     },
-        //     bounds: new Bounds(8, 8, 7, 7),
-        //     vx: 0,
-        //     vy: 0,
-        //     standing: false,
-        //     hidden: false,
-        //     name:'player',
-        //     hitable: true,
-        // }
         this.players = []
         this.enemies = []
         this.physics = new PhysicsManager()
@@ -91,22 +77,6 @@ export class GameState {
 
     addEnemy(badguy: Enemy) {
         this.enemies.push(badguy)
-    }
-    updateViewport(viewport: Bounds, players: Player[], scale:number) {
-        players.forEach(play => {
-            const p = play.bounds.scale(scale)
-            const vl = viewport.left() + 200
-            const vr = viewport.right() - 200
-            const pl = p.left()
-            const pr = p.right()
-            if (pr > vr) {
-                viewport.x -= (vr - pr)
-            }
-            if (pl < vl) {
-                viewport.x -= (vl - pl)
-                if (viewport.x < 0) viewport.x = 0
-            }
-        })
     }
 
 }

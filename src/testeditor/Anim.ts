@@ -1,5 +1,5 @@
 import {Size} from "josh_js_util"
-import {PhysicsConstants, TileCache} from "retrogami-engine"
+import {PhysicsConstants, TileCache, updateViewport} from "retrogami-engine"
 
 import {GameState} from "../engine/gamestate"
 
@@ -62,11 +62,10 @@ export class Anim {
         const map = this.game_state.getCurrentMap()
         const ctx = this.game_state.getDrawingSurface()
         const vp = this.game_state.getViewport()
-        // const vp = new Bounds(0,0,300,300)
         const players = this.game_state.getPlayers()
         this.game_state.getPhysics().updatePlayer(players, map.layers, this.game_state.getKeyboard(), this.cache, this.physics)
         this.game_state.getPhysics().updateEnemies(this.game_state.getEnemies(), map.layers, this.cache)
-        this.game_state.updateViewport(vp, players, this.zoom)
+        updateViewport(vp, players, this.zoom)
         // this.log("drawing", players.length, map.layers.length, vp.left())
         ctx.fillStyle = 'magenta'
         ctx.save()

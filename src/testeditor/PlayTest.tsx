@@ -117,7 +117,7 @@ export function PlayTest(props: {
 
     const redraw = () => {
         if (!ref.current) return
-        anim.setGamestate(generateGamestate(ref.current, doc, map, viewport.scale(zoom).scale(tileSize.w), props.physicsDebug))
+        anim.setGamestate(generateGamestate(ref.current, doc, map, viewport.scale(tileSize.w), props.physicsDebug))
         const phs:PhysicsConstants = {
             gravity: test.getPropValue('gravity'),
             jump_power: test.getPropValue('jump_power'),
