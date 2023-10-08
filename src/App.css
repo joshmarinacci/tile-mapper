@@ -100,6 +100,7 @@ button:disabled {
 .toolbar {
     border: 1px solid black;
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
     border-width: 0px 1px 1px 0px;
     align-items: center;
