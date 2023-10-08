@@ -1,4 +1,4 @@
-import {Point} from "josh_js_util"
+import {Bounds, Point} from "josh_js_util"
 import React from "react"
 
 import {PropsBase, useWatchAllProps} from "../model/base"
@@ -10,30 +10,40 @@ type RectToolSettingsType = {
 }
 
 
-export function drawRect(layer: SImageLayer, color: number, start: Point, end: Point) {
+export function drawRect(layer: SImageLayer, color: number, start: Point, end: Point, selection:Bounds|undefined) {
     const i1 = Math.min(start.x, end.x)
     const i2 = Math.max(start.x, end.x)
     const j1 = Math.min(start.y, end.y)
     const j2 = Math.max(start.y, end.y)
 
     for (let i = i1; i < i2; i++) {
-        layer.setPixel(new Point(i, j1), color)
-        layer.setPixel(new Point(i, j2), color)
+        setPixel(new Point(i,j1),layer,color,selection)
+        setPixel(new Point(i,j2),layer,color,selection)
     }
     for (let j = j1; j < j2; j++) {
-        layer.setPixel(new Point(i1, j), color)
-        layer.setPixel(new Point(i2, j), color)
+        setPixel(new Point(i1,j),layer,color,selection)
+        setPixel(new Point(i2,j),layer,color,selection)
     }
 }
 
-export function fillRect(layer: SImageLayer, color: number, start: Point, end: Point) {
+function setPixel(point: Point, layer: SImageLayer, color: number, selection: Bounds | undefined) {
+    if(selection) {
+        if(selection.contains(point)) {
+            layer.setPixel(point,color)
+        }
+    } else {
+        layer.setPixel(point,color)
+    }
+}
+
+export function fillRect(layer: SImageLayer, color: number, start: Point, end: Point, selection:Bounds|undefined) {
     const i1 = Math.min(start.x, end.x)
     const i2 = Math.max(start.x, end.x)
     const j1 = Math.min(start.y, end.y)
     const j2 = Math.max(start.y, end.y)
     for (let i = i1; i < i2; i++) {
         for (let j = j1; j < j2; j++) {
-            layer.setPixel(new Point(i, j), color)
+            setPixel(new Point(i,j),layer,color,selection)
         }
     }
 
@@ -88,9 +98,9 @@ export class RectTool extends PropsBase<RectToolSettingsType> implements Tool {
         this.down = false
         if (evt.layer) {
             if(this.getPropValue('filled')) {
-                fillRect(evt.layer, evt.color, this.start, this.end)
+                fillRect(evt.layer, evt.color, this.start, this.end, evt.selection)
             } else {
-                drawRect(evt.layer, evt.color, this.start, this.end)
+                drawRect(evt.layer, evt.color, this.start, this.end, evt.selection)
             }
         }
     }

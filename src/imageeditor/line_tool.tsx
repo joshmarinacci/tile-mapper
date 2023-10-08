@@ -1,4 +1,4 @@
-import {Point} from "josh_js_util"
+import {ArrayGrid, Point} from "josh_js_util"
 import React from "react"
 
 import {PropsBase, useWatchAllProps} from "../model/base"
@@ -6,10 +6,10 @@ import {BooleanDef, SImageLayer} from "../model/datamodel"
 import {Tool, ToolEvent, ToolOverlayInfo} from "./tool"
 
 type LineToolSettingsType = {
-    constrain:boolean
+    constrain: boolean
 }
 
-export function drawLine(layer: SImageLayer, color: number, start: Point, end: Point) {
+export function drawLine(data:ArrayGrid<number>, color: number, start: Point, end: Point) {
     const x1 = end.x
     const x0 = start.x
     const y1 = end.y
@@ -31,7 +31,7 @@ export function drawLine(layer: SImageLayer, color: number, start: Point, end: P
         let x = 0
         let y = 0
         for (let i = 0; i <= dx; i++) {
-            layer.setPixel(new Point(x + x0, y + y0), color)
+            data.set(new Point(x + x0, y + y0), color)
             // put_pixel(ctx, x + x0, y + y0, "black")
             if (d > 0) {
                 d += delta_B
@@ -50,7 +50,7 @@ export function drawLine(layer: SImageLayer, color: number, start: Point, end: P
         let x = 0
         let y = 0
         for (let i = 0; i <= dy; i++) {
-            layer.setPixel(new Point(x + x0, y + y0), color)
+            data.set(new Point(x + x0, y + y0), color)
             // put_pixel(ctx, x + x0, y + y0, "black")
             if (d > 0) {
                 d += delta_B
@@ -69,6 +69,7 @@ export class LineTool extends PropsBase<LineToolSettingsType> implements Tool {
     private _down: boolean
     private _start: Point
     private _current: Point
+    private temp: ArrayGrid<number>
 
     constructor() {
         super({
@@ -80,28 +81,42 @@ export class LineTool extends PropsBase<LineToolSettingsType> implements Tool {
         this._down = false
         this._start = new Point(0, 0)
         this._current = new Point(0, 0)
+        this.temp = new ArrayGrid<number>(1, 1)
     }
 
     drawOverlay(ovr: ToolOverlayInfo): void {
         if (this._down) {
-            ovr.ctx.strokeStyle = 'red'
-            ovr.ctx.lineWidth = 5
-            ovr.ctx.beginPath()
-            ovr.ctx.moveTo(this._start.x * ovr.scale, this._start.y * ovr.scale)
-            ovr.ctx.lineTo(this._current.x * ovr.scale, this._current.y * ovr.scale)
-            ovr.ctx.stroke()
+            const ctx = ovr.ctx
+            const palette = ovr.palette
+            const scale = ovr.scale
+            ctx.save()
+            // ctx.translate(this._start.x * scale, this._start.y * scale)
+            this.temp.forEach((n, p) => {
+                ctx.fillStyle = palette.colors[n]
+                if (n === -1) ctx.fillStyle = 'transparent'
+                ctx.fillRect(p.x * scale, p.y * scale, 1 * scale, 1 * scale)
+            })
+            ctx.restore()
         }
     }
 
     onMouseDown(evt: ToolEvent): void {
-        this._down = true
-        this._start = evt.pt.floor()
-        this._current = evt.pt.floor()
+        if (evt.layer) {
+            this._down = true
+            this._start = evt.pt.floor()
+            this._current = evt.pt.floor()
+            const data = evt.layer.getPropValue('data')
+            this.temp = new ArrayGrid<number>(data.w, data.h)
+            this.temp.fill(()=>-1)
+            this.temp.set(this._start,evt.color)
+        }
     }
 
     onMouseMove(evt: ToolEvent): void {
         if (this._down) {
             this._current = evt.pt.floor()
+            this.temp.fill(()=>-1)
+            drawLine(this.temp,evt.color,this._start.floor(),this._current.floor())
             evt.markDirty()
         }
     }
@@ -109,7 +124,8 @@ export class LineTool extends PropsBase<LineToolSettingsType> implements Tool {
     onMouseUp(evt: ToolEvent): void {
         this._down = false
         if (evt.layer) {
-            drawLine(evt.layer, evt.color, this._start.floor(), this._current.floor())
+            drawLine(evt.layer.getPropValue('data'), evt.color, this._start.floor(), this._current.floor())
+            this.temp.fill(()=>-1)
         }
         evt.markDirty()
     }

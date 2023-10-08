@@ -1,4 +1,4 @@
-import {Point} from "josh_js_util"
+import {Bounds, Point} from "josh_js_util"
 import React from "react"
 
 import {PropsBase, useWatchAllProps} from "../model/base"
@@ -9,12 +9,21 @@ type EllipseToolSettingsType = {
     filled:boolean
 }
 
-export function drawEllipse(layer: SImageLayer, color: number, start: Point, end: Point) {
+export function drawEllipse(layer: SImageLayer, color: number, start: Point, end: Point, selection:Bounds|undefined ) {
+    function setPixel(pt:Point) {
+        if(selection) {
+            if(selection.contains(pt)) {
+                layer.setPixel(pt,color)
+            }
+        } else {
+            layer.setPixel(pt,color)
+        }
+    }
     function ellipse_points(x0: number, y0: number, x: number, y: number, color: number) {
-        layer.setPixel(new Point(x0 + x, y0 + y), color)
-        layer.setPixel(new Point(x0 - x, y0 + y), color)
-        layer.setPixel(new Point(x0 + x, y0 - y), color)
-        layer.setPixel(new Point(x0 - x, y0 - y), color)
+        setPixel(new Point(x0 + x, y0 + y))
+        setPixel(new Point(x0 - x, y0 + y))
+        setPixel(new Point(x0 + x, y0 - y))
+        setPixel(new Point(x0 - x, y0 - y))
     }
 
     function rasterize(x0: number, y0: number, a: number, b: number, color: number) {
@@ -124,7 +133,7 @@ export class EllipseTool extends PropsBase<EllipseToolSettingsType> implements T
     onMouseUp(evt: ToolEvent): void {
         this.down = false
         if (evt.layer) {
-            drawEllipse(evt.layer, evt.color, this.start, this.end)
+            drawEllipse(evt.layer, evt.color, this.start, this.end, evt.selection)
         }
     }
 }
