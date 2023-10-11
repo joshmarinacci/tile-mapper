@@ -1,7 +1,5 @@
 .tile-sheet-editor {
-    border: 0px solid red;
-    display: grid;
-    grid-template-rows: auto;
+  border: 0px solid red;
+  display: grid;
+  grid-template-rows: auto;
 }
-
-

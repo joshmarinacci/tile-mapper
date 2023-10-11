@@ -1,28 +1,28 @@
 .tile-preview-wrapper {
-    border: 0px solid red;
-    position: relative;
-    padding:0;
-    margin:0;
-    background-color: blue;
+  border: 0px solid red;
+  position: relative;
+  padding: 0;
+  margin: 0;
+  background-color: blue;
 }
 .tile-preview {
-    margin:0;
-    padding: 0;
-    background: black;
-    image-rendering: pixelated;
-    display: block;
+  margin: 0;
+  padding: 0;
+  background: black;
+  image-rendering: pixelated;
+  display: block;
 }
 .tile-preview.selected {
-    /*border-color: white;*/
-    outline: 3px solid #ff8102;
-    outline-offset: -3px;
+  /*border-color: white;*/
+  outline: 3px solid #ff8102;
+  outline-offset: -3px;
 }
 .tile-preview-wrapper b {
-    position: absolute;
-    color: white;
-    background-color: black;
-    padding: 0.25rem;
-    right:0.0rem;
-    bottom:0.0rem;
-    font-size: 10px;
+  position: absolute;
+  color: white;
+  background-color: black;
+  padding: 0.25rem;
+  right: 0rem;
+  bottom: 0rem;
+  font-size: 10px;
 }

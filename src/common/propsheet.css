@@ -1,36 +1,36 @@
 .prop-sheet {
-    border: 1px solid black;
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    grid-template-rows: auto;
-    margin:0;
-    align-items: center;
-    justify-content: center;
-    min-width: 15rem;
-    align-self: stretch;
-    align-content: start;
+  border: 1px solid black;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  grid-template-rows: auto;
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+  min-width: 15rem;
+  align-self: stretch;
+  align-content: start;
 }
 .prop-sheet > * {
-    padding: 0.25rem 0.5rem;
-    margin: 0.25rem 0.5rem;
+  padding: 0.25rem 0.5rem;
+  margin: 0.25rem 0.5rem;
 }
 .prop-sheet header {
-    grid-column-start: 1;
-    grid-column-end: 3;
-    margin:0;
+  grid-column-start: 1;
+  grid-column-end: 3;
+  margin: 0;
 }
 
 .prop-sheet label {
-    grid-column-start: 1;
-    text-align: right;
+  grid-column-start: 1;
+  text-align: right;
 }
-.prop-sheet input, .prop-sheet .value {
-    grid-column-start: 2;
-    grid-column-end: 3;
-    min-width: 1rem;
-    justify-self: stretch;
+.prop-sheet input,
+.prop-sheet .value {
+  grid-column-start: 2;
+  grid-column-end: 3;
+  min-width: 1rem;
+  justify-self: stretch;
 }
-.prop-sheet input[type='checkbox'] {
-    justify-self: start;
+.prop-sheet input[type="checkbox"] {
+  justify-self: start;
 }
-
