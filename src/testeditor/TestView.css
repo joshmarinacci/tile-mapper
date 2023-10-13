@@ -1,12 +1,11 @@
 .test-view-canvas {
-    border: 5px solid green;
-    align-self: start;
+  border: 5px solid green;
+  align-self: start;
 }
-
 
 .play-canvas {
-    border: 5px solid blue;
+  border: 5px solid blue;
 }
 .play-canvas:focus {
-    border: 5px solid green;
+  border: 5px solid green;
 }

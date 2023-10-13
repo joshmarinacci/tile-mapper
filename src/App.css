@@ -1,143 +1,141 @@
 html body {
-    --border-color: #382f2f;
+  --border-color: #382f2f;
 
-    --hover-background-color: #382f2f;
-    --hover-text-color: white;
+  --hover-background-color: #382f2f;
+  --hover-text-color: white;
 
-    --selected-background: linear-gradient(#464444,black, #626060);
-    --selected-text-color: white;
-    --selected-border-color: white;
+  --selected-background: linear-gradient(#464444, black, #626060);
+  --selected-text-color: white;
+  --selected-border-color: white;
 
-    --menu-radius: 0.25rem;
-    --inverse-text-color: white;
+  --menu-radius: 0.25rem;
+  --inverse-text-color: white;
 
-    --std-padding: 0.25rem 0.5rem;
-    font-size: 10pt;
-    font-family: sans-serif;
-    padding: 0;
-    margin: 0;
+  --std-padding: 0.25rem 0.5rem;
+  font-size: 10pt;
+  font-family: sans-serif;
+  padding: 0;
+  margin: 0;
 }
 
 .editor-view {
-    display: flex;
-    flex-direction: row;
-    border: 0px solid black;
-    align-items: stretch;
-    overflow: auto;
-    align-self: stretch;
+  display: flex;
+  flex-direction: row;
+  border: 0px solid black;
+  align-items: stretch;
+  overflow: auto;
+  align-self: stretch;
 }
 
 .across {
-    grid-column-start: 1;
-    grid-column-end: 4;
+  grid-column-start: 1;
+  grid-column-end: 4;
 }
 
 .pane {
-    border: 1px solid var(--border-color);
-    display: flex;
-    flex-direction: column;
-    border-width: 0 1px 1px 0;
+  border: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  border-width: 0 1px 1px 0;
 }
 
 .pane header {
-    background-color: var(--border-color);
-    color: var(--inverse-text-color);
-    padding: var(--std-padding);
-    display: flex;
-    flex-direction: row;
-    height: 1.5rem;
+  background-color: var(--border-color);
+  color: var(--inverse-text-color);
+  padding: var(--std-padding);
+  display: flex;
+  flex-direction: row;
+  height: 1.5rem;
 }
 
 /* general */
 
-button, label {
-    box-sizing: border-box;
-    padding: var(--std-padding);
+button,
+label {
+  box-sizing: border-box;
+  padding: var(--std-padding);
 }
 
 button {
-    border: 1px solid var(--border-color);
-    background: #ddd;
-    color: var(--text-color);
-    white-space: nowrap;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
+  border: 1px solid var(--border-color);
+  background: #ddd;
+  color: var(--text-color);
+  white-space: nowrap;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
 }
 
 button:hover {
-    background: var(--hover-background-color);
-    color:var(--hover-text-color);
+  background: var(--hover-background-color);
+  color: var(--hover-text-color);
 }
 
 button.selected {
-    background: var(--selected-background);
-    color: var(--selected-text-color);
+  background: var(--selected-background);
+  color: var(--selected-text-color);
 }
 
 button.selected:hover {
-    background: aquamarine;
+  background: aquamarine;
 }
 
 button.selected:active {
-    background: #fff;
+  background: #fff;
 }
 
 button:disabled {
-    background: #aaa;
-    color: #999;
+  background: #aaa;
+  color: #999;
 }
 
 .logo {
-    text-transform: uppercase;
-    background-color: black;
-    color: white;
-    border: 1px solid black;
-    align-self: center;
+  text-transform: uppercase;
+  background-color: black;
+  color: white;
+  border: 1px solid black;
+  align-self: center;
 }
 
 .toolbar {
-    border: 1px solid black;
-    display: flex;
-    flex-wrap: wrap;
-    flex-direction: row;
-    border-width: 0px 1px 1px 0px;
-    align-items: center;
+  border: 1px solid black;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  border-width: 0px 1px 1px 0px;
+  align-items: center;
 }
 
 .toolbar > * {
-    border-width: 0px 1px 0px 0px;
+  border-width: 0px 1px 0px 0px;
 }
 
 .standard-form {
-    border: 0px solid red;
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    justify-content: center;
-    align-items: baseline;
+  border: 0px solid red;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  justify-content: center;
+  align-items: baseline;
 }
 
 .standard-form label {
-    justify-self: end;
-    padding-right: 1rem;
+  justify-self: end;
+  padding-right: 1rem;
 }
-
 
 .menu-list {
-    border: 1px solid var(--border-color);
-    padding: 0.25rem;
-    display: flex;
-    flex-direction: column;
-    border-radius: var(--menu-radius);
+  border: 1px solid var(--border-color);
+  padding: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--menu-radius);
 }
 .menu-list button {
-    border-width: 0 0 0 0;
-    border-radius: var(--menu-radius);
+  border-width: 0 0 0 0;
+  border-radius: var(--menu-radius);
 }
 .menu-list button:hover {
-    background-color: var(--hover-background-color);
-    color: var(--hover-text-color);
+  background-color: var(--hover-background-color);
+  color: var(--hover-text-color);
 }
-
-

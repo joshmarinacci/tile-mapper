@@ -1,12 +1,12 @@
 .palette {
-    background-color: black;
+  background-color: black;
 }
 .palette-color {
-    border: 1px solid transparent;
+  border: 1px solid transparent;
 }
 .palette-color.transparent {
-    border: 5px solid cyan;
+  border: 5px solid cyan;
 }
 .palette-color.selected {
-    border-color: var(--selected-border-color)
+  border-color: var(--selected-border-color);
 }

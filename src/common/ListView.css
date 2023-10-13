@@ -1,78 +1,76 @@
 .list-view {
-    border: 0px solid black;
-    width: 100%;
-    padding: 0rem;
-    margin: 0rem;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    align-content: flex-start;
-    overflow-y: auto;
+  border: 0px solid black;
+  width: 100%;
+  padding: 0rem;
+  margin: 0rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  align-content: flex-start;
+  overflow-y: auto;
 }
 
 .list-view.horizontal-wrap {
-    border: 0px solid yellow;
-    flex-direction: row;
-    flex-wrap: wrap;
+  border: 0px solid yellow;
+  flex-direction: row;
+  flex-wrap: wrap;
 }
 
 .list-view.vertical-fill {
-    border: 0px solid blue;
-    flex-direction: column;
-    align-items: stretch;
+  border: 0px solid blue;
+  flex-direction: column;
+  align-items: stretch;
 }
 
-
 .list-view > .list-item {
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: row;
-    background-color: #dddddd;
-    color: black;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: row;
+  background-color: #dddddd;
+  color: black;
 }
 
 .list-view > .list-item.selected {
-    background-color: var(--selected-background);
-    border-color: var(--selected-border-color);
-    color: black;
+  background-color: var(--selected-background);
+  border-color: var(--selected-border-color);
+  color: black;
 }
-
 
 .std-list-item {
-    padding: 0.5rem;
-    border: 0px solid black;
-    display: flex;
-    flex-direction: row;
-    flex: 1.0;
+  padding: 0.5rem;
+  border: 0px solid black;
+  display: flex;
+  flex-direction: row;
+  flex: 1;
 }
 .selected .std-list-item {
-    background: var(--selected-background);
-    color: var(--selected-text-color);
+  background: var(--selected-background);
+  color: var(--selected-text-color);
 }
 .std-list-item:hover {
-    background: var(--hover-background-color);
-    color: var(--hover-text-color);
+  background: var(--hover-background-color);
+  color: var(--hover-text-color);
 }
 
 .std-dropdown-item {
-    display: flex;
-    flex-direction: row;
-    flex: 1.0;
-    padding: var(--std-padding);
-    /*min-width: 10rem;*/
-    justify-content: space-between;
-    /*border: 1px solid black;*/
-    /*border-width: 0 0 1px 0;*/
+  display: flex;
+  flex-direction: row;
+  flex: 1;
+  padding: var(--std-padding);
+  /*min-width: 10rem;*/
+  justify-content: space-between;
+  /*border: 1px solid black;*/
+  /*border-width: 0 0 1px 0;*/
 }
 .std-dropdown-item:hover {
-    background-color: var(--hover-background-color);
-    color: var(--hover-text-color);
+  background-color: var(--hover-background-color);
+  color: var(--hover-text-color);
 }
 .list-select-button .std-dropdown-item {
-    padding:0;
-    border-width: 0;
+  padding: 0;
+  border-width: 0;
 }
 .list-select-button .std-dropdown-item:hover {
-    background-color: unset;
+  background-color: unset;
 }
