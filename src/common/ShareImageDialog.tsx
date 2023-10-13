@@ -10,7 +10,7 @@ export function ShareImageDialog(props: { blob: Blob }) {
     const get_url = async () => {
         const formData = new FormData()
         formData.append("file", props.blob)
-        const base = "http://api.retrogami.dev/"
+        const base = "https://api.retrogami.dev/"
         const res = await fetch(`${base}sharePNG`,{
             method:'POST',
             body: formData
