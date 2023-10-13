@@ -1,6 +1,7 @@
 import "./SImageEditorView.css"
 
 import {Bounds, Point} from "josh_js_util"
+import {DialogContext} from "josh_react_util"
 import {canvas_to_blob, forceDownloadBlob} from "josh_web_util"
 import React, {MouseEvent, useContext, useEffect, useRef, useState} from "react"
 
@@ -10,6 +11,7 @@ import {DividerColumnBox} from "../common/DividerColumnBox"
 import {ListView, ListViewDirection, ListViewRenderer} from "../common/ListView"
 import {PaletteColorPickerPane} from "../common/Palette"
 import {PropSheet} from "../common/propsheet"
+import {ShareImageDialog} from "../common/ShareImageDialog"
 import {appendToList, useWatchAllProps, useWatchProp} from "../model/base"
 import {SImage, SImageLayer} from "../model/datamodel"
 import {GlobalState} from "../state"
@@ -138,6 +140,7 @@ export function SImageEditorView(props: {
             drawCanvas(canvasRef.current, scale, grid, image, palette, tool, palette.colors.indexOf(drawColor), selectionRect)
         }
     }
+    const dm = useContext(DialogContext)
 
     useEffect(() => redraw(), [canvasRef, zoom, grid, count, image])
     useWatchAllProps(image, () => setCount(count + 1))
@@ -153,6 +156,18 @@ export function SImageEditorView(props: {
 
         const blob = await canvas_to_blob(canvas)
         forceDownloadBlob(`${image.getPropValue('name') as string}.${scale}x.png`, blob)
+
+    }
+    const sharePNG = async () => {
+        const scale = 4
+        const canvas = document.createElement('canvas')
+        const size = image.getPropValue('size').scale(scale)
+        canvas.width = size.w
+        canvas.height = size.h
+        const ctx = canvas.getContext('2d') as CanvasRenderingContext2D
+        drawImage(ctx, image, palette, scale)
+        const blob = await canvas_to_blob(canvas)
+        dm.show(<ShareImageDialog blob={blob}/>)
 
     }
     const crop = () => {
@@ -276,6 +291,7 @@ export function SImageEditorView(props: {
                                     palette={palette}/>
             <div className={'toolbar'}>
                 <button onClick={exportPNG}>export PNG</button>
+                <button onClick={sharePNG}>share PNG</button>
             </div>
         </DividerColumnBox>
         <div className={'image-editor-canvas-wrapper'}>
