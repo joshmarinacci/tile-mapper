@@ -2,7 +2,7 @@ import { ArrayGrid, Point } from "josh_js_util"
 import React from "react"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
-import { BooleanDef, SImageLayer } from "../model/datamodel"
+import { BooleanDef } from "../model/datamodel"
 import { Tool, ToolEvent, ToolOverlayInfo } from "./tool"
 
 type LineToolSettingsType = {
@@ -13,8 +13,7 @@ export function drawLine(
   data: ArrayGrid<number>,
   color: number,
   start: Point,
-  end: Point,
-) {
+  end: Point) {
   const x1 = end.x
   const x0 = start.x
   const y1 = end.y
