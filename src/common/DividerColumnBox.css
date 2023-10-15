@@ -1,13 +1,19 @@
 .divider {
   border: 4px solid black;
-  /*border-width: 0 2px 0 0;*/
+  border-width: 0 2px 0 0;
   /*justify-self: center;*/
   height: 100%;
   box-sizing: border-box;
+  overflow: auto;
 }
 .divider .container {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   border: 0px solid red;
-  overflow: scroll;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: auto;
 }
 
 .divider .handler {
