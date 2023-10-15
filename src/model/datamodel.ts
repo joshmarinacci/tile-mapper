@@ -1,11 +1,11 @@
-import { ArrayGrid, Bounds, Point, Size } from "josh_js_util";
+import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 
 import {
   drawEditableSprite,
   ImagePalette,
   PICO8,
   RESURRECT64,
-} from "../common/common";
+} from "../common/common"
 import {
   CLASS_REGISTRY,
   DefList,
@@ -13,7 +13,7 @@ import {
   PropsBase,
   PropValues,
   restoreClassFromJSON,
-} from "./base";
+} from "./base"
 
 export const BooleanDef: PropDef<boolean> = {
   type: "boolean",
@@ -25,7 +25,7 @@ export const BooleanDef: PropDef<boolean> = {
   toJSON: (v) => v,
   fromJSON: (v) => v as boolean,
   watchChildren: false,
-};
+}
 export const FloatDef: PropDef<number> = {
   type: "float",
   hidden: false,
@@ -36,7 +36,7 @@ export const FloatDef: PropDef<number> = {
   format: (v) => v.toFixed(2),
   toJSON: (v) => v,
   fromJSON: (v) => v as number,
-};
+}
 export const IntegerDef: PropDef<number> = {
   type: "integer",
   hidden: false,
@@ -47,7 +47,7 @@ export const IntegerDef: PropDef<number> = {
   format: (v) => v.toFixed(0),
   toJSON: (v) => v,
   fromJSON: (v) => v as number,
-};
+}
 export const NameDef: PropDef<string> = {
   type: "string",
   editable: true,
@@ -58,7 +58,7 @@ export const NameDef: PropDef<string> = {
   default: () => "unnamed",
   toJSON: (v: string) => v,
   format: (v) => v,
-};
+}
 export const SizeDef: PropDef<Size> = {
   type: "Size",
   editable: false,
@@ -69,7 +69,7 @@ export const SizeDef: PropDef<Size> = {
   toJSON: (v) => v.toJSON(),
   fromJSON: (v) => Size.fromJSON(v as { w: number; h: number }),
   format: (v) => `${v.w} x ${v.h}`,
-};
+}
 export const PointDef: PropDef<Point> = {
   type: "Point",
   editable: false,
@@ -80,7 +80,7 @@ export const PointDef: PropDef<Point> = {
   toJSON: (v) => v.toJSON(),
   fromJSON: (v) => Point.fromJSON(v as { x: number; y: number }),
   format: (v) => `${v.x} , ${v.y}`,
-};
+}
 export const BoundsDef: PropDef<Bounds> = {
   type: "Bounds",
   editable: false,
@@ -92,7 +92,7 @@ export const BoundsDef: PropDef<Bounds> = {
   format: (v) => `${v.w} x ${v.h}`,
   fromJSON: (v) =>
     Bounds.fromJSON(v as { x: number; y: number; w: number; h: number }),
-};
+}
 export const EditableBoundsDef: PropDef<Bounds> = {
   type: "Bounds",
   editable: true,
@@ -104,7 +104,7 @@ export const EditableBoundsDef: PropDef<Bounds> = {
   fromJSON: (v) =>
     Bounds.fromJSON(v as { x: number; y: number; w: number; h: number }),
   format: (v) => `${v.x}, ${v.y} -> ${v.w} x ${v.h}`,
-};
+}
 export const PaletteDef: PropDef<ImagePalette> = {
   type: "object",
   hidden: false,
@@ -116,17 +116,17 @@ export const PaletteDef: PropDef<ImagePalette> = {
   format: (v) => v.name,
   fromJSON: (v) => {
     if ("name" in v) {
-      return v as ImagePalette;
+      return v as ImagePalette
     } else {
-      if (v.length === 64) return RESURRECT64;
-      if (v.length === 17) return PICO8;
+      if (v.length === 64) return RESURRECT64
+      if (v.length === 17) return PICO8
       return {
         name: "unknow",
         colors: v as string[],
-      } as ImagePalette;
+      } as ImagePalette
     }
   },
-};
+}
 
 const JumpDef: PropDef<number> = {
   type: "float",
@@ -138,7 +138,7 @@ const JumpDef: PropDef<number> = {
   toJSON: (v: number) => v,
   fromJSON: (v) => v as number,
   format: (v) => v.toFixed(2),
-};
+}
 const GravityDef: PropDef<number> = {
   type: "float",
   editable: true,
@@ -149,7 +149,7 @@ const GravityDef: PropDef<number> = {
   toJSON: (v) => v,
   fromJSON: (v) => v as number,
   format: (v) => v.toFixed(2),
-};
+}
 const MoveSpeedDef: PropDef<number> = {
   type: "float",
   editable: true,
@@ -160,7 +160,7 @@ const MoveSpeedDef: PropDef<number> = {
   toJSON: (v: number) => v,
   fromJSON: (v) => v as number,
   format: (v) => v.toFixed(2),
-};
+}
 const MaxFallSpeedDef: PropDef<number> = {
   type: "float",
   editable: true,
@@ -171,7 +171,7 @@ const MaxFallSpeedDef: PropDef<number> = {
   toJSON: (v: number) => v,
   fromJSON: (v) => v as number,
   format: (v) => v.toFixed(2),
-};
+}
 const FrictionDef: PropDef<number> = {
   type: "float",
   default: () => 0.99,
@@ -182,7 +182,7 @@ const FrictionDef: PropDef<number> = {
   toJSON: (v) => v,
   fromJSON: (v) => v as number,
   format: (v) => v.toFixed(2),
-};
+}
 export type MapCell = {
   tile: string; //id of the sprite used to draw this
 };
@@ -197,7 +197,7 @@ export const BlockingDef: PropDef<boolean> = {
   toJSON: (v) => v,
   fromJSON: (v) => v as boolean,
   format: (v) => (v ? "true" : "false"),
-};
+}
 
 const GenericDataArrayDef: PropDef<object[]> = {
   type: "array",
@@ -208,12 +208,12 @@ const GenericDataArrayDef: PropDef<object[]> = {
   format: () => "unknown",
   toJSON: (v) =>
     v.map((a) => {
-      if ("toJSON" in a) return a.toJSON() as unknown as object;
-      return a;
+      if ("toJSON" in a) return a.toJSON() as unknown as object
+      return a
     }),
   fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
   hidden: true,
-};
+}
 
 type ArrayGridNumberJSON = {
   w: number;
@@ -236,74 +236,74 @@ const TileDataDef: PropDef<ArrayGrid<number>> = {
   format: () => "array number data",
   toJSON: (v): ArrayGridNumberJSON => ({ w: v.w, h: v.h, data: v.data }),
   fromJSON: (value) => {
-    const v = value as ArrayGridNumberJSON;
-    const arr = new ArrayGrid<number>(v.w, v.h);
-    arr.data = v.data;
-    return arr;
+    const v = value as ArrayGridNumberJSON
+    const arr = new ArrayGrid<number>(v.w, v.h)
+    arr.data = v.data
+    return arr
   },
-};
+}
 const TileDefs: DefList<TileType> = {
   name: NameDef,
   blocking: BlockingDef,
   data: TileDataDef,
   size: SizeDef,
-};
+}
 export class Tile extends PropsBase<TileType> {
   constructor(opts?: PropValues<TileType>) {
-    super(TileDefs, opts);
-    const size = this.getPropValue("size");
-    const data = this.getPropValue("data");
+    super(TileDefs, opts)
+    const size = this.getPropValue("size")
+    const data = this.getPropValue("data")
     if (data.w !== size.w || data.h !== size.h) {
       // this.log("we must rebuild the data with a new size")
-      const data = new ArrayGrid<number>(size.w, size.h);
-      data.fill(() => 0);
-      this.setPropValue("data", data);
+      const data = new ArrayGrid<number>(size.w, size.h)
+      data.fill(() => 0)
+      this.setPropValue("data", data)
     }
   }
 
   setPixel(number: number, point: Point) {
-    this.getPropValue("data").set(point, number);
-    this._fire("data", this.getPropValue("data"));
-    this._fireAll();
+    this.getPropValue("data").set(point, number)
+    this._fire("data", this.getPropValue("data"))
+    this._fireAll()
   }
   width() {
-    return this.getPropValue("size").w;
+    return this.getPropValue("size").w
   }
   height() {
-    return this.getPropValue("size").h;
+    return this.getPropValue("size").h
   }
   getPixel(point: Point) {
-    return this.getPropValue("data").get(point);
+    return this.getPropValue("data").get(point)
   }
 
   isValidIndex(pt: Point) {
-    if (pt.x < 0) return false;
-    if (pt.y < 0) return false;
-    if (pt.x >= this.data().w) return false;
-    if (pt.y >= this.data().h) return false;
-    return true;
+    if (pt.x < 0) return false
+    if (pt.y < 0) return false
+    if (pt.x >= this.data().w) return false
+    if (pt.y >= this.data().h) return false
+    return true
   }
 
   clone() {
     const new_tile = new Tile({
       size: this.getPropValue("size"),
-    });
-    new_tile.getPropValue("data").data = this.data().data.slice();
-    new_tile.setPropValue("blocking", this.getPropValue("blocking"));
-    new_tile.setPropValue("name", this.getPropValue("name"));
-    new_tile.setPropValue("size", this.getPropValue("size"));
-    return new_tile;
+    })
+    new_tile.getPropValue("data").data = this.data().data.slice()
+    new_tile.setPropValue("blocking", this.getPropValue("blocking"))
+    new_tile.setPropValue("name", this.getPropValue("name"))
+    new_tile.setPropValue("size", this.getPropValue("size"))
+    return new_tile
   }
 
   private log(...args: unknown[]) {
-    console.log(this.constructor.name, ...args);
+    console.log(this.constructor.name, ...args)
   }
 
   private data() {
-    return this.getPropValue("data");
+    return this.getPropValue("data")
   }
 }
-CLASS_REGISTRY.register("Tile", Tile, TileDefs);
+CLASS_REGISTRY.register("Tile", Tile, TileDefs)
 
 type SImageLayerType = {
   name: string;
@@ -321,60 +321,60 @@ const SImageLayerDataPropDef: PropDef<ArrayGrid<number>> = {
   format: () => "array number data",
   toJSON: (v): ArrayGridNumberJSON => ({ w: v.w, h: v.h, data: v.data }),
   fromJSON: (value) => {
-    const v = value as ArrayGridNumberJSON;
-    const arr = new ArrayGrid<number>(v.w, v.h);
-    arr.data = v.data;
-    return arr;
+    const v = value as ArrayGridNumberJSON
+    const arr = new ArrayGrid<number>(v.w, v.h)
+    arr.data = v.data
+    return arr
   },
-};
+}
 const SImageLayerDataDefs: DefList<SImageLayerType> = {
   name: NameDef,
   visible: BooleanDef,
   opacity: FloatDef,
   data: SImageLayerDataPropDef,
-};
+}
 export class SImageLayer extends PropsBase<SImageLayerType> {
   constructor(opts?: PropValues<SImageLayerType>) {
-    super(SImageLayerDataDefs, opts);
+    super(SImageLayerDataDefs, opts)
   }
 
   rebuildFromCanvas(canvas: SImage) {
-    const size = canvas.getPropValue("size");
-    const data = new ArrayGrid<number>(size.w, size.h);
-    data.fill(() => -1);
-    this.setPropValue("data", data);
+    const size = canvas.getPropValue("size")
+    const data = new ArrayGrid<number>(size.w, size.h)
+    data.fill(() => -1)
+    this.setPropValue("data", data)
   }
 
   setPixel(pt: Point, color: number) {
-    this.getPropValue("data").set(pt, color);
-    this._fire("data", this.getPropValue("data"));
-    this._fireAll();
+    this.getPropValue("data").set(pt, color)
+    this._fire("data", this.getPropValue("data"))
+    this._fireAll()
   }
 
   getPixel(pt: Point): number {
-    return this.getPropValue("data").get(pt);
+    return this.getPropValue("data").get(pt)
   }
 
   fillAll(number: number) {
-    this.getPropValue("data").fill(() => number);
-    this._fire("data", this.getPropValue("data"));
-    this._fireAll();
+    this.getPropValue("data").fill(() => number)
+    this._fire("data", this.getPropValue("data"))
+    this._fireAll()
   }
 
   crop(rect: Bounds) {
-    const data = this.getPropValue("data");
-    console.log("cropping", data.w, data.h, "to", rect);
-    const newData = new ArrayGrid<number>(rect.w, rect.h);
+    const data = this.getPropValue("data")
+    console.log("cropping", data.w, data.h, "to", rect)
+    const newData = new ArrayGrid<number>(rect.w, rect.h)
     for (let i = rect.left(); i < rect.right(); i++) {
       for (let j = rect.top(); j < rect.bottom(); j++) {
-        const v = data.get_at(i, j);
-        newData.set_at(i - rect.left(), j - rect.top(), v);
+        const v = data.get_at(i, j)
+        newData.set_at(i - rect.left(), j - rect.top(), v)
       }
     }
-    this.setPropValue("data", newData);
+    this.setPropValue("data", newData)
   }
 }
-CLASS_REGISTRY.register("SImageLayer", SImageLayer, SImageLayerDataDefs);
+CLASS_REGISTRY.register("SImageLayer", SImageLayer, SImageLayerDataDefs)
 
 type SImageType = {
   name: string;
@@ -395,18 +395,18 @@ const SImageDefs: DefList<SImageType> = {
     fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
   },
   size: SizeDef,
-};
+}
 export class SImage extends PropsBase<SImageType> {
   constructor(opts?: PropValues<SImageType>) {
-    super(SImageDefs, opts);
+    super(SImageDefs, opts)
   }
 
   crop(rect: Bounds) {
-    this.getPropValue("layers").forEach((lay) => lay.crop(rect));
-    this.setPropValue("size", rect.size());
+    this.getPropValue("layers").forEach((lay) => lay.crop(rect))
+    this.setPropValue("size", rect.size())
   }
 }
-CLASS_REGISTRY.register("SImage", SImage, SImageDefs);
+CLASS_REGISTRY.register("SImage", SImage, SImageDefs)
 
 type SheetType = {
   name: string;
@@ -426,10 +426,10 @@ const TileArrayDef: PropDef<Tile[]> = {
   toJSON: (v) => v.map((t) => t.toJSON()),
   format: (v) => "list of tiles",
   fromJSON: (value) => {
-    const v = value as [];
-    return v.map((d) => restoreClassFromJSON(d)) as Tile[];
+    const v = value as []
+    return v.map((d) => restoreClassFromJSON(d)) as Tile[]
   },
-};
+}
 export const TransientBooleanDef: PropDef<boolean> = {
   type: "boolean",
   hidden: false,
@@ -441,7 +441,7 @@ export const TransientBooleanDef: PropDef<boolean> = {
   fromJSON: (v) => v as boolean,
   watchChildren: false,
   skipPersisting: true,
-};
+}
 
 const SheetDefs: DefList<SheetType> = {
   name: NameDef,
@@ -458,27 +458,27 @@ const SheetDefs: DefList<SheetType> = {
   },
   showNames: TransientBooleanDef,
   showGrid: TransientBooleanDef,
-};
+}
 export class Sheet extends PropsBase<SheetType> {
   constructor(opts?: PropValues<SheetType>) {
-    super(SheetDefs, opts);
+    super(SheetDefs, opts)
   }
   addTile(new_tile: Tile) {
-    this.getPropValue("tiles").push(new_tile);
-    this._fire("tiles", this.getPropValue("tiles"));
+    this.getPropValue("tiles").push(new_tile)
+    this._fire("tiles", this.getPropValue("tiles"))
   }
   removeTile(tile: Tile) {
-    const tiles = this.getPropValue("tiles") as Tile[];
-    const n = tiles.indexOf(tile);
+    const tiles = this.getPropValue("tiles") as Tile[]
+    const n = tiles.indexOf(tile)
     if (n >= 0) {
-      tiles.splice(n, 1);
-      this.setPropValue("tiles", tiles.slice());
+      tiles.splice(n, 1)
+      this.setPropValue("tiles", tiles.slice())
     } else {
-      console.warn("cannot delete sprite");
+      console.warn("cannot delete sprite")
     }
   }
 }
-CLASS_REGISTRY.register("Sheet", Sheet, SheetDefs);
+CLASS_REGISTRY.register("Sheet", Sheet, SheetDefs)
 
 export type MapLayerType = {
   name: string;
@@ -516,14 +516,14 @@ const TileDataGridDef: PropDef<ArrayGrid<MapCell>> = {
   format: (v) => `${v.size()} cells`,
   default: () => new ArrayGrid<MapCell>(1, 1),
   fromJSON: (value) => {
-    const v = value as ArrayGridNumberJSON;
-    const arr = new ArrayGrid<MapCell>(v.w, v.h);
-    arr.data = v.data;
-    return arr;
+    const v = value as ArrayGridNumberJSON
+    const arr = new ArrayGrid<MapCell>(v.w, v.h)
+    arr.data = v.data
+    return arr
   },
   expandable: false,
   hidden: true,
-};
+}
 const TileLayerDefs: DefList<TileMapLayerType> = {
   name: NameDef,
   type: {
@@ -542,21 +542,21 @@ const TileLayerDefs: DefList<TileMapLayerType> = {
   data: TileDataGridDef,
   wrapping: BooleanDef,
   scrollSpeed: FloatDef,
-};
+}
 export class TileLayer extends PropsBase<TileMapLayerType> {
   constructor(opts?: PropValues<TileMapLayerType>) {
-    super(TileLayerDefs, opts);
-    const size = this.getPropValue("size");
-    const data = this.getPropValue("data");
+    super(TileLayerDefs, opts)
+    const size = this.getPropValue("size")
+    const data = this.getPropValue("data")
     if (data.w !== size.w || data.h !== size.h) {
       // this.log("we must rebuild the data with a new size")
-      const data = new ArrayGrid<MapCell>(size.w, size.h);
-      data.fill(() => ({ tile: "unknown" }));
-      this.setPropValue("data", data);
+      const data = new ArrayGrid<MapCell>(size.w, size.h)
+      data.fill(() => ({ tile: "unknown" }))
+      this.setPropValue("data", data)
     }
   }
 }
-CLASS_REGISTRY.register("TileLayer", TileLayer, TileLayerDefs);
+CLASS_REGISTRY.register("TileLayer", TileLayer, TileLayerDefs)
 
 const ActorLayerDefs: DefList<ActorMapLayerType> = {
   name: NameDef,
@@ -573,13 +573,13 @@ const ActorLayerDefs: DefList<ActorMapLayerType> = {
   blocking: BlockingDef,
   visible: BlockingDef,
   actors: GenericDataArrayDef,
-};
+}
 export class ActorLayer extends PropsBase<ActorMapLayerType> {
   constructor(opts?: PropValues<ActorMapLayerType>) {
-    super(ActorLayerDefs, opts);
+    super(ActorLayerDefs, opts)
   }
 }
-CLASS_REGISTRY.register("ActorLayer", ActorLayer, ActorLayerDefs);
+CLASS_REGISTRY.register("ActorLayer", ActorLayer, ActorLayerDefs)
 
 type GameMapType = {
   name: string;
@@ -595,33 +595,33 @@ const LayerListDef: PropDef<PropsBase<any>[]> = {
   watchChildren: true,
   toJSON: (v) =>
     v.map((a) => {
-      if ("toJSON" in a) return a.toJSON();
-      return a;
+      if ("toJSON" in a) return a.toJSON()
+      return a
     }),
   fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
-};
+}
 const GameMapDefs: DefList<GameMapType> = {
   name: NameDef,
   layers: LayerListDef,
-};
+}
 export class GameMap extends PropsBase<GameMapType> {
   constructor(opts?: PropValues<GameMapType>) {
-    super(GameMapDefs, opts);
+    super(GameMapDefs, opts)
   }
 
   calcBiggestLayer() {
-    const biggest = new Size(0, 0);
+    const biggest = new Size(0, 0)
     this.getPropValue("layers").forEach((layer) => {
       if (layer instanceof TileLayer) {
-        const size = layer.getPropValue("size");
-        if (size.w > biggest.w) biggest.w = size.w;
-        if (size.h > biggest.h) biggest.h = size.h;
+        const size = layer.getPropValue("size")
+        if (size.w > biggest.w) biggest.w = size.w
+        if (size.h > biggest.h) biggest.h = size.h
       }
-    });
-    return biggest;
+    })
+    return biggest
   }
 }
-CLASS_REGISTRY.register("Map", GameMap, GameMapDefs);
+CLASS_REGISTRY.register("Map", GameMap, GameMapDefs)
 
 export type ActorKind = "player" | "enemy" | "item" | "other";
 export type ActorType = {
@@ -659,13 +659,13 @@ const ActorDefs: DefList<ActorType> = {
     watchChildren: false,
     skipPersisting: false,
   },
-};
+}
 export class Actor extends PropsBase<ActorType> {
   constructor(opts?: PropValues<ActorType>) {
-    super(ActorDefs, opts);
+    super(ActorDefs, opts)
   }
 }
-CLASS_REGISTRY.register("Actor", Actor, ActorDefs);
+CLASS_REGISTRY.register("Actor", Actor, ActorDefs)
 
 type ActorInstanceType = {
   name: string;
@@ -685,13 +685,13 @@ const ActorInstanceDefs: DefList<ActorInstanceType> = {
     toJSON: (v) => v,
     fromJSON: (v) => v,
   },
-};
+}
 export class ActorInstance extends PropsBase<ActorInstanceType> {
   constructor(opts?: PropValues<ActorInstanceType>) {
-    super(ActorInstanceDefs, opts);
+    super(ActorInstanceDefs, opts)
   }
 }
-CLASS_REGISTRY.register("ActorInstance", ActorInstance, ActorInstanceDefs);
+CLASS_REGISTRY.register("ActorInstance", ActorInstance, ActorInstanceDefs)
 
 const EditableSizeDef: PropDef<Size> = {
   type: "Size",
@@ -703,7 +703,7 @@ const EditableSizeDef: PropDef<Size> = {
   toJSON: (v) => v.toJSON(),
   fromJSON: (v) => Size.fromJSON(v),
   format: (v) => `${v.w} x ${v.h}`,
-};
+}
 
 const ViewportDef: PropDef<Size> = {
   type: "Size",
@@ -715,7 +715,7 @@ const ViewportDef: PropDef<Size> = {
   toJSON: (v: Size) => v.toJSON(),
   fromJSON: (v) => Size.fromJSON(v as { w: number; h: number }),
   format: (v) => `${v.w} x ${v.h}`,
-};
+}
 type TestType = {
   name: string;
   map: string | undefined;
@@ -747,13 +747,13 @@ const TestDefs: DefList<TestType> = {
   move_speed: FloatDef,
   move_speed_max: FloatDef,
   friction: FloatDef,
-};
+}
 export class GameTest extends PropsBase<TestType> {
   constructor(opts?: PropValues<TestType>) {
-    super(TestDefs, opts);
+    super(TestDefs, opts)
   }
 }
-CLASS_REGISTRY.register("GameTest", GameTest, TestDefs);
+CLASS_REGISTRY.register("GameTest", GameTest, TestDefs)
 
 const ActorsListDef: PropDef<Actor[]> = {
   type: "array",
@@ -765,7 +765,7 @@ const ActorsListDef: PropDef<Actor[]> = {
   fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
   expandable: true,
   hidden: true,
-};
+}
 const TestsListDef: PropDef<GameTest[]> = {
   type: "array",
   editable: false,
@@ -776,7 +776,7 @@ const TestsListDef: PropDef<GameTest[]> = {
   toJSON: (v) => v.map((n) => n.toJSON()),
   fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
   expandable: true,
-};
+}
 const SheetsListDef: PropDef<Sheet[]> = {
   type: "array",
   editable: false,
@@ -787,7 +787,7 @@ const SheetsListDef: PropDef<Sheet[]> = {
   format: (v) => "sheets list",
   fromJSON: (v) => v.map((sheet) => restoreClassFromJSON(sheet)),
   expandable: true,
-};
+}
 const MapsListDef: PropDef<GameMap[]> = {
   type: "array",
   editable: false,
@@ -798,7 +798,7 @@ const MapsListDef: PropDef<GameMap[]> = {
   format: (v) => "maps list",
   fromJSON: (v) => v.map((map) => restoreClassFromJSON(map)),
   expandable: true,
-};
+}
 const CanvasesListDef: PropDef<SImage[]> = {
   type: "array",
   editable: false,
@@ -809,7 +809,7 @@ const CanvasesListDef: PropDef<SImage[]> = {
   format: (v) => "canvases list",
   fromJSON: (v) => v.map((map) => restoreClassFromJSON(map)),
   expandable: true,
-};
+}
 
 export type DocType = {
   name: string;
@@ -830,74 +830,74 @@ const GameDocDefs: DefList<DocType> = {
   canvases: CanvasesListDef,
   palette: PaletteDef,
   tileSize: SizeDef,
-};
+}
 
 export function gen_canvas(tile: Tile, palette: ImagePalette) {
-  const cache_canvas = document.createElement("canvas");
-  cache_canvas.width = tile.getPropValue("size").w;
-  cache_canvas.height = tile.getPropValue("size").h;
-  const ctx = cache_canvas.getContext("2d") as CanvasRenderingContext2D;
-  drawEditableSprite(ctx, 1, tile, palette);
-  return cache_canvas;
+  const cache_canvas = document.createElement("canvas")
+  cache_canvas.width = tile.getPropValue("size").w
+  cache_canvas.height = tile.getPropValue("size").h
+  const ctx = cache_canvas.getContext("2d") as CanvasRenderingContext2D
+  drawEditableSprite(ctx, 1, tile, palette)
+  return cache_canvas
 }
 
 export class GameDoc extends PropsBase<DocType> {
-  private sprite_lookup: Map<string, Tile>;
-  private sprite_lookup_by_name: Map<string, Tile>;
-  private image_cache: Map<Tile, HTMLCanvasElement>;
+  private sprite_lookup: Map<string, Tile>
+  private sprite_lookup_by_name: Map<string, Tile>
+  private image_cache: Map<Tile, HTMLCanvasElement>
 
   constructor(opts?: PropValues<DocType>) {
-    super(GameDocDefs, opts);
-    this.sprite_lookup = new Map();
-    this.sprite_lookup_by_name = new Map();
-    this.image_cache = new Map();
+    super(GameDocDefs, opts)
+    this.sprite_lookup = new Map()
+    this.sprite_lookup_by_name = new Map()
+    this.image_cache = new Map()
   }
 
   lookup_sprite(id: string) {
-    if (this.sprite_lookup.has(id)) return this.sprite_lookup.get(id);
+    if (this.sprite_lookup.has(id)) return this.sprite_lookup.get(id)
     for (const sheet of this.getPropValue("sheets") as Sheet[]) {
       for (const tile of sheet.getPropValue("tiles") as Tile[]) {
         if (tile._id === id) {
-          this.sprite_lookup.set(tile._id, tile);
-          return tile;
+          this.sprite_lookup.set(tile._id, tile)
+          return tile
         }
       }
     }
-    console.log("missing", id);
-    return null;
+    console.log("missing", id)
+    return null
   }
   lookup_sprite_by_name(name: string): Tile | undefined {
     if (this.sprite_lookup_by_name.has(name))
-      return this.sprite_lookup_by_name.get(name);
+      return this.sprite_lookup_by_name.get(name)
     for (const sheet of this.getPropValue("sheets") as Sheet[]) {
       for (const tile of sheet.getPropValue("tiles") as Tile[]) {
         if (tile.getPropValue("name") === name) {
           // console.log("caching",id,tile.getPropValue('name'), tile.cache_canvas)
-          this.sprite_lookup.set(tile._id, tile);
-          this.sprite_lookup_by_name.set(tile.getPropValue("name"), tile);
-          return tile;
+          this.sprite_lookup.set(tile._id, tile)
+          this.sprite_lookup_by_name.set(tile.getPropValue("name"), tile)
+          return tile
         }
       }
     }
-    console.log("missing", name);
-    return undefined;
+    console.log("missing", name)
+    return undefined
   }
 
   lookup_canvas(id: string) {
-    const tile = this.lookup_sprite(id);
+    const tile = this.lookup_sprite(id)
     if (tile) {
       if (!this.image_cache.has(tile)) {
-        const can = gen_canvas(tile, this.getPropValue("palette"));
-        this.image_cache.set(tile, can);
+        const can = gen_canvas(tile, this.getPropValue("palette"))
+        this.image_cache.set(tile, can)
       }
-      return this.image_cache.get(tile);
+      return this.image_cache.get(tile)
     }
   }
   markDirty(id: string) {
-    const tile = this.lookup_sprite(id);
+    const tile = this.lookup_sprite(id)
     if (tile) {
-      this.image_cache.delete(tile);
+      this.image_cache.delete(tile)
     }
   }
 }
-CLASS_REGISTRY.register("Doc", GameDoc, GameDocDefs);
+CLASS_REGISTRY.register("Doc", GameDoc, GameDocDefs)

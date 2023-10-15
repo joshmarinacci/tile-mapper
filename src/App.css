@@ -21,10 +21,14 @@ html body {
 .editor-view {
   display: flex;
   flex-direction: row;
-  border: 0px solid black;
-  align-items: stretch;
-  overflow: auto;
-  align-self: stretch;
+  border: 5px solid red;
+  /*align-items: stretch;*/
+  overflow: scroll;
+  /*align-self: stretch;*/
+  grid-column-start: 2;
+  grid-column-end: 3;
+  grid-row-start: 2;
+  grid-row-end: 3;
 }
 
 .across {
