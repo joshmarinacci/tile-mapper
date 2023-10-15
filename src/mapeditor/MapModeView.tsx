@@ -1,29 +1,29 @@
-import "./MapEditor.css";
+import "./MapEditor.css"
 
-import React, { useContext, useState } from "react";
+import React, { useContext, useState } from "react"
 
-import { DocContext } from "../common/common-components";
-import { DividerColumnBox } from "../common/DividerColumnBox";
-import { PropSheet } from "../common/propsheet";
-import { PropsBase } from "../model/base";
-import { GameMap, MapLayerType, Sheet, Tile } from "../model/datamodel";
-import { CompactSheetAndTileSelector } from "../sheeteditor/TileListView";
-import { GlobalState } from "../state";
-import { LayerEditor } from "./LayerEditor";
-import { LayerList } from "./LayerList";
+import { DocContext } from "../common/common-components"
+import { DividerColumnBox } from "../common/DividerColumnBox"
+import { PropSheet } from "../common/propsheet"
+import { PropsBase } from "../model/base"
+import { GameMap, MapLayerType, Sheet, Tile } from "../model/datamodel"
+import { CompactSheetAndTileSelector } from "../sheeteditor/TileListView"
+import { GlobalState } from "../state"
+import { LayerEditor } from "./LayerEditor"
+import { LayerList } from "./LayerList"
 
 export function MapModeView(props: { state: GlobalState; map: GameMap }) {
-  const doc = useContext(DocContext);
-  const selectedMap = props.map;
-  const layers = selectedMap.getPropValue("layers");
-  const sheets = doc.getPropValue("sheets") as Sheet[];
+  const doc = useContext(DocContext)
+  const selectedMap = props.map
+  const layers = selectedMap.getPropValue("layers")
+  const sheets = doc.getPropValue("sheets") as Sheet[]
   const [selectedTile, setSelectedTile] = useState<Tile | undefined>(
     sheets[0].getPropValue("tiles")[0],
-  );
+  )
   const [selectedLayer, setSelectedLayer] = useState<
     PropsBase<MapLayerType> | undefined
-  >(layers[0]);
-  const [columnWidth, setColumnWidth] = useState(300);
+  >(layers[0])
+  const [columnWidth, setColumnWidth] = useState(300)
 
   return (
     <div
@@ -45,7 +45,7 @@ export function MapModeView(props: { state: GlobalState; map: GameMap }) {
           layer={selectedLayer}
           setSelectedLayer={setSelectedLayer}
         />
-        <PropSheet target={selectedLayer} title={"Layer Info"} />
+        <PropSheet target={selectedLayer} title={"Layer Info"}  collapsable/>
       </DividerColumnBox>
       <LayerEditor
         key={"layer-editor"}
@@ -55,5 +55,5 @@ export function MapModeView(props: { state: GlobalState; map: GameMap }) {
         setSelectedTile={setSelectedTile}
       />
     </div>
-  );
+  )
 }

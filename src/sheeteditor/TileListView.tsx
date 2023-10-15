@@ -1,7 +1,7 @@
-import "./TileSheetView.css";
+import "./TileSheetView.css"
 
-import { Spacer, toClass } from "josh_react_util";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import { Spacer, toClass } from "josh_react_util"
+import React, { useContext, useEffect, useRef, useState } from "react"
 
 import {
   deleteTile,
@@ -11,8 +11,8 @@ import {
   flipTileAroundVertical,
   rotateTile90Clock,
   rotateTile90CounterClock,
-} from "../actions/actions";
-import { drawEditableSprite, Icons, ImagePalette } from "../common/common";
+} from "../actions/actions"
+import { drawEditableSprite, Icons, ImagePalette } from "../common/common"
 import {
   DocContext,
   DropdownButton,
@@ -20,18 +20,18 @@ import {
   IconButton,
   MenuList,
   Pane,
-} from "../common/common-components";
-import { ListSelect } from "../common/ListSelect";
+} from "../common/common-components"
+import { ListSelect } from "../common/ListSelect"
 import {
   ListView,
   ListViewDirection,
   ListViewOptions,
   ListViewRenderer,
-} from "../common/ListView";
-import { PopupContext } from "../common/popup";
-import { ICON_CACHE } from "../iconcache";
-import { useWatchProp } from "../model/base";
-import { Sheet, Tile } from "../model/datamodel";
+} from "../common/ListView"
+import { PopupContext } from "../common/popup"
+import { ICON_CACHE } from "../iconcache"
+import { useWatchProp } from "../model/base"
+import { Sheet, Tile } from "../model/datamodel"
 
 type TilePreviewOptions = {
   sheet: Sheet;
@@ -49,27 +49,27 @@ export const TilePreviewRenderer: ListViewRenderer<
   selected: boolean;
   options: TilePreviewOptions;
 }) => {
-  const { value, options, selected } = props;
-  const ref = useRef<HTMLCanvasElement>(null);
+  const { value, options, selected } = props
+  const ref = useRef<HTMLCanvasElement>(null)
   const redraw = () => {
     if (ref.current && value) {
-      const canvas = ref.current;
-      const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+      const canvas = ref.current
+      const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
       ctx.fillStyle = ctx.createPattern(
         ICON_CACHE.getIconCanvas("checkerboard"),
         "repeat",
-      ) as CanvasPattern;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      drawEditableSprite(ctx, 1, value, options.palette);
+      ) as CanvasPattern
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      drawEditableSprite(ctx, 1, value, options.palette)
     }
-  };
-  useEffect(() => redraw(), [value]);
-  useWatchProp(value, "data", () => redraw());
-  useWatchProp(value, "name");
-  const pm = useContext(PopupContext);
+  }
+  useEffect(() => redraw(), [value])
+  useWatchProp(value, "data", () => redraw())
+  useWatchProp(value, "name")
+  const pm = useContext(PopupContext)
   const showPopup = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
+    e.preventDefault()
+    e.stopPropagation()
     pm.show_at(
       <MenuList>
         <button onClick={() => flipTileAroundVertical(value)}>
@@ -91,8 +91,8 @@ export const TilePreviewRenderer: ListViewRenderer<
       </MenuList>,
       e.target,
       "left",
-    );
-  };
+    )
+  }
   return (
     <div className={"tile-preview-wrapper"} onContextMenu={showPopup}>
       <canvas
@@ -110,15 +110,15 @@ export const TilePreviewRenderer: ListViewRenderer<
       ></canvas>
       {options.showNames && <b>{props.value.getPropValue("name")}</b>}
     </div>
-  );
-};
+  )
+}
 
 const SheetPreviewRenderer: ListViewRenderer<Sheet, never> = (props: {
   value: Sheet;
   selected: boolean;
   options: ListViewOptions;
 }) => {
-  const { selected, value } = props;
+  const { selected, value } = props
   return (
     <div
       className={toClass({
@@ -129,8 +129,8 @@ const SheetPreviewRenderer: ListViewRenderer<Sheet, never> = (props: {
       <b>{value.getPropValue("name")}</b>
       <i>{value.getPropValue("tiles").length} tiles</i>
     </div>
-  );
-};
+  )
+}
 
 export function TileListView(props: {
   sheet: Sheet;
@@ -139,33 +139,33 @@ export function TileListView(props: {
   palette: ImagePalette;
   editable: boolean;
 }) {
-  const { sheet, tile, setTile, palette, editable } = props;
+  const { sheet, tile, setTile, palette, editable } = props
   // const [showNames, setShowNames] = useState(true)
   // const [showGrid, setShowGrid] = useState(true)
-  const showNames = sheet.getPropValue("showNames");
-  const showGrid = sheet.getPropValue("showGrid");
-  const [scale, setScale] = useState(4);
-  const tiles = sheet.getPropValue("tiles");
+  const showNames = sheet.getPropValue("showNames")
+  const showGrid = sheet.getPropValue("showGrid")
+  const [scale, setScale] = useState(4)
+  const tiles = sheet.getPropValue("tiles")
   const add_tile = () => {
-    const size = sheet.getPropValue("tileSize");
-    const tile = new Tile({ size: size });
-    sheet.addTile(tile);
-    setTile(tile);
-  };
+    const size = sheet.getPropValue("tileSize")
+    const tile = new Tile({ size: size })
+    sheet.addTile(tile)
+    setTile(tile)
+  }
   const dup_tile = () => {
-    if (tile) setTile(duplicate_tile(sheet, tile));
-  };
+    if (tile) setTile(duplicate_tile(sheet, tile))
+  }
   const delete_tile = () => {
-    if (tile) deleteTile(sheet, tile);
+    if (tile) deleteTile(sheet, tile)
     if (sheet.getPropValue("tiles").length > 0) {
-      setTile(sheet.getPropValue("tiles")[0]);
+      setTile(sheet.getPropValue("tiles")[0])
     } else {
-      setTile(undefined);
+      setTile(undefined)
     }
-  };
-  useWatchProp(sheet, "tiles");
-  useWatchProp(sheet, "showGrid");
-  useWatchProp(sheet, "showNames");
+  }
+  useWatchProp(sheet, "tiles")
+  useWatchProp(sheet, "showGrid")
+  useWatchProp(sheet, "showNames")
   return (
     <div className={"tile-list-view"}>
       {editable && (
@@ -206,19 +206,19 @@ export function TileListView(props: {
         </div>
       )}
     </div>
-  );
+  )
 }
 
 export function CompactSheetAndTileSelector(props: {
   selectedTile: Tile | undefined;
   setSelectedTile: (t: Tile | undefined) => void;
 }) {
-  const { selectedTile, setSelectedTile } = props;
-  const doc = useContext(DocContext);
-  const sheets = doc.getPropValue("sheets");
+  const { selectedTile, setSelectedTile } = props
+  const doc = useContext(DocContext)
+  const sheets = doc.getPropValue("sheets")
   const [selectedSheet, setSelectedSheet] = useState<Sheet | undefined>(
     sheets[0],
-  );
+  )
   return (
     <Pane
       header={
@@ -245,5 +245,5 @@ export function CompactSheetAndTileSelector(props: {
         />
       )}
     </Pane>
-  );
+  )
 }
