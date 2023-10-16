@@ -1,17 +1,17 @@
-import bmp, { BitsPerPixel, IImage } from "@wokwi/bmp-ts";
-import { ArrayGrid, Point } from "josh_js_util";
+import bmp, { BitsPerPixel, IImage } from "@wokwi/bmp-ts"
+import { ArrayGrid, Point } from "josh_js_util"
 
-import { Sheet, Tile } from "../model/datamodel";
+import { Sheet, Tile } from "../model/datamodel"
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 ArrayGrid.prototype.isValidIndex = function (pt: Point) {
-  if (pt.x < 0) return false;
-  if (pt.y < 0) return false;
-  if (pt.x >= this.w) return false;
-  if (pt.y >= this.h) return false;
-  return true;
-};
+  if (pt.x < 0) return false
+  if (pt.y < 0) return false
+  if (pt.x >= this.w) return false
+  if (pt.y >= this.h) return false
+  return true
+}
 
 export type ImagePalette = {
   name: string;
@@ -38,7 +38,7 @@ export const PICO8: ImagePalette = {
     "#FFCCAA",
     "transparent",
   ],
-};
+}
 export const MINECRAFT: ImagePalette = {
   name: "Minecraft",
   colors: [
@@ -59,7 +59,7 @@ export const MINECRAFT: ImagePalette = {
     "#b24cd8",
     "#f27fa5",
   ],
-};
+}
 export const RESURRECT64: ImagePalette = {
   name: "Resurrect64",
   colors: [
@@ -129,7 +129,7 @@ export const RESURRECT64: ImagePalette = {
     "#fdcbb0",
     "transparent",
   ],
-};
+}
 
 export function drawEditableSprite(
   ctx: CanvasRenderingContext2D,
@@ -139,74 +139,74 @@ export function drawEditableSprite(
 ) {
   for (let i = 0; i < image.width(); i++) {
     for (let j = 0; j < image.height(); j++) {
-      const v: number = image.getPixel(new Point(i, j));
-      ctx.fillStyle = palette.colors[v];
-      ctx.fillRect(i * scale, j * scale, scale, scale);
+      const v: number = image.getPixel(new Point(i, j))
+      ctx.fillStyle = palette.colors[v]
+      ctx.fillRect(i * scale, j * scale, scale, scale)
     }
   }
 }
 
-export function sheet_to_canvas(sheet: Sheet) {
-  const tiles = sheet.getPropValue("tiles") as Tile[];
-  const sprite = tiles[0];
-  const canvas = document.createElement("canvas");
-  canvas.width = sprite.width() * tiles.length;
-  canvas.height = sprite.height();
-  const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
+export function sheet_to_canvas(sheet: Sheet, palette: ImagePalette) {
+  const tiles = sheet.getPropValue("tiles") as Tile[]
+  const sprite = tiles[0]
+  const canvas = document.createElement("canvas")
+  canvas.width = sprite.width() * tiles.length
+  canvas.height = sprite.height()
+  const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
   tiles.forEach((img, i) => {
-    ctx.save();
-    ctx.translate(i * sprite.width(), 0);
-    drawEditableSprite(ctx, 1, img);
-    ctx.restore();
-  });
-  return canvas;
+    ctx.save()
+    ctx.translate(i * sprite.width(), 0)
+    drawEditableSprite(ctx, 1, img, palette)
+    ctx.restore()
+  })
+  return canvas
 }
 
-export function canvas_to_bmp(canvas: HTMLCanvasElement, palette1: string[]) {
+export function canvas_to_bmp(canvas: HTMLCanvasElement, pal: ImagePalette) {
   //get ImageData from the canvas
   const id = (canvas.getContext("2d") as CanvasRenderingContext2D).getImageData(
     0,
     0,
     canvas.width,
     canvas.height,
-  );
+  )
 
   function swizzle_data(id: ImageData) {
     for (let i = 0; i < id.width; i++) {
       for (let j = 0; j < id.height; j++) {
-        const n = (i + id.width * j) * 4;
+        const n = (i + id.width * j) * 4
 
-        const R = id.data[n + 0];
-        const G = id.data[n + 1];
-        const B = id.data[n + 2];
+        const R = id.data[n + 0]
+        const G = id.data[n + 1]
+        const B = id.data[n + 2]
         // const A = id.data[n + 3]
 
-        id.data[n + 0] = 255;
-        id.data[n + 1] = B;
-        id.data[n + 2] = G;
-        id.data[n + 3] = R;
+        id.data[n + 0] = 255
+        id.data[n + 1] = B
+        id.data[n + 2] = G
+        id.data[n + 3] = R
       }
     }
   }
 
-  swizzle_data(id);
+  swizzle_data(id)
 
   function strToRGBObj(str: string) {
-    const num = parseInt(str.substring(1), 16);
-    const red = (num & 0xff0000) >> 16;
-    const green = (num & 0x00ff00) >> 8;
-    const blue = (num & 0x0000ff) >> 0;
+    const num = parseInt(str.substring(1), 16)
+    const red = (num & 0xff0000) >> 16
+    const green = (num & 0x00ff00) >> 8
+    const blue = (num & 0x0000ff) >> 0
     return {
       red: red,
       green: green,
       blue: blue,
       quad: 255,
-    };
+    }
   }
 
-  const palette = palette1.map((str) => strToRGBObj(str));
+  const palette = pal.colors.map((str) => strToRGBObj(str))
   while (palette.length < 128) {
-    palette.push({ red: 0, green: 255, blue: 0, quad: 255 });
+    palette.push({ red: 0, green: 255, blue: 0, quad: 255 })
   }
 
   const bmpData: IImage = {
@@ -215,14 +215,14 @@ export function canvas_to_bmp(canvas: HTMLCanvasElement, palette1: string[]) {
     width: canvas.width,
     height: canvas.height,
     palette: palette,
-  };
-  return bmp.encode(bmpData);
+  }
+  return bmp.encode(bmpData)
 }
 
-export const down_arrow_triangle = "▼";
-export const up_arrow_triangle = "▲";
-export const right_arrow_triangle = "▶";
-export const left_arrow_triangle = "◀";
+export const down_arrow_triangle = "▼"
+export const up_arrow_triangle = "▲"
+export const right_arrow_triangle = "▶"
+export const left_arrow_triangle = "◀"
 
 export enum Icons {
   DownArrow = "down-arrow",

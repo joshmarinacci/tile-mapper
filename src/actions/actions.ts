@@ -48,7 +48,7 @@ export const DocToPNG: SimpleMenuAction = {
   async perform(state): Promise<void> {
     const doc = state.getPropValue("doc") as GameDoc
     for (const sheet of doc.getPropValue("sheets")) {
-      const can = sheet_to_canvas(sheet)
+      const can = sheet_to_canvas(sheet, doc.getPropValue('palette'))
       const blob = await canvas_to_blob(can)
       forceDownloadBlob(
         `${doc.getPropValue("name")}.${sheet.getPropValue("name")}.png`,
@@ -64,7 +64,7 @@ export const DocToBMP: SimpleMenuAction = {
   async perform(state) {
     const doc = state.getPropValue("doc") as GameDoc
     const sheet = doc.getPropValue("sheets")[0]
-    const canvas = sheet_to_canvas(sheet)
+    const canvas = sheet_to_canvas(sheet, doc.getPropValue("palette"))
     const rawData = canvas_to_bmp(canvas, doc.getPropValue("palette"))
     const blob = new Blob([rawData.data], { type: "image/bmp" })
     forceDownloadBlob(`${sheet.getPropValue("name")}.bmp`, blob)
@@ -140,8 +140,8 @@ export async function loadPNGJSON(
 }
 
 export const export_bmp = (sheet: Sheet, palette: ImagePalette) => {
-  const canvas = sheet_to_canvas(sheet)
-  const rawData = canvas_to_bmp(canvas, palette.colors)
+  const canvas = sheet_to_canvas(sheet, palette)
+  const rawData = canvas_to_bmp(canvas, palette)
   const blob = new Blob([rawData.data], { type: "image/bmp" })
   forceDownloadBlob(`${sheet.getPropValue("name")}.bmp`, blob)
 }
