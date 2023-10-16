@@ -1,7 +1,7 @@
-import "./ListView.css";
+import "./ListView.css"
 
-import { toClass } from "josh_react_util";
-import React from "react";
+import { toClass } from "josh_react_util"
+import React from "react"
 
 export type ListViewOptions = Record<string, unknown>;
 export type ListViewRenderer<T, O extends ListViewOptions> = (props: {
@@ -15,8 +15,8 @@ export function DefaultListViewRenderer<T>(props: {
   selected: boolean;
   options: ListViewOptions;
 }) {
-  if (props.value) <div>{props.value + ""}</div>;
-  return <div>unknown</div>;
+  if (props.value) <div>{props.value + ""}</div>
+  return <div>unknown</div>
 }
 export enum ListViewDirection {
   HorizontalWrap = "horizontal-wrap",
@@ -33,7 +33,7 @@ export function ListView<T, O extends ListViewOptions>(props: {
   direction: ListViewDirection;
   options: O;
 }) {
-  const Cell = props.renderer || DefaultListViewRenderer;
+  const Cell = props.renderer || DefaultListViewRenderer
   return (
     <div
       className={`list-view ${props.className} ${props.direction}`}
@@ -55,8 +55,8 @@ export function ListView<T, O extends ListViewOptions>(props: {
               options={props.options}
             />
           </div>
-        );
+        )
       })}
     </div>
-  );
+  )
 }

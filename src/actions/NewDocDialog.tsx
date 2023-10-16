@@ -1,41 +1,41 @@
-import { Size } from "josh_js_util";
-import { DialogContext } from "josh_react_util";
-import React, { useContext, useState } from "react";
+import { Size } from "josh_js_util"
+import { DialogContext } from "josh_react_util"
+import React, { useContext, useState } from "react"
 
-import { ImagePalette, MINECRAFT, PICO8, RESURRECT64 } from "../common/common";
-import { appendToList } from "../model/base";
-import { GameDoc, Sheet, Tile } from "../model/datamodel";
+import { ImagePalette, MINECRAFT, PICO8, RESURRECT64 } from "../common/common"
+import { appendToList } from "../model/base"
+import { GameDoc, Sheet, Tile } from "../model/datamodel"
 
 function make_new_doc(width: number, height: number, palette: ImagePalette) {
-  const TS = new Size(width, height);
+  const TS = new Size(width, height)
   const doc = new GameDoc({
     name: "new doc",
     palette: palette,
     tileSize: TS,
-  });
-  const sheet = new Sheet({ tileSize: TS });
-  const tile = new Tile({ size: TS });
-  appendToList(sheet, "tiles", tile);
-  appendToList(doc, "sheets", sheet);
-  return doc;
+  })
+  const sheet = new Sheet({ tileSize: TS })
+  const tile = new Tile({ size: TS })
+  appendToList(sheet, "tiles", tile)
+  appendToList(doc, "sheets", sheet)
+  return doc
 }
 
 type Pal = {
   name: string;
   pal: ImagePalette;
 };
-const PALS: ImagePalette[] = [PICO8, MINECRAFT, RESURRECT64];
+const PALS: ImagePalette[] = [PICO8, MINECRAFT, RESURRECT64]
 
 export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
-  const [width, setWidth] = useState(16);
-  const [height, setHeight] = useState(16);
-  const [pal, setPal] = useState(PALS[0]);
-  const dc = useContext(DialogContext);
+  const [width, setWidth] = useState(16)
+  const [height, setHeight] = useState(16)
+  const [pal, setPal] = useState(PALS[0])
+  const dc = useContext(DialogContext)
   const create = () => {
-    const doc = make_new_doc(width, height, pal);
-    props.onComplete(doc);
-    dc.hide();
-  };
+    const doc = make_new_doc(width, height, pal)
+    props.onComplete(doc)
+    dc.hide()
+  }
   return (
     <div className={"dialog"}>
       <header>new document</header>
@@ -58,8 +58,8 @@ export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
           onChange={(e) => {
             const pp = PALS.find(
               (p) => p.name === e.target.value,
-            ) as ImagePalette;
-            setPal(pp);
+            ) as ImagePalette
+            setPal(pp)
           }}
         >
           {PALS.map((pal) => {
@@ -67,7 +67,7 @@ export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
               <option key={pal.name} value={pal.name}>
                 {pal.name}
               </option>
-            );
+            )
           })}
         </select>
       </section>
@@ -78,5 +78,5 @@ export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
         </button>
       </footer>
     </div>
-  );
+  )
 }

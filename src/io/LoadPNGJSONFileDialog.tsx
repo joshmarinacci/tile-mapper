@@ -1,5 +1,3 @@
-// import '../dialog.css'
-
 import { DialogContext, Spacer } from "josh_react_util"
 import React, { ChangeEvent, useContext, useRef, useState } from "react"
 

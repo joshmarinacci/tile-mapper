@@ -301,13 +301,13 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
               icon={Icons.DownArrow}
             />
           </div>
-          <ListView
+          <ListView className={"layers"}
             selected={layer}
             setSelected={setLayer}
             renderer={LayerItemRenderer}
             data={props.image.getPropValue("layers")}
             direction={ListViewDirection.VerticalFill}
-            options={{}}
+            options={undefined as never}
           />
         </Pane>
         <PropSheet target={layer} title={"Layer Info"} collapsable={true} />

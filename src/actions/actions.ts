@@ -321,7 +321,7 @@ export const DeleteSheetAction: SimpleMenuAction = {
     const sel = state.getPropValue("selection")
     if (sel instanceof Sheet) {
       removeFromList(state.getPropValue("doc"), "sheets", sel as Sheet)
-      state.setPropValue("selection", null)
+      state.clearSelection()
     }
   },
 }
@@ -332,7 +332,7 @@ export const DeleteMapAction: SimpleMenuAction = {
     const sel = state.getPropValue("selection")
     if (sel instanceof GameMap) {
       removeFromList(state.getPropValue("doc"), "maps", sel as GameMap)
-      state.setPropValue("selection", null)
+      state.clearSelection()
     }
   },
 }
@@ -343,7 +343,7 @@ export const DeleteActorAction: SimpleMenuAction = {
     const sel = state.getPropValue("selection")
     if (sel instanceof Actor) {
       removeFromList(state.getPropValue("doc"), "actors", sel as Actor)
-      state.setPropValue("selection", null)
+      state.clearSelection()
     }
   },
 }
@@ -354,7 +354,7 @@ export const DeleteGameTestAction: SimpleMenuAction = {
     const sel = state.getPropValue("selection")
     if (sel instanceof GameTest) {
       removeFromList(state.getPropValue("doc"), "tests", sel as GameTest)
-      state.setPropValue("selection", null)
+      state.clearSelection()
     }
   },
 }

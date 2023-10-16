@@ -1,18 +1,18 @@
-import "./Palette.css";
+import "./Palette.css"
 
-import { Spacer, toClass } from "josh_react_util";
-import React, { useState } from "react";
+import { Spacer, toClass } from "josh_react_util"
+import React, { useState } from "react"
 
-import { ImagePalette } from "./common";
-import { DropdownButton, Pane } from "./common-components";
-import { ListView, ListViewDirection, ListViewOptions } from "./ListView";
+import { ImagePalette } from "./common"
+import { DropdownButton, Pane } from "./common-components"
+import { ListView, ListViewDirection, ListViewOptions } from "./ListView"
 
 const PaletteColorRenderer = (props: {
   value: string;
   selected: boolean;
   options: ListViewOptions;
 }) => {
-  const { value, selected, options } = props;
+  const { value, selected, options } = props
   return (
     <div
       className={toClass({
@@ -26,16 +26,16 @@ const PaletteColorRenderer = (props: {
         height: `${options.size}px`,
       }}
     />
-  );
-};
+  )
+}
 
 export function PaletteColorPickerPane(props: {
   drawColor: string;
   setDrawColor: (v: string) => void;
   palette: ImagePalette;
 }) {
-  const { drawColor, setDrawColor, palette } = props;
-  const [size, setSize] = useState(16);
+  const { drawColor, setDrawColor, palette } = props
+  const [size, setSize] = useState(16)
   return (
     <Pane>
       <header>
@@ -58,5 +58,5 @@ export function PaletteColorPickerPane(props: {
         options={{ size: size }}
       />
     </Pane>
-  );
+  )
 }
