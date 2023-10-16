@@ -75,13 +75,9 @@ export class LineTool extends PixelTool<LineToolSettingsType> implements Tool {
         this.name = "line"
     }
 
-    drawPixels(evt: ToolEvent) {
-        drawLine(
-            this.temp,
-            evt.color,
-            this._start.floor(),
-            this._current.floor(),
-        )
+    drawPixels(evt: ToolEvent, target:ArrayGrid<number>, final:boolean) {
+        if(!final) target.fill(()=>-1)
+        drawLine(target, evt.color, this._start.floor(), this._current.floor())
     }
 
 }

@@ -71,11 +71,12 @@ export class RectTool extends PixelTool<RectToolSettingsType> implements Tool {
         this.name = "rect"
     }
 
-    drawPixels(evt: ToolEvent) {
+    drawPixels(evt: ToolEvent, target:ArrayGrid<number>, final:boolean) {
+        if(!final) target.fill(()=>-1)
         if (this.getPropValue("filled")) {
-            fillRect(this.temp, evt.color, this._start.floor(), this._current.floor(),  evt.selection )
+            fillRect(target, evt.color, this._start.floor(), this._current.floor(),  evt.selection )
         } else {
-            drawRect(this.temp, evt.color, this._start.floor(), this._current.floor(),  evt.selection )
+            drawRect(target, evt.color, this._start.floor(), this._current.floor(),  evt.selection )
         }
     }
 }

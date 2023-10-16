@@ -106,12 +106,12 @@ export class EllipseTool extends PixelTool<EllipseToolSettingsType> implements T
         this.name = "ellipse"
     }
 
-    drawPixels(evt: ToolEvent) {
+    drawPixels(evt: ToolEvent, target:ArrayGrid<number>, final:boolean) {
+        if(!final) target.fill(()=>-1)
         if (this.getPropValue("filled")) {
-            drawEllipse(this.temp, evt.color, this._start.floor(), this._current.floor(), evt.selection)
-
+            drawEllipse(target, evt.color, this._start.floor(), this._current.floor(), evt.selection)
         } else {
-            drawEllipse(this.temp, evt.color, this._start.floor(), this._current.floor(), evt.selection)
+            drawEllipse(target, evt.color, this._start.floor(), this._current.floor(), evt.selection)
         }
     }
 }

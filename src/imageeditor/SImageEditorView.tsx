@@ -310,7 +310,7 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
             options={{}}
           />
         </Pane>
-        <PropSheet target={layer} title={"Layer Info"} />
+        <PropSheet target={layer} title={"Layer Info"} collapsable={true} />
         <div className={"toolbar"}>
           <IconButton onClick={() => setZoom(zoom + 1)} icon={Icons.Plus} />
           <IconButton onClick={() => setZoom(zoom - 1)} icon={Icons.Minus} />
