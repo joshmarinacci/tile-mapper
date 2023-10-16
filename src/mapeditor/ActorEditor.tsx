@@ -48,7 +48,7 @@ export function drawActorlayer(
   })
 }
 
-const ActorPreviewRenderer: ListViewRenderer<Actor> = (props: {
+const ActorPreviewRenderer: ListViewRenderer<Actor, never> = (props: {
   value: Actor;
   selected: boolean;
   options?: ListViewOptions;
@@ -68,7 +68,7 @@ const ActorPreviewRenderer: ListViewRenderer<Actor> = (props: {
       }}
     >
       <b>{value.getPropValue("name")}</b>
-      <TileReferenceView tileRef={value.getPropValue("tile")} />
+      <TileReferenceView tileRef={value.getPropValue("sprite")} />
     </div>
   )
 }
@@ -98,7 +98,7 @@ export function ActorLayerToolbar(props: {
         data={doc.getPropValue("actors")}
         setSelected={setSelected}
         renderer={ActorPreviewRenderer}
-        options={{}}
+        options={undefined as never}
       />
       <button disabled={!selected} onClick={add_actor}>
         add actor

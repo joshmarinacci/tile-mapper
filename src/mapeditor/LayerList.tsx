@@ -1,5 +1,5 @@
-import { DialogContext } from "josh_react_util";
-import React, { useContext } from "react";
+import { DialogContext } from "josh_react_util"
+import React, { useContext } from "react"
 
 import {
   add_actor_layer,
@@ -7,17 +7,17 @@ import {
   delete_map_layer,
   move_layer_down,
   move_layer_up,
-} from "../actions/actions";
-import { Icons } from "../common/common";
-import { Icon, Pane } from "../common/common-components";
+} from "../actions/actions"
+import { Icons } from "../common/common"
+import { Icon, Pane } from "../common/common-components"
 import {
   ListView,
   ListViewDirection,
   ListViewRenderer,
-} from "../common/ListView";
-import { PropsBase, useWatchProp } from "../model/base";
-import { GameMap, MapLayerType, TileLayer } from "../model/datamodel";
-import { ResizeLayerDialog } from "./ResizeLayerDialog";
+} from "../common/ListView"
+import { PropsBase, useWatchProp } from "../model/base"
+import { GameMap, MapLayerType, TileLayer } from "../model/datamodel"
+import { ResizeLayerDialog } from "./ResizeLayerDialog"
 
 const LayerNameRenderer: ListViewRenderer<
   PropsBase<MapLayerType>,
@@ -27,9 +27,9 @@ const LayerNameRenderer: ListViewRenderer<
   selected: boolean;
   options: never;
 }) => {
-  const { value } = props;
-  useWatchProp(value, "name");
-  useWatchProp(value, "visible");
+  const { value } = props
+  useWatchProp(value, "name")
+  useWatchProp(value, "visible")
   return (
     <div
       className={"std-list-item"}
@@ -43,8 +43,8 @@ const LayerNameRenderer: ListViewRenderer<
         name={value.getPropValue("visible") ? Icons.EyeOpen : Icons.EyeClosed}
       />
     </div>
-  );
-};
+  )
+}
 
 export function LayerList(props: {
   setSelectedLayer: (value: PropsBase<MapLayerType> | undefined) => void;
@@ -52,13 +52,13 @@ export function LayerList(props: {
   editable: boolean;
   layer: PropsBase<MapLayerType> | undefined;
 }) {
-  const { layer } = props;
-  const dm = useContext(DialogContext);
-  useWatchProp(props.map, "layers");
+  const { layer } = props
+  const dm = useContext(DialogContext)
+  useWatchProp(props.map, "layers")
   const resize = () => {
     if (layer instanceof TileLayer)
-      dm.show(<ResizeLayerDialog layer={layer} />);
-  };
+      dm.show(<ResizeLayerDialog layer={layer} />)
+  }
 
   return (
     <Pane className={"layer-list-view"} collapsable={true} title={"Layers"}>
@@ -91,8 +91,8 @@ export function LayerList(props: {
         data={props.map.getPropValue("layers")}
         direction={ListViewDirection.VerticalFill}
         className={"sheet-list"}
-        options={{}}
+        options={undefined as never}
       />
     </Pane>
-  );
+  )
 }

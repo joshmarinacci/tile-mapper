@@ -3,15 +3,6 @@ import { ArrayGrid, Point } from "josh_js_util"
 
 import { Sheet, Tile } from "../model/datamodel"
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-ArrayGrid.prototype.isValidIndex = function (pt: Point) {
-  if (pt.x < 0) return false
-  if (pt.y < 0) return false
-  if (pt.x >= this.w) return false
-  if (pt.y >= this.h) return false
-  return true
-}
 
 export type ImagePalette = {
   name: string;

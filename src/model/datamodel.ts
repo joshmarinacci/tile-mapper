@@ -812,14 +812,14 @@ const CanvasesListDef: PropDef<SImage[]> = {
 }
 
 export type DocType = {
-  name: string;
-  sheets: Sheet[];
-  maps: GameMap[];
-  actors: Actor[];
-  tests: GameTest[];
-  canvases: SImage[];
-  palette: ImagePalette;
-  tileSize: Size;
+  name: string
+  sheets: Sheet[]
+  maps: GameMap[]
+  actors: Actor[]
+  tests: GameTest[]
+  canvases: SImage[]
+  palette: ImagePalette
+  tileSize: Size
 };
 const GameDocDefs: DefList<DocType> = {
   name: NameDef,
