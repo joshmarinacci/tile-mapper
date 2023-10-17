@@ -152,6 +152,7 @@ export function deleteTile(sheet: Sheet, tile: Tile) {
 
 export function duplicate_tile(sheet: Sheet, tile: Tile): Tile {
   const new_tile = tile.clone()
+  new_tile.setPropValue('gridPosition',new Point(-1,-1))
   sheet.addTile(new_tile)
   return new_tile
 }

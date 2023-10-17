@@ -7,6 +7,7 @@ import {
   RESURRECT64,
 } from "../common/common"
 import {
+  appendToList,
   CLASS_REGISTRY,
   DefList,
   PropDef,
@@ -221,17 +222,18 @@ type ArrayGridNumberJSON = {
   data: number[];
 };
 type TileType = {
-  name: string;
-  blocking: boolean;
-  data: ArrayGrid<number>;
-  size: Size;
+  name: string
+  blocking: boolean
+  data: ArrayGrid<number>
+  size: Size
+  gridPosition:Point
 };
 const TileDataDef: PropDef<ArrayGrid<number>> = {
   type: "array",
   editable: false,
   expandable: false,
   hidden: true,
-  watchChildren: false,
+  watchChildren: true,
   default: () => new ArrayGrid<number>(1, 1),
   format: () => "array number data",
   toJSON: (v): ArrayGridNumberJSON => ({ w: v.w, h: v.h, data: v.data }),
@@ -242,11 +244,24 @@ const TileDataDef: PropDef<ArrayGrid<number>> = {
     return arr
   },
 }
+const GridPointDef: PropDef<Point> = {
+  type:'Point',
+  default: () => new Point(-1,-1),
+  skipPersisting:false,
+  editable:false,
+  expandable:false,
+  format: (v) => `${v.x} , ${v.y}`,
+  hidden:false,
+  watchChildren:false,
+  toJSON:(v) => v.toJSON(),
+  fromJSON: (v) => Point.fromJSON(v as { x: number; y: number }),
+}
 const TileDefs: DefList<TileType> = {
   name: NameDef,
   blocking: BlockingDef,
   data: TileDataDef,
   size: SizeDef,
+  gridPosition:GridPointDef,
 }
 export class Tile extends PropsBase<TileType> {
   constructor(opts?: PropValues<TileType>) {
@@ -292,6 +307,7 @@ export class Tile extends PropsBase<TileType> {
     new_tile.setPropValue("blocking", this.getPropValue("blocking"))
     new_tile.setPropValue("name", this.getPropValue("name"))
     new_tile.setPropValue("size", this.getPropValue("size"))
+    new_tile.setPropValue('gridPosition', this.getPropValue('gridPosition'))
     return new_tile
   }
 
@@ -464,8 +480,7 @@ export class Sheet extends PropsBase<SheetType> {
     super(SheetDefs, opts)
   }
   addTile(new_tile: Tile) {
-    this.getPropValue("tiles").push(new_tile)
-    this._fire("tiles", this.getPropValue("tiles"))
+    appendToList(this,'tiles',new_tile)
   }
   removeTile(tile: Tile) {
     const tiles = this.getPropValue("tiles") as Tile[]
@@ -476,6 +491,13 @@ export class Sheet extends PropsBase<SheetType> {
     } else {
       console.warn("cannot delete sprite")
     }
+  }
+
+  addNewTile() {
+    const size = this.getPropValue("tileSize")
+    const tile = new Tile({size: size, gridPosition: new Point(-1,-1)})
+    this.addTile(tile)
+    return tile
   }
 }
 CLASS_REGISTRY.register("Sheet", Sheet, SheetDefs)
