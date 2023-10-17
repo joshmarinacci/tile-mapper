@@ -1,17 +1,16 @@
-import "./treeview.css";
+import "./treeview.css"
 
-import { keyboard } from "@testing-library/user-event/dist/keyboard";
-import { Bounds, Size } from "josh_js_util";
-import { DialogContext, toClass } from "josh_react_util";
-import React, { MouseEvent, ReactNode, useContext, useState } from "react";
+import { Bounds, Size } from "josh_js_util"
+import { DialogContext, toClass } from "josh_react_util"
+import React, { MouseEvent, ReactNode, useContext, useState } from "react"
 
 import {
   DeleteActorAction,
   DeleteGameTestAction,
   DeleteMapAction,
   DeleteSheetAction,
-} from "../actions/actions";
-import { appendToList, PropDef, PropsBase, useWatchProp } from "../model/base";
+} from "../actions/actions"
+import { appendToList, PropDef, PropsBase, useWatchProp } from "../model/base"
 import {
   Actor,
   DocType,
@@ -21,20 +20,20 @@ import {
   Sheet,
   SImage,
   SImageLayer,
-} from "../model/datamodel";
-import { GlobalState } from "../state";
-import { down_arrow_triangle, right_arrow_triangle } from "./common";
+} from "../model/datamodel"
+import { GlobalState } from "../state"
+import { down_arrow_triangle, right_arrow_triangle } from "./common"
 import {
   DropdownButton,
   MenuList,
   ToolbarActionButton,
-} from "./common-components";
-import { PopupContext } from "./popup";
+} from "./common-components"
+import { PopupContext } from "./popup"
 
 function AddSImageDialog(props: { onComplete: (size: Size) => void }) {
-  const dm = useContext(DialogContext);
-  const [width, setWidth] = useState(16);
-  const [height, setHeight] = useState(16);
+  const dm = useContext(DialogContext)
+  const [width, setWidth] = useState(16)
+  const [height, setHeight] = useState(16)
   return (
     <div className={"dialog"}>
       <header>create new drawing canvas</header>
@@ -55,25 +54,25 @@ function AddSImageDialog(props: { onComplete: (size: Size) => void }) {
       <footer>
         <button
           onClick={() => {
-            dm.hide();
+            dm.hide()
           }}
         >
           cancel
         </button>
         <button
           onClick={() => {
-            dm.hide();
-            props.onComplete(new Size(width, height));
+            dm.hide()
+            props.onComplete(new Size(width, height))
           }}
         >
           create
         </button>
       </footer>
     </div>
-  );
+  )
 }
 
-function PropertyList<T extends DocType, K extends keyof T>(props: {
+function PropertyList<T, K extends keyof T>(props: {
   target: PropsBase<T>;
   value: GameDoc[];
   name: keyof T;
@@ -81,70 +80,70 @@ function PropertyList<T extends DocType, K extends keyof T>(props: {
   def: PropDef<T[K]>;
   selection: unknown;
 }) {
-  const { value, name, target } = props;
-  const values = value as [];
-  const [open, setOpen] = useState(true);
-  const toggle = () => setOpen(!open);
-  useWatchProp(target, name);
+  const { value, name, target } = props
+  const values = value as []
+  const [open, setOpen] = useState(true)
+  const toggle = () => setOpen(!open)
+  useWatchProp(target, name)
   const addSheet = () => {
     const sheet = new Sheet({
       name: "unnamed sheet",
       tileSize: target.getPropValue("tileSize"),
-    });
-    appendToList(target, "sheets", sheet);
-    props.state.setPropValue("selection", sheet);
-  };
+    })
+    appendToList(target, "sheets", sheet)
+    props.state.setPropValue("selection", sheet)
+  }
   const addMap = () => {
-    const map = new GameMap({ name: "new map" });
-    appendToList(target, "maps", map);
-    props.state.setPropValue("selection", map);
-  };
+    const map = new GameMap({ name: "new map" })
+    appendToList(target, "maps", map)
+    props.state.setPropValue("selection", map)
+  }
   const addActor = () => {
-    const size = new Size(16, 16);
-    const sprite = new SImage({ name: "new actor sprite", size: size });
+    const size = new Size(16, 16)
+    const sprite = new SImage({ name: "new actor sprite", size: size })
     const layer = new SImageLayer({
       name: "layer",
       opacity: 1.0,
       visible: true,
-    });
-    const bounds = new Bounds(0, 0, size.w, size.h);
-    layer.rebuildFromCanvas(sprite);
-    appendToList(sprite, "layers", layer);
-    appendToList(target, "canvases", sprite);
+    })
+    const bounds = new Bounds(0, 0, size.w, size.h)
+    layer.rebuildFromCanvas(sprite)
+    appendToList(sprite, "layers", layer)
+    appendToList(target, "canvases", sprite)
     const actor = new Actor({
       name: "new actor",
       viewbox: bounds,
       hitbox: bounds,
       sprite: sprite.getUUID(),
-    });
-    appendToList(target, name, actor);
-    props.state.setPropValue("selection", actor);
-  };
+    })
+    appendToList(target, name, actor)
+    props.state.setPropValue("selection", actor)
+  }
   const addTest = () => {
-    const test = new GameTest({ name: "a new test" });
-    appendToList(target, name, test);
-    props.state.setPropValue("selection", test);
-  };
+    const test = new GameTest({ name: "a new test" })
+    appendToList(target, name, test)
+    props.state.setPropValue("selection", test)
+  }
 
-  const dm = useContext(DialogContext);
+  const dm = useContext(DialogContext)
   const addCanvas = () => {
     dm.show(
       <AddSImageDialog
         onComplete={(size) => {
-          const canvas = new SImage({ name: "blank canvas", size: size });
+          const canvas = new SImage({ name: "blank canvas", size: size })
           const layer = new SImageLayer({
             name: "unnamed layer",
             opacity: 1.0,
             visible: true,
-          });
-          appendToList(canvas, "layers", layer);
-          layer.rebuildFromCanvas(canvas);
-          appendToList(target, "canvases", canvas);
-          props.state.setPropValue("selection", canvas);
+          })
+          appendToList(canvas, "layers", layer)
+          layer.rebuildFromCanvas(canvas)
+          appendToList(target, "canvases", canvas)
+          props.state.setPropValue("selection", canvas)
         }}
       />,
-    );
-  };
+    )
+  }
 
   return (
     <li className={"tree-item"}>
@@ -174,12 +173,12 @@ function PropertyList<T extends DocType, K extends keyof T>(props: {
                 state={props.state}
                 selection={props.selection}
               />
-            );
+            )
           })}
         </ul>
       )}
     </li>
-  );
+  )
 }
 
 export function ObjectTreeView<T>(props: {
@@ -187,29 +186,29 @@ export function ObjectTreeView<T>(props: {
   state: GlobalState;
   selection: unknown;
 }) {
-  const { obj, state } = props;
+  const { obj, state } = props
   const select = (e: MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    state.setPropValue("selection", obj);
-  };
+    e.preventDefault()
+    e.stopPropagation()
+    state.setPropValue("selection", obj)
+  }
   if (!obj.getAllPropDefs) {
-    console.log(obj);
+    console.log(obj)
     throw new Error(
       `trying to render an invalid object ${obj.constructor.name}`,
-    );
+    )
   }
-  const expandable = obj.getAllPropDefs().filter(([a, b]) => b.expandable);
+  const expandable = obj.getAllPropDefs().filter(([a, b]) => b.expandable)
   const style = {
     "tree-object": true,
     selected: state.getPropValue("selection") === obj,
-  };
-  useWatchProp(obj, "name");
-  const pm = useContext(PopupContext);
+  }
+  useWatchProp(obj, "name")
+  const pm = useContext(PopupContext)
   const showContextMenu = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault();
-    select(e);
-    const items: ReactNode[] = [];
+    e.preventDefault()
+    select(e)
+    const items: ReactNode[] = []
     if (obj instanceof Sheet) {
       items.push(
         <ToolbarActionButton
@@ -217,7 +216,7 @@ export function ObjectTreeView<T>(props: {
           state={state}
           action={DeleteSheetAction}
         />,
-      );
+      )
     }
     if (obj instanceof GameMap) {
       items.push(
@@ -226,7 +225,7 @@ export function ObjectTreeView<T>(props: {
           state={state}
           action={DeleteMapAction}
         />,
-      );
+      )
     }
     if (obj instanceof Actor) {
       items.push(
@@ -235,7 +234,7 @@ export function ObjectTreeView<T>(props: {
           state={state}
           action={DeleteActorAction}
         />,
-      );
+      )
     }
     if (obj instanceof GameTest) {
       items.push(
@@ -244,10 +243,10 @@ export function ObjectTreeView<T>(props: {
           state={state}
           action={DeleteGameTestAction}
         />,
-      );
+      )
     }
-    pm.show_at(<MenuList>{items}</MenuList>, e.target, "right");
-  };
+    pm.show_at(<MenuList>{items}</MenuList>, e.target, "right")
+  }
   return (
     <ul key={obj._id} className={toClass(style)}>
       <p
@@ -269,8 +268,8 @@ export function ObjectTreeView<T>(props: {
             def={def}
             selection={props.selection}
           />
-        );
+        )
       })}
     </ul>
-  );
+  )
 }

@@ -3,3 +3,12 @@
   display: grid;
   grid-template-rows: auto;
 }
+
+
+.draggable-grid-view {
+  border: 0px solid red;
+}
+
+.draggable-grid-cell {
+  border: 0px solid green;
+}

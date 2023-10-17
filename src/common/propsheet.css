@@ -1,8 +1,7 @@
-.prop-sheet {
-  border: 1px solid black;
+.prop-sheet .prop-sheet-contents {
+  border: 0px solid black;
   display: grid;
   grid-template-columns: 1fr 2fr;
-  grid-template-rows: auto;
   margin: 0;
   align-items: center;
   justify-content: center;
@@ -10,7 +9,7 @@
   align-self: stretch;
   align-content: start;
 }
-.prop-sheet > * {
+.prop-sheet .prop-sheet-contents > * {
   padding: 0.25rem 0.5rem;
   margin: 0.25rem 0.5rem;
 }
@@ -24,12 +23,12 @@
   grid-column-start: 1;
   text-align: right;
 }
-.prop-sheet input,
-.prop-sheet .value {
+.prop-sheet input, .prop-sheet .value {
   grid-column-start: 2;
   grid-column-end: 3;
   min-width: 1rem;
   justify-self: stretch;
+  text-align: left;
 }
 .prop-sheet input[type="checkbox"] {
   justify-self: start;

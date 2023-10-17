@@ -1,34 +1,34 @@
-import "./TileSheetEditor.css";
+import "./TileSheetEditor.css"
 
-import { ArrayGrid } from "josh_js_util";
-import { VBox } from "josh_react_util";
-import React, { useContext, useEffect, useState } from "react";
+import { ArrayGrid } from "josh_js_util"
+import { VBox } from "josh_react_util"
+import React, { useContext, useEffect, useState } from "react"
 
-import { DocContext, Pane } from "../common/common-components";
-import { DividerColumnBox } from "../common/DividerColumnBox";
-import { PaletteColorPickerPane } from "../common/Palette";
-import { PropSheet } from "../common/propsheet";
-import { useWatchProp } from "../model/base";
-import { Sheet, Tile } from "../model/datamodel";
-import { GlobalState } from "../state";
-import { TestMap } from "../testeditor/TestMap";
-import { PixelGridEditor } from "./PixelGridEditor";
-import { TileListView } from "./TileListView";
+import { DocContext, Pane } from "../common/common-components"
+import { DividerColumnBox } from "../common/DividerColumnBox"
+import { PaletteColorPickerPane } from "../common/Palette"
+import { PropSheet } from "../common/propsheet"
+import { useWatchProp } from "../model/base"
+import { Sheet, Tile } from "../model/datamodel"
+import { GlobalState } from "../state"
+import { TestMap } from "../testeditor/TestMap"
+import { PixelGridEditor } from "./PixelGridEditor"
+import { TileListView } from "./TileListView"
 
 export function TileSheetEditor(props: { sheet: Sheet; state: GlobalState }) {
-  const { sheet } = props;
-  const doc = useContext(DocContext);
-  const palette = doc.getPropValue("palette");
-  const [drawColor, setDrawColor] = useState<string>(palette.colors[0]);
-  const tile = sheet.getPropValue("selectedTile");
-  const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20));
-  const [columnWidth, setColumnWidth] = useState(300);
+  const { sheet } = props
+  const doc = useContext(DocContext)
+  const palette = doc.getPropValue("palette")
+  const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
+  const tile = sheet.getPropValue("selectedTile")
+  const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20))
+  const [columnWidth, setColumnWidth] = useState(300)
 
   useEffect(() => {
-    const tiles = sheet.getPropValue("tiles");
-    sheet.setPropValue("selectedTile", tiles.length > 0 ? tiles[0] : undefined);
-  }, [sheet]);
-  useWatchProp(sheet, "selectedTile");
+    const tiles = sheet.getPropValue("tiles")
+    sheet.setPropValue("selectedTile", tiles.length > 0 ? tiles[0] : undefined)
+  }, [sheet])
+  useWatchProp(sheet, "selectedTile")
 
   return (
     <div
@@ -49,7 +49,7 @@ export function TileSheetEditor(props: { sheet: Sheet; state: GlobalState }) {
             />
           </Pane>
         )}
-        {tile && <PropSheet target={tile} title={"Tile Info"} />}
+        {tile && <PropSheet target={tile} title={"Tile Info"} collapsable={true} />}
         {tile && (
           <Pane collapsable={true} title={"Scratch"}>
             <TestMap tile={tile} mapArray={maparray} palette={palette} />
@@ -73,5 +73,5 @@ export function TileSheetEditor(props: { sheet: Sheet; state: GlobalState }) {
         {!tile && <div>no tile selected</div>}
       </VBox>
     </div>
-  );
+  )
 }

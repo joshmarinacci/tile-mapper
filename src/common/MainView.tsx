@@ -1,7 +1,7 @@
-import { Spacer } from "josh_react_util";
-import React, { ReactNode, useState } from "react";
+import { Spacer } from "josh_react_util"
+import React, { ReactNode, useState } from "react"
 
-import { left_arrow_triangle, right_arrow_triangle } from "./common";
+import { left_arrow_triangle, right_arrow_triangle } from "./common"
 
 export function MainView(props: {
   toolbar: ReactNode;
@@ -9,8 +9,8 @@ export function MainView(props: {
   center: ReactNode;
   right: ReactNode;
 }) {
-  const [showLeft, setShowLeft] = useState(true);
-  const [showRight, setShowRight] = useState(true);
+  const [showLeft, setShowLeft] = useState(true)
+  const [showRight, setShowRight] = useState(true)
   const style = {
     display: "grid",
     gridTemplateColumns: `${
@@ -18,11 +18,10 @@ export function MainView(props: {
     } [center-column] 1fr ${
       showRight ? "[right-column] 15rem" : ""
     } [end-column]`,
-    gridTemplateRows: "auto 1fr",
+    gridTemplateRows: "2rem auto 2rem",
     width: "99vw",
     height: "99vh",
-    overflow: "clip",
-  };
+  }
   return (
     <div style={style}>
       {props.toolbar}
@@ -41,5 +40,5 @@ export function MainView(props: {
         </button>
       </div>
     </div>
-  );
+  )
 }

@@ -1,19 +1,19 @@
-import "./MapEditor.css";
+import "./MapEditor.css"
 
-import { Point } from "josh_js_util";
-import { Spacer } from "josh_react_util";
+import { Point } from "josh_js_util"
+import { Spacer } from "josh_react_util"
 import React, {
   MouseEvent,
   useContext,
   useEffect,
   useRef,
   useState,
-} from "react";
+} from "react"
 
-import { exportPNG } from "../actions/actions";
-import { DocContext } from "../common/common-components";
-import { ICON_CACHE } from "../iconcache";
-import { PropsBase, useWatchAllProps, useWatchProp } from "../model/base";
+import { exportPNG } from "../actions/actions"
+import { DocContext } from "../common/common-components"
+import { ICON_CACHE } from "../iconcache"
+import { PropsBase, useWatchAllProps, useWatchProp } from "../model/base"
 import {
   ActorInstance,
   ActorLayer,
@@ -21,18 +21,18 @@ import {
   MapLayerType,
   Tile,
   TileLayer,
-} from "../model/datamodel";
+} from "../model/datamodel"
 import {
   ActorLayerMouseHandler,
   ActorLayerToolbar,
   drawActorlayer,
-} from "./ActorEditor";
-import { MouseHandler } from "./editorbase";
+} from "./ActorEditor"
+import { MouseHandler } from "./editorbase"
 import {
   drawTileLayer,
   TileLayerMouseHandler,
   TileLayerToolbar,
-} from "./TileEditor";
+} from "./TileEditor"
 
 export function LayerEditor(props: {
   map: GameMap;
@@ -40,49 +40,49 @@ export function LayerEditor(props: {
   tile: Tile | undefined;
   setSelectedTile: (sprite: Tile) => void;
 }) {
-  const { map, layer, tile, setSelectedTile } = props;
-  const doc = useContext(DocContext);
-  const [grid, setGrid] = useState<boolean>(false);
+  const { map, layer, tile, setSelectedTile } = props
+  const doc = useContext(DocContext)
+  const [grid, setGrid] = useState<boolean>(false)
   const [selectedActor, setSelectedActor] = useState<ActorInstance | undefined>(
     undefined,
-  );
-  const ref = useRef<HTMLCanvasElement>(null);
-  const [down, setDown] = useState<boolean>(false);
+  )
+  const ref = useRef<HTMLCanvasElement>(null)
+  const [down, setDown] = useState<boolean>(false)
   const [handler, setHandler] = useState<MouseHandler<unknown> | undefined>(
     undefined,
-  );
-  useEffect(() => redraw(), [grid, layer, selectedActor]);
+  )
+  useEffect(() => redraw(), [grid, layer, selectedActor])
 
-  const [zoom, setZoom] = useState(2);
-  const scale = Math.pow(2, zoom);
-  const biggest = map.calcBiggestLayer();
-  const tileSize = doc.getPropValue("tileSize");
-  useWatchProp(map, "layers");
+  const [zoom, setZoom] = useState(2)
+  const scale = Math.pow(2, zoom)
+  const biggest = map.calcBiggestLayer()
+  const tileSize = doc.getPropValue("tileSize")
+  useWatchProp(map, "layers")
   useEffect(() => {
     if (props.layer instanceof TileLayer)
-      setHandler(new TileLayerMouseHandler());
+      setHandler(new TileLayerMouseHandler())
     if (props.layer instanceof ActorLayer)
-      setHandler(new ActorLayerMouseHandler());
-  }, [props.layer]);
+      setHandler(new ActorLayerMouseHandler())
+  }, [props.layer])
   const redraw = () => {
     if (ref.current) {
-      const canvas = ref.current;
-      const ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
-      ctx.imageSmoothingEnabled = false;
+      const canvas = ref.current
+      const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+      ctx.imageSmoothingEnabled = false
       ctx.fillStyle = ctx.createPattern(
         ICON_CACHE.getIconCanvas("checkerboard"),
         "repeat",
-      ) as CanvasPattern;
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ) as CanvasPattern
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
       map.getPropValue("layers").forEach((layer: PropsBase<MapLayerType>) => {
-        if (!layer.getPropValue("visible")) return;
+        if (!layer.getPropValue("visible")) return
         if (layer instanceof TileLayer) {
-          drawTileLayer(ctx, doc, layer as TileLayer, scale, grid);
+          drawTileLayer(ctx, doc, layer as TileLayer, scale, grid)
         }
         if (layer instanceof ActorLayer) {
-          drawActorlayer(ctx, doc, layer as ActorLayer, scale, grid);
+          drawActorlayer(ctx, doc, layer as ActorLayer, scale, grid)
         }
-      });
+      })
       if (handler)
         handler.drawOverlay({
           doc,
@@ -92,21 +92,21 @@ export function LayerEditor(props: {
           grid,
           scale,
           selectedActor,
-        });
+        })
     }
-  };
-  useWatchAllProps(map, () => redraw());
+  }
+  useWatchAllProps(map, () => redraw())
   const canvasToLayer = (e: MouseEvent<HTMLCanvasElement>) => {
-    const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
+    const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
     return new Point(e.clientX, e.clientY)
       .subtract(new Point(rect.left, rect.top))
-      .scale(1 / scale);
-  };
-  const [fillOnce, setFillOnce] = useState<boolean>(false);
+      .scale(1 / scale)
+  }
+  const [fillOnce, setFillOnce] = useState<boolean>(false)
 
-  useEffect(() => redraw(), [zoom, layer]);
+  useEffect(() => redraw(), [zoom, layer])
   const onMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
-    setDown(true);
+    setDown(true)
     if (handler)
       handler.onMouseDown({
         e,
@@ -119,9 +119,9 @@ export function LayerEditor(props: {
         setSelectedActor,
         fillOnce,
         setFillOnce,
-      });
-    redraw();
-  };
+      })
+    redraw()
+  }
   const onMouseMove = (e: MouseEvent<HTMLCanvasElement>) => {
     if (down) {
       if (handler)
@@ -136,12 +136,12 @@ export function LayerEditor(props: {
           setSelectedActor,
           fillOnce,
           setFillOnce,
-        });
-      redraw();
+        })
+      redraw()
     }
-  };
+  }
   const onMouseUp = (e: MouseEvent<HTMLCanvasElement>) => {
-    setDown(false);
+    setDown(false)
     if (handler)
       handler.onMouseUp({
         e,
@@ -154,9 +154,9 @@ export function LayerEditor(props: {
         setSelectedActor,
         fillOnce,
         setFillOnce,
-      });
-  };
-  if (!layer) return <div>select a map</div>;
+      })
+  }
+  if (!layer) return <div>select a map</div>
   return (
     <div className={"layer-editor"}>
       <div className={"toolbar"}>
@@ -190,5 +190,5 @@ export function LayerEditor(props: {
         />
       </div>
     </div>
-  );
+  )
 }
