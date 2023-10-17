@@ -54,12 +54,11 @@ html body {
 }
 
 .pane .pane-content-wrapper {
-  margin:0;
-  padding:0;
+  margin: 0;
+  padding: 0;
   border: 0px solid yellow;
   box-sizing: border-box;
 }
-
 
 /* general */
 
