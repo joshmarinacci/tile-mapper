@@ -18,9 +18,9 @@
     "josh_web_util": "^0.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "retrogami-engine": "^0.0.10",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4",
-    "retrogami-engine": "^0.0.10"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "mkdir -p build && cp public/* build && esbuild src/index.tsx --bundle --outdir=build --watch --serve --servedir=build",
@@ -32,13 +32,9 @@
     "@typescript-eslint/parser": "^6.5.0",
     "esbuild": "^0.18.19",
     "eslint": "^8.48.0",
+    "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
     "vitest": "^0.34.1"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
   },
   "browserslist": {
     "production": [
