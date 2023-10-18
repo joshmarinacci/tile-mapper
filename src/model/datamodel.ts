@@ -11,101 +11,67 @@ import {
   CLASS_REGISTRY,
   DefList,
   PropDef,
+  PropDefBuilder,
   PropsBase,
   PropValues,
   restoreClassFromJSON,
 } from "./base"
 
-export const BooleanDef: PropDef<boolean> = {
+export const BooleanDef: PropDefBuilder<boolean> = new PropDefBuilder<boolean>({
   type: "boolean",
-  hidden: false,
-  editable: true,
-  expandable: false,
-  default: () => true,
-  format: (v) => (v ? "true" : "false"),
   toJSON: (v) => v,
   fromJSON: (v) => v as boolean,
-  watchChildren: false,
-}
-export const FloatDef: PropDef<number> = {
+  format: (v) => (v ? "true" : "false"),
+  default: () => false,
+})
+
+export const StdStringDef = new PropDefBuilder<string>({
+  type: "string",
+  fromJSON: (v) => v as string,
+  default: () => "empty",
+  toJSON: (v: string) => v,
+  format: (v) => v,
+})
+
+export const StdNumberDef = new PropDefBuilder<number>({
   type: "float",
-  hidden: false,
-  editable: true,
-  expandable: false,
-  watchChildren: false,
   default: () => 0.0,
   format: (v) => v.toFixed(2),
   toJSON: (v) => v,
   fromJSON: (v) => v as number,
-}
-export const IntegerDef: PropDef<number> = {
-  type: "integer",
-  hidden: false,
-  editable: true,
-  expandable: false,
-  watchChildren: false,
-  default: () => 0,
-  format: (v) => v.toFixed(0),
-  toJSON: (v) => v,
-  fromJSON: (v) => v as number,
-}
-export const NameDef: PropDef<string> = {
-  type: "string",
-  editable: true,
-  watchChildren: false,
-  hidden: false,
-  expandable: false,
-  fromJSON: (v) => v as string,
-  default: () => "unnamed",
-  toJSON: (v: string) => v,
-  format: (v) => v,
-}
-export const SizeDef: PropDef<Size> = {
+})
+
+export const FloatDef = StdNumberDef.copy().withFormat((v) => v.toFixed(2))
+export const IntegerDef = StdNumberDef.copy().withFormat((v) => v.toFixed(0))
+export const NameDef: PropDef<string> = StdStringDef.copy().withDefault(
+  () => "unnamed",
+)
+
+export const SizeDef = new PropDefBuilder<Size>({
   type: "Size",
-  editable: false,
-  hidden: false,
-  expandable: false,
-  watchChildren: false,
   default: () => new Size(10, 10),
   toJSON: (v) => v.toJSON(),
   fromJSON: (v) => Size.fromJSON(v as { w: number; h: number }),
   format: (v) => `${v.w} x ${v.h}`,
-}
-export const PointDef: PropDef<Point> = {
+})
+
+export const PointDef = new PropDefBuilder<Point>({
   type: "Point",
-  editable: false,
-  hidden: false,
-  expandable: false,
-  watchChildren: false,
   default: () => new Point(0, 0),
   toJSON: (v) => v.toJSON(),
   fromJSON: (v) => Point.fromJSON(v as { x: number; y: number }),
   format: (v) => `${v.x} , ${v.y}`,
-}
-export const BoundsDef: PropDef<Bounds> = {
+})
+
+export const EditableBoundsDef: PropDef<Bounds> = new PropDefBuilder<Bounds>({
   type: "Bounds",
-  editable: false,
-  hidden: false,
-  expandable: false,
-  watchChildren: false,
-  default: () => new Bounds(0, 0, 10, 10),
-  toJSON: (v) => v.toJSON(),
-  format: (v) => `${v.w} x ${v.h}`,
-  fromJSON: (v) =>
-    Bounds.fromJSON(v as { x: number; y: number; w: number; h: number }),
-}
-export const EditableBoundsDef: PropDef<Bounds> = {
-  type: "Bounds",
-  editable: true,
-  hidden: false,
-  expandable: false,
-  watchChildren: false,
   default: () => new Bounds(0, 0, 16, 16),
   toJSON: (v) => v.toJSON(),
   fromJSON: (v) =>
     Bounds.fromJSON(v as { x: number; y: number; w: number; h: number }),
   format: (v) => `${v.x}, ${v.y} -> ${v.w} x ${v.h}`,
-}
+})
+
 export const PaletteDef: PropDef<ImagePalette> = {
   type: "object",
   hidden: false,
@@ -129,76 +95,17 @@ export const PaletteDef: PropDef<ImagePalette> = {
   },
 }
 
-const JumpDef: PropDef<number> = {
-  type: "float",
-  editable: true,
-  hidden: false,
-  watchChildren: false,
-  expandable: false,
-  default: () => -5,
-  toJSON: (v: number) => v,
-  fromJSON: (v) => v as number,
-  format: (v) => v.toFixed(2),
-}
-const GravityDef: PropDef<number> = {
-  type: "float",
-  editable: true,
-  hidden: false,
-  watchChildren: false,
-  expandable: false,
-  default: () => 0.2,
-  toJSON: (v) => v,
-  fromJSON: (v) => v as number,
-  format: (v) => v.toFixed(2),
-}
-const MoveSpeedDef: PropDef<number> = {
-  type: "float",
-  editable: true,
-  hidden: false,
-  watchChildren: false,
-  expandable: false,
-  default: () => 0.5,
-  toJSON: (v: number) => v,
-  fromJSON: (v) => v as number,
-  format: (v) => v.toFixed(2),
-}
-const MaxFallSpeedDef: PropDef<number> = {
-  type: "float",
-  editable: true,
-  hidden: false,
-  watchChildren: false,
-  expandable: false,
-  default: () => 0.5,
-  toJSON: (v: number) => v,
-  fromJSON: (v) => v as number,
-  format: (v) => v.toFixed(2),
-}
-const FrictionDef: PropDef<number> = {
-  type: "float",
-  default: () => 0.99,
-  editable: true,
-  hidden: false,
-  watchChildren: false,
-  expandable: false,
-  toJSON: (v) => v,
-  fromJSON: (v) => v as number,
-  format: (v) => v.toFixed(2),
-}
+const JumpDef: PropDef<number> = FloatDef.copy().withDefault(() => -5)
+const GravityDef = FloatDef.copy().withDefault(() => 0.2)
+const MoveSpeedDef = FloatDef.copy().withDefault(() => 0.5)
+const MaxFallSpeedDef = FloatDef.copy().withDefault(() => 0.5)
+const FrictionDef = FloatDef.copy().withDefault(() => 0.99)
+
 export type MapCell = {
   tile: string //id of the sprite used to draw this
 }
 
-export const BlockingDef: PropDef<boolean> = {
-  type: "boolean",
-  editable: true,
-  hidden: false,
-  watchChildren: false,
-  expandable: false,
-  default: () => false,
-  toJSON: (v) => v,
-  fromJSON: (v) => v as boolean,
-  format: (v) => (v ? "true" : "false"),
-}
+export const BlockingDef = BooleanDef.copy()
 
 const GenericDataArrayDef: PropDef<object[]> = {
   type: "array",
@@ -244,18 +151,9 @@ const TileDataDef: PropDef<ArrayGrid<number>> = {
     return arr
   },
 }
-const GridPointDef: PropDef<Point> = {
-  type: "Point",
-  default: () => new Point(-1, -1),
-  skipPersisting: false,
-  editable: false,
-  expandable: false,
-  format: (v) => `${v.x} , ${v.y}`,
-  hidden: false,
-  watchChildren: false,
-  toJSON: (v) => v.toJSON(),
-  fromJSON: (v) => Point.fromJSON(v as { x: number; y: number }),
-}
+
+const GridPointDef = PointDef.copy().withDefault(() => new Point(-1, -1))
+
 const TileDefs: DefList<TileType> = {
   name: NameDef,
   blocking: BlockingDef,
@@ -446,19 +344,10 @@ const TileArrayDef: PropDef<Tile[]> = {
     return v.map((d) => restoreClassFromJSON(d)) as Tile[]
   },
 }
-export const TransientBooleanDef: PropDef<boolean> = {
-  type: "boolean",
-  hidden: false,
-  editable: true,
-  expandable: false,
-  default: () => true,
-  format: (v) => (v ? "true" : "false"),
-  toJSON: (v) => v,
-  fromJSON: (v) => v as boolean,
-  watchChildren: false,
-  skipPersisting: true,
-}
 
+export const TransientBooleanDef = BooleanDef.copy()
+  .withSkipPersisting(true)
+  .withHidden(true)
 const SheetDefs: DefList<SheetType> = {
   name: NameDef,
   tileSize: SizeDef,
@@ -548,16 +437,9 @@ const TileDataGridDef: PropDef<ArrayGrid<MapCell>> = {
 }
 const TileLayerDefs: DefList<TileMapLayerType> = {
   name: NameDef,
-  type: {
-    type: "string",
-    default: () => "tile-layer",
-    toJSON: (v) => v,
-    format: (v) => v,
-    fromJSON: (v) => v,
-    editable: false,
-    hidden: false,
-    expandable: false,
-  } as PropDef<string>,
+  type: StdStringDef.copy()
+    .withDefault(() => "tile-layer")
+    .withEditable(false),
   blocking: BlockingDef,
   visible: BlockingDef,
   size: SizeDef,
@@ -582,16 +464,9 @@ CLASS_REGISTRY.register("TileLayer", TileLayer, TileLayerDefs)
 
 const ActorLayerDefs: DefList<ActorMapLayerType> = {
   name: NameDef,
-  type: {
-    type: "string",
-    default: () => "actor-layer",
-    toJSON: (v) => v,
-    format: (v) => v,
-    fromJSON: (v) => v,
-    editable: false,
-    hidden: false,
-    expandable: false,
-  } as PropDef<string>,
+  type: StdStringDef.copy()
+    .withDefault(() => "actor-layer")
+    .withEditable(false),
   blocking: BlockingDef,
   visible: BlockingDef,
   actors: GenericDataArrayDef,
@@ -668,19 +543,9 @@ const ActorDefs: DefList<ActorType> = {
     toJSON: (v: string) => v,
     fromJson: (v: string) => v,
   },
-  kind: {
-    type: "string",
-    custom: "actor-type",
-    default: () => "item",
-    format: (v) => v,
-    editable: true,
-    hidden: false,
-    expandable: false,
-    fromJSON: (v) => v,
-    toJSON: (v) => v,
-    watchChildren: false,
-    skipPersisting: false,
-  },
+  kind: StdStringDef.copy()
+    .withDefault(() => "item")
+    .withCustom("actor-type"),
 }
 export class Actor extends PropsBase<ActorType> {
   constructor(opts?: PropValues<ActorType>) {
@@ -715,29 +580,7 @@ export class ActorInstance extends PropsBase<ActorInstanceType> {
 }
 CLASS_REGISTRY.register("ActorInstance", ActorInstance, ActorInstanceDefs)
 
-const EditableSizeDef: PropDef<Size> = {
-  type: "Size",
-  editable: true,
-  hidden: false,
-  expandable: false,
-  watchChildren: false,
-  default: () => new Size(10, 10),
-  toJSON: (v) => v.toJSON(),
-  fromJSON: (v) => Size.fromJSON(v),
-  format: (v) => `${v.w} x ${v.h}`,
-}
-
-const ViewportDef: PropDef<Size> = {
-  type: "Size",
-  editable: true,
-  hidden: false,
-  expandable: false,
-  watchChildren: false,
-  default: () => new Size(10, 10),
-  toJSON: (v: Size) => v.toJSON(),
-  fromJSON: (v) => Size.fromJSON(v as { w: number; h: number }),
-  format: (v) => `${v.w} x ${v.h}`,
-}
+const ViewportDef = SizeDef.copy()
 type TestType = {
   name: string
   map: string | undefined

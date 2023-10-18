@@ -1,7 +1,6 @@
 import { Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
-import { PICO8 } from "../common/common"
 import {
   appendToList,
   CLASS_REGISTRY,

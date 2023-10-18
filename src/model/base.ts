@@ -14,29 +14,33 @@ export type JsonOut<Type> = {
 export type ToJSONner<T> = (v: T) => JSONValue
 export type FromJSONner<T> = (v: JSONValue) => T
 export type ToFormatString<T> = (v: T) => string
+type PropDefBaseTypes =
+  | "string"
+  | "integer"
+  | "float"
+  | "Size"
+  | "Point"
+  | "Bounds"
+  | "boolean"
+  | "array"
+  | "object"
+  | "reference"
+
+type PropDefCustomType =
+  | "tile-reference"
+  | "image-reference"
+  | "map-reference"
+  | "actor-reference"
+  | "actor-type"
+
 export type PropDef<T> = {
-  type:
-    | "string"
-    | "integer"
-    | "float"
-    | "Size"
-    | "Point"
-    | "Bounds"
-    | "boolean"
-    | "array"
-    | "object"
-    | "reference"
-  editable: boolean
-  custom?:
-    | "tile-reference"
-    | "image-reference"
-    | "map-reference"
-    | "actor-reference"
-    | "actor-type"
+  type: PropDefBaseTypes
+  custom?: PropDefCustomType
   default: Getter<T>
   toJSON: ToJSONner<T>
   fromJSON: FromJSONner<T>
   format: ToFormatString<T>
+  editable: boolean
   expandable: boolean
   hidden: boolean
   watchChildren: boolean
@@ -193,6 +197,69 @@ export class PropsBase<Type> {
       this.listeners.set(name, [])
     }
     return this.listeners.get(name) as WrapperCallback<Type[K]>[]
+  }
+}
+
+type PropDefOptions<T> = {
+  type: PropDefBaseTypes
+  default: Getter<T>
+  toJSON: ToJSONner<T>
+  fromJSON: FromJSONner<T>
+  format: ToFormatString<T>
+}
+
+export class PropDefBuilder<T> implements PropDef<T> {
+  type: PropDefBaseTypes
+  editable: boolean
+  custom?: PropDefCustomType
+  expandable: boolean
+  hidden: boolean
+  watchChildren: boolean
+  skipPersisting: boolean
+  default: Getter<T>
+  toJSON: ToJSONner<T>
+  fromJSON: FromJSONner<T>
+  format: ToFormatString<T>
+  constructor(options: PropDefOptions<T>) {
+    this.type = options.type
+    this.editable = true
+    this.expandable = false
+    this.hidden = false
+    this.watchChildren = false
+    this.skipPersisting = false
+    this.default = options.default
+    this.toJSON = options.toJSON
+    this.fromJSON = options.fromJSON
+    this.format = options.format
+  }
+  copy() {
+    return new PropDefBuilder<T>(this)
+  }
+  withSkipPersisting(skipPersisting: boolean) {
+    this.skipPersisting = skipPersisting
+    return this
+  }
+  withHidden(hidden: boolean) {
+    this.hidden = hidden
+    return this
+  }
+  withDefault(getter: Getter<T>) {
+    this.default = getter
+    return this
+  }
+  withFormat(format: ToFormatString<T>) {
+    this.format = format
+    return this
+  }
+
+  withEditable(b: boolean) {
+    this.editable = b
+    return this
+  }
+
+  withCustom(actorType: PropDefCustomType) {
+    this.custom = actorType
+    return this
   }
 }
 
