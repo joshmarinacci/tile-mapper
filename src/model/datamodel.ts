@@ -24,7 +24,6 @@ export const BooleanDef: PropDefBuilder<boolean> = new PropDefBuilder<boolean>({
   format: (v) => (v ? "true" : "false"),
   default: () => false,
 })
-
 export const StdStringDef = new PropDefBuilder<string>({
   type: "string",
   fromJSON: (v) => v as string,
@@ -32,7 +31,6 @@ export const StdStringDef = new PropDefBuilder<string>({
   toJSON: (v: string) => v,
   format: (v) => v,
 })
-
 export const StdNumberDef = new PropDefBuilder<number>({
   type: "float",
   default: () => 0.0,
@@ -40,7 +38,6 @@ export const StdNumberDef = new PropDefBuilder<number>({
   toJSON: (v) => v,
   fromJSON: (v) => v as number,
 })
-
 export const FloatDef = StdNumberDef.copy().withFormat((v) => v.toFixed(2))
 export const IntegerDef = StdNumberDef.copy().withFormat((v) => v.toFixed(0))
 export const NameDef: PropDef<string> = StdStringDef.copy().withDefault(
@@ -54,7 +51,6 @@ export const SizeDef = new PropDefBuilder<Size>({
   fromJSON: (v) => Size.fromJSON(v as { w: number; h: number }),
   format: (v) => `${v.w} x ${v.h}`,
 })
-
 export const PointDef = new PropDefBuilder<Point>({
   type: "Point",
   default: () => new Point(0, 0),
@@ -62,8 +58,7 @@ export const PointDef = new PropDefBuilder<Point>({
   fromJSON: (v) => Point.fromJSON(v as { x: number; y: number }),
   format: (v) => `${v.x} , ${v.y}`,
 })
-
-export const EditableBoundsDef: PropDef<Bounds> = new PropDefBuilder<Bounds>({
+export const BoundsDef: PropDef<Bounds> = new PropDefBuilder<Bounds>({
   type: "Bounds",
   default: () => new Bounds(0, 0, 16, 16),
   toJSON: (v) => v.toJSON(),
@@ -72,12 +67,8 @@ export const EditableBoundsDef: PropDef<Bounds> = new PropDefBuilder<Bounds>({
   format: (v) => `${v.x}, ${v.y} -> ${v.w} x ${v.h}`,
 })
 
-export const PaletteDef: PropDef<ImagePalette> = {
+export const PaletteDef = new PropDefBuilder<ImagePalette>({
   type: "object",
-  hidden: false,
-  editable: false,
-  expandable: false,
-  watchChildren: false,
   default: () => PICO8,
   toJSON: (v) => v,
   format: (v) => v.name,
@@ -93,7 +84,7 @@ export const PaletteDef: PropDef<ImagePalette> = {
       } as ImagePalette
     }
   },
-}
+}).withEditable(false)
 
 const JumpDef: PropDef<number> = FloatDef.copy().withDefault(() => -5)
 const GravityDef = FloatDef.copy().withDefault(() => 0.2)
@@ -135,12 +126,8 @@ type TileType = {
   size: Size
   gridPosition: Point
 }
-const TileDataDef: PropDef<ArrayGrid<number>> = {
+const ArrayGridNumberDef = new PropDefBuilder<ArrayGrid<number>>({
   type: "array",
-  editable: false,
-  expandable: false,
-  hidden: true,
-  watchChildren: true,
   default: () => new ArrayGrid<number>(1, 1),
   format: () => "array number data",
   toJSON: (v): ArrayGridNumberJSON => ({ w: v.w, h: v.h, data: v.data }),
@@ -150,7 +137,11 @@ const TileDataDef: PropDef<ArrayGrid<number>> = {
     arr.data = v.data
     return arr
   },
-}
+})
+const TileDataDef = ArrayGridNumberDef.copy()
+  .withEditable(false)
+  .withHidden(true)
+  .withWatchChildren(true)
 
 const GridPointDef = PointDef.copy().withDefault(() => new Point(-1, -1))
 
@@ -161,6 +152,7 @@ const TileDefs: DefList<TileType> = {
   size: SizeDef,
   gridPosition: GridPointDef,
 }
+
 export class Tile extends PropsBase<TileType> {
   constructor(opts?: PropValues<TileType>) {
     super(TileDefs, opts)
@@ -179,12 +171,15 @@ export class Tile extends PropsBase<TileType> {
     this._fire("data", this.getPropValue("data"))
     this._fireAll()
   }
+
   width() {
     return this.getPropValue("size").w
   }
+
   height() {
     return this.getPropValue("size").h
   }
+
   getPixel(point: Point) {
     return this.getPropValue("data").get(point)
   }
@@ -217,6 +212,7 @@ export class Tile extends PropsBase<TileType> {
     return this.getPropValue("data")
   }
 }
+
 CLASS_REGISTRY.register("Tile", Tile, TileDefs)
 
 type SImageLayerType = {
@@ -225,28 +221,16 @@ type SImageLayerType = {
   opacity: number
   data: ArrayGrid<number>
 }
-const SImageLayerDataPropDef: PropDef<ArrayGrid<number>> = {
-  type: "array",
-  editable: false,
-  expandable: false,
-  hidden: true,
-  watchChildren: false,
-  default: () => new ArrayGrid<number>(1, 1),
-  format: () => "array number data",
-  toJSON: (v): ArrayGridNumberJSON => ({ w: v.w, h: v.h, data: v.data }),
-  fromJSON: (value) => {
-    const v = value as ArrayGridNumberJSON
-    const arr = new ArrayGrid<number>(v.w, v.h)
-    arr.data = v.data
-    return arr
-  },
-}
+const SImageLayerDataPropDef = ArrayGridNumberDef.copy()
+  .withEditable(false)
+  .withHidden(true)
 const SImageLayerDataDefs: DefList<SImageLayerType> = {
   name: NameDef,
   visible: BooleanDef,
   opacity: FloatDef,
   data: SImageLayerDataPropDef,
 }
+
 export class SImageLayer extends PropsBase<SImageLayerType> {
   constructor(opts?: PropValues<SImageLayerType>) {
     super(SImageLayerDataDefs, opts)
@@ -288,6 +272,7 @@ export class SImageLayer extends PropsBase<SImageLayerType> {
     this.setPropValue("data", newData)
   }
 }
+
 CLASS_REGISTRY.register("SImageLayer", SImageLayer, SImageLayerDataDefs)
 
 type SImageType = {
@@ -310,6 +295,7 @@ const SImageDefs: DefList<SImageType> = {
   },
   size: SizeDef,
 }
+
 export class SImage extends PropsBase<SImageType> {
   constructor(opts?: PropValues<SImageType>) {
     super(SImageDefs, opts)
@@ -320,6 +306,7 @@ export class SImage extends PropsBase<SImageType> {
     this.setPropValue("size", rect.size())
   }
 }
+
 CLASS_REGISTRY.register("SImage", SImage, SImageDefs)
 
 type SheetType = {
@@ -364,13 +351,16 @@ const SheetDefs: DefList<SheetType> = {
   showNames: TransientBooleanDef,
   showGrid: TransientBooleanDef,
 }
+
 export class Sheet extends PropsBase<SheetType> {
   constructor(opts?: PropValues<SheetType>) {
     super(SheetDefs, opts)
   }
+
   addTile(new_tile: Tile) {
     appendToList(this, "tiles", new_tile)
   }
+
   removeTile(tile: Tile) {
     const tiles = this.getPropValue("tiles") as Tile[]
     const n = tiles.indexOf(tile)
@@ -389,6 +379,7 @@ export class Sheet extends PropsBase<SheetType> {
     return tile
   }
 }
+
 CLASS_REGISTRY.register("Sheet", Sheet, SheetDefs)
 
 export type MapLayerType = {
@@ -415,7 +406,7 @@ type ArrayGridMapCellJSON = {
   data: MapCell[]
 }
 const TileDataGridDef: PropDef<ArrayGrid<MapCell>> = {
-  type: "object",
+  type: "array",
   editable: false,
   watchChildren: false,
   toJSON: (v) =>
@@ -447,6 +438,7 @@ const TileLayerDefs: DefList<TileMapLayerType> = {
   wrapping: BooleanDef,
   scrollSpeed: FloatDef,
 }
+
 export class TileLayer extends PropsBase<TileMapLayerType> {
   constructor(opts?: PropValues<TileMapLayerType>) {
     super(TileLayerDefs, opts)
@@ -460,6 +452,7 @@ export class TileLayer extends PropsBase<TileMapLayerType> {
     }
   }
 }
+
 CLASS_REGISTRY.register("TileLayer", TileLayer, TileLayerDefs)
 
 const ActorLayerDefs: DefList<ActorMapLayerType> = {
@@ -471,11 +464,13 @@ const ActorLayerDefs: DefList<ActorMapLayerType> = {
   visible: BlockingDef,
   actors: GenericDataArrayDef,
 }
+
 export class ActorLayer extends PropsBase<ActorMapLayerType> {
   constructor(opts?: PropValues<ActorMapLayerType>) {
     super(ActorLayerDefs, opts)
   }
 }
+
 CLASS_REGISTRY.register("ActorLayer", ActorLayer, ActorLayerDefs)
 
 type GameMapType = {
@@ -501,6 +496,7 @@ const GameMapDefs: DefList<GameMapType> = {
   name: NameDef,
   layers: LayerListDef,
 }
+
 export class GameMap extends PropsBase<GameMapType> {
   constructor(opts?: PropValues<GameMapType>) {
     super(GameMapDefs, opts)
@@ -518,6 +514,7 @@ export class GameMap extends PropsBase<GameMapType> {
     return biggest
   }
 }
+
 CLASS_REGISTRY.register("Map", GameMap, GameMapDefs)
 
 export type ActorKind = "player" | "enemy" | "item" | "other"
@@ -530,8 +527,8 @@ export type ActorType = {
 }
 const ActorDefs: DefList<ActorType> = {
   name: NameDef,
-  hitbox: EditableBoundsDef,
-  viewbox: EditableBoundsDef,
+  hitbox: BoundsDef,
+  viewbox: BoundsDef,
   sprite: {
     type: "reference",
     custom: "image-reference",
@@ -547,11 +544,13 @@ const ActorDefs: DefList<ActorType> = {
     .withDefault(() => "item")
     .withCustom("actor-type"),
 }
+
 export class Actor extends PropsBase<ActorType> {
   constructor(opts?: PropValues<ActorType>) {
     super(ActorDefs, opts)
   }
 }
+
 CLASS_REGISTRY.register("Actor", Actor, ActorDefs)
 
 type ActorInstanceType = {
@@ -731,6 +730,7 @@ export class GameDoc extends PropsBase<DocType> {
     console.log("missing", id)
     return null
   }
+
   lookup_sprite_by_name(name: string): Tile | undefined {
     if (this.sprite_lookup_by_name.has(name))
       return this.sprite_lookup_by_name.get(name)
@@ -758,6 +758,7 @@ export class GameDoc extends PropsBase<DocType> {
       return this.image_cache.get(tile)
     }
   }
+
   markDirty(id: string) {
     const tile = this.lookup_sprite(id)
     if (tile) {

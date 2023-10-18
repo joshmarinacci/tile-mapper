@@ -261,6 +261,11 @@ export class PropDefBuilder<T> implements PropDef<T> {
     this.custom = actorType
     return this
   }
+
+  withWatchChildren(b: boolean) {
+    this.watchChildren = b
+    return this
+  }
 }
 
 export type Shortcut = {
