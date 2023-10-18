@@ -1,7 +1,7 @@
 import "./SImageEditorView.css"
 
 import { Bounds, Point } from "josh_js_util"
-import {DialogContext} from "josh_react_util"
+import { DialogContext } from "josh_react_util"
 import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 import React, {
   MouseEvent,
@@ -27,7 +27,7 @@ import {
 } from "../common/ListView"
 import { PaletteColorPickerPane } from "../common/Palette"
 import { PropSheet } from "../common/propsheet"
-import {ShareImageDialog} from "../common/ShareImageDialog"
+import { ShareImageDialog } from "../common/ShareImageDialog"
 import { appendToList, useWatchAllProps, useWatchProp } from "../model/base"
 import { SImage, SImageLayer } from "../model/datamodel"
 import { GlobalState } from "../state"
@@ -43,9 +43,9 @@ import { SelectionTool, SelectionToolSettings } from "./selection_tool"
 import { Tool } from "./tool"
 
 const LayerItemRenderer: ListViewRenderer<SImageLayer, never> = (props: {
-  value: SImageLayer;
-  selected: boolean;
-  options: never;
+  value: SImageLayer
+  selected: boolean
+  options: never
 }) => {
   const { value } = props
   useWatchProp(value, "name")
@@ -193,8 +193,8 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
 
     const blob = await canvas_to_blob(canvas)
     forceDownloadBlob(
-        `${image.getPropValue("name") as string}.${scale}x.png`,
-        blob,
+      `${image.getPropValue("name") as string}.${scale}x.png`,
+      blob,
     )
   }
 
@@ -208,7 +208,7 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
     drawImage(ctx, image, palette, scale)
 
     const blob = await canvas_to_blob(canvas)
-    dm.show(<ShareImageDialog blob={blob}/>)
+    dm.show(<ShareImageDialog blob={blob} />)
   }
   const crop = () => {
     if (selectionRect) {
@@ -268,18 +268,14 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
     tool_settings = <PencilToolSettings tool={tool} />
   if (tool instanceof EraserTool)
     tool_settings = <EraserToolSettings tool={tool} />
-  if (tool instanceof RectTool)
-    tool_settings = <RectToolSettings tool={tool} />
-  if (tool instanceof LineTool)
-    tool_settings = <LineToolSettings tool={tool} />
+  if (tool instanceof RectTool) tool_settings = <RectToolSettings tool={tool} />
+  if (tool instanceof LineTool) tool_settings = <LineToolSettings tool={tool} />
   if (tool instanceof EllipseTool)
     tool_settings = <EllipseToolSettings tool={tool} />
-  if (tool instanceof FillTool)
-    tool_settings = <FillToolSettings tool={tool} />
+  if (tool instanceof FillTool) tool_settings = <FillToolSettings tool={tool} />
   if (tool instanceof SelectionTool)
     tool_settings = <SelectionToolSettings tool={tool} />
-  if (tool instanceof MoveTool)
-    tool_settings = <MoveToolSettings tool={tool} />
+  if (tool instanceof MoveTool) tool_settings = <MoveToolSettings tool={tool} />
   return (
     <div
       className={"image-editor-view"}
@@ -301,7 +297,8 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
               icon={Icons.DownArrow}
             />
           </div>
-          <ListView className={"layers"}
+          <ListView
+            className={"layers"}
             selected={layer}
             setSelected={setLayer}
             renderer={LayerItemRenderer}

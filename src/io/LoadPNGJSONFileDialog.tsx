@@ -11,8 +11,8 @@ function isValidJSONPNGFile(file: File) {
 }
 
 export function LoadFileDialog(props: {
-  state: GlobalState;
-  onComplete: (file: File) => Promise<void>;
+  state: GlobalState
+  onComplete: (file: File) => Promise<void>
 }) {
   const [canLoad, setCanLoad] = useState(false)
   const dm = useContext(DialogContext)

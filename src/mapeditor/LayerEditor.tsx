@@ -35,10 +35,10 @@ import {
 } from "./TileEditor"
 
 export function LayerEditor(props: {
-  map: GameMap;
-  layer: PropsBase<MapLayerType> | undefined;
-  tile: Tile | undefined;
-  setSelectedTile: (sprite: Tile) => void;
+  map: GameMap
+  layer: PropsBase<MapLayerType> | undefined
+  tile: Tile | undefined
+  setSelectedTile: (sprite: Tile) => void
 }) {
   const { map, layer, tile, setSelectedTile } = props
   const doc = useContext(DocContext)

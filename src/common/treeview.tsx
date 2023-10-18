@@ -73,12 +73,12 @@ function AddSImageDialog(props: { onComplete: (size: Size) => void }) {
 }
 
 function PropertyList<T, K extends keyof T>(props: {
-  target: PropsBase<T>;
-  value: GameDoc[];
-  name: keyof T;
-  state: GlobalState;
-  def: PropDef<T[K]>;
-  selection: unknown;
+  target: PropsBase<T>
+  value: GameDoc[]
+  name: keyof T
+  state: GlobalState
+  def: PropDef<T[K]>
+  selection: unknown
 }) {
   const { value, name, target } = props
   const values = value as []
@@ -182,9 +182,9 @@ function PropertyList<T, K extends keyof T>(props: {
 }
 
 export function ObjectTreeView<T>(props: {
-  obj: PropsBase<T>;
-  state: GlobalState;
-  selection: unknown;
+  obj: PropsBase<T>
+  state: GlobalState
+  selection: unknown
 }) {
   const { obj, state } = props
   const select = (e: MouseEvent<HTMLElement>) => {

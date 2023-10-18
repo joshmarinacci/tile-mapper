@@ -3,17 +3,17 @@ import { useEffect, useState } from "react"
 
 import { GlobalState } from "../state"
 
-export type UUID = string;
-export type Getter<T> = () => T;
-export type JSONValue = string | number | object | boolean | object[];
+export type UUID = string
+export type Getter<T> = () => T
+export type JSONValue = string | number | object | boolean | object[]
 export type JsonOut<Type> = {
-  id: string;
-  class: string;
-  props: Record<keyof Type, JSONValue>;
-};
-export type ToJSONner<T> = (v: T) => JSONValue;
-export type FromJSONner<T> = (v: JSONValue) => T;
-export type ToFormatString<T> = (v: T) => string;
+  id: string
+  class: string
+  props: Record<keyof Type, JSONValue>
+}
+export type ToJSONner<T> = (v: T) => JSONValue
+export type FromJSONner<T> = (v: JSONValue) => T
+export type ToFormatString<T> = (v: T) => string
 export type PropDef<T> = {
   type:
     | "string"
@@ -25,34 +25,34 @@ export type PropDef<T> = {
     | "boolean"
     | "array"
     | "object"
-    | "reference";
-  editable: boolean;
+    | "reference"
+  editable: boolean
   custom?:
     | "tile-reference"
     | "image-reference"
     | "map-reference"
     | "actor-reference"
-    | "actor-type";
-  default: Getter<T>;
-  toJSON: ToJSONner<T>;
-  fromJSON: FromJSONner<T>;
-  format: ToFormatString<T>;
-  expandable: boolean;
-  hidden: boolean;
-  watchChildren: boolean;
-  skipPersisting?: boolean;
-};
-type WrapperCallback<Value> = (v: Value) => void;
-type WrapperAnyCallback<Type> = (t: PropsBase<Type>) => void;
+    | "actor-type"
+  default: Getter<T>
+  toJSON: ToJSONner<T>
+  fromJSON: FromJSONner<T>
+  format: ToFormatString<T>
+  expandable: boolean
+  hidden: boolean
+  watchChildren: boolean
+  skipPersisting?: boolean
+}
+type WrapperCallback<Value> = (v: Value) => void
+type WrapperAnyCallback<Type> = (t: PropsBase<Type>) => void
 
-export type DefList<Type> = Record<keyof Type, PropDef<Type[keyof Type]>>;
-export type PropValues<Type> = Partial<Record<keyof Type, Type[keyof Type]>>;
+export type DefList<Type> = Record<keyof Type, PropDef<Type[keyof Type]>>
+export type PropValues<Type> = Partial<Record<keyof Type, Type[keyof Type]>>
 // export type ExcludeNonArrayValue<T> = {[K in keyof T as T[K] extends Array<infer Item> ? K : never]: T[K] }
 // export type ExcludeNonArrayValue<T> = {[K in keyof T as T[K] extends readonly unknown[] ? K : never]: T[K] }
 // export type ArrayElement<ArrayType extends readonly unknown[]> =
 //     ArrayType extends readonly (infer ElementType)[] ? ElementType : never;
 // type ArrayElementType<ArrayType extends Array> = ArrayType[number];
-type Flatten<Type> = Type extends Array<infer Item> ? Item : never;
+type Flatten<Type> = Type extends Array<infer Item> ? Item : never
 
 export class PropsBase<Type> {
   _id: UUID
@@ -197,25 +197,25 @@ export class PropsBase<Type> {
 }
 
 export type Shortcut = {
-  key: string;
-  meta: boolean;
-  shift: boolean;
-  control: boolean;
-  alt: boolean;
-};
+  key: string
+  meta: boolean
+  shift: boolean
+  control: boolean
+  alt: boolean
+}
 
 export interface MenuAction {
-  type: string;
-  title: string;
-  shortcut?: Shortcut;
-  description?: string;
+  type: string
+  title: string
+  shortcut?: Shortcut
+  description?: string
   // icon?:SupportedIcons,
-  tags?: string[];
+  tags?: string[]
 }
 
 export interface SimpleMenuAction extends MenuAction {
-  type: "simple";
-  perform: (state: GlobalState) => Promise<void>;
+  type: "simple"
+  perform: (state: GlobalState) => Promise<void>
 }
 
 export class ActionRegistry {
@@ -255,7 +255,7 @@ export class ActionRegistry {
   }
 }
 
-export type AllPropsWatcher<T> = (v: T) => void;
+export type AllPropsWatcher<T> = (v: T) => void
 
 export function useWatchAllProps<Type>(
   target: PropsBase<Type>,
@@ -272,7 +272,7 @@ export function useWatchAllProps<Type>(
   }, [target, count])
 }
 
-export type PropWatcher<T> = (v: T) => void;
+export type PropWatcher<T> = (v: T) => void
 
 export function useWatchProp<Type, Key extends keyof Type>(
   target: PropsBase<Type>,
@@ -347,9 +347,7 @@ export function restoreClassFromJSON<Type>(
   for (const key of Object.keys(defs)) {
     const def = defs[key]
     if (json.props.hasOwnProperty(key)) {
-      const val = def.fromJSON
-        ? def.fromJSON(json.props[key])
-        : json.props[key]
+      const val = def.fromJSON ? def.fromJSON(json.props[key]) : json.props[key]
       args[key] = val
       // console.log("setting",key,'to',val)
     } else {

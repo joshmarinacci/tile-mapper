@@ -4,33 +4,33 @@ import React from "react"
 import { ActorInstance, GameDoc, Tile } from "../model/datamodel"
 
 export type MouseEventArgs<T> = {
-  e: React.MouseEvent<HTMLCanvasElement>;
-  layer: T;
-  pt: Point;
-  doc: GameDoc;
-  tile: Tile | undefined;
-  setSelectedTile: (tile: Tile) => void;
-  selectedActor?: ActorInstance;
-  setSelectedActor: (act: ActorInstance | undefined) => void;
-  fillOnce: boolean;
-  setFillOnce: (fillOnce: boolean) => void;
-};
+  e: React.MouseEvent<HTMLCanvasElement>
+  layer: T
+  pt: Point
+  doc: GameDoc
+  tile: Tile | undefined
+  setSelectedTile: (tile: Tile) => void
+  selectedActor?: ActorInstance
+  setSelectedActor: (act: ActorInstance | undefined) => void
+  fillOnce: boolean
+  setFillOnce: (fillOnce: boolean) => void
+}
 export type DrawArgs<T> = {
-  layer: T;
-  doc: GameDoc;
-  tile: Tile | undefined;
-  selectedActor?: ActorInstance;
-  ctx: CanvasRenderingContext2D;
-  scale: number;
-  grid: boolean;
-};
+  layer: T
+  doc: GameDoc
+  tile: Tile | undefined
+  selectedActor?: ActorInstance
+  ctx: CanvasRenderingContext2D
+  scale: number
+  grid: boolean
+}
 
 export interface MouseHandler<T> {
-  onMouseDown(v: MouseEventArgs<T>): void;
+  onMouseDown(v: MouseEventArgs<T>): void
 
-  onMouseMove(v: MouseEventArgs<T>): void;
+  onMouseMove(v: MouseEventArgs<T>): void
 
-  onMouseUp(v: MouseEventArgs<T>): void;
+  onMouseUp(v: MouseEventArgs<T>): void
 
-  drawOverlay(v: DrawArgs<T>): void;
+  drawOverlay(v: DrawArgs<T>): void
 }

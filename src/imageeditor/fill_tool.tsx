@@ -5,7 +5,7 @@ import { PropsBase, useWatchAllProps } from "../model/base"
 import { SImageLayer } from "../model/datamodel"
 import { Tool, ToolEvent, ToolOverlayInfo } from "./tool"
 
-type FillToolSettingsType = {};
+type FillToolSettingsType = {}
 
 function calculateDirections() {
   return [new Point(-1, 0), new Point(1, 0), new Point(0, -1), new Point(0, 1)]

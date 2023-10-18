@@ -9,8 +9,8 @@ import { down_arrow_triangle, Icons } from "./common"
 import { PopupContext } from "./popup"
 
 export function EditableLabel(props: {
-  onChange: (str: string) => void;
-  value: string;
+  onChange: (str: string) => void
+  value: string
 }) {
   const [editing, setEditing] = useState(false)
   const [value, setValue] = useState(props.value)
@@ -62,20 +62,18 @@ const AR = new ActionRegistry()
 export const ActionRegistryContext = React.createContext(AR)
 
 export interface ReactMenuAction extends MenuAction {
-  type: "react";
-  makeComponent: (state: GlobalState) => JSX.Element;
+  type: "react"
+  makeComponent: (state: GlobalState) => JSX.Element
 }
 
 export function ToolbarActionButton(props: {
-  state: GlobalState;
-  action: MenuAction;
-  disabled?: boolean;
+  state: GlobalState
+  action: MenuAction
+  disabled?: boolean
 }): JSX.Element {
   const { action, disabled = false } = props
   if (action.type === "react") {
-    return (action as ReactMenuAction).makeComponent(
-      props.state,
-    ) as JSX.Element
+    return (action as ReactMenuAction).makeComponent(props.state) as JSX.Element
   }
   const icon = <></>
   // if(action.icon) {
@@ -97,9 +95,9 @@ export function MenuList(props: { children: ReactNode }) {
   return <div className={"menu-list"}>{props.children}</div>
 }
 export function DropdownButton(props: {
-  title?: string;
-  icon?: Icons;
-  children: ReactNode;
+  title?: string
+  icon?: Icons
+  children: ReactNode
 }) {
   const { title, icon, children } = props
   const pm = useContext(PopupContext)
@@ -118,11 +116,11 @@ export function DropdownButton(props: {
 export const DocContext = React.createContext(new GameDoc())
 
 export function Pane(props: {
-  title?: string;
-  header?: ReactNode;
-  children: ReactNode;
-  collapsable?: boolean;
-  className?: string;
+  title?: string
+  header?: ReactNode
+  children: ReactNode
+  collapsable?: boolean
+  className?: string
 }) {
   const { collapsable, className, title } = props
   const [hide, setHide] = useState(false)
@@ -132,15 +130,15 @@ export function Pane(props: {
       <div className={`pane ${className}`}>
         <header>
           <ToggleButton
-              onClick={() => setHide(!hide)}
-              icon={Icons.DownArrow}
-              selectedIcon={Icons.RightArrow}
-              selected={hide}
+            onClick={() => setHide(!hide)}
+            icon={Icons.DownArrow}
+            selectedIcon={Icons.RightArrow}
+            selected={hide}
           />
           <label>{title}</label>
         </header>
         <div
-            className={'pane-content-wrapper'}
+          className={"pane-content-wrapper"}
           style={{
             display: collapsable ? (hide ? "none" : "block") : "block",
           }}
@@ -156,7 +154,7 @@ export function Pane(props: {
           ? props.header
           : props.title && <header>{props.title}</header>}
         <div
-            className={'pane-content-wrapper'}
+          className={"pane-content-wrapper"}
           style={{
             display: props.collapsable ? (hide ? "none" : "block") : "block",
           }}
@@ -180,11 +178,11 @@ export function Icon(props: { name: Icons; onClick?: () => void }) {
 }
 
 export function ToggleButton(props: {
-  onClick: () => void;
-  icon: Icons;
-  selected: boolean;
-  selectedIcon?: Icons;
-  text?: string;
+  onClick: () => void
+  icon: Icons
+  selected: boolean
+  selectedIcon?: Icons
+  text?: string
 }) {
   let icon = props.icon
   if (props.selected && props.selectedIcon) {
@@ -204,9 +202,9 @@ export function ToggleButton(props: {
 }
 
 export function IconButton(props: {
-  onClick: () => void;
-  icon: Icons;
-  text?: string;
+  onClick: () => void
+  icon: Icons
+  text?: string
 }) {
   return (
     <button onClick={props.onClick}>

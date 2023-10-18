@@ -8,9 +8,9 @@ import { DropdownButton, Pane } from "./common-components"
 import { ListView, ListViewDirection, ListViewOptions } from "./ListView"
 
 const PaletteColorRenderer = (props: {
-  value: string;
-  selected: boolean;
-  options: ListViewOptions;
+  value: string
+  selected: boolean
+  options: ListViewOptions
 }) => {
   const { value, selected, options } = props
   return (
@@ -30,9 +30,9 @@ const PaletteColorRenderer = (props: {
 }
 
 export function PaletteColorPickerPane(props: {
-  drawColor: string;
-  setDrawColor: (v: string) => void;
-  palette: ImagePalette;
+  drawColor: string
+  setDrawColor: (v: string) => void
+  palette: ImagePalette
 }) {
   const { drawColor, setDrawColor, palette } = props
   const [size, setSize] = useState(16)

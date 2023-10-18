@@ -10,16 +10,16 @@ import {
 } from "./json"
 
 export type JSONDocReference = {
-  uuid: string;
-  name: string;
-  kind: string;
-  thumbnail?: string;
-  creationDate: Date;
-  updateDate: Date;
-};
+  uuid: string
+  name: string
+  kind: string
+  thumbnail?: string
+  creationDate: Date
+  updateDate: Date
+}
 export type JSONDocIndex = {
-  docs: JSONDocReference[];
-};
+  docs: JSONDocReference[]
+}
 
 function loadIndex(state: GlobalState): JSONDocIndex {
   const index = state.localStorage.getItem("index")

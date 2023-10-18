@@ -10,11 +10,11 @@ import {
 import { PopupContext } from "./popup"
 
 function SelectionList<T, O extends ListViewOptions>(props: {
-  data: T[];
-  selected: T | undefined;
-  setSelected: (v: T | undefined) => void;
-  renderer: ListViewRenderer<T, O>;
-  options: O;
+  data: T[]
+  selected: T | undefined
+  setSelected: (v: T | undefined) => void
+  renderer: ListViewRenderer<T, O>
+  options: O
 }) {
   const Cell = props.renderer
   const choose = (v: T) => props.setSelected(v)
@@ -30,11 +30,11 @@ function SelectionList<T, O extends ListViewOptions>(props: {
 }
 
 export function ListSelect<T, O extends ListViewOptions>(props: {
-  selected: T | undefined;
-  setSelected: (v: T | undefined) => void;
-  renderer: ListViewRenderer<T, O> | undefined;
-  data: T[];
-  options: O;
+  selected: T | undefined
+  setSelected: (v: T | undefined) => void
+  renderer: ListViewRenderer<T, O> | undefined
+  data: T[]
+  options: O
 }): JSX.Element {
   const { selected, setSelected, data, renderer, options } = props
   const Cell = renderer || DefaultListViewRenderer

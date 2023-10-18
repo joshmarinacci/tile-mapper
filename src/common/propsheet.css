@@ -23,7 +23,8 @@
   grid-column-start: 1;
   text-align: right;
 }
-.prop-sheet input, .prop-sheet .value {
+.prop-sheet input,
+.prop-sheet .value {
   grid-column-start: 2;
   grid-column-end: 3;
   min-width: 1rem;

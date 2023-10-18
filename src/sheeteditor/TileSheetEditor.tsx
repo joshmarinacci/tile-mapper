@@ -49,7 +49,9 @@ export function TileSheetEditor(props: { sheet: Sheet; state: GlobalState }) {
             />
           </Pane>
         )}
-        {tile && <PropSheet target={tile} title={"Tile Info"} collapsable={true} />}
+        {tile && (
+          <PropSheet target={tile} title={"Tile Info"} collapsable={true} />
+        )}
         {tile && (
           <Pane collapsable={true} title={"Scratch"}>
             <TestMap tile={tile} mapArray={maparray} palette={palette} />

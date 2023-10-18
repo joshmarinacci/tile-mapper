@@ -8,8 +8,8 @@ import {
 } from "retrogami-engine"
 
 export type GameMap = {
-  name: string;
-  layers: Layer[];
+  name: string
+  layers: Layer[]
 }
 
 export class GameState {

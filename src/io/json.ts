@@ -16,55 +16,55 @@ import { GlobalState } from "../state"
 import { writeMetadata } from "./vendor"
 
 export type JSONSprite = {
-  name: string;
-  id: string;
-  w: number;
-  h: number;
-  blocking: boolean;
-  data: number[];
-  palette?: string[];
-};
+  name: string
+  id: string
+  w: number
+  h: number
+  blocking: boolean
+  data: number[]
+  palette?: string[]
+}
 export type JSONSheet = {
-  id: string;
-  name: string;
-  sprites: JSONSprite[];
-};
+  id: string
+  name: string
+  sprites: JSONSprite[]
+}
 
 export type JSONActor = {
-  id: string;
-  name: string;
-};
+  id: string
+  name: string
+}
 export type JSONMap = {
-  id: string;
-  name: string;
-  height: number;
-  width: number;
-  cells: MapCell[];
-};
+  id: string
+  name: string
+  height: number
+  width: number
+  cells: MapCell[]
+}
 export type JSONTest = {
-  id: string;
-  name: string;
+  id: string
+  name: string
   viewport: {
-    width: number;
-    height: number;
-  };
-};
+    width: number
+    height: number
+  }
+}
 export type JSONDocV4 = {
-  color_palette: string[];
-  sheets: JSONSheet[];
-  maps: JSONMap[];
-  tests: JSONTest[];
-  version: number;
-  name: string;
-};
+  color_palette: string[]
+  sheets: JSONSheet[]
+  maps: JSONMap[]
+  tests: JSONTest[]
+  version: number
+  name: string
+}
 
 export const TILE_MAPPER_DOCUMENT = "tile-mapper-document"
 export type JSONDocV5 = {
-  name: string;
-  kind: typeof TILE_MAPPER_DOCUMENT;
-  version: 5;
-  doc: object;
-};
+  name: string
+  kind: typeof TILE_MAPPER_DOCUMENT
+  version: 5
+  doc: object
+}
 
 export function docToJSON(doc: GameDoc): JSONDocV5 {
   return {
@@ -209,4 +209,4 @@ export async function savePNGJSON(state: GlobalState) {
   )
 }
 
-export type Metadata = { tEXt: { keyword: any; SOURCE: any } };
+export type Metadata = { tEXt: { keyword: any; SOURCE: any } }

@@ -21,9 +21,9 @@ function make_new_doc(width: number, height: number, palette: ImagePalette) {
 }
 
 type Pal = {
-  name: string;
-  pal: ImagePalette;
-};
+  name: string
+  pal: ImagePalette
+}
 const PALS: ImagePalette[] = [PICO8, MINECRAFT, RESURRECT64]
 
 export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {

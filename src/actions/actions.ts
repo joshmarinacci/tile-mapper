@@ -48,7 +48,7 @@ export const DocToPNG: SimpleMenuAction = {
   async perform(state): Promise<void> {
     const doc = state.getPropValue("doc") as GameDoc
     for (const sheet of doc.getPropValue("sheets")) {
-      const can = sheet_to_canvas(sheet, doc.getPropValue('palette'))
+      const can = sheet_to_canvas(sheet, doc.getPropValue("palette"))
       const blob = await canvas_to_blob(can)
       forceDownloadBlob(
         `${doc.getPropValue("name")}.${sheet.getPropValue("name")}.png`,
@@ -84,9 +84,7 @@ export const ImportFromJSONAction: SimpleMenuAction = {
         const files = input_element.files
         if (!files || files.length <= 0) return
         const file = files[0]
-        fileToJson(file).then((data) =>
-          res(make_doc_from_json(data as object)),
-        )
+        fileToJson(file).then((data) => res(make_doc_from_json(data as object)))
       })
       input_element.click()
     })
@@ -152,7 +150,7 @@ export function deleteTile(sheet: Sheet, tile: Tile) {
 
 export function duplicate_tile(sheet: Sheet, tile: Tile): Tile {
   const new_tile = tile.clone()
-  new_tile.setPropValue('gridPosition',new Point(-1,-1))
+  new_tile.setPropValue("gridPosition", new Point(-1, -1))
   sheet.addTile(new_tile)
   return new_tile
 }
@@ -251,10 +249,7 @@ export function map_to_canvas(
 export async function exportPNG(doc: GameDoc, map: GameMap, scale: number) {
   const can = map_to_canvas(map, doc, scale)
   const blob = await canvas_to_blob(can)
-  forceDownloadBlob(
-    `${map.getPropValue("name") as string}.${scale}x.png`,
-    blob,
-  )
+  forceDownloadBlob(`${map.getPropValue("name") as string}.${scale}x.png`, blob)
 }
 
 export const add_tile_layer = (map: GameMap) => {

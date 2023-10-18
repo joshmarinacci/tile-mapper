@@ -13,7 +13,7 @@
     "@types/react-dom": "^18.2.6",
     "@wokwi/bmp-ts": "^3.0.0",
     "crc-32": "^1.2.2",
-    "josh_js_util": "^0.1.24",
+    "josh_js_util": "^0.1.25",
     "josh_react_util": "^1.0.23",
     "josh_web_util": "^0.0.5",
     "react": "^18.2.0",
@@ -25,7 +25,7 @@
   "scripts": {
     "start": "mkdir -p build && cp public/* build && esbuild src/index.tsx --bundle --outdir=build --watch --serve --servedir=build",
     "build": "mkdir -p build && cp public/* build && esbuild src/index.tsx --bundle --outdir=build",
-    "test": "vitest"
+    "test": "vitest run --dir src"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.5.0",

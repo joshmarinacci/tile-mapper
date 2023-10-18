@@ -23,9 +23,9 @@ const LayerNameRenderer: ListViewRenderer<
   PropsBase<MapLayerType>,
   never
 > = (props: {
-  value: PropsBase<MapLayerType>;
-  selected: boolean;
-  options: never;
+  value: PropsBase<MapLayerType>
+  selected: boolean
+  options: never
 }) => {
   const { value } = props
   useWatchProp(value, "name")
@@ -47,17 +47,16 @@ const LayerNameRenderer: ListViewRenderer<
 }
 
 export function LayerList(props: {
-  setSelectedLayer: (value: PropsBase<MapLayerType> | undefined) => void;
-  map: GameMap;
-  editable: boolean;
-  layer: PropsBase<MapLayerType> | undefined;
+  setSelectedLayer: (value: PropsBase<MapLayerType> | undefined) => void
+  map: GameMap
+  editable: boolean
+  layer: PropsBase<MapLayerType> | undefined
 }) {
   const { layer } = props
   const dm = useContext(DialogContext)
   useWatchProp(props.map, "layers")
   const resize = () => {
-    if (layer instanceof TileLayer)
-      dm.show(<ResizeLayerDialog layer={layer} />)
+    if (layer instanceof TileLayer) dm.show(<ResizeLayerDialog layer={layer} />)
   }
 
   return (

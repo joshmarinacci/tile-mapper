@@ -3,11 +3,10 @@ import { ArrayGrid, Point } from "josh_js_util"
 
 import { Sheet, Tile } from "../model/datamodel"
 
-
 export type ImagePalette = {
-  name: string;
-  colors: string[];
-};
+  name: string
+  colors: string[]
+}
 export const PICO8: ImagePalette = {
   name: "PICO8",
   colors: [

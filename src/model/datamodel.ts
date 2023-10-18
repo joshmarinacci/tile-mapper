@@ -185,8 +185,8 @@ const FrictionDef: PropDef<number> = {
   format: (v) => v.toFixed(2),
 }
 export type MapCell = {
-  tile: string; //id of the sprite used to draw this
-};
+  tile: string //id of the sprite used to draw this
+}
 
 export const BlockingDef: PropDef<boolean> = {
   type: "boolean",
@@ -217,17 +217,17 @@ const GenericDataArrayDef: PropDef<object[]> = {
 }
 
 type ArrayGridNumberJSON = {
-  w: number;
-  h: number;
-  data: number[];
-};
+  w: number
+  h: number
+  data: number[]
+}
 type TileType = {
   name: string
   blocking: boolean
   data: ArrayGrid<number>
   size: Size
-  gridPosition:Point
-};
+  gridPosition: Point
+}
 const TileDataDef: PropDef<ArrayGrid<number>> = {
   type: "array",
   editable: false,
@@ -245,15 +245,15 @@ const TileDataDef: PropDef<ArrayGrid<number>> = {
   },
 }
 const GridPointDef: PropDef<Point> = {
-  type:'Point',
-  default: () => new Point(-1,-1),
-  skipPersisting:false,
-  editable:false,
-  expandable:false,
+  type: "Point",
+  default: () => new Point(-1, -1),
+  skipPersisting: false,
+  editable: false,
+  expandable: false,
   format: (v) => `${v.x} , ${v.y}`,
-  hidden:false,
-  watchChildren:false,
-  toJSON:(v) => v.toJSON(),
+  hidden: false,
+  watchChildren: false,
+  toJSON: (v) => v.toJSON(),
   fromJSON: (v) => Point.fromJSON(v as { x: number; y: number }),
 }
 const TileDefs: DefList<TileType> = {
@@ -261,7 +261,7 @@ const TileDefs: DefList<TileType> = {
   blocking: BlockingDef,
   data: TileDataDef,
   size: SizeDef,
-  gridPosition:GridPointDef,
+  gridPosition: GridPointDef,
 }
 export class Tile extends PropsBase<TileType> {
   constructor(opts?: PropValues<TileType>) {
@@ -307,7 +307,7 @@ export class Tile extends PropsBase<TileType> {
     new_tile.setPropValue("blocking", this.getPropValue("blocking"))
     new_tile.setPropValue("name", this.getPropValue("name"))
     new_tile.setPropValue("size", this.getPropValue("size"))
-    new_tile.setPropValue('gridPosition', this.getPropValue('gridPosition'))
+    new_tile.setPropValue("gridPosition", this.getPropValue("gridPosition"))
     return new_tile
   }
 
@@ -322,11 +322,11 @@ export class Tile extends PropsBase<TileType> {
 CLASS_REGISTRY.register("Tile", Tile, TileDefs)
 
 type SImageLayerType = {
-  name: string;
-  visible: boolean;
-  opacity: number;
-  data: ArrayGrid<number>;
-};
+  name: string
+  visible: boolean
+  opacity: number
+  data: ArrayGrid<number>
+}
 const SImageLayerDataPropDef: PropDef<ArrayGrid<number>> = {
   type: "array",
   editable: false,
@@ -393,10 +393,10 @@ export class SImageLayer extends PropsBase<SImageLayerType> {
 CLASS_REGISTRY.register("SImageLayer", SImageLayer, SImageLayerDataDefs)
 
 type SImageType = {
-  name: string;
-  layers: SImageLayer[];
-  size: Size;
-};
+  name: string
+  layers: SImageLayer[]
+  size: Size
+}
 const SImageDefs: DefList<SImageType> = {
   name: NameDef,
   layers: {
@@ -425,13 +425,13 @@ export class SImage extends PropsBase<SImageType> {
 CLASS_REGISTRY.register("SImage", SImage, SImageDefs)
 
 type SheetType = {
-  name: string;
-  tileSize: Size;
-  tiles: Tile[];
-  selectedTile: Tile | undefined;
-  showNames: boolean;
-  showGrid: boolean;
-};
+  name: string
+  tileSize: Size
+  tiles: Tile[]
+  selectedTile: Tile | undefined
+  showNames: boolean
+  showGrid: boolean
+}
 const TileArrayDef: PropDef<Tile[]> = {
   type: "array",
   editable: false,
@@ -480,7 +480,7 @@ export class Sheet extends PropsBase<SheetType> {
     super(SheetDefs, opts)
   }
   addTile(new_tile: Tile) {
-    appendToList(this,'tiles',new_tile)
+    appendToList(this, "tiles", new_tile)
   }
   removeTile(tile: Tile) {
     const tiles = this.getPropValue("tiles") as Tile[]
@@ -495,7 +495,7 @@ export class Sheet extends PropsBase<SheetType> {
 
   addNewTile() {
     const size = this.getPropValue("tileSize")
-    const tile = new Tile({size: size, gridPosition: new Point(-1,-1)})
+    const tile = new Tile({ size: size, gridPosition: new Point(-1, -1) })
     this.addTile(tile)
     return tile
   }
@@ -503,28 +503,28 @@ export class Sheet extends PropsBase<SheetType> {
 CLASS_REGISTRY.register("Sheet", Sheet, SheetDefs)
 
 export type MapLayerType = {
-  name: string;
-  type: string;
-  blocking: boolean;
-  visible: boolean;
-};
+  name: string
+  type: string
+  blocking: boolean
+  visible: boolean
+}
 type TileMapLayerType = {
-  type: "tile-layer";
-  size: Size;
-  data: ArrayGrid<MapCell>;
-  wrapping: boolean;
-  scrollSpeed: number;
-} & MapLayerType;
+  type: "tile-layer"
+  size: Size
+  data: ArrayGrid<MapCell>
+  wrapping: boolean
+  scrollSpeed: number
+} & MapLayerType
 type ActorMapLayerType = {
-  type: "actor-layer";
-  actors: ActorInstance[];
-} & MapLayerType;
+  type: "actor-layer"
+  actors: ActorInstance[]
+} & MapLayerType
 
 type ArrayGridMapCellJSON = {
-  w: number;
-  h: number;
-  data: MapCell[];
-};
+  w: number
+  h: number
+  data: MapCell[]
+}
 const TileDataGridDef: PropDef<ArrayGrid<MapCell>> = {
   type: "object",
   editable: false,
@@ -604,9 +604,9 @@ export class ActorLayer extends PropsBase<ActorMapLayerType> {
 CLASS_REGISTRY.register("ActorLayer", ActorLayer, ActorLayerDefs)
 
 type GameMapType = {
-  name: string;
-  layers: PropsBase<any>[];
-};
+  name: string
+  layers: PropsBase<any>[]
+}
 const LayerListDef: PropDef<PropsBase<any>[]> = {
   type: "array",
   editable: false,
@@ -645,14 +645,14 @@ export class GameMap extends PropsBase<GameMapType> {
 }
 CLASS_REGISTRY.register("Map", GameMap, GameMapDefs)
 
-export type ActorKind = "player" | "enemy" | "item" | "other";
+export type ActorKind = "player" | "enemy" | "item" | "other"
 export type ActorType = {
-  name: string;
-  hitbox: Bounds;
-  viewbox: Bounds;
-  sprite: string | undefined;
-  kind: ActorKind;
-};
+  name: string
+  hitbox: Bounds
+  viewbox: Bounds
+  sprite: string | undefined
+  kind: ActorKind
+}
 const ActorDefs: DefList<ActorType> = {
   name: NameDef,
   hitbox: EditableBoundsDef,
@@ -690,10 +690,10 @@ export class Actor extends PropsBase<ActorType> {
 CLASS_REGISTRY.register("Actor", Actor, ActorDefs)
 
 type ActorInstanceType = {
-  name: string;
-  position: Point;
-  actor: string;
-};
+  name: string
+  position: Point
+  actor: string
+}
 const ActorInstanceDefs: DefList<ActorInstanceType> = {
   name: NameDef,
   position: PointDef,
@@ -739,15 +739,15 @@ const ViewportDef: PropDef<Size> = {
   format: (v) => `${v.w} x ${v.h}`,
 }
 type TestType = {
-  name: string;
-  map: string | undefined;
-  viewport: Size;
-  gravity: number;
-  jump_power: number;
-  move_speed: number;
-  move_speed_max: number;
-  friction: number;
-};
+  name: string
+  map: string | undefined
+  viewport: Size
+  gravity: number
+  jump_power: number
+  move_speed: number
+  move_speed_max: number
+  friction: number
+}
 const TestDefs: DefList<TestType> = {
   name: NameDef,
   map: {
@@ -842,7 +842,7 @@ export type DocType = {
   canvases: SImage[]
   palette: ImagePalette
   tileSize: Size
-};
+}
 const GameDocDefs: DefList<DocType> = {
   name: NameDef,
   sheets: SheetsListDef,

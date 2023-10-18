@@ -4,10 +4,10 @@ import React, { ReactNode, useState } from "react"
 import { left_arrow_triangle, right_arrow_triangle } from "./common"
 
 export function MainView(props: {
-  toolbar: ReactNode;
-  left: ReactNode;
-  center: ReactNode;
-  right: ReactNode;
+  toolbar: ReactNode
+  left: ReactNode
+  center: ReactNode
+  right: ReactNode
 }) {
   const [showLeft, setShowLeft] = useState(true)
   const [showRight, setShowRight] = useState(true)

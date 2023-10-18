@@ -1,85 +1,85 @@
-import {Size} from "josh_js_util"
+import { Size } from "josh_js_util"
 
-import {PICO8} from "./common/common"
-import {DefList, PropDef, PropsBase, PropValues} from "./model/base"
-import {GameDoc} from "./model/datamodel"
+import { PICO8 } from "./common/common"
+import { DefList, PropDef, PropsBase, PropValues } from "./model/base"
+import { GameDoc } from "./model/datamodel"
 
 type GlobalStateType = {
-    doc: GameDoc;
-    mode: string;
-    selection: PropsBase<unknown>;
-    localStorage: Storage;
-};
+  doc: GameDoc
+  mode: string
+  selection: PropsBase<unknown>
+  localStorage: Storage
+}
 
 const DocDef: PropDef<GameDoc> = {
-    type: "string",
-    hidden: false,
-    expandable: false,
-    format: () => "global state",
-    toJSON: (o) => {
-        return o.toString()
-    },
-    fromJSON: (v) => v as GameDoc,
-    watchChildren: false,
-    editable: false,
-    default: () => {
-        const size = new Size(10, 10)
-        return new GameDoc({tileSize: size, name: "unnamed doc", palette: PICO8})
-    },
+  type: "string",
+  hidden: false,
+  expandable: false,
+  format: () => "global state",
+  toJSON: (o) => {
+    return o.toString()
+  },
+  fromJSON: (v) => v as GameDoc,
+  watchChildren: false,
+  editable: false,
+  default: () => {
+    const size = new Size(10, 10)
+    return new GameDoc({ tileSize: size, name: "unnamed doc", palette: PICO8 })
+  },
 }
 const ModeDef: PropDef<string> = {
-    type: "string",
-    default: () => "tiles",
-    toJSON: (o) => o,
-    editable: false,
-    format: (o) => o,
-    hidden: true,
-    expandable: false,
-    watchChildren: false,
-    fromJSON: (v) => v as string,
+  type: "string",
+  default: () => "tiles",
+  toJSON: (o) => o,
+  editable: false,
+  format: (o) => o,
+  hidden: true,
+  expandable: false,
+  watchChildren: false,
+  fromJSON: (v) => v as string,
 }
 const SelectedDef: PropDef<unknown> = {
+  type: "object",
+  expandable: false,
+  hidden: true,
+  watchChildren: false,
+  fromJSON: (v) => v,
+  default: () => undefined,
+  toJSON: () => "unknown",
+  editable: false,
+  format: () => "unknown",
+}
+const StateDef: DefList<GlobalStateType> = {
+  doc: DocDef,
+  mode: ModeDef,
+  selection: SelectedDef,
+  localStorage: {
     type: "object",
     expandable: false,
     hidden: true,
-    watchChildren: false,
-    fromJSON: (v) => v,
-    default: () => undefined,
-    toJSON: () => "unknown",
+    default: () => null,
     editable: false,
-    format: () => "unknown",
-}
-const StateDef: DefList<GlobalStateType> = {
-    doc: DocDef,
-    mode: ModeDef,
-    selection: SelectedDef,
-    localStorage: {
-        type: "object",
-        expandable: false,
-        hidden: true,
-        default: () => null,
-        editable: false,
-        watchChildren: false,
-    },
+    watchChildren: false,
+  },
 }
 
 export class GlobalState extends PropsBase<GlobalStateType> {
-    localStorage: Storage
+  localStorage: Storage
 
-    constructor(opts?: PropValues<GlobalStateType>) {
-        super(StateDef)
-        if (typeof localStorage !== "undefined") {
-            this.localStorage = localStorage
-        } else {
-            this.localStorage = opts.localStorage as Storage
-        }
+  constructor(opts?: PropValues<GlobalStateType>) {
+    super(StateDef)
+    if (typeof localStorage !== "undefined") {
+      this.localStorage = localStorage
+    } else {
+      this.localStorage = opts.localStorage as Storage
     }
+  }
 
-    clearSelection() {
-        this.setPropValue("selection", undefined)
-    }
+  clearSelection() {
+    this.setPropValue("selection", undefined)
+  }
 
-    setSelection(doc: GameDoc) {
-        this.setPropValue("selection", doc)
-    }
+  setSelection(doc: GameDoc) {
+    this.setPropValue("selection", doc)
+  }
 }

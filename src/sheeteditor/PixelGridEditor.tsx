@@ -37,10 +37,10 @@ function bucketFill(tile: Tile, target: number, replace: number, at: Point) {
 }
 
 export function PixelGridEditor(props: {
-  tile: Tile;
-  selectedColor: number;
-  palette: ImagePalette;
-  setSelectedColor: (v: number) => void;
+  tile: Tile
+  selectedColor: number
+  palette: ImagePalette
+  setSelectedColor: (v: number) => void
 }) {
   const doc = useContext(DocContext)
   const { selectedColor, palette, tile } = props

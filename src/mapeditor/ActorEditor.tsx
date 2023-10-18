@@ -49,9 +49,9 @@ export function drawActorlayer(
 }
 
 const ActorPreviewRenderer: ListViewRenderer<Actor, never> = (props: {
-  value: Actor;
-  selected: boolean;
-  options?: ListViewOptions;
+  value: Actor
+  selected: boolean
+  options?: ListViewOptions
 }) => {
   const { selected, value } = props
   if (!value) return <div>nothing selected</div>
@@ -74,8 +74,8 @@ const ActorPreviewRenderer: ListViewRenderer<Actor, never> = (props: {
 }
 
 export function ActorLayerToolbar(props: {
-  layer: ActorLayer;
-  onSelect: (act: ActorInstance) => void;
+  layer: ActorLayer
+  onSelect: (act: ActorInstance) => void
 }) {
   const { layer, onSelect } = props
   const doc = useContext(DocContext)

@@ -68,9 +68,9 @@ export function drawTileLayer(
 }
 
 export function TileLayerToolbar(props: {
-  layer: TileLayer;
-  fillOnce: boolean;
-  setFillOnce: (fw: boolean) => void;
+  layer: TileLayer
+  fillOnce: boolean
+  setFillOnce: (fw: boolean) => void
 }) {
   const { fillOnce, setFillOnce } = props
   return (
@@ -90,10 +90,7 @@ export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
   onMouseDown(args: MouseEventArgs<TileLayer>) {
     const { e, layer, tile, doc, setSelectedTile, fillOnce } = args
     const tileSize = doc.getPropValue("tileSize")
-    const pt = new Point(
-      args.pt.x / tileSize.w,
-      args.pt.y / tileSize.h,
-    ).floor()
+    const pt = new Point(args.pt.x / tileSize.w, args.pt.y / tileSize.h).floor()
     if (e.button === 2) {
       const cell = layer.getPropValue("data").get(pt)
       const tile = doc.lookup_sprite(cell.tile)
@@ -114,10 +111,7 @@ export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
   onMouseMove(args: MouseEventArgs<TileLayer>) {
     const { layer, tile, doc } = args
     const tileSize = doc.getPropValue("tileSize")
-    const pt = new Point(
-      args.pt.x / tileSize.w,
-      args.pt.y / tileSize.h,
-    ).floor()
+    const pt = new Point(args.pt.x / tileSize.w, args.pt.y / tileSize.h).floor()
     if (tile) layer.getPropValue("data").set(pt, { tile: tile._id })
   }
 

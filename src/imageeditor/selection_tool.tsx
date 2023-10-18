@@ -4,7 +4,7 @@ import React from "react"
 import { PropsBase, useWatchAllProps } from "../model/base"
 import { Tool, ToolEvent, ToolOverlayInfo } from "./tool"
 
-type SelectionToolSettingsType = {};
+type SelectionToolSettingsType = {}
 
 export class SelectionTool
   extends PropsBase<SelectionToolSettingsType>

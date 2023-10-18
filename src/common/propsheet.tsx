@@ -4,14 +4,9 @@ import { Bounds, Size } from "josh_js_util"
 import React, { useContext, useEffect, useRef } from "react"
 
 import { PropDef, PropsBase, useWatchProp } from "../model/base"
-import {
-  ActorKind,
-  ActorType,
-  GameMap,
-  SImage,
-} from "../model/datamodel"
+import { ActorKind, ActorType, GameMap, SImage } from "../model/datamodel"
 import { drawEditableSprite } from "./common"
-import {DocContext, Pane} from "./common-components"
+import { DocContext, Pane } from "./common-components"
 import { ListSelect } from "./ListSelect"
 
 export function TileReferenceView(props: { tileRef: string | undefined }) {
@@ -27,31 +22,34 @@ export function TileReferenceView(props: { tileRef: string | undefined }) {
       ctx.fillRect(0, 0, canvas.width, canvas.height)
       if (tileRef) {
         const tile = doc.lookup_sprite(tileRef)
-        if (tile) drawEditableSprite(ctx, 3, tile, doc.getPropValue('palette'))
+        if (tile) drawEditableSprite(ctx, 3, tile, doc.getPropValue("palette"))
       }
     }
   }, [props.tileRef])
   return <canvas ref={canvasRef} width={32} height={32} />
 }
 
-
 function MapNameRenderer<T extends GameMap, O>(props: {
-  value: T;
-  selected: boolean;
-  options: O;
+  value: T
+  selected: boolean
+  options: O
 }) {
   if (!props.value) return <div>undefined</div>
-  return <div className={'std-list-item'}>{props.value.getPropValue("name")}</div>
+  return (
+    <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
+  )
 }
 function MapReferenceEditor<T>(props: {
-  def: PropDef<T[keyof T]>;
-  name: keyof T;
-  target: PropsBase<T>;
+  def: PropDef<T[keyof T]>
+  name: keyof T
+  target: PropsBase<T>
 }) {
   const doc = useContext(DocContext)
   const { target, name } = props
   const current = target.getPropValue(name)
-  const selected = doc.getPropValue("maps").find((mp) => mp.getUUID() === current)
+  const selected = doc
+    .getPropValue("maps")
+    .find((mp) => mp.getUUID() === current)
   const data = doc.getPropValue("maps")
   return (
     <ListSelect
@@ -65,21 +63,25 @@ function MapReferenceEditor<T>(props: {
 }
 
 function SImageNameRenderer<T extends SImage, O>(props: {
-  value: T;
-  selected: boolean;
-  options: O;
+  value: T
+  selected: boolean
+  options: O
 }) {
   if (!props.value) return <div>undefined</div>
-  return <div className={'std-list-item'}>{props.value.getPropValue("name")}</div>
+  return (
+    <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
+  )
 }
 function SImageReferenceEditor<T>(props: {
-  def: PropDef<T[keyof T]>;
-  name: keyof T;
-  target: PropsBase<T>;
+  def: PropDef<T[keyof T]>
+  name: keyof T
+  target: PropsBase<T>
 }) {
   const doc = useContext(DocContext)
   const current = props.target.getPropValue(props.name)
-  const selected = doc.getPropValue("canvases").find((mp) => mp.getUUID() === current)
+  const selected = doc
+    .getPropValue("canvases")
+    .find((mp) => mp.getUUID() === current)
   const data = doc.getPropValue("canvases")
   return (
     <ListSelect
@@ -93,18 +95,18 @@ function SImageReferenceEditor<T>(props: {
 }
 
 function ActorTypeRenderer<T extends ActorKind, O>(props: {
-  value: T;
-  selected: boolean;
-  options: O;
+  value: T
+  selected: boolean
+  options: O
 }) {
   if (!props.value) return <div>undefined</div>
-  return <div className={'std-list-item'}>{props.value}</div>
+  return <div className={"std-list-item"}>{props.value}</div>
 }
 
 function ActorTypeEditor<T extends ActorType>(props: {
-  def: PropDef<T[keyof T]>;
-  name: keyof T;
-  target: PropsBase<T>;
+  def: PropDef<T[keyof T]>
+  name: keyof T
+  target: PropsBase<T>
 }) {
   // const selected = props.target.getPropValue('kind')
   return (
@@ -119,9 +121,9 @@ function ActorTypeEditor<T extends ActorType>(props: {
 }
 
 function PropEditor<T>(props: {
-  target: PropsBase<T>;
-  name: keyof T;
-  def: PropDef<T[keyof T]>;
+  target: PropsBase<T>
+  name: keyof T
+  def: PropDef<T[keyof T]>
 }) {
   const { target, def, name } = props
   const new_val = target.getPropValue(name)
@@ -302,8 +304,8 @@ function PropEditor<T>(props: {
 }
 
 export function PropSheet<T>(props: {
-  title?: string;
-  target: PropsBase<T> | undefined;
+  title?: string
+  target: PropsBase<T> | undefined
   collapsable: boolean
 }) {
   const { title, target } = props
@@ -318,26 +320,29 @@ export function PropSheet<T>(props: {
     ([, b]) => !b.hidden,
   )
   return (
-      <Pane title={title?title:"props"} collapsable={props.collapsable} className={'prop-sheet'}>
+    <Pane
+      title={title ? title : "props"}
+      collapsable={props.collapsable}
+      className={"prop-sheet"}
+    >
       {/*{header}*/}
-          <div className={'prop-sheet-contents'}>
-      <label>UUID</label>
-      <label className={"value"}>{target ? target.getUUID() : "????"}</label>
-      {propnames.map(([name, def]) => {
-        return (
-          <>
-            <label key={`label_${name.toString()}`}>{name.toString()}</label>
-            <PropEditor
-              key={`editor_${name.toString()}`}
-              target={target}
-              name={name}
-              def={def}
-            />
-          </>
-        )
-      })}
-
-          </div>
-      </Pane>
+      <div className={"prop-sheet-contents"}>
+        <label>UUID</label>
+        <label className={"value"}>{target ? target.getUUID() : "????"}</label>
+        {propnames.map(([name, def]) => {
+          return (
+            <>
+              <label key={`label_${name.toString()}`}>{name.toString()}</label>
+              <PropEditor
+                key={`editor_${name.toString()}`}
+                target={target}
+                name={name}
+                def={def}
+              />
+            </>
+          )
+        })}
+      </div>
+    </Pane>
   )
 }

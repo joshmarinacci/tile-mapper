@@ -45,7 +45,7 @@ export function MapModeView(props: { state: GlobalState; map: GameMap }) {
           layer={selectedLayer}
           setSelectedLayer={setSelectedLayer}
         />
-        <PropSheet target={selectedLayer} title={"Layer Info"}  collapsable/>
+        <PropSheet target={selectedLayer} title={"Layer Info"} collapsable />
       </DividerColumnBox>
       <LayerEditor
         key={"layer-editor"}

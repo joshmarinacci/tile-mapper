@@ -4,9 +4,7 @@ import React from "react"
 import { PropsBase, useWatchAllProps } from "../model/base"
 import { Tool, ToolEvent, ToolOverlayInfo } from "./tool"
 
-type MoveToolSettingsType = {
-  
-};
+type MoveToolSettingsType = {}
 
 export function copyContentsFrom(
   src: ArrayGrid<number>,
