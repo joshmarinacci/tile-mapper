@@ -1,10 +1,11 @@
-import { ArrayGrid, Bounds, Point } from "josh_js_util"
+import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 import React from "react"
 
 import { useWatchAllProps } from "../model/base"
 import { IntegerDef } from "../model/datamodel"
+import { strokeBounds } from "../util"
 import { PixelTool } from "./pixel_tool"
-import { Tool, ToolEvent } from "./tool"
+import { Tool, ToolEvent, ToolOverlayInfo } from "./tool"
 
 type PencilSettingsType = {
   tip_size: number
@@ -17,7 +18,6 @@ export class PencilTool extends PixelTool<PencilSettingsType> implements Tool {
     this._down = false
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   drawPixels(evt: ToolEvent, target: ArrayGrid<number>, final: boolean) {
     if (evt.layer) {
       if (final) {
@@ -28,6 +28,16 @@ export class PencilTool extends PixelTool<PencilSettingsType> implements Tool {
         this.drawAtCursor(target, this._current, evt.color, evt.selection)
       }
     }
+  }
+
+  drawOverlay(ovr: ToolOverlayInfo): void {
+    super.drawOverlay(ovr)
+    const size = this.getPropValue("tip_size")
+    const rad = Math.floor(size / 2)
+    const bds = Bounds.fromPointSize(this._current, new Size(size, size))
+      .add(new Point(-rad, -rad))
+      .scale(ovr.scale)
+    strokeBounds(ovr.ctx, bds, "black", 1)
   }
 
   private drawAtCursor(
