@@ -18,9 +18,16 @@ export class PencilTool extends PixelTool<PencilSettingsType> implements Tool {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  drawPixels(evt: ToolEvent, target: ArrayGrid<number>, _final: boolean) {
-    if (evt.layer)
-      this.drawAtCursor(target, this._current, evt.color, evt.selection)
+  drawPixels(evt: ToolEvent, target: ArrayGrid<number>, final: boolean) {
+    if (evt.layer) {
+      if (final) {
+        this.temp.forEach((v, n) => {
+          if (v >= 0) target.set(n, v)
+        })
+      } else {
+        this.drawAtCursor(target, this._current, evt.color, evt.selection)
+      }
+    }
   }
 
   private drawAtCursor(
