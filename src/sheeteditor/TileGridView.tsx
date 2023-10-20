@@ -1,6 +1,7 @@
 import { Bounds, Point } from "josh_js_util"
 import React, { useContext, useEffect, useRef, useState } from "react"
 
+import { duplicate_tile } from "../actions/actions"
 import { drawEditableSprite, ImagePalette } from "../common/common"
 import { DocContext } from "../common/common-components"
 import { PopupContext } from "../common/popup"
@@ -83,18 +84,23 @@ export class SparseGridModel<T extends Tile> {
     console.log("doing move to")
     const pt = value.getPropValue("gridPosition")
     const pt2 = pos
-    if (pt.x === pt2.x && pt.y === pt2.y) {
-      console.log("same point")
-      return pt
-    }
+    if (pt.x === pt2.x && pt.y === pt2.y) return pt
     const new_key = this.calcKey(pt2)
-    if (this.positions.has(new_key)) {
-      return pt
-    }
+    if (this.positions.has(new_key)) return pt
     this.positions.delete(this.calcKey(pt))
     this.positions.set(this.calcKey(pt2), value)
     value.setPropValue("gridPosition", pt2)
     return pt2
+  }
+
+  getMaxSize() {
+    const max = new Point(0, 0)
+    for (const [, b] of this.positions.entries()) {
+      const pos = b.getPropValue("gridPosition")
+      if (pos.x > max.x) max.x = pos.x
+      if (pos.y > max.y) max.y = pos.y
+    }
+    return max
   }
 }
 
@@ -109,12 +115,12 @@ export function TileGridView(props: {
     palette: ImagePalette
     showGrid: boolean
     showNames: boolean
+    locked: boolean
   }
 }) {
   const { data, options } = props
 
   const rebuild_model = (sheet: Sheet) => {
-    console.log("rebuilding the model")
     const grid = new SparseGridModel<Tile>()
     const tiles = sheet.getPropValue("tiles")
     const positioned = tiles.filter(
@@ -144,7 +150,7 @@ export function TileGridView(props: {
       ctx.imageSmoothingEnabled = false
       ctx.fillStyle = "white"
       ctx.fillRect(0, 0, ref.current.width, ref.current.height)
-      for (const [key, value] of model.getAllPositionsAndValues()) {
+      for (const [, value] of model.getAllPositionsAndValues()) {
         const pos = value.getPropValue("gridPosition").scale(size.w)
         const bounds = Bounds.fromPointSize(pos, size).scale(options.scale)
         ctx.save()
@@ -188,7 +194,7 @@ export function TileGridView(props: {
   useWatchAllProps(props.sheet, () => setModel(rebuild_model(props.sheet)))
 
   const pm = useContext(PopupContext)
-  const toModel = (e) => {
+  const toModel = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
     return new Point(e.clientX, e.clientY)
       .subtract(new Point(rect.left, rect.top))
@@ -196,7 +202,7 @@ export function TileGridView(props: {
       .scale(1 / size.w)
       .floor()
   }
-  const showPopup = (e: React.MouseEvent<HTMLElement>) => {
+  const showPopup = (e: React.MouseEvent<HTMLCanvasElement>) => {
     e.preventDefault()
     e.stopPropagation()
     const pt = toModel(e)
@@ -211,39 +217,49 @@ export function TileGridView(props: {
     }
   }
 
-  const mouseDown = (e) => {
+  const mouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     const pt = toModel(e)
     const tile = model.getAt(pt)
     if (tile) {
       props.setSelected(tile)
+      if (options.locked) return
       setTarget(pt)
       setDown(true)
     }
   }
-  const mouseMove = (e) => {
+  const mouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (options.locked) return
     if (down) {
       setTarget(toModel(e))
     }
   }
-  const mouseUp = (e) => {
+  const mouseUp = (e: React.MouseEvent<HTMLCanvasElement>) => {
     setDown(false)
+    if (options.locked) return
     if (props.selected) {
       const target = toModel(e)
-      model.moveTo(props.selected, target)
+      if (e.altKey) {
+        const new_tile = duplicate_tile(props.sheet, props.selected)
+        new_tile.setPropValue("gridPosition", target)
+        model.addAt(new_tile)
+      } else {
+        model.moveTo(props.selected, target)
+      }
     }
     setTarget(new Point(-1, -1))
   }
-  const mouseLeave = (e) => {
+  const mouseLeave = () => {
     setDown(false)
     setTarget(new Point(-1, -1))
   }
 
+  const maxPosition = model.getMaxSize().add(new Point(2, 2))
   return (
     <canvas
       ref={ref}
       className={"draggable-grid-view"}
-      width={size.w * options.scale * 5}
-      height={size.h * options.scale * 5}
+      width={size.w * options.scale * maxPosition.x}
+      height={size.h * options.scale * maxPosition.y}
       onMouseDown={mouseDown}
       onMouseMove={mouseMove}
       onMouseUp={mouseUp}

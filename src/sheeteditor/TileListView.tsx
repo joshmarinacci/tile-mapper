@@ -117,7 +117,8 @@ export function TileListView(props: {
   const { sheet, tile, setTile, palette, editable } = props
   const showNames = sheet.getPropValue("showNames")
   const showGrid = sheet.getPropValue("showGrid")
-  const [view, setView] = useState<"list" | "grid">("list")
+  const locked = sheet.getPropValue("locked")
+  const view = sheet.getPropValue("viewMode")
   const [scale, setScale] = useState(4)
   const [tiles, setTiles] = useState(sheet.getPropValue("tiles"))
   const add_tile = () => {
@@ -135,10 +136,12 @@ export function TileListView(props: {
       setTile(undefined)
     }
   }
-  const use_grid_view = () => setView("grid")
-  const use_list_view = () => setView("list")
+  const use_grid_view = () => sheet.setPropValue("viewMode", "grid")
+  const use_list_view = () => sheet.setPropValue("viewMode", "list")
   useWatchProp(sheet, "showGrid")
   useWatchProp(sheet, "showNames")
+  useWatchProp(sheet, "viewMode")
+  useWatchProp(sheet, "locked")
   return (
     <div className={"tile-list-view"}>
       {editable && (
@@ -161,6 +164,9 @@ export function TileListView(props: {
             <button onClick={() => setScale(4)}>4x</button>
             <button onClick={() => setScale(8)}>8x</button>
             <button onClick={() => setScale(16)}>16x</button>
+            <button onClick={() => sheet.setPropValue("locked", !locked)}>
+              {locked ? "unlock" : "lock"}
+            </button>
           </DropdownButton>
         </div>
       )}
@@ -181,7 +187,7 @@ export function TileListView(props: {
           setSelected={setTile}
           data={tiles}
           sheet={sheet}
-          options={{ showNames, scale, sheet, showGrid, palette }}
+          options={{ showNames, scale, sheet, showGrid, palette, locked }}
         />
       )}
       {editable && (

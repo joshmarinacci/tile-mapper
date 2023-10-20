@@ -214,12 +214,11 @@ export class Tile extends PropsBase<TileType> {
   clone() {
     const new_tile = new Tile({
       size: this.getPropValue("size"),
+      blocking: this.getPropValue("blocking"),
+      name: this.getPropValue("name"),
+      gridPosition: this.getPropValue("gridPosition"),
     })
     new_tile.getPropValue("data").data = this.data().data.slice()
-    new_tile.setPropValue("blocking", this.getPropValue("blocking"))
-    new_tile.setPropValue("name", this.getPropValue("name"))
-    new_tile.setPropValue("size", this.getPropValue("size"))
-    new_tile.setPropValue("gridPosition", this.getPropValue("gridPosition"))
     return new_tile
   }
 
@@ -333,6 +332,8 @@ type SheetType = {
   selectedTile: Tile | undefined
   showNames: boolean
   showGrid: boolean
+  locked: boolean
+  viewMode: "list" | "grid"
 }
 const TileArrayDef: PropDef<Tile[]> = {
   type: "array",
@@ -367,6 +368,8 @@ const SheetDefs: DefList<SheetType> = {
   },
   showNames: TransientBooleanDef,
   showGrid: TransientBooleanDef,
+  locked: TransientBooleanDef,
+  viewMode: StringDef.withDefault(() => "list"),
 }
 
 export class Sheet extends PropsBase<SheetType> {
