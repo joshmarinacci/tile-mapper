@@ -12,18 +12,15 @@ import { TilePopupMenu } from "./TilePopupMenu"
 export class SparseGridModel<T extends Tile> {
   private positions: Map<string, T>
   private inverse: Map<string, Point>
-  private values: T[]
 
   constructor() {
     this.positions = new Map()
     this.inverse = new Map()
-    this.values = []
   }
 
-  addAt(value: T, pt: Point) {
+  addAt(value: T) {
     this.positions.set(this.calcKey(value.getPropValue("gridPosition")), value)
     this.inverse.set(value.getUUID(), value.getPropValue("gridPosition"))
-    this.values.push(value)
   }
 
   getAllPositionsAndValues() {
@@ -31,12 +28,11 @@ export class SparseGridModel<T extends Tile> {
   }
 
   addAtEmpty(value: T): Point {
-    console.log("adding empty")
     let pt = new Point(0, 0)
     for (let i = 0; i < 50; i++) {
       if (!this.positions.has(this.calcKey(pt))) {
         value.setPropValue("gridPosition", pt)
-        this.addAt(value, pt)
+        this.addAt(value)
         return pt
       }
       pt = pt.add(new Point(1, 0))
@@ -124,7 +120,7 @@ export function TileGridView(props: {
     const positioned = tiles.filter(
       (t) => t.getPropValue("gridPosition").x >= 0,
     )
-    positioned.forEach((t) => grid.addAt(t, t.getPropValue("gridPosition")))
+    positioned.forEach((t) => grid.addAt(t))
     const unpositioned = tiles.filter(
       (t) => t.getPropValue("gridPosition").x < 0,
     )
@@ -237,6 +233,10 @@ export function TileGridView(props: {
     }
     setTarget(new Point(-1, -1))
   }
+  const mouseLeave = (e) => {
+    setDown(false)
+    setTarget(new Point(-1, -1))
+  }
 
   return (
     <canvas
@@ -248,6 +248,7 @@ export function TileGridView(props: {
       onMouseMove={mouseMove}
       onMouseUp={mouseUp}
       onContextMenu={showPopup}
+      onMouseLeave={mouseLeave}
     ></canvas>
   )
 }
