@@ -150,6 +150,13 @@ function PixelGlyphEditor(props: { glyph: PixelGlyph; palette: ImagePalette }) {
         }}
         onMouseDown={(e) => {
           setDown(true)
+          if (e.button === 2) {
+            const color = glyph.getPropValue("data").get(canvasToImage(e))
+            setColor(color)
+            e.stopPropagation()
+            e.preventDefault()
+            return
+          }
           glyph.getPropValue("data").set(canvasToImage(e), color)
           glyph._fire("data", glyph.getPropValue("data"))
         }}
@@ -281,7 +288,8 @@ export function PixelFontEditorView(props: {
   }
 
   const add_glyph = () => {
-    const glyph = new PixelGlyph({ name: "letter" })
+    const glyph = new PixelGlyph({ name: "X" })
+    glyph.getPropValue("data").fill((n) => -1)
     appendToList(props.font, "glyphs", glyph)
   }
   const toggle_draw_names = () => {

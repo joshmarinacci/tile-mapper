@@ -709,6 +709,7 @@ const ObjectListDef = new PropDefBuilder<object>({
   default: () => [],
   toJSON: (v) => v.map((vv) => vv.toJSON()),
   format: (v) => "object list",
+  fromJSON: (v) => v.map((vv) => restoreClassFromJSON(vv)),
 })
 
 type PixelGlyphType = {
@@ -760,7 +761,7 @@ export class PixelFont extends PropsBase<PixelFontType> {
 }
 CLASS_REGISTRY.register("PixelFont", PixelFont, PixelFontDefs)
 
-const PixelFontListDef: PropDef<PixelFontType[]> = ObjectListDef.copy()
+const PixelFontListDef: PropDef<PixelFont[]> = ObjectListDef.copy()
   .withHidden(true)
   .withExpandable(true)
 export type DocType = {
@@ -770,7 +771,7 @@ export type DocType = {
   actors: Actor[]
   tests: GameTest[]
   canvases: SImage[]
-  fonts: PixelFontType[]
+  fonts: PixelFont[]
   palette: ImagePalette
   tileSize: Size
 }
