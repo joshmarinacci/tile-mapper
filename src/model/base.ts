@@ -266,6 +266,11 @@ export class PropDefBuilder<T> implements PropDef<T> {
     this.watchChildren = b
     return this
   }
+
+  withExpandable(b: boolean) {
+    this.expandable = b
+    return this
+  }
 }
 
 export type Shortcut = {

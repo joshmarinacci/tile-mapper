@@ -17,6 +17,8 @@ import {
   GameDoc,
   GameMap,
   GameTest,
+  PixelFont,
+  PixelGlyph,
   Sheet,
   SImage,
   SImageLayer,
@@ -144,6 +146,14 @@ function PropertyList<T, K extends keyof T>(props: {
       />,
     )
   }
+  const addFont = () => {
+    const font = new PixelFont({ name: "unnamed font" })
+    const glyph = new PixelGlyph({ name: "A" })
+    glyph.getPropValue("data").fill((n) => -1)
+    appendToList(font, "glyphs", glyph)
+    appendToList(target, name, font)
+    props.state.setPropValue("selection", font)
+  }
 
   return (
     <li className={"tree-item"}>
@@ -160,6 +170,7 @@ function PropertyList<T, K extends keyof T>(props: {
           {name === "canvases" && (
             <button onClick={addCanvas}>Add Canvas</button>
           )}
+          {name === "fonts" && <button onClick={addFont}>Add Font</button>}
           {/*<button onClick={() => add()}>Add</button>*/}
         </DropdownButton>
       </p>

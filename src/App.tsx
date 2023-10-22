@@ -46,9 +46,11 @@ import {
   GameDoc,
   GameMap,
   GameTest,
+  PixelFont,
   Sheet,
   SImage,
 } from "./model/datamodel"
+import { PixelFontEditorView } from "./PixelFontEditorView"
 import { TileSheetEditor } from "./sheeteditor/TileSheetEditor"
 import { GlobalState } from "./state"
 import { TestModeView } from "./testeditor/TestModeView"
@@ -80,6 +82,9 @@ function getEditView(state: GlobalState, selection: unknown) {
   }
   if (selection instanceof SImage) {
     return <SImageEditorView state={state} image={selection as SImage} />
+  }
+  if (selection instanceof PixelFont) {
+    return <PixelFontEditorView state={state} font={selection as PixelFont} />
   }
   return (
     <div style={{ padding: "1rem" }}>

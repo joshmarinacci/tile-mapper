@@ -39,7 +39,13 @@ export const NumberDef = new PropDefBuilder<number>({
   fromJSON: (v) => v as number,
 })
 export const FloatDef = NumberDef.copy().withFormat((v) => v.toFixed(2))
-export const IntegerDef = NumberDef.copy().withFormat((v) => v.toFixed(0))
+export const IntegerDef = new PropDefBuilder<number>({
+  type: "integer",
+  default: () => 0,
+  format: (v) => v.toFixed(0),
+  toJSON: (v) => v,
+  fromJSON: (v) => v as number,
+})
 const SizeDef = new PropDefBuilder<Size>({
   type: "Size",
   default: () => new Size(10, 10),
@@ -698,6 +704,65 @@ const CanvasesListDef: PropDef<SImage[]> = {
   expandable: true,
 }
 
+const ObjectListDef = new PropDefBuilder<object>({
+  type: "array",
+  default: () => [],
+  toJSON: (v) => v.map((vv) => vv.toJSON()),
+  format: (v) => "object list",
+})
+
+type PixelGlyphType = {
+  name: string
+  codepoint: number
+  size: Size
+  baseline: number
+  ascent: number
+  descent: number
+  left: number
+  right: number
+  data: ArrayGrid<number>
+}
+
+const PixelGlyphDefs: DefList<PixelGlyphType> = {
+  name: NameDef,
+  codepoint: IntegerDef.copy().withDefault(() => 65),
+  size: SizeDef.copy().withDefault(() => new Size(16, 16)),
+  baseline: IntegerDef.copy().withDefault(() => 12),
+  ascent: IntegerDef.copy().withDefault(() => 10),
+  descent: IntegerDef.copy().withDefault(() => 2),
+  left: IntegerDef.copy().withDefault(() => 0),
+  right: IntegerDef.copy().withDefault(() => 0),
+  data: ArrayGridNumberDef.copy()
+    .withWatchChildren(true)
+    .withDefault(() => new ArrayGrid<number>(16, 16)),
+}
+export class PixelGlyph extends PropsBase<PixelGlyphType> {
+  constructor(opts?: PropValues<PixelGlyphType>) {
+    super(PixelGlyphDefs, opts)
+  }
+}
+CLASS_REGISTRY.register("PixelGlyph", PixelGlyph, PixelGlyphDefs)
+
+type PixelFontType = {
+  name: string
+  glyphs: PixelGlyph[]
+}
+const PixelGlyphListDef: PropDef<PixelGlyphType[]> =
+  ObjectListDef.copy().withHidden(true)
+const PixelFontDefs: DefList<PixelFontType> = {
+  name: NameDef,
+  glyphs: PixelGlyphListDef,
+}
+export class PixelFont extends PropsBase<PixelFontType> {
+  constructor(opts?: PropValues<PixelFontType>) {
+    super(PixelFontDefs, opts)
+  }
+}
+CLASS_REGISTRY.register("PixelFont", PixelFont, PixelFontDefs)
+
+const PixelFontListDef: PropDef<PixelFontType[]> = ObjectListDef.copy()
+  .withHidden(true)
+  .withExpandable(true)
 export type DocType = {
   name: string
   sheets: Sheet[]
@@ -705,6 +770,7 @@ export type DocType = {
   actors: Actor[]
   tests: GameTest[]
   canvases: SImage[]
+  fonts: PixelFontType[]
   palette: ImagePalette
   tileSize: Size
 }
@@ -715,6 +781,7 @@ const GameDocDefs: DefList<DocType> = {
   actors: ActorsListDef,
   tests: TestsListDef,
   canvases: CanvasesListDef,
+  fonts: PixelFontListDef,
   palette: PaletteDef,
   tileSize: SizeDef,
 }
