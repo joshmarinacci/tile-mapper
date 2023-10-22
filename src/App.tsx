@@ -32,6 +32,7 @@ import { PopupContainer, PopupContext, PopupContextImpl } from "./common/popup"
 import { PropSheet } from "./common/propsheet"
 import { ObjectTreeView } from "./common/treeview"
 import Example from "./example.json"
+import { PixelFontEditorView } from "./fonteditor/PixelFontEditorView"
 import { SImageEditorView } from "./imageeditor/SImageEditorView"
 import { make_doc_from_json } from "./io/json"
 import { MapModeView } from "./mapeditor/MapModeView"
@@ -50,7 +51,6 @@ import {
   Sheet,
   SImage,
 } from "./model/datamodel"
-import { PixelFontEditorView } from "./PixelFontEditorView"
 import { TileSheetEditor } from "./sheeteditor/TileSheetEditor"
 import { GlobalState } from "./state"
 import { TestModeView } from "./testeditor/TestModeView"

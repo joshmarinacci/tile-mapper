@@ -748,8 +748,9 @@ type PixelFontType = {
   name: string
   glyphs: PixelGlyph[]
 }
-const PixelGlyphListDef: PropDef<PixelGlyphType[]> =
-  ObjectListDef.copy().withHidden(true)
+const PixelGlyphListDef: PropDef<PixelGlyphType[]> = ObjectListDef.copy()
+  .withHidden(true)
+  .withWatchChildren(true)
 const PixelFontDefs: DefList<PixelFontType> = {
   name: NameDef,
   glyphs: PixelGlyphListDef,
