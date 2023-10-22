@@ -30,7 +30,7 @@ export function PixelFontPreview(props: { font: PixelFont }) {
           glyph.getPropValue("size").w -
           glyph.getPropValue("left") -
           glyph.getPropValue("right") +
-          SPACE
+          SPACE * 2
       } else {
         ctx.fillStyle = "black"
         ctx.fillText(ch, x, y)

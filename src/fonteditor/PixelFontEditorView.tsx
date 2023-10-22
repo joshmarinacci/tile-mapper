@@ -49,6 +49,13 @@ export function PixelFontEditorView(props: {
   const toggle_draw_names = () => {
     setDrawNames(!drawNames)
   }
+  const sort = () => {
+    const glyphs = props.font.getPropValue("glyphs").slice()
+    glyphs.sort((a, b) => {
+      return a.getPropValue("codepoint") - b.getPropValue("codepoint")
+    })
+    props.font.setPropValue("glyphs", glyphs)
+  }
   useWatchProp(props.font, "glyphs")
   useWatchAllProps(props.font)
   const opts: GlyphDrawOptions = {
@@ -60,6 +67,7 @@ export function PixelFontEditorView(props: {
         <div className={"toolbar"}>
           <button onClick={add_glyph}>add glyph</button>
           <button onClick={toggle_draw_names}>names</button>
+          <button onClick={sort}>sort</button>
         </div>
         <ListView
           selected={selected}
