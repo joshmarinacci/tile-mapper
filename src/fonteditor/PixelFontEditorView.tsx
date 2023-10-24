@@ -1,7 +1,8 @@
 import { Point } from "josh_js_util"
 import React, { useState } from "react"
 
-import { ImagePalette } from "../common/common"
+import { Icons, ImagePalette } from "../common/common"
+import { DropdownButton } from "../common/common-components"
 import { ListView, ListViewDirection } from "../common/ListView"
 import { PropSheet } from "../common/propsheet"
 import { appendToList, useWatchAllProps, useWatchProp } from "../model/base"
@@ -36,6 +37,7 @@ export function PixelFontEditorView(props: {
 }) {
   const [selected, setSelected] = useState<PixelGlyph | undefined>()
   const [drawNames, setDrawNames] = useState(true)
+  const [scale, setScale] = useState(1)
   const palette: ImagePalette = {
     name: "B",
     colors: ["#000000", "#ff0000"],
@@ -60,6 +62,7 @@ export function PixelFontEditorView(props: {
   useWatchAllProps(props.font)
   const opts: GlyphDrawOptions = {
     drawNames: drawNames,
+    scale: scale,
   }
   return (
     <div className={"hbox"}>
@@ -68,6 +71,11 @@ export function PixelFontEditorView(props: {
           <button onClick={add_glyph}>add glyph</button>
           <button onClick={toggle_draw_names}>names</button>
           <button onClick={sort}>sort</button>
+          <DropdownButton icon={Icons.Gear}>
+            <button onClick={() => setScale(1)}>1x</button>
+            <button onClick={() => setScale(2)}>2x</button>
+            <button onClick={() => setScale(3)}>3x</button>
+          </DropdownButton>
         </div>
         <ListView
           selected={selected}

@@ -9,6 +9,7 @@ import { drawGlyph } from "./PixelFontEditorView"
 
 export type GlyphDrawOptions = {
   drawNames: boolean
+  scale: number
 }
 export const PixelGlyphRenderer: ListViewRenderer<
   PixelGlyph,
@@ -21,7 +22,7 @@ export const PixelGlyphRenderer: ListViewRenderer<
   const { value } = props
   const ref = useRef<HTMLCanvasElement>(null)
   const size = value.getPropValue("size")
-  const scale = 1
+  const scale = props.options.scale
   const redraw = () => {
     if (ref.current && value) {
       const canvas = ref.current
