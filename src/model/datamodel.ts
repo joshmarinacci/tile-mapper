@@ -251,13 +251,13 @@ export class TextObject extends PropsBase<TextObjectType> {
 }
 CLASS_REGISTRY.register("TextObject", TextObject, TextObjectDefs)
 
-export interface ImageLayer {
+export interface ImageLayerType {
   name: string
   visible: boolean
   opacity: number
 }
 
-interface ImagePixelLayerType extends ImageLayer {
+interface ImagePixelLayerType extends ImageLayerType {
   data: ArrayGrid<number>
 }
 const ImagePixelLayerData = ArrayGridNumberDef.copy()
@@ -317,7 +317,7 @@ export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> {
 }
 CLASS_REGISTRY.register("ImageLayer", ImagePixelLayer, ImagePixelLayerDefs)
 
-interface ImageObjectLayerType extends ImageLayer {
+interface ImageObjectLayerType extends ImageLayerType {
   data: TextObject[]
 }
 
@@ -343,7 +343,7 @@ CLASS_REGISTRY.register(
 
 type SImageType = {
   name: string
-  layers: ImageLayer[]
+  layers: PropsBase<ImageLayerType>[]
   size: Size
 }
 

@@ -14,74 +14,35 @@ import React, {
 import { Icons, ImagePalette } from "../common/common"
 import {
   DocContext,
-  Icon,
   IconButton,
   Pane,
   ToggleButton,
 } from "../common/common-components"
 import { DividerColumnBox } from "../common/DividerColumnBox"
-import {
-  ListView,
-  ListViewDirection,
-  ListViewRenderer,
-} from "../common/ListView"
+import { ListView, ListViewDirection } from "../common/ListView"
 import { PaletteColorPickerPane } from "../common/Palette"
 import { PropSheet } from "../common/propsheet"
 import { ShareImageDialog } from "../common/ShareImageDialog"
+import { appendToList, PropsBase, useWatchAllProps } from "../model/base"
 import {
-  appendToList,
-  PropsBase,
-  useWatchAllProps,
-  useWatchProp,
-} from "../model/base"
-import {
-  ImageLayer,
+  ImageLayerType,
   ImageObjectLayer,
   ImagePixelLayer,
   SImage,
+  TextObject,
 } from "../model/datamodel"
 import { GlobalState } from "../state"
 import { strokeBounds } from "../util"
 import { EllipseTool, EllipseToolSettings } from "./ellipse_tool"
 import { EraserTool, EraserToolSettings } from "./eraser_tool"
 import { FillTool, FillToolSettings } from "./fill_tool"
+import { LayerItemRenderer } from "./LayerItemRenderer"
 import { LineTool, LineToolSettings } from "./line_tool"
 import { MoveTool, MoveToolSettings } from "./move_tool"
 import { PencilTool, PencilToolSettings } from "./pencil_tool"
 import { RectTool, RectToolSettings } from "./rect_tool"
 import { SelectionTool, SelectionToolSettings } from "./selection_tool"
 import { Tool } from "./tool"
-
-const LayerItemRenderer: ListViewRenderer<
-  PropsBase<ImageLayer>,
-  never
-> = (props: {
-  value: PropsBase<ImageLayer>
-  selected: boolean
-  options: never
-}) => {
-  const { value } = props
-  useWatchProp(value, "name")
-  useWatchProp(value, "visible")
-  useWatchProp(value, "opacity")
-  return (
-    <div
-      className={"std-list-item"}
-      style={{ justifyContent: "space-between" }}
-    >
-      {value instanceof ImagePixelLayer && <Icon name={Icons.PixelLayer} />}
-      {value instanceof ImageObjectLayer && <Icon name={Icons.ObjectLayer} />}
-      <b>{value.getPropValue("name")}</b>
-      <i>{value.getPropValue("opacity").toFixed(2)}</i>
-      <Icon
-        onClick={() =>
-          value.setPropValue("visible", !value.getPropValue("visible"))
-        }
-        name={value.getPropValue("visible") ? Icons.EyeOpen : Icons.EyeClosed}
-      />
-    </div>
-  )
-}
 
 function clamp(val: number, min: number, max: number) {
   if (val < min) return min
@@ -96,15 +57,17 @@ export function drawImage(
   scale: number,
 ) {
   image.getPropValue("layers").forEach((layer) => {
-    if (!layer.getPropValue("visible")) return
-    ctx.save()
-    ctx.globalAlpha = clamp(layer.getPropValue("opacity"), 0, 1)
-    layer.getPropValue("data").forEach((n, p) => {
-      ctx.fillStyle = palette.colors[n]
-      if (n === -1) ctx.fillStyle = "transparent"
-      ctx.fillRect(p.x * scale, p.y * scale, 1 * scale, 1 * scale)
-    })
-    ctx.restore()
+    if (layer instanceof ImagePixelLayer) {
+      if (!layer.getPropValue("visible")) return
+      ctx.save()
+      ctx.globalAlpha = clamp(layer.getPropValue("opacity"), 0, 1)
+      layer.getPropValue("data").forEach((n, p) => {
+        ctx.fillStyle = palette.colors[n]
+        if (n === -1) ctx.fillStyle = "transparent"
+        ctx.fillRect(p.x * scale, p.y * scale, 1 * scale, 1 * scale)
+      })
+      ctx.restore()
+    }
   })
 }
 
@@ -162,13 +125,15 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
   const [grid, setGrid] = useState(false)
   const [zoom, setZoom] = useState(3)
   const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
-  const [layer, setLayer] = useState<ImageLayer | undefined>(() => {
-    if (image.getPropValue("layers").length > 0) {
-      return image.getPropValue("layers")[0]
-    } else {
-      return undefined
-    }
-  })
+  const [layer, setLayer] = useState<PropsBase<ImageLayerType> | undefined>(
+    () => {
+      if (image.getPropValue("layers").length > 0) {
+        return image.getPropValue("layers")[0]
+      } else {
+        return undefined
+      }
+    },
+  )
   const canvasRef = useRef(null)
   const [pixelTool, setPixelTool] = useState<Tool>(() => new PencilTool())
   const [count, setCount] = useState(0)
@@ -404,7 +369,10 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
         {layer instanceof ImageObjectLayer && (
           <div className={"toolbar"}>
             <ToggleButton
-              onClick={() => {}}
+              onClick={() => {
+                const textobj = new TextObject()
+                appendToList(layer, "data", textobj)
+              }}
               icon={Icons.Plus}
               selected={false}
               text={"new text"}
@@ -446,53 +414,59 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
             e.preventDefault()
             e.stopPropagation()
             const pt = canvasToImage(e)
-            if (layer) {
+            if (layer instanceof ImagePixelLayer) {
               const color = layer.getPixel(pt)
               setDrawColor(palette.colors[color])
             }
           }}
           onMouseDown={(e) => {
             if (e.button == 2) return
-            pixelTool.onMouseDown({
-              color: palette.colors.indexOf(drawColor),
-              pt: canvasToImage(e),
-              e: e,
-              layer: layer,
-              palette: palette,
-              selection: selectionRect,
-              setSelectionRect: (rect) => setSelectionRect(rect),
-              markDirty: () => {
-                setCount(count + 1)
-              },
-            })
+            if (layer instanceof ImagePixelLayer) {
+              pixelTool.onMouseDown({
+                color: palette.colors.indexOf(drawColor),
+                pt: canvasToImage(e),
+                e: e,
+                layer: layer,
+                palette: palette,
+                selection: selectionRect,
+                setSelectionRect: (rect) => setSelectionRect(rect),
+                markDirty: () => {
+                  setCount(count + 1)
+                },
+              })
+            }
           }}
           onMouseMove={(e) => {
-            pixelTool.onMouseMove({
-              color: palette.colors.indexOf(drawColor),
-              pt: canvasToImage(e),
-              e: e,
-              layer: layer,
-              palette: palette,
-              selection: selectionRect,
-              setSelectionRect: (rect) => setSelectionRect(rect),
-              markDirty: () => {
-                setCount(count + 1)
-              },
-            })
+            if (layer instanceof ImagePixelLayer) {
+              pixelTool.onMouseMove({
+                color: palette.colors.indexOf(drawColor),
+                pt: canvasToImage(e),
+                e: e,
+                layer: layer,
+                palette: palette,
+                selection: selectionRect,
+                setSelectionRect: (rect) => setSelectionRect(rect),
+                markDirty: () => {
+                  setCount(count + 1)
+                },
+              })
+            }
           }}
           onMouseUp={(e) => {
-            pixelTool.onMouseUp({
-              color: palette.colors.indexOf(drawColor),
-              pt: canvasToImage(e),
-              e: e,
-              layer: layer,
-              palette: palette,
-              selection: selectionRect,
-              setSelectionRect: (rect) => setSelectionRect(rect),
-              markDirty: () => {
-                setCount(count + 1)
-              },
-            })
+            if (layer instanceof ImagePixelLayer) {
+              pixelTool.onMouseUp({
+                color: palette.colors.indexOf(drawColor),
+                pt: canvasToImage(e),
+                e: e,
+                layer: layer,
+                palette: palette,
+                selection: selectionRect,
+                setSelectionRect: (rect) => setSelectionRect(rect),
+                markDirty: () => {
+                  setCount(count + 1)
+                },
+              })
+            }
           }}
         />
       </div>
