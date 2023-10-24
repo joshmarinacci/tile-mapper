@@ -1,12 +1,18 @@
-import { ArrayGrid, Bounds, Point, range } from "josh_js_util"
+import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
+import { appendToList } from "../model/base"
+import {
+  ImageObjectLayer,
+  ImagePixelLayer,
+  TextObject,
+} from "../model/datamodel"
 import { copyContentsFrom } from "./move_tool"
 
 describe("array grid test", () => {
   it("should create an array", async () => {
     const arr = new ArrayGrid<number>(20, 20)
-    arr.fill((n) => 24)
+    arr.fill(() => 24)
     expect(arr.get_at(0, 0)).toBe(24)
     expect(arr.w).toBe(20)
     expect(arr.h).toBe(20)
@@ -14,9 +20,9 @@ describe("array grid test", () => {
 
   it("can copy same size array grids", async () => {
     const arr1 = new ArrayGrid<number>(10, 10)
-    arr1.fill((n) => 24)
+    arr1.fill(() => 24)
     const arr2 = new ArrayGrid<number>(10, 10)
-    arr2.fill((n) => 25)
+    arr2.fill(() => 25)
     expect(arr1.w).toBe(10)
     expect(arr2.w).toBe(10)
     expect(arr1.get_at(0, 0)).toBe(24)
@@ -30,7 +36,7 @@ describe("array grid test", () => {
     const arr1 = new ArrayGrid<number>(10, 10)
     arr1.fill((n) => 24)
     const arr2 = new ArrayGrid<number>(10, 10)
-    arr2.fill((n) => 25)
+    arr2.fill(() => 25)
     expect(arr1.w).toBe(10)
     expect(arr2.w).toBe(10)
     expect(arr1.get_at(0, 0)).toBe(24)
@@ -85,5 +91,40 @@ describe("array grid test", () => {
     copyContentsFrom(arr1, new Bounds(2, 2, 2, 2), arr2, new Point(0, 0))
     expect(arr2.get_at(0, 0)).toBe(24)
     expect(arr2.get_at(1, 1)).toBe(28)
+  })
+})
+
+describe("image layer test", () => {
+  it("should create a image pixel layer", async () => {
+    const size = new Size(10, 10)
+    const layer = new ImagePixelLayer({
+      name: "first pixel layer",
+      opacity: 0.5,
+      visible: true,
+    })
+    layer.resizeAndClear(size)
+    layer.fillAll(5)
+    layer.setPixel(new Point(0, 0), 2)
+    const json = layer.toJSON()
+    expect(json.props.name).toBe(layer.getPropValue("name"))
+    expect(json.props.opacity).toBe(layer.getPropValue("opacity"))
+    expect(json.props.visible).toBe(layer.getPropValue("visible"))
+    expect(json.props.data.data[0]).toBe(2)
+    expect(json.props.data.data[1]).toBe(5)
+  })
+  it("should create an image object layer", async () => {
+    const size = new Size(10, 10)
+    const layer = new ImageObjectLayer({
+      name: "first pixel layer",
+      opacity: 0.5,
+      visible: true,
+    })
+    const obj = new TextObject({})
+    appendToList(layer, "data", obj)
+    const json = layer.toJSON()
+    expect(json.props.name).toBe(layer.getPropValue("name"))
+    expect(json.props.opacity).toBe(layer.getPropValue("opacity"))
+    expect(json.props.visible).toBe(layer.getPropValue("visible"))
+    console.log(json.props.data)
   })
 })

@@ -243,4 +243,6 @@ export enum Icons {
   SelectionSelected = "selection-selected",
   Move = "move",
   DividerHandle = "divider-handle",
+  PixelLayer = "pixel-layer",
+  ObjectLayer = "object-layer",
 }

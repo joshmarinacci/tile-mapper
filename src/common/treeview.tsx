@@ -13,15 +13,14 @@ import {
 import { appendToList, PropDef, PropsBase, useWatchProp } from "../model/base"
 import {
   Actor,
-  DocType,
   GameDoc,
   GameMap,
   GameTest,
+  ImagePixelLayer,
   PixelFont,
   PixelGlyph,
   Sheet,
   SImage,
-  SImageLayer,
 } from "../model/datamodel"
 import { GlobalState } from "../state"
 import { down_arrow_triangle, right_arrow_triangle } from "./common"
@@ -103,7 +102,7 @@ function PropertyList<T, K extends keyof T>(props: {
   const addActor = () => {
     const size = new Size(16, 16)
     const sprite = new SImage({ name: "new actor sprite", size: size })
-    const layer = new SImageLayer({
+    const layer = new ImagePixelLayer({
       name: "layer",
       opacity: 1.0,
       visible: true,
@@ -133,8 +132,8 @@ function PropertyList<T, K extends keyof T>(props: {
       <AddSImageDialog
         onComplete={(size) => {
           const canvas = new SImage({ name: "blank canvas", size: size })
-          const layer = new SImageLayer({
-            name: "unnamed layer",
+          const layer = new ImagePixelLayer({
+            name: "new pixel layer",
             opacity: 1.0,
             visible: true,
           })

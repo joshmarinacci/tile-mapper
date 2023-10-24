@@ -135,12 +135,9 @@ export type MapCell = {
 
 export const BlockingDef = BooleanDef.copy()
 
-const GenericDataArrayDef: PropDef<object[]> = {
+const GenericDataArrayDef = new PropDefBuilder<object[]>({
   type: "array",
-  editable: false,
   default: () => [],
-  expandable: false,
-  watchChildren: false,
   format: () => "unknown",
   toJSON: (v) =>
     v.map((a) => {
@@ -148,8 +145,9 @@ const GenericDataArrayDef: PropDef<object[]> = {
       return a
     }),
   fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
-  hidden: true,
-}
+})
+  .withEditable(false)
+  .withHidden(true)
 
 type ArrayGridNumberJSON = {
   w: number
@@ -236,28 +234,51 @@ export class Tile extends PropsBase<TileType> {
     return this.getPropValue("data")
   }
 }
+
 CLASS_REGISTRY.register("Tile", Tile, TileDefs)
 
-type SImageLayerType = {
+export interface ImageObjectType {
+  name: string
+}
+export interface TextObjectType extends ImageObjectType {}
+const TextObjectDefs: DefList<TextObjectType> = {
+  name: NameDef,
+}
+export class TextObject extends PropsBase<TextObjectType> {
+  constructor(opts?: PropValues<TextObjectType>) {
+    super(TextObjectDefs, opts)
+  }
+}
+CLASS_REGISTRY.register("TextObject", TextObject, TextObjectDefs)
+
+export interface ImageLayer {
   name: string
   visible: boolean
   opacity: number
+}
+
+interface ImagePixelLayerType extends ImageLayer {
   data: ArrayGrid<number>
 }
-const SImageLayerDataPropDef = ArrayGridNumberDef.copy()
+const ImagePixelLayerData = ArrayGridNumberDef.copy()
   .withEditable(false)
   .withHidden(true)
-const SImageLayerDataDefs: DefList<SImageLayerType> = {
+const ImagePixelLayerDefs: DefList<ImagePixelLayerType> = {
   name: NameDef,
   visible: BooleanDef,
   opacity: FloatDef,
-  data: SImageLayerDataPropDef,
+  data: ImagePixelLayerData,
 }
-export class SImageLayer extends PropsBase<SImageLayerType> {
-  constructor(opts?: PropValues<SImageLayerType>) {
-    super(SImageLayerDataDefs, opts)
+export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> {
+  constructor(opts?: PropValues<ImagePixelLayerType>) {
+    super(ImagePixelLayerDefs, opts)
   }
 
+  resizeAndClear(size: Size) {
+    const data = new ArrayGrid<number>(size.w, size.h)
+    data.fill(() => -1)
+    this.setPropValue("data", data)
+  }
   rebuildFromCanvas(canvas: SImage) {
     const size = canvas.getPropValue("size")
     const data = new ArrayGrid<number>(size.w, size.h)
@@ -294,20 +315,39 @@ export class SImageLayer extends PropsBase<SImageLayerType> {
     this.setPropValue("data", newData)
   }
 }
-CLASS_REGISTRY.register("SImageLayer", SImageLayer, SImageLayerDataDefs)
+CLASS_REGISTRY.register("ImageLayer", ImagePixelLayer, ImagePixelLayerDefs)
+
+interface ImageObjectLayerType extends ImageLayer {
+  data: TextObject[]
+}
+
+const ImageObjectLayerData = GenericDataArrayDef.copy().withWatchChildren(true)
+const ImageObjectLayerDefs: DefList<ImageObjectLayerType> = {
+  name: NameDef,
+  visible: BooleanDef,
+  opacity: FloatDef,
+  data: ImageObjectLayerData,
+}
+
+export class ImageObjectLayer extends PropsBase<ImageObjectLayerType> {
+  constructor(opts?: PropValues<ImageObjectLayerType>) {
+    super(ImageObjectLayerDefs, opts)
+  }
+}
+
+CLASS_REGISTRY.register(
+  "ImageObjectLayer",
+  ImageObjectLayer,
+  ImageObjectLayerDefs,
+)
 
 type SImageType = {
   name: string
-  layers: SImageLayer[]
+  layers: ImageLayer[]
   size: Size
 }
-const SImageLayerArrayDef = new PropDefBuilder<SImageLayer[]>({
-  type: "array",
-  default: () => [],
-  format: (v: SImageLayer[]) => `${v.length} layers`,
-  toJSON: (v: SImageLayer[]) => v.map((a) => (a.toJSON ? a.toJSON() : a)),
-  fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
-})
+
+const SImageLayerArrayDef = GenericDataArrayDef.copy()
   .withEditable(false)
   .withHidden(true)
   .withWatchChildren(true)
@@ -737,11 +777,13 @@ const PixelGlyphDefs: DefList<PixelGlyphType> = {
     .withWatchChildren(true)
     .withDefault(() => new ArrayGrid<number>(16, 16)),
 }
+
 export class PixelGlyph extends PropsBase<PixelGlyphType> {
   constructor(opts?: PropValues<PixelGlyphType>) {
     super(PixelGlyphDefs, opts)
   }
 }
+
 CLASS_REGISTRY.register("PixelGlyph", PixelGlyph, PixelGlyphDefs)
 
 type PixelFontType = {
@@ -755,11 +797,13 @@ const PixelFontDefs: DefList<PixelFontType> = {
   name: NameDef,
   glyphs: PixelGlyphListDef,
 }
+
 export class PixelFont extends PropsBase<PixelFontType> {
   constructor(opts?: PropValues<PixelFontType>) {
     super(PixelFontDefs, opts)
   }
 }
+
 CLASS_REGISTRY.register("PixelFont", PixelFont, PixelFontDefs)
 
 const PixelFontListDef: PropDef<PixelFont[]> = ObjectListDef.copy()

@@ -33,7 +33,7 @@ import { PropSheet } from "./common/propsheet"
 import { ObjectTreeView } from "./common/treeview"
 import Example from "./example.json"
 import { PixelFontEditorView } from "./fonteditor/PixelFontEditorView"
-import { SImageEditorView } from "./imageeditor/SImageEditorView"
+import { ImageEditorView } from "./imageeditor/ImageEditorView"
 import { make_doc_from_json } from "./io/json"
 import { MapModeView } from "./mapeditor/MapModeView"
 import {
@@ -81,7 +81,7 @@ function getEditView(state: GlobalState, selection: unknown) {
     return <TestModeView state={state} test={selection as GameTest} />
   }
   if (selection instanceof SImage) {
-    return <SImageEditorView state={state} image={selection as SImage} />
+    return <ImageEditorView state={state} image={selection as SImage} />
   }
   if (selection instanceof PixelFont) {
     return <PixelFontEditorView state={state} font={selection as PixelFont} />

@@ -2,14 +2,14 @@ import { Bounds, Point } from "josh_js_util"
 import React from "react"
 
 import { ImagePalette } from "../common/common"
-import { SImageLayer } from "../model/datamodel"
+import { ImagePixelLayer } from "../model/datamodel"
 
 export type ToolEvent = {
   pt: Point // in image coords
   e: React.MouseEvent<HTMLCanvasElement> // in screen coords
   color: number //currently selected color
   palette: ImagePalette
-  layer: SImageLayer | undefined // currently selected layer
+  layer: ImagePixelLayer | undefined // currently selected layer
   markDirty: () => void
   selection: Bounds | undefined
   setSelectionRect: (selection: Bounds | undefined) => void

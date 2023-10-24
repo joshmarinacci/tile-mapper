@@ -2,14 +2,14 @@ import { Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
 import { appendToList } from "../model/base"
-import { SImage, SImageLayer } from "../model/datamodel"
+import { ImagePixelLayer, SImage } from "../model/datamodel"
 import { drawEllipse } from "./ellipse_tool"
 import { drawRect } from "./rect_tool"
 
 describe("basic drawing", () => {
   it("should fill the canvas", async () => {
     const canvas = new SImage({ size: new Size(50, 50) })
-    const layer = new SImageLayer({ visible: true, opacity: 1.0 })
+    const layer = new ImagePixelLayer({ visible: true, opacity: 1.0 })
     appendToList(canvas, "layers", layer)
     layer.rebuildFromCanvas(canvas)
 
@@ -20,7 +20,7 @@ describe("basic drawing", () => {
   })
   it("should draw a rectangle", async () => {
     const canvas = new SImage({ size: new Size(50, 50) })
-    const layer = new SImageLayer({ visible: true, opacity: 1.0 })
+    const layer = new ImagePixelLayer({ visible: true, opacity: 1.0 })
     appendToList(canvas, "layers", layer)
     layer.rebuildFromCanvas(canvas)
 
@@ -76,7 +76,7 @@ describe("basic drawing", () => {
   })
   it("should draw an ellipse", async () => {
     const canvas = new SImage({ size: new Size(50, 50) })
-    const layer = new SImageLayer({ visible: true, opacity: 1.0 })
+    const layer = new ImagePixelLayer({ visible: true, opacity: 1.0 })
     appendToList(canvas, "layers", layer)
     layer.rebuildFromCanvas(canvas)
 

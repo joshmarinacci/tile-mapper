@@ -2,7 +2,7 @@ import { Point } from "josh_js_util"
 import React from "react"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
-import { SImageLayer } from "../model/datamodel"
+import { ImagePixelLayer } from "../model/datamodel"
 import { Tool, ToolEvent, ToolOverlayInfo } from "./tool"
 
 type FillToolSettingsType = {}
@@ -12,7 +12,7 @@ function calculateDirections() {
 }
 
 export function new_bucketFill(
-  layer: SImageLayer,
+  layer: ImagePixelLayer,
   target: number,
   replace: number,
   at: Point,

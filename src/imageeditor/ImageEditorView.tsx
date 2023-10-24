@@ -28,8 +28,18 @@ import {
 import { PaletteColorPickerPane } from "../common/Palette"
 import { PropSheet } from "../common/propsheet"
 import { ShareImageDialog } from "../common/ShareImageDialog"
-import { appendToList, useWatchAllProps, useWatchProp } from "../model/base"
-import { SImage, SImageLayer } from "../model/datamodel"
+import {
+  appendToList,
+  PropsBase,
+  useWatchAllProps,
+  useWatchProp,
+} from "../model/base"
+import {
+  ImageLayer,
+  ImageObjectLayer,
+  ImagePixelLayer,
+  SImage,
+} from "../model/datamodel"
 import { GlobalState } from "../state"
 import { strokeBounds } from "../util"
 import { EllipseTool, EllipseToolSettings } from "./ellipse_tool"
@@ -42,8 +52,11 @@ import { RectTool, RectToolSettings } from "./rect_tool"
 import { SelectionTool, SelectionToolSettings } from "./selection_tool"
 import { Tool } from "./tool"
 
-const LayerItemRenderer: ListViewRenderer<SImageLayer, never> = (props: {
-  value: SImageLayer
+const LayerItemRenderer: ListViewRenderer<
+  PropsBase<ImageLayer>,
+  never
+> = (props: {
+  value: PropsBase<ImageLayer>
   selected: boolean
   options: never
 }) => {
@@ -56,6 +69,8 @@ const LayerItemRenderer: ListViewRenderer<SImageLayer, never> = (props: {
       className={"std-list-item"}
       style={{ justifyContent: "space-between" }}
     >
+      {value instanceof ImagePixelLayer && <Icon name={Icons.PixelLayer} />}
+      {value instanceof ImageObjectLayer && <Icon name={Icons.ObjectLayer} />}
       <b>{value.getPropValue("name")}</b>
       <i>{value.getPropValue("opacity").toFixed(2)}</i>
       <Icon
@@ -140,14 +155,14 @@ function drawCanvas(
   }
 }
 
-export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
+export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
   const { image } = props
   const doc = useContext(DocContext)
   const palette = doc.getPropValue("palette")
   const [grid, setGrid] = useState(false)
   const [zoom, setZoom] = useState(3)
   const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
-  const [layer, setLayer] = useState<SImageLayer | undefined>(() => {
+  const [layer, setLayer] = useState<ImageLayer | undefined>(() => {
     if (image.getPropValue("layers").length > 0) {
       return image.getPropValue("layers")[0]
     } else {
@@ -155,7 +170,7 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
     }
   })
   const canvasRef = useRef(null)
-  const [tool, setTool] = useState<Tool>(() => new PencilTool())
+  const [pixelTool, setPixelTool] = useState<Tool>(() => new PencilTool())
   const [count, setCount] = useState(0)
   const size = image.getPropValue("size")
   const [columnWidth, setColumnWidth] = useState(300)
@@ -171,7 +186,7 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
         grid,
         image,
         palette,
-        tool,
+        pixelTool,
         palette.colors.indexOf(drawColor),
         selectionRect,
       )
@@ -223,13 +238,21 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
       .scale(1 / scale)
       .floor()
   }
-  const new_layer = () => {
-    const layer = new SImageLayer({
-      name: "unknown layer",
+  const new_pixel_layer = () => {
+    const layer = new ImagePixelLayer({
+      name: "new pixel layer",
       opacity: 1.0,
       visible: true,
     })
-    layer.rebuildFromCanvas(image)
+    layer.resizeAndClear(image.getPropValue("size"))
+    appendToList(image, "layers", layer)
+  }
+  const new_object_layer = () => {
+    const layer = new ImageObjectLayer({
+      name: "new object layer",
+      opacity: 1.0,
+      visible: true,
+    })
     appendToList(image, "layers", layer)
   }
   const del_layer = () => {
@@ -264,18 +287,22 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
   }
 
   let tool_settings = <div>no tool selected</div>
-  if (tool instanceof PencilTool)
-    tool_settings = <PencilToolSettings tool={tool} />
-  if (tool instanceof EraserTool)
-    tool_settings = <EraserToolSettings tool={tool} />
-  if (tool instanceof RectTool) tool_settings = <RectToolSettings tool={tool} />
-  if (tool instanceof LineTool) tool_settings = <LineToolSettings tool={tool} />
-  if (tool instanceof EllipseTool)
-    tool_settings = <EllipseToolSettings tool={tool} />
-  if (tool instanceof FillTool) tool_settings = <FillToolSettings tool={tool} />
-  if (tool instanceof SelectionTool)
-    tool_settings = <SelectionToolSettings tool={tool} />
-  if (tool instanceof MoveTool) tool_settings = <MoveToolSettings tool={tool} />
+  if (pixelTool instanceof PencilTool)
+    tool_settings = <PencilToolSettings tool={pixelTool} />
+  if (pixelTool instanceof EraserTool)
+    tool_settings = <EraserToolSettings tool={pixelTool} />
+  if (pixelTool instanceof RectTool)
+    tool_settings = <RectToolSettings tool={pixelTool} />
+  if (pixelTool instanceof LineTool)
+    tool_settings = <LineToolSettings tool={pixelTool} />
+  if (pixelTool instanceof EllipseTool)
+    tool_settings = <EllipseToolSettings tool={pixelTool} />
+  if (pixelTool instanceof FillTool)
+    tool_settings = <FillToolSettings tool={pixelTool} />
+  if (pixelTool instanceof SelectionTool)
+    tool_settings = <SelectionToolSettings tool={pixelTool} />
+  if (pixelTool instanceof MoveTool)
+    tool_settings = <MoveToolSettings tool={pixelTool} />
   return (
     <div
       className={"image-editor-view"}
@@ -286,7 +313,16 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
       <DividerColumnBox value={columnWidth} onChange={setColumnWidth}>
         <Pane key={"layer-list"} title={"layers"} collapsable={true}>
           <div className={"toolbar"}>
-            <IconButton onClick={() => new_layer()} icon={Icons.Plus} />
+            <IconButton
+              onClick={() => new_pixel_layer()}
+              icon={Icons.Plus}
+              text={"pixels"}
+            />
+            <IconButton
+              onClick={() => new_object_layer()}
+              icon={Icons.Plus}
+              text={"objects"}
+            />
             <IconButton onClick={() => del_layer()} icon={Icons.Trashcan} />
             <IconButton
               onClick={() => move_layer_down()}
@@ -317,52 +353,78 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
             selected={grid}
             selectedIcon={Icons.GridSelected}
           />
-          <ToggleButton
-            icon={Icons.Selection}
-            selectedIcon={Icons.SelectionSelected}
-            selected={tool.name === "selection"}
-            onClick={() => setTool(new SelectionTool())}
-          />
-          <ToggleButton
-            icon={Icons.Move}
-            selected={tool.name === "move"}
-            onClick={() => setTool(new MoveTool())}
-          />
-          <ToggleButton
-            icon={Icons.Pencil}
-            selected={tool.name === "pencil"}
-            onClick={() => setTool(new PencilTool())}
-          />
-          <ToggleButton
-            icon={Icons.Eraser}
-            selected={tool.name === "eraser"}
-            onClick={() => setTool(new EraserTool())}
-          />
-          <ToggleButton
-            onClick={() => setTool(new LineTool())}
-            icon={Icons.Line}
-            selected={tool.name === "line"}
-          />
-          <ToggleButton
-            onClick={() => setTool(new RectTool())}
-            icon={Icons.Rect}
-            selectedIcon={Icons.RectSelected}
-            selected={tool.name === "rect"}
-          />
-          <ToggleButton
-            onClick={() => setTool(new EllipseTool())}
-            icon={Icons.Ellipse}
-            selected={tool.name === "ellipse"}
-          />
-          <ToggleButton
-            onClick={() => setTool(new FillTool())}
-            icon={Icons.PaintBucket}
-            selected={tool.name === "fill"}
-          />
-          <button onClick={() => crop()}>crop</button>
         </div>
+        {layer instanceof ImagePixelLayer && (
+          <div className={"toolbar"}>
+            <ToggleButton
+              icon={Icons.Selection}
+              selectedIcon={Icons.SelectionSelected}
+              selected={pixelTool.name === "selection"}
+              onClick={() => setPixelTool(new SelectionTool())}
+            />
+            <ToggleButton
+              icon={Icons.Move}
+              selected={pixelTool.name === "move"}
+              onClick={() => setPixelTool(new MoveTool())}
+            />
+            <ToggleButton
+              icon={Icons.Pencil}
+              selected={pixelTool.name === "pencil"}
+              onClick={() => setPixelTool(new PencilTool())}
+            />
+            <ToggleButton
+              icon={Icons.Eraser}
+              selected={pixelTool.name === "eraser"}
+              onClick={() => setPixelTool(new EraserTool())}
+            />
+            <ToggleButton
+              onClick={() => setPixelTool(new LineTool())}
+              icon={Icons.Line}
+              selected={pixelTool.name === "line"}
+            />
+            <ToggleButton
+              onClick={() => setPixelTool(new RectTool())}
+              icon={Icons.Rect}
+              selectedIcon={Icons.RectSelected}
+              selected={pixelTool.name === "rect"}
+            />
+            <ToggleButton
+              onClick={() => setPixelTool(new EllipseTool())}
+              icon={Icons.Ellipse}
+              selected={pixelTool.name === "ellipse"}
+            />
+            <ToggleButton
+              onClick={() => setPixelTool(new FillTool())}
+              icon={Icons.PaintBucket}
+              selected={pixelTool.name === "fill"}
+            />
+            <button onClick={() => crop()}>crop</button>
+          </div>
+        )}
+        {layer instanceof ImageObjectLayer && (
+          <div className={"toolbar"}>
+            <ToggleButton
+              onClick={() => {}}
+              icon={Icons.Plus}
+              selected={false}
+              text={"new text"}
+            />
+            <ToggleButton
+              icon={Icons.Move}
+              selected={pixelTool.name === "move"}
+              text={"move"}
+              onClick={() => 0}
+            />
+            <ToggleButton
+              icon={Icons.Move}
+              selected={pixelTool.name === "move"}
+              text={"delete object"}
+              onClick={() => 0}
+            />
+          </div>
+        )}
         <div className={"toolbar"}>
-          <b>{tool.name} settings</b>
+          <b>{pixelTool.name} settings</b>
           {tool_settings}
         </div>
         <PaletteColorPickerPane
@@ -391,7 +453,7 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
           }}
           onMouseDown={(e) => {
             if (e.button == 2) return
-            tool.onMouseDown({
+            pixelTool.onMouseDown({
               color: palette.colors.indexOf(drawColor),
               pt: canvasToImage(e),
               e: e,
@@ -405,7 +467,7 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
             })
           }}
           onMouseMove={(e) => {
-            tool.onMouseMove({
+            pixelTool.onMouseMove({
               color: palette.colors.indexOf(drawColor),
               pt: canvasToImage(e),
               e: e,
@@ -419,7 +481,7 @@ export function SImageEditorView(props: { image: SImage; state: GlobalState }) {
             })
           }}
           onMouseUp={(e) => {
-            tool.onMouseUp({
+            pixelTool.onMouseUp({
               color: palette.colors.indexOf(drawColor),
               pt: canvasToImage(e),
               e: e,

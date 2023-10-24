@@ -11,7 +11,7 @@ import {
 
 import { drawGrid } from "../actions/actions"
 import { GameState } from "../engine/gamestate"
-import { drawImage } from "../imageeditor/SImageEditorView"
+import { drawImage } from "../imageeditor/ImageEditorView"
 import { findActorForInstance } from "../mapeditor/ActorEditor"
 import { useWatchAllProps } from "../model/base"
 import {
