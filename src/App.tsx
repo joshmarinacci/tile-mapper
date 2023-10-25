@@ -1,11 +1,6 @@
 import "./App.css"
 
-import {
-  DialogContainer,
-  DialogContext,
-  DialogContextImpl,
-  Spacer,
-} from "josh_react_util"
+import { DialogContainer, DialogContext, DialogContextImpl, Spacer } from "josh_react_util"
 import React, { useContext, useState } from "react"
 
 import {
@@ -15,11 +10,7 @@ import {
   SaveLocalStorageAction,
   SavePNGJSONAction,
 } from "./actions/actions"
-import {
-  LoadLocalStorageAction,
-  NewDocAction,
-  UploadPNGJSONAction,
-} from "./actions/reactactions"
+import { LoadLocalStorageAction, NewDocAction, UploadPNGJSONAction } from "./actions/reactactions"
 import { ActorEditView } from "./ActorEditView"
 import {
   ActionRegistryContext,
@@ -36,33 +27,14 @@ import { PixelFontEditorView } from "./fonteditor/PixelFontEditorView"
 import { ImageEditorView } from "./imageeditor/ImageEditorView"
 import { make_doc_from_json } from "./io/json"
 import { MapModeView } from "./mapeditor/MapModeView"
-import {
-  ActionRegistry,
-  PropsBase,
-  useWatchAllProps,
-  useWatchProp,
-} from "./model/base"
-import {
-  Actor,
-  GameDoc,
-  GameMap,
-  GameTest,
-  PixelFont,
-  Sheet,
-  SImage,
-} from "./model/datamodel"
+import { ActionRegistry, PropsBase, useWatchAllProps, useWatchProp } from "./model/base"
+import { Actor, GameDoc, GameMap, GameTest, PixelFont, Sheet, SImage } from "./model/datamodel"
 import { TileSheetEditor } from "./sheeteditor/TileSheetEditor"
 import { GlobalState } from "./state"
 import { TestModeView } from "./testeditor/TestModeView"
 
 const AR = new ActionRegistry()
-AR.register([
-  ExportToJSONAction,
-  DocToBMP,
-  DocToBMP,
-  ImportFromJSONAction,
-  NewDocAction,
-])
+AR.register([ExportToJSONAction, DocToBMP, DocToBMP, ImportFromJSONAction, NewDocAction])
 
 const STATE = new GlobalState()
 STATE.setPropValue("doc", make_doc_from_json(Example))
@@ -95,9 +67,7 @@ function getEditView(state: GlobalState, selection: unknown) {
 
 function MainWrapper(props: { state: GlobalState }): JSX.Element {
   const [doc, setDoc] = useState(props.state.getPropValue("doc") as GameDoc)
-  useWatchProp(props.state, "doc", () =>
-    setDoc(props.state.getPropValue("doc")),
-  )
+  useWatchProp(props.state, "doc", () => setDoc(props.state.getPropValue("doc")))
   return (
     <DocContext.Provider value={doc}>
       <Main2 />
@@ -107,9 +77,7 @@ function MainWrapper(props: { state: GlobalState }): JSX.Element {
 
 function Main2() {
   const doc = useContext(DocContext)
-  const [selection, setSelection] = useState<PropsBase<unknown> | undefined>(
-    undefined,
-  )
+  const [selection, setSelection] = useState<PropsBase<unknown> | undefined>(undefined)
   useWatchAllProps(STATE, (s) => setSelection(s.getPropValue("selection")))
   const toolbar = (
     <div className={"toolbar across"}>
@@ -142,14 +110,9 @@ function Main2() {
   )
   const editView = getEditView(STATE, selection)
   const center_column = <div className={"editor-view"}>{editView}</div>
-  const right_column = <PropSheet target={selection} />
+  const right_column = <PropSheet target={selection} collapsable={false} />
   return (
-    <MainView
-      left={left_column}
-      center={center_column}
-      right={right_column}
-      toolbar={toolbar}
-    />
+    <MainView left={left_column} center={center_column} right={right_column} toolbar={toolbar} />
   )
 }
 

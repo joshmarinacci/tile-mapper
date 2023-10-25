@@ -1,3 +1,14 @@
+/* ======== resets ========== */
+
+.dialog > section {
+  flex: unset !important;
+}
+.dialog > header,
+.dialog > footer {
+  border: unset !important;
+}
+
+/* ============= variables ========== */
 html body {
   --border-color: #382f2f;
 

@@ -10,6 +10,7 @@ import {
   DeleteMapAction,
   DeleteSheetAction,
 } from "../actions/actions"
+import { AddImageDialog } from "../actions/AddImageDialog"
 import { appendToList, PropDef, PropsBase, useWatchProp } from "../model/base"
 import {
   Actor,
@@ -24,54 +25,8 @@ import {
 } from "../model/datamodel"
 import { GlobalState } from "../state"
 import { down_arrow_triangle, right_arrow_triangle } from "./common"
-import {
-  DropdownButton,
-  MenuList,
-  ToolbarActionButton,
-} from "./common-components"
+import { DropdownButton, MenuList, ToolbarActionButton } from "./common-components"
 import { PopupContext } from "./popup"
-
-function AddSImageDialog(props: { onComplete: (size: Size) => void }) {
-  const dm = useContext(DialogContext)
-  const [width, setWidth] = useState(16)
-  const [height, setHeight] = useState(16)
-  return (
-    <div className={"dialog"}>
-      <header>create new drawing canvas</header>
-      <section className={"standard-form"}>
-        <label>width</label>{" "}
-        <input
-          type={"number"}
-          value={width}
-          onChange={(e) => setWidth(parseInt(e.target.value))}
-        />
-        <label>height</label>{" "}
-        <input
-          type={"number"}
-          value={height}
-          onChange={(e) => setHeight(parseInt(e.target.value))}
-        />
-      </section>
-      <footer>
-        <button
-          onClick={() => {
-            dm.hide()
-          }}
-        >
-          cancel
-        </button>
-        <button
-          onClick={() => {
-            dm.hide()
-            props.onComplete(new Size(width, height))
-          }}
-        >
-          create
-        </button>
-      </footer>
-    </div>
-  )
-}
 
 function PropertyList<T, K extends keyof T>(props: {
   target: PropsBase<T>
@@ -129,7 +84,7 @@ function PropertyList<T, K extends keyof T>(props: {
   const dm = useContext(DialogContext)
   const addCanvas = () => {
     dm.show(
-      <AddSImageDialog
+      <AddImageDialog
         onComplete={(size) => {
           const canvas = new SImage({ name: "blank canvas", size: size })
           const layer = new ImagePixelLayer({
@@ -166,9 +121,7 @@ function PropertyList<T, K extends keyof T>(props: {
           {name === "maps" && <button onClick={addMap}>Add Map</button>}
           {name === "tests" && <button onClick={addTest}>Add Test</button>}
           {name === "actors" && <button onClick={addActor}>Add Actor</button>}
-          {name === "canvases" && (
-            <button onClick={addCanvas}>Add Canvas</button>
-          )}
+          {name === "canvases" && <button onClick={addCanvas}>Add Canvas</button>}
           {name === "fonts" && <button onClick={addFont}>Add Font</button>}
           {/*<button onClick={() => add()}>Add</button>*/}
         </DropdownButton>
@@ -204,9 +157,7 @@ export function ObjectTreeView<T>(props: {
   }
   if (!obj.getAllPropDefs) {
     console.log(obj)
-    throw new Error(
-      `trying to render an invalid object ${obj.constructor.name}`,
-    )
+    throw new Error(`trying to render an invalid object ${obj.constructor.name}`)
   }
   const expandable = obj.getAllPropDefs().filter(([a, b]) => b.expandable)
   const style = {
@@ -221,38 +172,20 @@ export function ObjectTreeView<T>(props: {
     const items: ReactNode[] = []
     if (obj instanceof Sheet) {
       items.push(
-        <ToolbarActionButton
-          key={"delete-sheet"}
-          state={state}
-          action={DeleteSheetAction}
-        />,
+        <ToolbarActionButton key={"delete-sheet"} state={state} action={DeleteSheetAction} />,
       )
     }
     if (obj instanceof GameMap) {
-      items.push(
-        <ToolbarActionButton
-          key={"delete-map"}
-          state={state}
-          action={DeleteMapAction}
-        />,
-      )
+      items.push(<ToolbarActionButton key={"delete-map"} state={state} action={DeleteMapAction} />)
     }
     if (obj instanceof Actor) {
       items.push(
-        <ToolbarActionButton
-          key="delete-actor"
-          state={state}
-          action={DeleteActorAction}
-        />,
+        <ToolbarActionButton key="delete-actor" state={state} action={DeleteActorAction} />,
       )
     }
     if (obj instanceof GameTest) {
       items.push(
-        <ToolbarActionButton
-          key="delete-test"
-          state={state}
-          action={DeleteGameTestAction}
-        />,
+        <ToolbarActionButton key="delete-test" state={state} action={DeleteGameTestAction} />,
       )
     }
     pm.show_at(<MenuList>{items}</MenuList>, e.target, "right")
