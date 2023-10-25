@@ -237,11 +237,12 @@ CLASS_REGISTRY.register("Tile", Tile, TileDefs)
 export interface ImageObjectType {
   name: string
   position: Point
+}
+export interface TextObjectType extends ImageObjectType {
   text: string
   color: string
   font: string
 }
-export interface TextObjectType extends ImageObjectType {}
 const PixelFontReferenceDef = new PropDefBuilder<string>({
   type: "reference",
   format: (v) => "font",
@@ -254,7 +255,9 @@ const TextObjectDefs: DefList<TextObjectType> = {
   name: NameDef,
   position: PointDef.copy().withEditable(true),
   text: StringDef.copy().withDefault(() => "Greetings Earthling"),
-  color: StringDef.copy().withDefault(() => "black"),
+  color: StringDef.copy()
+    .withDefault(() => "black")
+    .withCustom("palette-color"),
   font: PixelFontReferenceDef,
 }
 export class TextObject extends PropsBase<TextObjectType> {

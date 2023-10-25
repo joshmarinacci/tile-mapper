@@ -33,6 +33,7 @@ type PropDefCustomType =
   | "actor-reference"
   | "font-reference"
   | "actor-type"
+  | "palette-color"
 
 export type PropDef<T> = {
   type: PropDefBaseTypes

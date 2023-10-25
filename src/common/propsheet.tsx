@@ -33,6 +33,7 @@ function MapNameRenderer<T extends GameMap, O>(props: { value: T; selected: bool
   if (!props.value) return <div>undefined</div>
   return <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
 }
+
 function MapReferenceEditor<T>(props: {
   def: PropDef<T[keyof T]>
   name: keyof T
@@ -62,6 +63,7 @@ function SImageNameRenderer<T extends SImage, O>(props: {
   if (!props.value) return <div>undefined</div>
   return <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
 }
+
 function SImageReferenceEditor<T>(props: {
   def: PropDef<T[keyof T]>
   name: keyof T
@@ -90,6 +92,7 @@ function PixelFontNameRenderer<T extends PixelFont, O>(props: {
   if (!props.value) return <div>undefined</div>
   return <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
 }
+
 function PixelFontReferenceEditor<T>(props: {
   def: PropDef<T[keyof T]>
   name: keyof T
@@ -136,6 +139,41 @@ function ActorTypeEditor<T extends ActorType>(props: {
   )
 }
 
+function PaletteColorNameRenderer<T extends string, O>(props: {
+  value: T
+  selected: boolean
+  options: O
+}) {
+  return (
+    <div
+      style={{
+        backgroundColor: `${props.value.toString()}`,
+      }}
+    >
+      {props.value.toString()}
+    </div>
+  )
+}
+
+function PaletteColorSelector<T>(props: {
+  def: PropDef<T[keyof T]>
+  name: keyof T
+  target: PropsBase<T>
+}) {
+  const doc = useContext(DocContext)
+  const current = props.target.getPropValue(props.name)
+  const palette = doc.getPropValue("palette")
+  return (
+    <ListSelect
+      selected={current}
+      setSelected={(v) => props.target.setPropValue(props.name, v)}
+      renderer={PaletteColorNameRenderer}
+      data={palette.colors}
+      options={{}}
+    />
+  )
+}
+
 function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDef<T[keyof T]> }) {
   const { target, def, name } = props
   const new_val = target.getPropValue(name)
@@ -151,6 +189,16 @@ function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDe
     if (def.custom === "actor-type") {
       return (
         <ActorTypeEditor key={`editor_${name.toString()}`} target={target} def={def} name={name} />
+      )
+    }
+    if (def.custom === "palette-color") {
+      return (
+        <PaletteColorSelector
+          key={`editor_${name.toString()}`}
+          target={target}
+          def={def}
+          name={name}
+        />
       )
     }
     return (
@@ -234,7 +282,7 @@ function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDe
     const val = new_val as Point
     return (
       <>
-        <label key={`editor_${name.toString()}_x_label`}>w</label>
+        <label key={`editor_${name.toString()}_x_label`}>x</label>
         <input
           key={`editor_${name.toString()}_x_input`}
           type={"number"}
@@ -245,7 +293,7 @@ function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDe
             target.setPropValue(props.name, point as T[keyof T])
           }}
         />
-        <label key={`editor_${name.toString()}_y_label`}>h</label>
+        <label key={`editor_${name.toString()}_y_label`}>y</label>
         <input
           key={`editor_${name.toString()}_y_input`}
           type={"number"}
