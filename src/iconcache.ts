@@ -1,7 +1,7 @@
 import { ImagePalette } from "./common/common"
-import Icons from "./icons.json"
 import { make_doc_from_json } from "./io/json"
 import { gen_canvas, Tile } from "./model/datamodel"
+import Icons from "./resources/icons.json"
 
 class IconCache {
   private icons: Map<string, string>

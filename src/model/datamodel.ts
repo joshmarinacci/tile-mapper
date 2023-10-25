@@ -1,6 +1,8 @@
 import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 
 import { drawEditableSprite, ImagePalette, PICO8, RESURRECT64 } from "../common/common"
+import { make_doc_from_json } from "../io/json"
+import StdFont from "../resources/std_font.json"
 import {
   appendToList,
   CLASS_REGISTRY,
@@ -813,7 +815,7 @@ export class PixelFont extends PropsBase<PixelFontType> {
 
 CLASS_REGISTRY.register("PixelFont", PixelFont, PixelFontDefs)
 
-const PixelFontListDef: PropDef<PixelFont[]> = ObjectListDef.copy()
+const PixelFontListDef: PropDefBuilder<PixelFont[]> = ObjectListDef.copy()
   .withHidden(true)
   .withExpandable(true)
 export type DocType = {
@@ -910,3 +912,6 @@ export class GameDoc extends PropsBase<DocType> {
 }
 
 CLASS_REGISTRY.register("Doc", GameDoc, GameDocDefs)
+
+const DEFAULT_FONT = make_doc_from_json(StdFont)
+PixelFontListDef.withDefault(() => [DEFAULT_FONT.getPropValue("fonts")[0]])
