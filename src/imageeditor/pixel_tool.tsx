@@ -1,9 +1,9 @@
 import { ArrayGrid, Point } from "josh_js_util"
 
 import { DefList, PropsBase, PropValues } from "../model/base"
-import { ToolEvent, ToolOverlayInfo } from "./tool"
+import { PixelToolEvent, ToolOverlayInfo } from "./tool"
 
-export abstract class PixelTool<Type> extends PropsBase<Type> {
+export abstract class BasePixelTool<Type> extends PropsBase<Type> {
   name: string
   protected _down: boolean
   protected _start: Point
@@ -34,7 +34,7 @@ export abstract class PixelTool<Type> extends PropsBase<Type> {
     ctx.restore()
   }
 
-  onMouseDown(evt: ToolEvent): void {
+  onMouseDown(evt: PixelToolEvent): void {
     if (evt.layer) {
       this._down = true
       this._start = evt.pt.floor()
@@ -47,7 +47,7 @@ export abstract class PixelTool<Type> extends PropsBase<Type> {
     }
   }
 
-  onMouseMove(evt: ToolEvent): void {
+  onMouseMove(evt: PixelToolEvent): void {
     if (this._down) {
       this._current = evt.pt.floor()
       this.drawPixels(evt, this.temp, false)
@@ -55,7 +55,7 @@ export abstract class PixelTool<Type> extends PropsBase<Type> {
     }
   }
 
-  onMouseUp(evt: ToolEvent): void {
+  onMouseUp(evt: PixelToolEvent): void {
     this._down = false
     if (evt.layer) {
       this.drawPixels(evt, evt.layer.getPropValue("data"), true)
@@ -64,9 +64,5 @@ export abstract class PixelTool<Type> extends PropsBase<Type> {
     evt.markDirty()
   }
 
-  abstract drawPixels(
-    evt: ToolEvent,
-    target: ArrayGrid<number>,
-    final: boolean,
-  ): void
+  abstract drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, final: boolean): void
 }

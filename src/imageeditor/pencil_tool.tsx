@@ -4,21 +4,21 @@ import React from "react"
 import { useWatchAllProps } from "../model/base"
 import { IntegerDef } from "../model/datamodel"
 import { strokeBounds } from "../util"
-import { PixelTool } from "./pixel_tool"
-import { Tool, ToolEvent, ToolOverlayInfo } from "./tool"
+import { BasePixelTool } from "./pixel_tool"
+import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
 
 type PencilSettingsType = {
   tip_size: number
 }
 
-export class PencilTool extends PixelTool<PencilSettingsType> implements Tool {
+export class PencilTool extends BasePixelTool<PencilSettingsType> implements PixelTool {
   constructor() {
     super({ tip_size: IntegerDef }, { tip_size: 1 })
     this.name = "pencil"
     this._down = false
   }
 
-  drawPixels(evt: ToolEvent, target: ArrayGrid<number>, final: boolean) {
+  drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, final: boolean) {
     if (evt.layer) {
       if (final) {
         this.temp.forEach((v, n) => {

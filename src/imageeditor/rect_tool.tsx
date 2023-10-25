@@ -3,8 +3,8 @@ import React from "react"
 
 import { useWatchAllProps } from "../model/base"
 import { BooleanDef } from "../model/datamodel"
-import { PixelTool } from "./pixel_tool"
-import { Tool, ToolEvent } from "./tool"
+import { BasePixelTool } from "./pixel_tool"
+import { PixelTool, PixelToolEvent } from "./tool"
 
 type RectToolSettingsType = {
   filled: boolean
@@ -65,30 +65,18 @@ export function fillRect(
   }
 }
 
-export class RectTool extends PixelTool<RectToolSettingsType> implements Tool {
+export class RectTool extends BasePixelTool<RectToolSettingsType> implements PixelTool {
   constructor() {
     super({ filled: BooleanDef }, { filled: false })
     this.name = "rect"
   }
 
-  drawPixels(evt: ToolEvent, target: ArrayGrid<number>, final: boolean) {
+  drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, final: boolean) {
     if (!final) target.fill(() => -1)
     if (this.getPropValue("filled")) {
-      fillRect(
-        target,
-        evt.color,
-        this._start.floor(),
-        this._current.floor(),
-        evt.selection,
-      )
+      fillRect(target, evt.color, this._start.floor(), this._current.floor(), evt.selection)
     } else {
-      drawRect(
-        target,
-        evt.color,
-        this._start.floor(),
-        this._current.floor(),
-        evt.selection,
-      )
+      drawRect(target, evt.color, this._start.floor(), this._current.floor(), evt.selection)
     }
   }
 }

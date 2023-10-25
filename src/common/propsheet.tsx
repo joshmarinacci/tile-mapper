@@ -1,10 +1,10 @@
 import "./propsheet.css"
 
-import { Bounds, Size } from "josh_js_util"
+import { Bounds, Point, Size } from "josh_js_util"
 import React, { useContext, useEffect, useRef } from "react"
 
 import { PropDef, PropsBase, useWatchProp } from "../model/base"
-import { ActorKind, ActorType, GameMap, SImage } from "../model/datamodel"
+import { ActorKind, ActorType, GameMap, PixelFont, SImage } from "../model/datamodel"
 import { drawEditableSprite } from "./common"
 import { DocContext, Pane } from "./common-components"
 import { ListSelect } from "./ListSelect"
@@ -29,15 +29,9 @@ export function TileReferenceView(props: { tileRef: string | undefined }) {
   return <canvas ref={canvasRef} width={32} height={32} />
 }
 
-function MapNameRenderer<T extends GameMap, O>(props: {
-  value: T
-  selected: boolean
-  options: O
-}) {
+function MapNameRenderer<T extends GameMap, O>(props: { value: T; selected: boolean; options: O }) {
   if (!props.value) return <div>undefined</div>
-  return (
-    <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
-  )
+  return <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
 }
 function MapReferenceEditor<T>(props: {
   def: PropDef<T[keyof T]>
@@ -47,9 +41,7 @@ function MapReferenceEditor<T>(props: {
   const doc = useContext(DocContext)
   const { target, name } = props
   const current = target.getPropValue(name)
-  const selected = doc
-    .getPropValue("maps")
-    .find((mp) => mp.getUUID() === current)
+  const selected = doc.getPropValue("maps").find((mp) => mp.getUUID() === current)
   const data = doc.getPropValue("maps")
   return (
     <ListSelect
@@ -68,9 +60,7 @@ function SImageNameRenderer<T extends SImage, O>(props: {
   options: O
 }) {
   if (!props.value) return <div>undefined</div>
-  return (
-    <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
-  )
+  return <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
 }
 function SImageReferenceEditor<T>(props: {
   def: PropDef<T[keyof T]>
@@ -79,15 +69,41 @@ function SImageReferenceEditor<T>(props: {
 }) {
   const doc = useContext(DocContext)
   const current = props.target.getPropValue(props.name)
-  const selected = doc
-    .getPropValue("canvases")
-    .find((mp) => mp.getUUID() === current)
+  const selected = doc.getPropValue("canvases").find((mp) => mp.getUUID() === current)
   const data = doc.getPropValue("canvases")
   return (
     <ListSelect
       selected={selected}
       setSelected={(v) => props.target.setPropValue(props.name, v.getUUID())}
       renderer={SImageNameRenderer}
+      data={data}
+      options={{}}
+    />
+  )
+}
+
+function PixelFontNameRenderer<T extends PixelFont, O>(props: {
+  value: T
+  selected: boolean
+  options: O
+}) {
+  if (!props.value) return <div>undefined</div>
+  return <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
+}
+function PixelFontReferenceEditor<T>(props: {
+  def: PropDef<T[keyof T]>
+  name: keyof T
+  target: PropsBase<T>
+}) {
+  const doc = useContext(DocContext)
+  const current = props.target.getPropValue(props.name)
+  const selected = doc.getPropValue("fonts").find((mp) => mp.getUUID() === current)
+  const data = doc.getPropValue("fonts")
+  return (
+    <ListSelect
+      selected={selected}
+      setSelected={(v) => props.target.setPropValue(props.name, v.getUUID())}
+      renderer={PixelFontNameRenderer}
       data={data}
       options={{}}
     />
@@ -120,11 +136,7 @@ function ActorTypeEditor<T extends ActorType>(props: {
   )
 }
 
-function PropEditor<T>(props: {
-  target: PropsBase<T>
-  name: keyof T
-  def: PropDef<T[keyof T]>
-}) {
+function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDef<T[keyof T]> }) {
   const { target, def, name } = props
   const new_val = target.getPropValue(name)
   useWatchProp(target, name)
@@ -138,12 +150,7 @@ function PropEditor<T>(props: {
   if (def.type === "string") {
     if (def.custom === "actor-type") {
       return (
-        <ActorTypeEditor
-          key={`editor_${name.toString()}`}
-          target={target}
-          def={def}
-          name={name}
-        />
+        <ActorTypeEditor key={`editor_${name.toString()}`} target={target} def={def} name={name} />
       )
     }
     return (
@@ -164,10 +171,7 @@ function PropEditor<T>(props: {
         type={"number"}
         value={Math.floor(new_val as number)}
         onChange={(e) => {
-          props.target.setPropValue(
-            props.name,
-            parseInt(e.target.value) as T[keyof T],
-          )
+          props.target.setPropValue(props.name, parseInt(e.target.value) as T[keyof T])
         }}
       />
     )
@@ -180,10 +184,7 @@ function PropEditor<T>(props: {
         value={(new_val as number).toFixed(2)}
         step={0.1}
         onChange={(e) => {
-          props.target.setPropValue(
-            props.name,
-            parseFloat(e.target.value) as T[keyof T],
-          )
+          props.target.setPropValue(props.name, parseFloat(e.target.value) as T[keyof T])
         }}
       />
     )
@@ -224,6 +225,35 @@ function PropEditor<T>(props: {
             const v = parseInt(e.target.value)
             const size = new Size(val.w, v)
             props.target.setPropValue(props.name, size as T[keyof T])
+          }}
+        />
+      </>
+    )
+  }
+  if (def.type === "Point") {
+    const val = new_val as Point
+    return (
+      <>
+        <label key={`editor_${name.toString()}_x_label`}>w</label>
+        <input
+          key={`editor_${name.toString()}_x_input`}
+          type={"number"}
+          value={val.x}
+          onChange={(e) => {
+            const v = parseInt(e.target.value)
+            const point = new Point(v, val.y)
+            target.setPropValue(props.name, point as T[keyof T])
+          }}
+        />
+        <label key={`editor_${name.toString()}_y_label`}>h</label>
+        <input
+          key={`editor_${name.toString()}_y_input`}
+          type={"number"}
+          value={val.y}
+          onChange={(e) => {
+            const v = parseInt(e.target.value)
+            const point = new Point(val.x, v)
+            props.target.setPropValue(props.name, point as T[keyof T])
           }}
         />
       </>
@@ -290,14 +320,19 @@ function PropEditor<T>(props: {
       />
     )
   }
-  if (def.type === "reference" && def.custom === "map-reference") {
+  if (def.type === "reference" && def.custom === "font-reference") {
     return (
-      <MapReferenceEditor
+      <PixelFontReferenceEditor
         key={`editor_${name.toString()}`}
         target={target}
         def={def}
         name={name}
       />
+    )
+  }
+  if (def.type === "reference" && def.custom === "map-reference") {
+    return (
+      <MapReferenceEditor key={`editor_${name.toString()}`} target={target} def={def} name={name} />
     )
   }
   return <label key={"nothing"}>no editor for it</label>
@@ -316,15 +351,9 @@ export function PropSheet<T>(props: {
         {header}nothing selected
       </div>
     )
-  const propnames = Array.from(target.getAllPropDefs()).filter(
-    ([, b]) => !b.hidden,
-  )
+  const propnames = Array.from(target.getAllPropDefs()).filter(([, b]) => !b.hidden)
   return (
-    <Pane
-      title={title ? title : "props"}
-      collapsable={props.collapsable}
-      className={"prop-sheet"}
-    >
+    <Pane title={title ? title : "props"} collapsable={props.collapsable} className={"prop-sheet"}>
       {/*{header}*/}
       <div className={"prop-sheet-contents"}>
         <label>UUID</label>
@@ -333,12 +362,7 @@ export function PropSheet<T>(props: {
           return (
             <>
               <label key={`label_${name.toString()}`}>{name.toString()}</label>
-              <PropEditor
-                key={`editor_${name.toString()}`}
-                target={target}
-                name={name}
-                def={def}
-              />
+              <PropEditor key={`editor_${name.toString()}`} target={target} name={name} def={def} />
             </>
           )
         })}

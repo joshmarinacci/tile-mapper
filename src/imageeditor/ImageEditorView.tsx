@@ -3,28 +3,19 @@ import "./SImageEditorView.css"
 import { Bounds, Point } from "josh_js_util"
 import { DialogContext } from "josh_react_util"
 import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
-import React, {
-  MouseEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import { Icons, ImagePalette } from "../common/common"
-import {
-  DocContext,
-  IconButton,
-  Pane,
-  ToggleButton,
-} from "../common/common-components"
+import { DocContext, IconButton, Pane, ToggleButton } from "../common/common-components"
 import { DividerColumnBox } from "../common/DividerColumnBox"
 import { ListView, ListViewDirection } from "../common/ListView"
 import { PaletteColorPickerPane } from "../common/Palette"
 import { PropSheet } from "../common/propsheet"
 import { ShareImageDialog } from "../common/ShareImageDialog"
+import { drawTextRun } from "../fonteditor/PixelFontPreview"
 import { appendToList, PropsBase, useWatchAllProps } from "../model/base"
 import {
+  GameDoc,
   ImageLayerType,
   ImageObjectLayer,
   ImagePixelLayer,
@@ -42,7 +33,7 @@ import { MoveTool, MoveToolSettings } from "./move_tool"
 import { PencilTool, PencilToolSettings } from "./pencil_tool"
 import { RectTool, RectToolSettings } from "./rect_tool"
 import { SelectionTool, SelectionToolSettings } from "./selection_tool"
-import { Tool } from "./tool"
+import { ObjectTool, ObjectToolEvent, ObjectToolOverlayInfo, PixelTool } from "./tool"
 
 function clamp(val: number, min: number, max: number) {
   if (val < min) return min
@@ -51,6 +42,7 @@ function clamp(val: number, min: number, max: number) {
 }
 
 export function drawImage(
+  doc: GameDoc,
   ctx: CanvasRenderingContext2D,
   image: SImage,
   palette: ImagePalette,
@@ -68,23 +60,52 @@ export function drawImage(
       })
       ctx.restore()
     }
+    if (layer instanceof ImageObjectLayer) {
+      if (!layer.getPropValue("visible")) return
+      ctx.save()
+      ctx.globalAlpha = clamp(layer.getPropValue("opacity"), 0, 1)
+      layer.getPropValue("data").forEach((obj) => {
+        if (obj instanceof TextObject) {
+          const bds = obj.getPropValue("bounds")
+          const font_ref = obj.getPropValue("font")
+          const txt = obj.getPropValue("text")
+          const color = obj.getPropValue("color")
+          if (font_ref) {
+            console.log("drawing with font", font_ref)
+            const font = doc.getPropValue("fonts").find((fnt) => fnt.getUUID() === font_ref)
+            console.log("found font is", font)
+            if (font) {
+              drawTextRun(ctx, txt, font, scale, color)
+            }
+          } else {
+            ctx.font = "12pt sans-serif"
+            ctx.fillStyle = color
+            ctx.fillText(txt, bds.x, bds.y + 20)
+          }
+        }
+      })
+      ctx.restore()
+    }
   })
 }
 
 function drawCanvas(
+  doc: GameDoc,
   canvas: HTMLCanvasElement,
   scale: number,
   grid: boolean,
   image: SImage,
   palette: ImagePalette,
-  tool: Tool,
+  tool: PixelTool,
+  tool2: ObjectTool,
   drawColor: number,
   selectionRect: Bounds | undefined,
+  selectedObject: TextObject | undefined,
 ) {
   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
   ctx.fillStyle = "magenta"
   ctx.fillRect(0, 0, canvas.width, canvas.height)
-  drawImage(ctx, image, palette, scale)
+  drawImage(doc, ctx, image, palette, scale)
   const size = image.getPropValue("size")
   if (grid) {
     ctx.strokeStyle = "black"
@@ -109,12 +130,43 @@ function drawCanvas(
       palette: palette,
     })
   }
+  if (tool2) {
+    tool2.drawOverlay({
+      canvas: canvas,
+      ctx: ctx,
+      scale: scale,
+      selectedObject: selectedObject,
+    })
+  }
 
   if (selectionRect) {
     const bounds = selectionRect.scale(scale)
     ctx.setLineDash([5, 5])
     strokeBounds(ctx, bounds, "black", 1)
     ctx.setLineDash([])
+  }
+}
+
+class MoveObjectTool implements ObjectTool {
+  onMouseDown(evt: ObjectToolEvent) {
+    console.log("pressed on", evt.layer, "at", evt.pt)
+    const obj = evt.layer.getPropValue("data").find((obj) => obj.contains(evt.pt))
+    if (obj) {
+      console.log("found the object", obj)
+      evt.setSelectedObject(obj)
+      evt.markDirty()
+    }
+  }
+  onMouseMove(evt: ObjectToolEvent) {}
+  onMouseUp(evt: ObjectToolEvent) {}
+  drawOverlay(ovr: ObjectToolOverlayInfo) {
+    console.log("drawing")
+    if (ovr.selectedObject) {
+      const bds = ovr.selectedObject.getPropValue("position").scale(ovr.scale)
+      ovr.ctx.strokeStyle = "white"
+      ovr.ctx.lineWidth = 3
+      ovr.ctx.strokeRect(bds.x, bds.y, 10, 10)
+    }
   }
 }
 
@@ -125,35 +177,38 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
   const [grid, setGrid] = useState(false)
   const [zoom, setZoom] = useState(3)
   const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
-  const [layer, setLayer] = useState<PropsBase<ImageLayerType> | undefined>(
-    () => {
-      if (image.getPropValue("layers").length > 0) {
-        return image.getPropValue("layers")[0]
-      } else {
-        return undefined
-      }
-    },
-  )
+  const [layer, setLayer] = useState<PropsBase<ImageLayerType> | undefined>(() => {
+    if (image.getPropValue("layers").length > 0) {
+      return image.getPropValue("layers")[0]
+    } else {
+      return undefined
+    }
+  })
   const canvasRef = useRef(null)
-  const [pixelTool, setPixelTool] = useState<Tool>(() => new PencilTool())
+  const [pixelTool, setPixelTool] = useState<PixelTool>(() => new PencilTool())
+  const [objectTool, setObjectTool] = useState<ObjectTool>(() => new MoveObjectTool())
   const [count, setCount] = useState(0)
   const size = image.getPropValue("size")
   const [columnWidth, setColumnWidth] = useState(300)
   const [selectionRect, setSelectionRect] = useState<Bounds | undefined>()
+  const [selectedObject, setSelectedObject] = useState<TextObject | undefined>()
 
   const scale = Math.pow(2, zoom)
   const redraw = () => {
     if (canvasRef.current) {
       const scale = Math.pow(2, zoom)
       drawCanvas(
+        doc,
         canvasRef.current,
         scale,
         grid,
         image,
         palette,
         pixelTool,
+        objectTool,
         palette.colors.indexOf(drawColor),
         selectionRect,
+        selectedObject,
       )
     }
   }
@@ -172,10 +227,7 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
     drawImage(ctx, image, palette, scale)
 
     const blob = await canvas_to_blob(canvas)
-    forceDownloadBlob(
-      `${image.getPropValue("name") as string}.${scale}x.png`,
-      blob,
-    )
+    forceDownloadBlob(`${image.getPropValue("name") as string}.${scale}x.png`, blob)
   }
 
   const sharePNG = async () => {
@@ -252,22 +304,14 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
   }
 
   let tool_settings = <div>no tool selected</div>
-  if (pixelTool instanceof PencilTool)
-    tool_settings = <PencilToolSettings tool={pixelTool} />
-  if (pixelTool instanceof EraserTool)
-    tool_settings = <EraserToolSettings tool={pixelTool} />
-  if (pixelTool instanceof RectTool)
-    tool_settings = <RectToolSettings tool={pixelTool} />
-  if (pixelTool instanceof LineTool)
-    tool_settings = <LineToolSettings tool={pixelTool} />
-  if (pixelTool instanceof EllipseTool)
-    tool_settings = <EllipseToolSettings tool={pixelTool} />
-  if (pixelTool instanceof FillTool)
-    tool_settings = <FillToolSettings tool={pixelTool} />
-  if (pixelTool instanceof SelectionTool)
-    tool_settings = <SelectionToolSettings tool={pixelTool} />
-  if (pixelTool instanceof MoveTool)
-    tool_settings = <MoveToolSettings tool={pixelTool} />
+  if (pixelTool instanceof PencilTool) tool_settings = <PencilToolSettings tool={pixelTool} />
+  if (pixelTool instanceof EraserTool) tool_settings = <EraserToolSettings tool={pixelTool} />
+  if (pixelTool instanceof RectTool) tool_settings = <RectToolSettings tool={pixelTool} />
+  if (pixelTool instanceof LineTool) tool_settings = <LineToolSettings tool={pixelTool} />
+  if (pixelTool instanceof EllipseTool) tool_settings = <EllipseToolSettings tool={pixelTool} />
+  if (pixelTool instanceof FillTool) tool_settings = <FillToolSettings tool={pixelTool} />
+  if (pixelTool instanceof SelectionTool) tool_settings = <SelectionToolSettings tool={pixelTool} />
+  if (pixelTool instanceof MoveTool) tool_settings = <MoveToolSettings tool={pixelTool} />
   return (
     <div
       className={"image-editor-view"}
@@ -278,25 +322,11 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
       <DividerColumnBox value={columnWidth} onChange={setColumnWidth}>
         <Pane key={"layer-list"} title={"layers"} collapsable={true}>
           <div className={"toolbar"}>
-            <IconButton
-              onClick={() => new_pixel_layer()}
-              icon={Icons.Plus}
-              text={"pixels"}
-            />
-            <IconButton
-              onClick={() => new_object_layer()}
-              icon={Icons.Plus}
-              text={"objects"}
-            />
+            <IconButton onClick={() => new_pixel_layer()} icon={Icons.Plus} text={"pixels"} />
+            <IconButton onClick={() => new_object_layer()} icon={Icons.Plus} text={"objects"} />
             <IconButton onClick={() => del_layer()} icon={Icons.Trashcan} />
-            <IconButton
-              onClick={() => move_layer_down()}
-              icon={Icons.UpArrow}
-            />
-            <IconButton
-              onClick={() => move_layer_up()}
-              icon={Icons.DownArrow}
-            />
+            <IconButton onClick={() => move_layer_down()} icon={Icons.UpArrow} />
+            <IconButton onClick={() => move_layer_up()} icon={Icons.DownArrow} />
           </div>
           <ListView
             className={"layers"}
@@ -370,7 +400,13 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
           <div className={"toolbar"}>
             <ToggleButton
               onClick={() => {
-                const textobj = new TextObject()
+                const font = doc.getPropValue("fonts").find((fnt) => fnt)
+                const textobj = new TextObject({
+                  name: "new text",
+                  text: "Greetings Earthling",
+                  position: new Point(0, 0),
+                  font: font?.getUUID(),
+                })
                 appendToList(layer, "data", textobj)
               }}
               icon={Icons.Plus}
@@ -390,6 +426,9 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
               onClick={() => 0}
             />
           </div>
+        )}
+        {layer instanceof ImageObjectLayer && selectedObject && (
+          <PropSheet target={selectedObject} collapsable={true} />
         )}
         <div className={"toolbar"}>
           <b>{pixelTool.name} settings</b>
@@ -421,6 +460,18 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
           }}
           onMouseDown={(e) => {
             if (e.button == 2) return
+            if (layer instanceof ImageObjectLayer) {
+              objectTool.onMouseDown({
+                layer: layer,
+                pt: canvasToImage(e),
+                e: e,
+                markDirty: () => {
+                  setCount(count + 1)
+                },
+                selectedObject: selectedObject,
+                setSelectedObject: setSelectedObject,
+              })
+            }
             if (layer instanceof ImagePixelLayer) {
               pixelTool.onMouseDown({
                 color: palette.colors.indexOf(drawColor),
@@ -437,6 +488,18 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
             }
           }}
           onMouseMove={(e) => {
+            if (layer instanceof ImageObjectLayer) {
+              objectTool.onMouseMove({
+                layer: layer,
+                pt: canvasToImage(e),
+                e: e,
+                markDirty: () => {
+                  setCount(count + 1)
+                },
+                selectedObject: selectedObject,
+                setSelectedObject: setSelectedObject,
+              })
+            }
             if (layer instanceof ImagePixelLayer) {
               pixelTool.onMouseMove({
                 color: palette.colors.indexOf(drawColor),
@@ -453,6 +516,18 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
             }
           }}
           onMouseUp={(e) => {
+            if (layer instanceof ImageObjectLayer) {
+              objectTool.onMouseUp({
+                layer: layer,
+                pt: canvasToImage(e),
+                e: e,
+                markDirty: () => {
+                  setCount(count + 1)
+                },
+                selectedObject: selectedObject,
+                setSelectedObject: setSelectedObject,
+              })
+            }
             if (layer instanceof ImagePixelLayer) {
               pixelTool.onMouseUp({
                 color: palette.colors.indexOf(drawColor),

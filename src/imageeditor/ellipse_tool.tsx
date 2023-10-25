@@ -3,8 +3,8 @@ import React from "react"
 
 import { useWatchAllProps } from "../model/base"
 import { BooleanDef } from "../model/datamodel"
-import { PixelTool } from "./pixel_tool"
-import { Tool, ToolEvent } from "./tool"
+import { BasePixelTool } from "./pixel_tool"
+import { PixelTool, PixelToolEvent } from "./tool"
 
 type EllipseToolSettingsType = {
   filled: boolean
@@ -89,33 +89,18 @@ export function drawEllipse(
   }
 }
 
-export class EllipseTool
-  extends PixelTool<EllipseToolSettingsType>
-  implements Tool
-{
+export class EllipseTool extends BasePixelTool<EllipseToolSettingsType> implements PixelTool {
   constructor() {
     super({ filled: BooleanDef }, { filled: false })
     this.name = "ellipse"
   }
 
-  drawPixels(evt: ToolEvent, target: ArrayGrid<number>, final: boolean) {
+  drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, final: boolean) {
     if (!final) target.fill(() => -1)
     if (this.getPropValue("filled")) {
-      drawEllipse(
-        target,
-        evt.color,
-        this._start.floor(),
-        this._current.floor(),
-        evt.selection,
-      )
+      drawEllipse(target, evt.color, this._start.floor(), this._current.floor(), evt.selection)
     } else {
-      drawEllipse(
-        target,
-        evt.color,
-        this._start.floor(),
-        this._current.floor(),
-        evt.selection,
-      )
+      drawEllipse(target, evt.color, this._start.floor(), this._current.floor(), evt.selection)
     }
   }
 }

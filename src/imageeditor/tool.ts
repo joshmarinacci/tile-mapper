@@ -2,14 +2,14 @@ import { Bounds, Point } from "josh_js_util"
 import React from "react"
 
 import { ImagePalette } from "../common/common"
-import { ImagePixelLayer } from "../model/datamodel"
+import { ImageObjectLayer, ImagePixelLayer, TextObject } from "../model/datamodel"
 
-export type ToolEvent = {
+export type PixelToolEvent = {
   pt: Point // in image coords
   e: React.MouseEvent<HTMLCanvasElement> // in screen coords
   color: number //currently selected color
   palette: ImagePalette
-  layer: ImagePixelLayer | undefined // currently selected layer
+  layer: ImagePixelLayer // currently selected layer
   markDirty: () => void
   selection: Bounds | undefined
   setSelectionRect: (selection: Bounds | undefined) => void
@@ -22,14 +22,35 @@ export type ToolOverlayInfo = {
   palette: ImagePalette
 }
 
-export interface Tool {
+export interface PixelTool {
   name: string
 
-  onMouseDown(evt: ToolEvent): void
+  onMouseDown(evt: PixelToolEvent): void
 
-  onMouseMove(evt: ToolEvent): void
+  onMouseMove(evt: PixelToolEvent): void
 
-  onMouseUp(evt: ToolEvent): void
+  onMouseUp(evt: PixelToolEvent): void
 
   drawOverlay(ovr: ToolOverlayInfo): void
+}
+
+export type ObjectToolOverlayInfo = {
+  selectedObject: TextObject | undefined
+  canvas: HTMLCanvasElement
+  ctx: CanvasRenderingContext2D
+  scale: number
+}
+export type ObjectToolEvent = {
+  layer: ImageObjectLayer // currently selected layer
+  pt: Point // in image coords
+  e: React.MouseEvent<HTMLCanvasElement> // in screen coords
+  markDirty: () => void
+  selectedObject: TextObject | undefined
+  setSelectedObject: (obj: TextObject | undefined) => void
+}
+export interface ObjectTool {
+  onMouseDown(evt: ObjectToolEvent): void
+  onMouseMove(evt: ObjectToolEvent): void
+  onMouseUp(evt: ObjectToolEvent): void
+  drawOverlay(ovr: ObjectToolOverlayInfo): void
 }

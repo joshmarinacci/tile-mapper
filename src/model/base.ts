@@ -31,6 +31,7 @@ type PropDefCustomType =
   | "image-reference"
   | "map-reference"
   | "actor-reference"
+  | "font-reference"
   | "actor-type"
 
 export type PropDef<T> = {
@@ -77,10 +78,7 @@ export class PropsBase<Type> {
     }
     for (const [k, d] of Object.entries(defs)) {
       this.setPropDef(k as keyof Type, d as PropDef<Type[keyof Type]>)
-      this.setPropValue(
-        k as keyof Type,
-        this.getPropDef(k as keyof Type).default(),
-      )
+      this.setPropValue(k as keyof Type, this.getPropDef(k as keyof Type).default())
     }
     if (options) this.setProps(options)
   }
@@ -104,8 +102,7 @@ export class PropsBase<Type> {
   }
 
   getPropDef<Key extends keyof Type>(name: Key): PropDef<Type[Key]> {
-    if (!this.defs.has(name))
-      throw new Error(`object does not have key ${String(name)}`)
+    if (!this.defs.has(name)) throw new Error(`object does not have key ${String(name)}`)
     return this.defs.get(name) as unknown as PropDef<Type[Key]>
   }
 
@@ -180,9 +177,7 @@ export class PropsBase<Type> {
     for (const [k, d] of this.getAllPropDefs()) {
       if (d.skipPersisting) continue
       if (!d.toJSON)
-        throw new Error(
-          `prop def for ${k} in class ${clazz} is missing toJSON function`,
-        )
+        throw new Error(`prop def for ${k} in class ${clazz} is missing toJSON function`)
       obj.props[k] = d.toJSON(this.getPropValue(k))
     }
     return obj
@@ -411,9 +406,7 @@ const CLASS_NAME_MAP: Record<string, string> = {
   Test2: "GameTest",
 }
 
-export function restoreClassFromJSON<Type>(
-  json: JsonOut<Type>,
-): PropsBase<Type> {
+export function restoreClassFromJSON<Type>(json: JsonOut<Type>): PropsBase<Type> {
   // console.log("restoring class", json)
   if (CLASS_NAME_MAP[json.class]) json.class = CLASS_NAME_MAP[json.class]
   const Clazz = CLASS_REGISTRY.classByName.get(json.class)
@@ -428,9 +421,7 @@ export function restoreClassFromJSON<Type>(
       args[key] = val
       // console.log("setting",key,'to',val)
     } else {
-      console.log(
-        `prop missing in json: ${key}. using default: ${def.default()}`,
-      )
+      console.log(`prop missing in json: ${key}. using default: ${def.default()}`)
       args[key] = def.default()
     }
   }
@@ -440,21 +431,21 @@ export function restoreClassFromJSON<Type>(
   return obj
 }
 
-export function appendToList<
-  Type,
-  Key extends keyof Type,
-  Value extends Type[Key],
->(target: PropsBase<Type>, key: Key, value: Flatten<Value>) {
+export function appendToList<Type, Key extends keyof Type, Value extends Type[Key]>(
+  target: PropsBase<Type>,
+  key: Key,
+  value: Flatten<Value>,
+) {
   const data = (target.getPropValue(key) as unknown[]).slice()
   data.push(value)
   target.setPropValue(key, data as Value)
 }
 
-export function removeFromList<
-  Type,
-  Key extends keyof Type,
-  Value extends Type[Key],
->(target: PropsBase<Type>, key: Key, value: Flatten<Value>) {
+export function removeFromList<Type, Key extends keyof Type, Value extends Type[Key]>(
+  target: PropsBase<Type>,
+  key: Key,
+  value: Flatten<Value>,
+) {
   const data = (target.getPropValue(key) as unknown[]).slice()
   const n = data.indexOf(value)
   if (n >= 0) {

@@ -2,14 +2,11 @@ import { Bounds } from "josh_js_util"
 import React from "react"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
-import { Tool, ToolEvent, ToolOverlayInfo } from "./tool"
+import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
 
 type SelectionToolSettingsType = {}
 
-export class SelectionTool
-  extends PropsBase<SelectionToolSettingsType>
-  implements Tool
-{
+export class SelectionTool extends PropsBase<SelectionToolSettingsType> implements PixelTool {
   name: string
   private down: boolean
 
@@ -21,7 +18,7 @@ export class SelectionTool
 
   drawOverlay(ovr: ToolOverlayInfo): void {}
 
-  onMouseDown(evt: ToolEvent): void {
+  onMouseDown(evt: PixelToolEvent): void {
     if (!evt.layer) return
     this.down = true
     const selection = new Bounds(evt.pt.floor().x, evt.pt.floor().y, 0, 0)
@@ -31,7 +28,7 @@ export class SelectionTool
     evt.markDirty()
   }
 
-  onMouseMove(evt: ToolEvent): void {
+  onMouseMove(evt: PixelToolEvent): void {
     if (!evt.layer) return
     if (!this.down) return
     const pt = evt.pt.floor()
@@ -47,7 +44,7 @@ export class SelectionTool
     }
   }
 
-  onMouseUp(evt: ToolEvent): void {
+  onMouseUp(evt: PixelToolEvent): void {
     if (!evt.layer) return
     this.down = false
     const pt = evt.pt.floor()

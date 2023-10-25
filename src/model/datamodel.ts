@@ -1,11 +1,6 @@
 import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 
-import {
-  drawEditableSprite,
-  ImagePalette,
-  PICO8,
-  RESURRECT64,
-} from "../common/common"
+import { drawEditableSprite, ImagePalette, PICO8, RESURRECT64 } from "../common/common"
 import {
   appendToList,
   CLASS_REGISTRY,
@@ -72,7 +67,7 @@ const PointDef = new PropDefBuilder<Point>({
     ),
   format: (v) => `${v.x} , ${v.y}`,
 })
-const BoundsDef: PropDef<Bounds> = new PropDefBuilder<Bounds>({
+const BoundsDef = new PropDefBuilder<Bounds>({
   type: "Bounds",
   default: () => new Bounds(0, 0, 16, 16),
   toJSON: (v) => v.toJSON(),
@@ -239,14 +234,34 @@ CLASS_REGISTRY.register("Tile", Tile, TileDefs)
 
 export interface ImageObjectType {
   name: string
+  position: Point
+  text: string
+  color: string
+  font: string
 }
 export interface TextObjectType extends ImageObjectType {}
+const PixelFontReferenceDef = new PropDefBuilder<string>({
+  type: "reference",
+  format: (v) => "font",
+  default: () => "unknown",
+  toJSON: (v) => v,
+  fromJSON: (v) => v.toString(),
+}).withCustom("font-reference")
+
 const TextObjectDefs: DefList<TextObjectType> = {
   name: NameDef,
+  position: PointDef.copy().withEditable(true),
+  text: StringDef.copy().withDefault(() => "Greetings Earthling"),
+  color: StringDef.copy().withDefault(() => "black"),
+  font: PixelFontReferenceDef,
 }
 export class TextObject extends PropsBase<TextObjectType> {
   constructor(opts?: PropValues<TextObjectType>) {
     super(TextObjectDefs, opts)
+  }
+
+  contains(pt: Point) {
+    return this.getPropValue("position").distance(pt) < 10
   }
 }
 CLASS_REGISTRY.register("TextObject", TextObject, TextObjectDefs)
@@ -260,9 +275,7 @@ export interface ImageLayerType {
 interface ImagePixelLayerType extends ImageLayerType {
   data: ArrayGrid<number>
 }
-const ImagePixelLayerData = ArrayGridNumberDef.copy()
-  .withEditable(false)
-  .withHidden(true)
+const ImagePixelLayerData = ArrayGridNumberDef.copy().withEditable(false).withHidden(true)
 const ImagePixelLayerDefs: DefList<ImagePixelLayerType> = {
   name: NameDef,
   visible: BooleanDef,
@@ -335,11 +348,7 @@ export class ImageObjectLayer extends PropsBase<ImageObjectLayerType> {
   }
 }
 
-CLASS_REGISTRY.register(
-  "ImageObjectLayer",
-  ImageObjectLayer,
-  ImageObjectLayerDefs,
-)
+CLASS_REGISTRY.register("ImageObjectLayer", ImageObjectLayer, ImageObjectLayerDefs)
 
 type SImageType = {
   name: string
@@ -396,9 +405,7 @@ const TileArrayDef: PropDef<Tile[]> = {
   },
 }
 
-export const TransientBooleanDef = BooleanDef.copy()
-  .withSkipPersisting(true)
-  .withHidden(true)
+export const TransientBooleanDef = BooleanDef.copy().withSkipPersisting(true).withHidden(true)
 const SheetDefs: DefList<SheetType> = {
   name: NameDef,
   tileSize: SizeDef,
@@ -868,8 +875,7 @@ export class GameDoc extends PropsBase<DocType> {
   }
 
   lookup_sprite_by_name(name: string): Tile | undefined {
-    if (this.sprite_lookup_by_name.has(name))
-      return this.sprite_lookup_by_name.get(name)
+    if (this.sprite_lookup_by_name.has(name)) return this.sprite_lookup_by_name.get(name)
     for (const sheet of this.getPropValue("sheets") as Sheet[]) {
       for (const tile of sheet.getPropValue("tiles") as Tile[]) {
         if (tile.getPropValue("name") === name) {

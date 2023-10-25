@@ -2,7 +2,7 @@ import { ArrayGrid, Bounds, Point } from "josh_js_util"
 import React from "react"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
-import { Tool, ToolEvent, ToolOverlayInfo } from "./tool"
+import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
 
 type MoveToolSettingsType = {}
 
@@ -21,7 +21,7 @@ export function copyContentsFrom(
   }
 }
 
-export class MoveTool extends PropsBase<MoveToolSettingsType> implements Tool {
+export class MoveTool extends PropsBase<MoveToolSettingsType> implements PixelTool {
   name: string
   private down: boolean
   private start: Point
@@ -48,7 +48,7 @@ export class MoveTool extends PropsBase<MoveToolSettingsType> implements Tool {
     ctx.restore()
   }
 
-  onMouseDown(evt: ToolEvent): void {
+  onMouseDown(evt: PixelToolEvent): void {
     // if inside selection
     if (evt.selection && evt.selection.contains(evt.pt) && evt.layer) {
       console.log("starting move at", evt.pt)
@@ -58,33 +58,21 @@ export class MoveTool extends PropsBase<MoveToolSettingsType> implements Tool {
       console.log("selection is", evt.selection)
       // copy selection to a temp layer drawn in the overlay
       this.temp = new ArrayGrid<number>(size.w, size.h)
-      copyContentsFrom(
-        evt.layer.getPropValue("data"),
-        evt.selection,
-        this.temp,
-        new Point(0, 0),
-      )
+      copyContentsFrom(evt.layer.getPropValue("data"), evt.selection, this.temp, new Point(0, 0))
       evt.markDirty()
     }
     // otherwise do nothing
   }
 
-  onMouseMove(evt: ToolEvent): void {
+  onMouseMove(evt: PixelToolEvent): void {
     if (this.down && evt.selection) {
       this.start = evt.pt
-      evt.setSelectionRect(
-        new Bounds(
-          this.start.x,
-          this.start.y,
-          evt.selection.w,
-          evt.selection.h,
-        ),
-      )
+      evt.setSelectionRect(new Bounds(this.start.x, this.start.y, evt.selection.w, evt.selection.h))
       evt.markDirty()
     }
   }
 
-  onMouseUp(evt: ToolEvent): void {
+  onMouseUp(evt: PixelToolEvent): void {
     if (this.down && evt.layer) {
       this.start = evt.pt
       //copy the temp back to the layer

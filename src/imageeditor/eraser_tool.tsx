@@ -4,23 +4,22 @@ import React from "react"
 import { useWatchAllProps } from "../model/base"
 import { IntegerDef } from "../model/datamodel"
 import { strokeBounds } from "../util"
-import { PixelTool } from "./pixel_tool"
-import { Tool, ToolEvent, ToolOverlayInfo } from "./tool"
+import { BasePixelTool } from "./pixel_tool"
+import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
 
 type EraserSettingsType = {
   tip_size: number
 }
 
-export class EraserTool extends PixelTool<EraserSettingsType> implements Tool {
+export class EraserTool extends BasePixelTool<EraserSettingsType> implements PixelTool {
   constructor() {
     super({ tip_size: IntegerDef }, { tip_size: 3 })
     this.name = "eraser"
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  drawPixels(evt: ToolEvent, target: ArrayGrid<number>, _final: boolean) {
-    if (evt.layer)
-      this.drawAtCursor(evt, target, this._current, evt.color, evt.selection)
+  drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, _final: boolean) {
+    if (evt.layer) this.drawAtCursor(evt, target, this._current, evt.color, evt.selection)
   }
 
   drawOverlay(ovr: ToolOverlayInfo): void {
@@ -34,7 +33,7 @@ export class EraserTool extends PixelTool<EraserSettingsType> implements Tool {
   }
 
   private drawAtCursor(
-    evt: ToolEvent,
+    evt: PixelToolEvent,
     layer: ArrayGrid<number>,
     pt: Point,
     color: number,

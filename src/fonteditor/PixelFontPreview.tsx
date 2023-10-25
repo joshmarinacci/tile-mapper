@@ -7,15 +7,13 @@ import { useWatchAllProps } from "../model/base"
 import { PixelFont } from "../model/datamodel"
 import { drawGlyph } from "./PixelFontEditorView"
 
-function measureTextRun(text: string, font: PixelFont) {
+export function measureTextRun(text: string, font: PixelFont) {
   const SPACE = 1
   let w = 0
   let h = 0
   const glyphs = font.getPropValue("glyphs")
   for (const ch of text) {
-    const glyph = glyphs.find(
-      (g) => g.getPropValue("codepoint") === ch.codePointAt(0),
-    )
+    const glyph = glyphs.find((g) => g.getPropValue("codepoint") === ch.codePointAt(0))
     if (glyph) {
       const left = glyph.getPropValue("left")
       const right = glyph.getPropValue("right")
@@ -27,7 +25,7 @@ function measureTextRun(text: string, font: PixelFont) {
   return new Size(w, h)
 }
 
-function drawTextRun(
+export function drawTextRun(
   ctx: CanvasRenderingContext2D,
   text: string,
   font: PixelFont,
@@ -38,9 +36,7 @@ function drawTextRun(
   let x = 0
   const SPACE = 1
   for (const ch of text) {
-    const glyph = glyphs.find(
-      (g) => g.getPropValue("codepoint") === ch.codePointAt(0),
-    )
+    const glyph = glyphs.find((g) => g.getPropValue("codepoint") === ch.codePointAt(0))
     if (glyph) {
       const left = glyph.getPropValue("left")
       const right = glyph.getPropValue("right")
@@ -68,10 +64,7 @@ async function textToPng(text: string, font: PixelFont, scale: number) {
   ctx.restore()
 
   const blob = await canvas_to_blob(canvas)
-  forceDownloadBlob(
-    `${font.getPropValue("name") as string}.${scale}x.png`,
-    blob,
-  )
+  forceDownloadBlob(`${font.getPropValue("name") as string}.${scale}x.png`, blob)
 }
 
 export function PixelFontPreview(props: { font: PixelFont }) {
@@ -101,23 +94,13 @@ export function PixelFontPreview(props: { font: PixelFont }) {
   return (
     <div className={"hbox"}>
       <div className={"vbox"}>
-        <input
-          type={"text"}
-          value={text}
-          onChange={(e) => setText(e.target.value)}
-        />
+        <input type={"text"} value={text} onChange={(e) => setText(e.target.value)} />
         <canvas ref={ref} width={250} height={100} />
       </div>
       <DropdownButton title={"export"}>
-        <button onClick={() => textToPng(text, props.font, 1)}>
-          export PNG 1x
-        </button>
-        <button onClick={() => textToPng(text, props.font, 2)}>
-          export PNG 2x
-        </button>
-        <button onClick={() => textToPng(text, props.font, 4)}>
-          export PNG 4x
-        </button>
+        <button onClick={() => textToPng(text, props.font, 1)}>export PNG 1x</button>
+        <button onClick={() => textToPng(text, props.font, 2)}>export PNG 2x</button>
+        <button onClick={() => textToPng(text, props.font, 4)}>export PNG 4x</button>
       </DropdownButton>
     </div>
   )
