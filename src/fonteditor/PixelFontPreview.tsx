@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react"
 
 import { DropdownButton } from "../common/common-components"
 import { useWatchAllProps } from "../model/base"
-import { PixelFont } from "../model/datamodel"
+import { PixelFont, PixelGlyph } from "../model/datamodel"
 import { drawGlyph } from "./PixelFontEditorView"
 
 export function measureTextRun(text: string, font: PixelFont) {
@@ -25,6 +25,17 @@ export function measureTextRun(text: string, font: PixelFont) {
   return new Size(w, h)
 }
 
+const EMPTY_GLYPH = new PixelGlyph({
+  name: "EMPTY_GLYPH",
+  codepoint: 256,
+  size: new Size(10, 10),
+  right: 0,
+  left: 0,
+  baseline: 10,
+  descent: 0,
+  ascent: 10,
+})
+EMPTY_GLYPH.getPropValue("data").fill(() => 0)
 export function drawTextRun(
   ctx: CanvasRenderingContext2D,
   text: string,
@@ -36,14 +47,13 @@ export function drawTextRun(
   let x = 0
   const SPACE = 1
   for (const ch of text) {
-    const glyph = glyphs.find((g) => g.getPropValue("codepoint") === ch.codePointAt(0))
-    if (glyph) {
-      const left = glyph.getPropValue("left")
-      const right = glyph.getPropValue("right")
-      const size = glyph.getPropValue("size")
-      drawGlyph(ctx, glyph, new Point(x - left, 0), black, scale)
-      x += size.w - left - right + SPACE
-    }
+    let glyph = glyphs.find((g) => g.getPropValue("codepoint") === ch.codePointAt(0))
+    if (glyph === undefined) glyph = EMPTY_GLYPH
+    const left = glyph.getPropValue("left")
+    const right = glyph.getPropValue("right")
+    const size = glyph.getPropValue("size")
+    drawGlyph(ctx, glyph, new Point(x - left, 0), black, scale)
+    x += size.w - left - right + SPACE
   }
 }
 

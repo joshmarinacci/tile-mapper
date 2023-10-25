@@ -13,7 +13,7 @@ import { PaletteColorPickerPane } from "../common/Palette"
 import { PropSheet } from "../common/propsheet"
 import { ShareImageDialog } from "../common/ShareImageDialog"
 import { drawTextRun } from "../fonteditor/PixelFontPreview"
-import { appendToList, PropsBase, useWatchAllProps } from "../model/base"
+import { appendToList, PropsBase, removeFromList, useWatchAllProps } from "../model/base"
 import {
   GameDoc,
   ImageLayerType,
@@ -30,10 +30,11 @@ import { FillTool, FillToolSettings } from "./fill_tool"
 import { LayerItemRenderer } from "./LayerItemRenderer"
 import { LineTool, LineToolSettings } from "./line_tool"
 import { MoveTool, MoveToolSettings } from "./move_tool"
+import { MoveObjectTool } from "./MoveObjectTool"
 import { PencilTool, PencilToolSettings } from "./pencil_tool"
 import { RectTool, RectToolSettings } from "./rect_tool"
 import { SelectionTool, SelectionToolSettings } from "./selection_tool"
-import { ObjectTool, ObjectToolEvent, ObjectToolOverlayInfo, PixelTool } from "./tool"
+import { ObjectTool, PixelTool } from "./tool"
 
 function clamp(val: number, min: number, max: number) {
   if (val < min) return min
@@ -66,7 +67,7 @@ export function drawImage(
       ctx.globalAlpha = clamp(layer.getPropValue("opacity"), 0, 1)
       layer.getPropValue("data").forEach((obj) => {
         if (obj instanceof TextObject) {
-          const bds = obj.getPropValue("bounds")
+          const pt = obj.getPropValue("position")
           const font_ref = obj.getPropValue("font")
           const txt = obj.getPropValue("text")
           const color = obj.getPropValue("color")
@@ -75,12 +76,15 @@ export function drawImage(
             const font = doc.getPropValue("fonts").find((fnt) => fnt.getUUID() === font_ref)
             console.log("found font is", font)
             if (font) {
+              ctx.save()
+              ctx.translate(pt.x * scale, pt.y * scale)
               drawTextRun(ctx, txt, font, scale, color)
+              ctx.restore()
             }
           } else {
             ctx.font = "12pt sans-serif"
             ctx.fillStyle = color
-            ctx.fillText(txt, bds.x, bds.y + 20)
+            ctx.fillText(txt, pt.x, pt.y + 20)
           }
         }
       })
@@ -136,6 +140,7 @@ function drawCanvas(
       ctx: ctx,
       scale: scale,
       selectedObject: selectedObject,
+      doc: doc,
     })
   }
 
@@ -144,29 +149,6 @@ function drawCanvas(
     ctx.setLineDash([5, 5])
     strokeBounds(ctx, bounds, "black", 1)
     ctx.setLineDash([])
-  }
-}
-
-class MoveObjectTool implements ObjectTool {
-  onMouseDown(evt: ObjectToolEvent) {
-    console.log("pressed on", evt.layer, "at", evt.pt)
-    const obj = evt.layer.getPropValue("data").find((obj) => obj.contains(evt.pt))
-    if (obj) {
-      console.log("found the object", obj)
-      evt.setSelectedObject(obj)
-      evt.markDirty()
-    }
-  }
-  onMouseMove(evt: ObjectToolEvent) {}
-  onMouseUp(evt: ObjectToolEvent) {}
-  drawOverlay(ovr: ObjectToolOverlayInfo) {
-    console.log("drawing")
-    if (ovr.selectedObject) {
-      const bds = ovr.selectedObject.getPropValue("position").scale(ovr.scale)
-      ovr.ctx.strokeStyle = "white"
-      ovr.ctx.lineWidth = 3
-      ovr.ctx.strokeRect(bds.x, bds.y, 10, 10)
-    }
   }
 }
 
@@ -224,7 +206,7 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
     canvas.width = size.w
     canvas.height = size.h
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
-    drawImage(ctx, image, palette, scale)
+    drawImage(doc, ctx, image, palette, scale)
 
     const blob = await canvas_to_blob(canvas)
     forceDownloadBlob(`${image.getPropValue("name") as string}.${scale}x.png`, blob)
@@ -237,7 +219,7 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
     canvas.width = size.w
     canvas.height = size.h
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
-    drawImage(ctx, image, palette, scale)
+    drawImage(doc, ctx, image, palette, scale)
 
     const blob = await canvas_to_blob(canvas)
     dm.show(<ShareImageDialog blob={blob} />)
@@ -312,6 +294,14 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
   if (pixelTool instanceof FillTool) tool_settings = <FillToolSettings tool={pixelTool} />
   if (pixelTool instanceof SelectionTool) tool_settings = <SelectionToolSettings tool={pixelTool} />
   if (pixelTool instanceof MoveTool) tool_settings = <MoveToolSettings tool={pixelTool} />
+
+  function deleteSelectedObject() {
+    if (layer instanceof ImageObjectLayer && selectedObject !== undefined) {
+      removeFromList(layer, "data", selectedObject)
+      setSelectedObject(undefined)
+    }
+  }
+
   return (
     <div
       className={"image-editor-view"}
@@ -403,27 +393,22 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
                 const font = doc.getPropValue("fonts").find((fnt) => fnt)
                 const textobj = new TextObject({
                   name: "new text",
-                  text: "Greetings Earthling",
-                  position: new Point(0, 0),
+                  text: "ABC",
+                  position: new Point(10, 10),
                   font: font?.getUUID(),
                 })
                 appendToList(layer, "data", textobj)
+                setSelectedObject(textobj)
               }}
               icon={Icons.Plus}
               selected={false}
               text={"new text"}
             />
             <ToggleButton
-              icon={Icons.Move}
-              selected={pixelTool.name === "move"}
-              text={"move"}
-              onClick={() => 0}
-            />
-            <ToggleButton
-              icon={Icons.Move}
-              selected={pixelTool.name === "move"}
+              icon={Icons.SelectionSelected}
+              selected={pixelTool.name === "delete"}
               text={"delete object"}
-              onClick={() => 0}
+              onClick={() => deleteSelectedObject()}
             />
           </div>
         )}
