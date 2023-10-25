@@ -10,7 +10,6 @@ import { DocContext, IconButton, Pane, ToggleButton } from "../common/common-com
 import { DividerColumnBox } from "../common/DividerColumnBox"
 import { ListView, ListViewDirection } from "../common/ListView"
 import { PaletteColorPickerPane } from "../common/Palette"
-import { PropSheet } from "../common/propsheet"
 import { ShareImageDialog } from "../common/ShareImageDialog"
 import { drawTextRun } from "../fonteditor/PixelFontPreview"
 import { appendToList, PropsBase, removeFromList, useWatchAllProps } from "../model/base"
@@ -22,6 +21,7 @@ import {
   SImage,
   TextObject,
 } from "../model/datamodel"
+import { PropSheet } from "../propsheet/propsheet"
 import { GlobalState } from "../state"
 import { strokeBounds } from "../util"
 import { EllipseTool, EllipseToolSettings } from "./ellipse_tool"

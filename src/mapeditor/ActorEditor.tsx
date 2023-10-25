@@ -5,10 +5,10 @@ import React, { useContext, useState } from "react"
 import { DocContext } from "../common/common-components"
 import { ListSelect } from "../common/ListSelect"
 import { ListViewOptions, ListViewRenderer } from "../common/ListView"
-import { TileReferenceView } from "../common/propsheet"
 import { drawImage } from "../imageeditor/ImageEditorView"
 import { appendToList } from "../model/base"
 import { Actor, ActorInstance, ActorLayer, GameDoc } from "../model/datamodel"
+import { TileReferenceView } from "../propsheet/propsheet"
 import { fillBounds, strokeBounds } from "../util"
 import { DrawArgs, MouseEventArgs, MouseHandler } from "./editorbase"
 
@@ -31,9 +31,7 @@ export function drawActorlayer(
       const box = source.getPropValue("viewbox").add(position).scale(scale)
       const imageRef = source.getPropValue("sprite")
       if (imageRef) {
-        const img = doc
-          .getPropValue("canvases")
-          .find((can) => can.getUUID() === imageRef)
+        const img = doc.getPropValue("canvases").find((can) => can.getUUID() === imageRef)
         if (img) {
           ctx.save()
           ctx.translate(box.x, box.y)
@@ -122,17 +120,11 @@ export function drawSelectedActor(
   }
 }
 
-export function findActorAtPosition(
-  doc: GameDoc,
-  layer: ActorLayer,
-  point: Point,
-) {
+export function findActorAtPosition(doc: GameDoc, layer: ActorLayer, point: Point) {
   return layer.getPropValue("actors").find((inst) => {
     const actt = findActorForInstance(inst, doc)
     if (actt) {
-      const box = actt
-        .getPropValue("viewbox")
-        .add(inst.getPropValue("position"))
+      const box = actt.getPropValue("viewbox").add(inst.getPropValue("position"))
       console.log("box is", box)
       if (box.contains(point)) {
         return true

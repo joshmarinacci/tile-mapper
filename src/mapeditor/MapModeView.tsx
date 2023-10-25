@@ -4,9 +4,9 @@ import React, { useContext, useState } from "react"
 
 import { DocContext } from "../common/common-components"
 import { DividerColumnBox } from "../common/DividerColumnBox"
-import { PropSheet } from "../common/propsheet"
 import { PropsBase } from "../model/base"
 import { GameMap, MapLayerType, Sheet, Tile } from "../model/datamodel"
+import { PropSheet } from "../propsheet/propsheet"
 import { CompactSheetAndTileSelector } from "../sheeteditor/TileListView"
 import { GlobalState } from "../state"
 import { LayerEditor } from "./LayerEditor"
@@ -20,9 +20,7 @@ export function MapModeView(props: { state: GlobalState; map: GameMap }) {
   const [selectedTile, setSelectedTile] = useState<Tile | undefined>(
     sheets[0].getPropValue("tiles")[0],
   )
-  const [selectedLayer, setSelectedLayer] = useState<
-    PropsBase<MapLayerType> | undefined
-  >(layers[0])
+  const [selectedLayer, setSelectedLayer] = useState<PropsBase<MapLayerType> | undefined>(layers[0])
   const [columnWidth, setColumnWidth] = useState(300)
 
   return (

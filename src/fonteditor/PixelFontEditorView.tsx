@@ -4,9 +4,9 @@ import React, { useState } from "react"
 import { Icons, ImagePalette } from "../common/common"
 import { DropdownButton } from "../common/common-components"
 import { ListView, ListViewDirection } from "../common/ListView"
-import { PropSheet } from "../common/propsheet"
 import { appendToList, useWatchAllProps, useWatchProp } from "../model/base"
 import { PixelFont, PixelGlyph } from "../model/datamodel"
+import { PropSheet } from "../propsheet/propsheet"
 import { GlobalState } from "../state"
 import { PixelFontPreview } from "./PixelFontPreview"
 import { PixelGlyphEditor } from "./PixelGlyphEditor"
@@ -31,10 +31,7 @@ export function drawGlyph(
   }
 }
 
-export function PixelFontEditorView(props: {
-  state: GlobalState
-  font: PixelFont
-}) {
+export function PixelFontEditorView(props: { state: GlobalState; font: PixelFont }) {
   const [selected, setSelected] = useState<PixelGlyph | undefined>()
   const [drawNames, setDrawNames] = useState(true)
   const [scale, setScale] = useState(1)

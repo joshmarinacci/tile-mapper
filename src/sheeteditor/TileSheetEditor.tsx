@@ -7,9 +7,9 @@ import React, { useContext, useEffect, useState } from "react"
 import { DocContext, Pane } from "../common/common-components"
 import { DividerColumnBox } from "../common/DividerColumnBox"
 import { PaletteColorPickerPane } from "../common/Palette"
-import { PropSheet } from "../common/propsheet"
 import { useWatchProp } from "../model/base"
 import { Sheet, Tile } from "../model/datamodel"
+import { PropSheet } from "../propsheet/propsheet"
 import { GlobalState } from "../state"
 import { TestMap } from "../testeditor/TestMap"
 import { PixelGridEditor } from "./PixelGridEditor"
@@ -49,9 +49,7 @@ export function TileSheetEditor(props: { sheet: Sheet; state: GlobalState }) {
             />
           </Pane>
         )}
-        {tile && (
-          <PropSheet target={tile} title={"Tile Info"} collapsable={true} />
-        )}
+        {tile && <PropSheet target={tile} title={"Tile Info"} collapsable={true} />}
         {tile && (
           <Pane collapsable={true} title={"Scratch"}>
             <TestMap tile={tile} mapArray={maparray} palette={palette} />
