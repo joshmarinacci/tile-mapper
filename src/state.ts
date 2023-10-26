@@ -83,7 +83,7 @@ export class GlobalState extends PropsBase<GlobalStateType> {
     this.setPropValue("selection", undefined)
   }
 
-  setSelection(doc: GameDoc) {
-    this.setPropValue("selection", doc)
+  setSelection<T>(doc: PropsBase<T>) {
+    this.setPropValue("selection", doc as unknown as PropsBase<unknown>)
   }
 }

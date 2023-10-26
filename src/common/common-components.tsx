@@ -105,7 +105,7 @@ export function DropdownButton(props: { title?: string; icon?: Icons; children: 
   )
 }
 
-export const DocContext = React.createContext(new GameDoc())
+export const DocContext = React.createContext<GameDoc>(null)
 
 export function Pane(props: {
   title?: string
@@ -200,4 +200,4 @@ export function IconButton(props: { onClick: () => void; icon: Icons; text?: str
   )
 }
 
-export const StateContext = React.createContext(new GlobalState())
+export const StateContext = React.createContext<GlobalState>(null)

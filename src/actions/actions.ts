@@ -37,19 +37,6 @@ export const ExportToJSONAction: SimpleMenuAction = {
   },
 }
 
-export const DocToPNG: SimpleMenuAction = {
-  type: "simple",
-  title: "to PNG",
-  async perform(state): Promise<void> {
-    const doc = state.getPropValue("doc") as GameDoc
-    for (const sheet of doc.getPropValue("sheets")) {
-      const can = sheet_to_canvas(sheet, doc.getPropValue("palette"))
-      const blob = await canvas_to_blob(can)
-      forceDownloadBlob(`${doc.getPropValue("name")}.${sheet.getPropValue("name")}.png`, blob)
-    }
-  },
-}
-
 export const DocToBMP: SimpleMenuAction = {
   type: "simple",
   title: "to BMP",
@@ -71,7 +58,7 @@ export const ImportFromJSONAction: SimpleMenuAction = {
     input_element.setAttribute("type", "file")
     input_element.style.display = "none"
     document.body.appendChild(input_element)
-    const new_doc = await new Promise<GameDoc>((res, rej) => {
+    const new_doc = await new Promise<GameDoc>((res) => {
       input_element.addEventListener("change", () => {
         const files = input_element.files
         if (!files || files.length <= 0) return
@@ -82,7 +69,7 @@ export const ImportFromJSONAction: SimpleMenuAction = {
     })
     console.log("new doc is", new_doc)
     state.setPropValue("doc", new_doc)
-    state.setPropValue("selection", new_doc)
+    state.setSelection(new_doc)
   },
 }
 

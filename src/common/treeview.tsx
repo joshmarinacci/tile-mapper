@@ -11,6 +11,7 @@ import {
   DeleteSheetAction,
 } from "../actions/actions"
 import { AddImageDialog } from "../actions/AddImageDialog"
+import { AddSheetToDocButton, AddTestToDocButton } from "../actions/reactactions"
 import { appendToList, PropDef, PropsBase, useWatchProp } from "../model/base"
 import {
   Actor,
@@ -23,16 +24,20 @@ import {
   Sheet,
   SImage,
 } from "../model/datamodel"
-import { GlobalState } from "../state"
 import { down_arrow_triangle, right_arrow_triangle } from "./common"
-import { DropdownButton, MenuList, StateContext, ToolbarActionButton } from "./common-components"
+import {
+  DocContext,
+  DropdownButton,
+  MenuList,
+  StateContext,
+  ToolbarActionButton,
+} from "./common-components"
 import { PopupContext } from "./popup"
 
 function PropertyList<T, K extends keyof T>(props: {
   target: PropsBase<T>
   value: GameDoc[]
   name: keyof T
-  state: GlobalState
   def: PropDef<T[K]>
   selection: unknown
 }) {
@@ -41,18 +46,20 @@ function PropertyList<T, K extends keyof T>(props: {
   const [open, setOpen] = useState(true)
   const toggle = () => setOpen(!open)
   useWatchProp(target, name)
+  const doc = useContext(DocContext)
+  const state = useContext(StateContext)
   const addSheet = () => {
     const sheet = new Sheet({
       name: "unnamed sheet",
-      tileSize: target.getPropValue("tileSize"),
+      tileSize: doc.getPropValue("tileSize"),
     })
-    appendToList(target, "sheets", sheet)
-    props.state.setPropValue("selection", sheet)
+    appendToList(doc, "sheets", sheet)
+    state.setSelection(sheet)
   }
   const addMap = () => {
     const map = new GameMap({ name: "new map" })
     appendToList(target, "maps", map)
-    props.state.setPropValue("selection", map)
+    state.setSelection(map)
   }
   const addActor = () => {
     const size = new Size(16, 16)
@@ -73,12 +80,7 @@ function PropertyList<T, K extends keyof T>(props: {
       sprite: sprite.getUUID(),
     })
     appendToList(target, name, actor)
-    props.state.setPropValue("selection", actor)
-  }
-  const addTest = () => {
-    const test = new GameTest({ name: "a new test" })
-    appendToList(target, name, test)
-    props.state.setPropValue("selection", test)
+    state.setSelection(actor)
   }
 
   const dm = useContext(DialogContext)
@@ -95,7 +97,7 @@ function PropertyList<T, K extends keyof T>(props: {
           appendToList(canvas, "layers", layer)
           layer.rebuildFromCanvas(canvas)
           appendToList(target, "canvases", canvas)
-          props.state.setPropValue("selection", canvas)
+          state.setSelection(canvas)
         }}
       />,
     )
@@ -106,7 +108,7 @@ function PropertyList<T, K extends keyof T>(props: {
     glyph.getPropValue("data").fill((n) => -1)
     appendToList(font, "glyphs", glyph)
     appendToList(target, name, font)
-    props.state.setPropValue("selection", font)
+    state.setSelection(font)
   }
 
   return (
@@ -118,8 +120,9 @@ function PropertyList<T, K extends keyof T>(props: {
         <b>{name.toString()}</b>
         <DropdownButton title={"..."}>
           {name === "sheets" && <button onClick={addSheet}>Add Sheet</button>}
+          {name === "sheets" && <AddSheetToDocButton state={state} />}
           {name === "maps" && <button onClick={addMap}>Add Map</button>}
-          {name === "tests" && <button onClick={addTest}>Add Test</button>}
+          {name === "tests" && <AddTestToDocButton />}
           {name === "actors" && <button onClick={addActor}>Add Actor</button>}
           {name === "canvases" && <button onClick={addCanvas}>Add Canvas</button>}
           {name === "fonts" && <button onClick={addFont}>Add Font</button>}
@@ -129,14 +132,7 @@ function PropertyList<T, K extends keyof T>(props: {
       {open && (
         <ul key={"children"} className={"tree-list"}>
           {values.map((val) => {
-            return (
-              <ObjectTreeView
-                key={val._id}
-                obj={val}
-                state={props.state}
-                selection={props.selection}
-              />
-            )
+            return <ObjectTreeView key={val._id} obj={val} selection={props.selection} />
           })}
         </ul>
       )}
@@ -150,7 +146,7 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown
   const select = (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
     e.stopPropagation()
-    state.setPropValue("selection", obj)
+    state.setSelection(obj)
   }
   if (!obj.getAllPropDefs) {
     console.log(obj)
@@ -198,7 +194,6 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown
             target={obj}
             value={obj.getPropValue(key)}
             name={key}
-            state={state}
             def={def}
             selection={props.selection}
           />

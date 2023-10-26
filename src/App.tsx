@@ -21,26 +21,14 @@ import { GlobalState } from "./state"
 const AR = new ActionRegistry()
 AR.register([ExportToJSONAction, DocToBMP, DocToBMP, ImportFromJSONAction, NewDocAction])
 
-const STATE = new GlobalState()
-STATE.setPropValue("doc", make_doc_from_json(Example))
-
-function MainWrapper(props: { state: GlobalState }): ReactElement {
-  const [doc, setDoc] = useState(props.state.getPropValue("doc") as GameDoc)
-  useWatchProp(props.state, "doc", () => setDoc(props.state.getPropValue("doc")))
-  return (
-    <StateContext.Provider value={props.state}>
-      <DocContext.Provider value={doc}>
-        <Main3 />
-      </DocContext.Provider>
-    </StateContext.Provider>
-  )
-}
+const gstate = new GlobalState()
+gstate.setPropValue("doc", make_doc_from_json(Example))
 
 function Main3() {
   const state = useContext(StateContext)
   const doc = useContext(DocContext)
   const [selection, setSelection] = useState<PropsBase<unknown> | undefined>(undefined)
-  useWatchAllProps(STATE, (s) => setSelection(s.getPropValue("selection")))
+  useWatchAllProps(state, (s) => setSelection(s.getPropValue("selection")))
 
   const showLeft = state.getPropValue("showLeft")
   const showRight = state.getPropValue("showRight")
@@ -83,16 +71,22 @@ function Main3() {
 }
 
 function App() {
+  const [doc, setDoc] = useState(gstate.getPropValue("doc") as GameDoc)
+  useWatchProp(gstate, "doc", () => setDoc(gstate.getPropValue("doc")))
   return (
-    <DialogContext.Provider value={new DialogContextImpl()}>
-      <PopupContext.Provider value={new PopupContextImpl()}>
-        <ActionRegistryContext.Provider value={AR}>
-          <MainWrapper state={STATE} />
-          <PopupContainer />
-          <DialogContainer />
-        </ActionRegistryContext.Provider>
-      </PopupContext.Provider>
-    </DialogContext.Provider>
+    <StateContext.Provider value={gstate}>
+      <DocContext.Provider value={doc}>
+        <DialogContext.Provider value={new DialogContextImpl()}>
+          <PopupContext.Provider value={new PopupContextImpl()}>
+            <ActionRegistryContext.Provider value={AR}>
+              <Main3 />
+              <PopupContainer />
+              <DialogContainer />
+            </ActionRegistryContext.Provider>
+          </PopupContext.Provider>
+        </DialogContext.Provider>
+      </DocContext.Provider>
+    </StateContext.Provider>
   )
 }
 

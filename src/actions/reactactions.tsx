@@ -1,9 +1,11 @@
 import { DialogContext } from "josh_react_util"
 import React, { useContext } from "react"
 
-import { ReactMenuAction } from "../common/common-components"
+import { DocContext, ReactMenuAction, StateContext } from "../common/common-components"
 import { ListFilesDialog } from "../io/ListFilesDialog"
 import { LoadFileDialog } from "../io/LoadPNGJSONFileDialog"
+import { appendToList } from "../model/base"
+import { GameTest, Sheet } from "../model/datamodel"
 import { GlobalState } from "../state"
 import { loadPNGJSON } from "./actions"
 import { NewDocDialog } from "./NewDocDialog"
@@ -15,7 +17,7 @@ function NewDocButton(props: { state: GlobalState }) {
       <NewDocDialog
         onComplete={(doc) => {
           props.state.setPropValue("doc", doc)
-          props.state.setPropValue("selection", doc)
+          props.state.setSelection(doc)
         }}
       />,
     )
@@ -63,4 +65,40 @@ export const UploadPNGJSONAction: ReactMenuAction = {
   makeComponent: (state: GlobalState) => {
     return <UploadButton state={state} />
   },
+}
+
+export function AddTestToDocButton() {
+  const doc = useContext(DocContext)
+  const state = useContext(StateContext)
+  return (
+    <button
+      onClick={() => {
+        const test = new GameTest({ name: "a new test" })
+        appendToList(doc, "tests", test)
+        state.setSelection(test)
+      }}
+    >
+      Add Test To Doc
+    </button>
+  )
+}
+
+export function AddSheetToDocButton(props: { state: GlobalState }) {
+  const doc = useContext(DocContext)
+  // const state = useContext(StateContext)
+  const state = props.state
+  return (
+    <button
+      onClick={() => {
+        const sheet = new Sheet({
+          name: "unnamed sheet",
+          tileSize: doc.getPropValue("tileSize"),
+        })
+        appendToList(doc, "sheets", sheet)
+        state.setSelection(sheet)
+      }}
+    >
+      Add Sheet To Doc
+    </button>
+  )
 }
