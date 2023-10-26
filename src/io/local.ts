@@ -2,12 +2,7 @@ import { make_logger, Size } from "josh_js_util"
 
 import { GameDoc } from "../model/datamodel"
 import { GlobalState } from "../state"
-import {
-  docToJSON,
-  JSONDocV5,
-  make_doc_from_json,
-  TILE_MAPPER_DOCUMENT,
-} from "./json"
+import { docToJSON, JSONDocV5, make_doc_from_json, TILE_MAPPER_DOCUMENT } from "./json"
 
 export type JSONDocReference = {
   uuid: string
@@ -53,20 +48,14 @@ function scaleCropCanvasTo(original_canvas: HTMLCanvasElement, size: Size) {
   return new_canvas
 }
 
-export async function saveLocalStorage(
-  state: GlobalState,
-  withThumbnail: boolean,
-) {
+export async function saveLocalStorage(state: GlobalState, withThumbnail: boolean) {
   // const log = make_logger('local')
   const json_obj = docToJSON(state.getPropValue("doc"))
   console.log("generated json", json_obj)
   const doc = state.getPropValue("doc")
   // log.info('json is',json_obj)
   //first save the doc itself
-  state.localStorage.setItem(
-    doc.getUUID(),
-    JSON.stringify(json_obj, null, "    "),
-  )
+  state.localStorage.setItem(doc.getUUID(), JSON.stringify(json_obj, null, "    "))
   //now save a thumbnail
   let thumbnail_url = ""
   if (withThumbnail) {
@@ -100,10 +89,7 @@ export async function saveLocalStorage(
 export async function listLocalDocs(state: GlobalState) {
   return loadIndex(state).docs
 }
-export async function loadLocalDoc(
-  state: GlobalState,
-  uuid: string,
-): Promise<GameDoc> {
+export async function loadLocalDoc(state: GlobalState, uuid: string): Promise<GameDoc> {
   const log = make_logger("local")
   const index: JSONDocIndex = loadIndex(state)
   log.info("the index is", index)
@@ -118,10 +104,7 @@ export async function loadLocalDoc(
   }
 }
 
-export async function deleteLocalDoc(
-  state: GlobalState,
-  uuid: string,
-): Promise<void> {
+export async function deleteLocalDoc(state: GlobalState, uuid: string): Promise<void> {
   const index: JSONDocIndex = loadIndex(state)
   const docref = index.docs.find((dr) => dr.uuid === uuid)
   if (!docref) return

@@ -2,13 +2,7 @@ import "./MapEditor.css"
 
 import { Point } from "josh_js_util"
 import { Spacer } from "josh_react_util"
-import React, {
-  MouseEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import { exportPNG } from "../actions/actions"
 import { DocContext } from "../common/common-components"
@@ -22,17 +16,9 @@ import {
   Tile,
   TileLayer,
 } from "../model/datamodel"
-import {
-  ActorLayerMouseHandler,
-  ActorLayerToolbar,
-  drawActorlayer,
-} from "./ActorEditor"
+import { ActorLayerMouseHandler, ActorLayerToolbar, drawActorlayer } from "./ActorEditor"
 import { MouseHandler } from "./editorbase"
-import {
-  drawTileLayer,
-  TileLayerMouseHandler,
-  TileLayerToolbar,
-} from "./TileEditor"
+import { drawTileLayer, TileLayerMouseHandler, TileLayerToolbar } from "./TileEditor"
 
 export function LayerEditor(props: {
   map: GameMap
@@ -43,14 +29,10 @@ export function LayerEditor(props: {
   const { map, layer, tile, setSelectedTile } = props
   const doc = useContext(DocContext)
   const [grid, setGrid] = useState<boolean>(false)
-  const [selectedActor, setSelectedActor] = useState<ActorInstance | undefined>(
-    undefined,
-  )
+  const [selectedActor, setSelectedActor] = useState<ActorInstance | undefined>(undefined)
   const ref = useRef<HTMLCanvasElement>(null)
   const [down, setDown] = useState<boolean>(false)
-  const [handler, setHandler] = useState<MouseHandler<unknown> | undefined>(
-    undefined,
-  )
+  const [handler, setHandler] = useState<MouseHandler<unknown> | undefined>(undefined)
   useEffect(() => redraw(), [grid, layer, selectedActor])
 
   const [zoom, setZoom] = useState(2)
@@ -59,10 +41,8 @@ export function LayerEditor(props: {
   const tileSize = doc.getPropValue("tileSize")
   useWatchProp(map, "layers")
   useEffect(() => {
-    if (props.layer instanceof TileLayer)
-      setHandler(new TileLayerMouseHandler())
-    if (props.layer instanceof ActorLayer)
-      setHandler(new ActorLayerMouseHandler())
+    if (props.layer instanceof TileLayer) setHandler(new TileLayerMouseHandler())
+    if (props.layer instanceof ActorLayer) setHandler(new ActorLayerMouseHandler())
   }, [props.layer])
   const redraw = () => {
     if (ref.current) {
@@ -98,9 +78,7 @@ export function LayerEditor(props: {
   useWatchAllProps(map, () => redraw())
   const canvasToLayer = (e: MouseEvent<HTMLCanvasElement>) => {
     const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
-    return new Point(e.clientX, e.clientY)
-      .subtract(new Point(rect.left, rect.top))
-      .scale(1 / scale)
+    return new Point(e.clientX, e.clientY).subtract(new Point(rect.left, rect.top)).scale(1 / scale)
   }
   const [fillOnce, setFillOnce] = useState<boolean>(false)
 
@@ -169,11 +147,7 @@ export function LayerEditor(props: {
         <button onClick={() => exportPNG(doc, map, 4)}>png 4x</button>
       </div>
       {layer instanceof TileLayer && (
-        <TileLayerToolbar
-          layer={layer}
-          fillOnce={fillOnce}
-          setFillOnce={setFillOnce}
-        />
+        <TileLayerToolbar layer={layer} fillOnce={fillOnce} setFillOnce={setFillOnce} />
       )}
       {layer instanceof ActorLayer && (
         <ActorLayerToolbar layer={layer} onSelect={setSelectedActor} />

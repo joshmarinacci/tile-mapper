@@ -5,19 +5,9 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 
 import { deleteTile, duplicate_tile, export_bmp } from "../actions/actions"
 import { drawEditableSprite, Icons, ImagePalette } from "../common/common"
-import {
-  DocContext,
-  DropdownButton,
-  IconButton,
-  Pane,
-} from "../common/common-components"
+import { DocContext, DropdownButton, IconButton, Pane } from "../common/common-components"
 import { ListSelect } from "../common/ListSelect"
-import {
-  ListView,
-  ListViewDirection,
-  ListViewOptions,
-  ListViewRenderer,
-} from "../common/ListView"
+import { ListView, ListViewDirection, ListViewOptions, ListViewRenderer } from "../common/ListView"
 import { PopupContext } from "../common/popup"
 import { ICON_CACHE } from "../iconcache"
 import { useWatchProp } from "../model/base"
@@ -33,10 +23,7 @@ type TilePreviewOptions = {
   palette: ImagePalette
 } & ListViewOptions
 
-export const TilePreviewRenderer: ListViewRenderer<
-  Tile,
-  TilePreviewOptions
-> = (props: {
+export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (props: {
   value: Tile
   selected: boolean
   options: TilePreviewOptions
@@ -62,11 +49,7 @@ export const TilePreviewRenderer: ListViewRenderer<
   const showPopup = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
     e.stopPropagation()
-    pm.show_at(
-      <TilePopupMenu value={value} sheet={options.sheet} />,
-      e.target,
-      "left",
-    )
+    pm.show_at(<TilePopupMenu value={value} sheet={options.sheet} />, e.target, "left")
   }
   return (
     <div className={"tile-preview-wrapper"} onContextMenu={showPopup}>
@@ -76,9 +59,7 @@ export const TilePreviewRenderer: ListViewRenderer<
         style={{
           width: `${value.width() * options.scale}px`,
           height: `${value.height() * options.scale}px`,
-          border: options.showGrid
-            ? "3px solid transparent"
-            : "0px solid transparent",
+          border: options.showGrid ? "3px solid transparent" : "0px solid transparent",
         }}
         width={value.width()}
         height={value.height()}
@@ -153,12 +134,8 @@ export function TileListView(props: {
           <IconButton onClick={use_list_view} icon={Icons.Selection} />
           <Spacer />
           <DropdownButton icon={Icons.Gear}>
-            <button onClick={() => sheet.setPropValue("showNames", !showNames)}>
-              show names
-            </button>
-            <button onClick={() => sheet.setPropValue("showGrid", !showGrid)}>
-              show grid
-            </button>
+            <button onClick={() => sheet.setPropValue("showNames", !showNames)}>show names</button>
+            <button onClick={() => sheet.setPropValue("showGrid", !showGrid)}>show grid</button>
             <button onClick={() => setScale(1)}>1x</button>
             <button onClick={() => setScale(2)}>2x</button>
             <button onClick={() => setScale(4)}>4x</button>
@@ -206,9 +183,7 @@ export function CompactSheetAndTileSelector(props: {
   const { selectedTile, setSelectedTile } = props
   const doc = useContext(DocContext)
   const sheets = doc.getPropValue("sheets")
-  const [selectedSheet, setSelectedSheet] = useState<Sheet | undefined>(
-    sheets[0],
-  )
+  const [selectedSheet, setSelectedSheet] = useState<Sheet | undefined>(sheets[0])
   return (
     <Pane
       header={

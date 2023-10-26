@@ -46,11 +46,7 @@ export function LoadFileDialog(props: {
         <button className={"default"} onClick={() => cancel()}>
           Cancel
         </button>
-        <button
-          disabled={!canLoad}
-          className={"primary"}
-          onClick={() => load()}
-        >
+        <button disabled={!canLoad} className={"primary"} onClick={() => load()}>
           Load
         </button>
       </footer>

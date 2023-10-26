@@ -1,11 +1,5 @@
 import { Bounds, Size } from "josh_js_util"
-import {
-  Enemy,
-  KeyboardManager,
-  Layer,
-  PhysicsManager,
-  Player,
-} from "retrogami-engine"
+import { Enemy, KeyboardManager, Layer, PhysicsManager, Player } from "retrogami-engine"
 
 export type GameMap = {
   name: string

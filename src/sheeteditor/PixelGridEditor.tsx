@@ -1,20 +1,10 @@
 import { Point, Size } from "josh_js_util"
 import { HBox } from "josh_react_util"
-import React, {
-  MouseEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import { drawGrid } from "../actions/actions"
 import { Icons, ImagePalette } from "../common/common"
-import {
-  DocContext,
-  IconButton,
-  ToggleButton,
-} from "../common/common-components"
+import { DocContext, IconButton, ToggleButton } from "../common/common-components"
 import { ICON_CACHE } from "../iconcache"
 import { useWatchProp } from "../model/base"
 import { Tile } from "../model/datamodel"

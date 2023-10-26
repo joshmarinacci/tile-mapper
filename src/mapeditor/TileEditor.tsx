@@ -9,12 +9,7 @@ function calculateDirections() {
   return [new Point(-1, 0), new Point(1, 0), new Point(0, -1), new Point(0, 1)]
 }
 
-export function bucketFill(
-  layer: TileLayer,
-  target: string,
-  replace: string,
-  at: Point,
-) {
+export function bucketFill(layer: TileLayer, target: string, replace: string, at: Point) {
   if (target === replace) return
   const cells = layer.getPropValue("data") as ArrayGrid<MapCell>
   const v = cells.get(at)
@@ -76,10 +71,7 @@ export function TileLayerToolbar(props: {
   return (
     <div className={"toolbar"}>
       <label>tiles</label>
-      <button
-        onClick={() => setFillOnce(true)}
-        className={toClass({ selected: fillOnce })}
-      >
+      <button onClick={() => setFillOnce(true)} className={toClass({ selected: fillOnce })}>
         fill
       </button>
     </div>

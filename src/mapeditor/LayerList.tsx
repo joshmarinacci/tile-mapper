@@ -10,19 +10,12 @@ import {
 } from "../actions/actions"
 import { Icons } from "../common/common"
 import { Icon, Pane } from "../common/common-components"
-import {
-  ListView,
-  ListViewDirection,
-  ListViewRenderer,
-} from "../common/ListView"
+import { ListView, ListViewDirection, ListViewRenderer } from "../common/ListView"
 import { PropsBase, useWatchProp } from "../model/base"
 import { GameMap, MapLayerType, TileLayer } from "../model/datamodel"
 import { ResizeLayerDialog } from "./ResizeLayerDialog"
 
-const LayerNameRenderer: ListViewRenderer<
-  PropsBase<MapLayerType>,
-  never
-> = (props: {
+const LayerNameRenderer: ListViewRenderer<PropsBase<MapLayerType>, never> = (props: {
   value: PropsBase<MapLayerType>
   selected: boolean
   options: never
@@ -31,15 +24,10 @@ const LayerNameRenderer: ListViewRenderer<
   useWatchProp(value, "name")
   useWatchProp(value, "visible")
   return (
-    <div
-      className={"std-list-item"}
-      style={{ justifyContent: "space-between" }}
-    >
+    <div className={"std-list-item"} style={{ justifyContent: "space-between" }}>
       <b>{value.getPropValue("name")}</b>
       <Icon
-        onClick={() =>
-          value.setPropValue("visible", !value.getPropValue("visible"))
-        }
+        onClick={() => value.setPropValue("visible", !value.getPropValue("visible"))}
         name={value.getPropValue("visible") ? Icons.EyeOpen : Icons.EyeClosed}
       />
     </div>

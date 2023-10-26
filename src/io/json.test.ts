@@ -1,20 +1,8 @@
 import { Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
-import {
-  appendToList,
-  CLASS_REGISTRY,
-  restoreClassFromJSON,
-} from "../model/base"
-import {
-  Actor,
-  GameMap,
-  PixelFont,
-  PixelGlyph,
-  Sheet,
-  Tile,
-  TileLayer,
-} from "../model/datamodel"
+import { appendToList, CLASS_REGISTRY, restoreClassFromJSON } from "../model/base"
+import { Actor, GameMap, PixelFont, PixelGlyph, Sheet, Tile, TileLayer } from "../model/datamodel"
 
 function log(...args: unknown[]) {
   console.log("JSON TEST", ...args)
@@ -70,9 +58,7 @@ describe("simple test", () => {
     appendToList(sheet, "tiles", tile)
     expect(sheet.getPropValue("tiles").length).toBe(1)
     expect(sheet.getPropValue("tiles")[0].getPropValue("name")).toBe("sky")
-    expect(
-      sheet.getPropValue("tiles")[0].getPropValue("data").get_at(2, 2),
-    ).toBe(3)
+    expect(sheet.getPropValue("tiles")[0].getPropValue("data").get_at(2, 2)).toBe(3)
 
     const json = sheet.toJSON()
     console.log("sheet JSON", JSON.stringify(json, null, "  "))
@@ -88,9 +74,7 @@ describe("simple test", () => {
     expect(sheet2.getPropValue("name")).toBe("terrain")
     expect(sheet2.getPropValue("tiles").length).toBe(1)
     expect(sheet2.getPropValue("tiles")[0].getPropValue("name")).toBe("sky")
-    expect(
-      sheet2.getPropValue("tiles")[0].getPropValue("data").get_at(2, 2),
-    ).toBe(3)
+    expect(sheet2.getPropValue("tiles")[0].getPropValue("data").get_at(2, 2)).toBe(3)
   })
   it("should save a tile layer", async () => {
     const layer1 = new TileLayer({

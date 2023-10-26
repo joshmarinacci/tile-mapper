@@ -2,11 +2,7 @@ import { HBox } from "josh_react_util"
 import React, { JSX, useContext, useRef } from "react"
 
 import { down_arrow_triangle } from "./common"
-import {
-  DefaultListViewRenderer,
-  ListViewOptions,
-  ListViewRenderer,
-} from "./ListView"
+import { DefaultListViewRenderer, ListViewOptions, ListViewRenderer } from "./ListView"
 import { PopupContext } from "./popup"
 
 function SelectionList<T, O extends ListViewOptions>(props: {

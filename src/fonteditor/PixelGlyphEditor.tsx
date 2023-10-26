@@ -1,29 +1,16 @@
 import { Point } from "josh_js_util"
 import { HBox } from "josh_react_util"
-import React, {
-  MouseEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react"
+import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import { drawGrid } from "../actions/actions"
 import { Icons, ImagePalette } from "../common/common"
-import {
-  DocContext,
-  IconButton,
-  ToggleButton,
-} from "../common/common-components"
+import { DocContext, IconButton, ToggleButton } from "../common/common-components"
 import { ICON_CACHE } from "../iconcache"
 import { useWatchAllProps, useWatchProp } from "../model/base"
 import { PixelGlyph } from "../model/datamodel"
 import { drawGlyph } from "./PixelFontEditorView"
 
-export function PixelGlyphEditor(props: {
-  glyph: PixelGlyph
-  palette: ImagePalette
-}) {
+export function PixelGlyphEditor(props: { glyph: PixelGlyph; palette: ImagePalette }) {
   const doc = useContext(DocContext)
   const { palette, glyph } = props
   const [down, setDown] = useState<boolean>(false)
@@ -104,16 +91,8 @@ export function PixelGlyphEditor(props: {
         <IconButton onClick={() => setZoom(zoom + 1)} icon={Icons.Plus} />
         <label>{zoom}</label>
         <IconButton onClick={() => setZoom(zoom - 1)} icon={Icons.Minus} />
-        <ToggleButton
-          onClick={() => setColor(0)}
-          icon={Icons.Pencil}
-          selected={color === 0}
-        />
-        <ToggleButton
-          onClick={() => setColor(-1)}
-          icon={Icons.Eraser}
-          selected={color === -1}
-        />
+        <ToggleButton onClick={() => setColor(0)} icon={Icons.Pencil} selected={color === 0} />
+        <ToggleButton onClick={() => setColor(-1)} icon={Icons.Eraser} selected={color === -1} />
       </HBox>
       <canvas
         ref={ref}

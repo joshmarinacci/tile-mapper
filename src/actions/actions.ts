@@ -13,12 +13,7 @@ import {
 } from "../io/json"
 import { saveLocalStorage } from "../io/local"
 import { readMetadata } from "../io/vendor"
-import {
-  appendToList,
-  PropsBase,
-  removeFromList,
-  SimpleMenuAction,
-} from "../model/base"
+import { appendToList, PropsBase, removeFromList, SimpleMenuAction } from "../model/base"
 import {
   Actor,
   ActorLayer,
@@ -50,10 +45,7 @@ export const DocToPNG: SimpleMenuAction = {
     for (const sheet of doc.getPropValue("sheets")) {
       const can = sheet_to_canvas(sheet, doc.getPropValue("palette"))
       const blob = await canvas_to_blob(can)
-      forceDownloadBlob(
-        `${doc.getPropValue("name")}.${sheet.getPropValue("name")}.png`,
-        blob,
-      )
+      forceDownloadBlob(`${doc.getPropValue("name")}.${sheet.getPropValue("name")}.png`, blob)
     }
   },
 }
@@ -108,18 +100,14 @@ export const SavePNGJSONAction: SimpleMenuAction = {
   type: "simple",
   // icon:SupportedIcons.SaveDocument,
   title: "Save As doc.JSON.PNG",
-  description:
-    "Save the document as a PNG with the document embedded inside of the PNG as JSON.",
+  description: "Save the document as a PNG with the document embedded inside of the PNG as JSON.",
   tags: ["save", "export", "download", "png"],
   perform: async (state) => {
     await savePNGJSON(state)
   },
 }
 
-export async function loadPNGJSON(
-  state: GlobalState,
-  file: File,
-): Promise<GameDoc> {
+export async function loadPNGJSON(state: GlobalState, file: File): Promise<GameDoc> {
   return new Promise((res, rej) => {
     const reader = new FileReader()
     reader.addEventListener("load", () => {
@@ -167,9 +155,8 @@ function cloneAndRemap<T>(
 export function flipTileAroundVertical(value: Tile) {
   value.setPropValue(
     "data",
-    cloneAndRemap(
-      value.getPropValue("data"),
-      (n: Point, data: ArrayGrid<number>) => data.get_at(data.w - 1 - n.x, n.y),
+    cloneAndRemap(value.getPropValue("data"), (n: Point, data: ArrayGrid<number>) =>
+      data.get_at(data.w - 1 - n.x, n.y),
     ),
   )
 }
@@ -177,9 +164,8 @@ export function flipTileAroundVertical(value: Tile) {
 export function flipTileAroundHorizontal(value: Tile) {
   value.setPropValue(
     "data",
-    cloneAndRemap(
-      value.getPropValue("data"),
-      (n: Point, data: ArrayGrid<number>) => data.get_at(n.x, data.h - 1 - n.y),
+    cloneAndRemap(value.getPropValue("data"), (n: Point, data: ArrayGrid<number>) =>
+      data.get_at(n.x, data.h - 1 - n.y),
     ),
   )
 }
@@ -187,9 +173,8 @@ export function flipTileAroundHorizontal(value: Tile) {
 export function rotateTile90Clock(value: Tile) {
   value.setPropValue(
     "data",
-    cloneAndRemap(
-      value.getPropValue("data"),
-      (n: Point, data: ArrayGrid<number>) => data.get_at(n.y, data.w - 1 - n.x),
+    cloneAndRemap(value.getPropValue("data"), (n: Point, data: ArrayGrid<number>) =>
+      data.get_at(n.y, data.w - 1 - n.x),
     ),
   )
 }
@@ -197,18 +182,13 @@ export function rotateTile90Clock(value: Tile) {
 export function rotateTile90CounterClock(value: Tile) {
   value.setPropValue(
     "data",
-    cloneAndRemap(
-      value.getPropValue("data"),
-      (n: Point, data: ArrayGrid<number>) => data.get_at(data.h - 1 - n.y, n.x),
+    cloneAndRemap(value.getPropValue("data"), (n: Point, data: ArrayGrid<number>) =>
+      data.get_at(data.h - 1 - n.y, n.x),
     ),
   )
 }
 
-export function map_to_canvas(
-  map: GameMap,
-  doc: GameDoc,
-  scale: number,
-): HTMLCanvasElement {
+export function map_to_canvas(map: GameMap, doc: GameDoc, scale: number): HTMLCanvasElement {
   const canvas = document.createElement("canvas")
   const mapSize = map.calcBiggestLayer()
   const size = doc.getPropValue("tileSize")
@@ -270,10 +250,7 @@ export const add_actor_layer = (map: GameMap) => {
   })
   appendToList(map, "layers", layer)
 }
-export const delete_map_layer = (
-  layer: PropsBase<MapLayerType> | undefined,
-  map: GameMap,
-) => {
+export const delete_map_layer = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
   if (!layer) return
   let layers = map.getPropValue("layers") as PropsBase<MapLayerType>[]
   layers = layers.slice()
@@ -283,10 +260,7 @@ export const delete_map_layer = (
   }
   map.setPropValue("layers", layers)
 }
-export const move_layer_up = (
-  layer: PropsBase<MapLayerType> | undefined,
-  map: GameMap,
-) => {
+export const move_layer_up = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
   if (!layer) return
   let layers = map.getPropValue("layers") as PropsBase<MapLayerType>[]
   layers = layers.slice()
@@ -296,10 +270,7 @@ export const move_layer_up = (
   layers.splice(n + 1, 0, layer)
   map.setPropValue("layers", layers)
 }
-export const move_layer_down = (
-  layer: PropsBase<MapLayerType> | undefined,
-  map: GameMap,
-) => {
+export const move_layer_down = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
   if (!layer) return
   let layers = map.getPropValue("layers") as PropsBase<MapLayerType>[]
   layers = layers.slice()

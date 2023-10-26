@@ -65,23 +65,13 @@ export class Anim {
     const players = this.game_state.getPlayers()
     this.game_state
       .getPhysics()
-      .updatePlayer(
-        players,
-        map.layers,
-        this.game_state.getKeyboard(),
-        this.cache,
-        this.physics,
-      )
-    this.game_state
-      .getPhysics()
-      .updateEnemies(this.game_state.getEnemies(), map.layers, this.cache)
+      .updatePlayer(players, map.layers, this.game_state.getKeyboard(), this.cache, this.physics)
+    this.game_state.getPhysics().updateEnemies(this.game_state.getEnemies(), map.layers, this.cache)
     updateViewport(vp, players, this.zoom)
     // this.log("drawing", players.length, map.layers.length, vp.left())
     ctx.fillStyle = "magenta"
     ctx.save()
-    map.layers.forEach((layer) =>
-      layer.drawSelf(ctx, vp, this.cache, this.zoom),
-    )
+    map.layers.forEach((layer) => layer.drawSelf(ctx, vp, this.cache, this.zoom))
     ctx.restore()
   }
 

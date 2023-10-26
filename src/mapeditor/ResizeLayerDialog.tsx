@@ -45,11 +45,7 @@ export function ResizeLayerDialog(props: { layer: TileLayer }) {
       <header>resize layer</header>
       <section className={"standard-form"}>
         <label>width</label>{" "}
-        <input
-          type={"number"}
-          value={width}
-          onChange={(e) => setWidth(parseInt(e.target.value))}
-        />
+        <input type={"number"} value={width} onChange={(e) => setWidth(parseInt(e.target.value))} />
         <label>height</label>{" "}
         <input
           type={"number"}

@@ -19,12 +19,7 @@ export type PopupEvent = {
 }
 export type ShowPopupType = (e: PopupEvent) => void
 export interface PopupContextInterface {
-  show_at(
-    view: JSX.Element,
-    owner: EventTarget,
-    direction?: PopupDirection,
-    offset?: Point,
-  ): void
+  show_at(view: JSX.Element, owner: EventTarget, direction?: PopupDirection, offset?: Point): void
   hide(): void
   on_change(cb: ShowPopupType): void
 }
@@ -48,12 +43,7 @@ export class PopupContextImpl implements PopupContextInterface {
     this.listeners.push(cb)
   }
 
-  show_at(
-    view: JSX.Element,
-    owner: HTMLElement,
-    direction?: PopupDirection,
-    offset?: Point,
-  ): void {
+  show_at(view: JSX.Element, owner: HTMLElement, direction?: PopupDirection, offset?: Point): void {
     const evt: PopupEvent = {
       type: "popup-event",
       direction: direction || "right",
@@ -66,8 +56,7 @@ export class PopupContextImpl implements PopupContextInterface {
   }
 }
 const samplePopupContext: PopupContextInterface = new PopupContextImpl()
-export const PopupContext =
-  createContext<PopupContextInterface>(samplePopupContext)
+export const PopupContext = createContext<PopupContextInterface>(samplePopupContext)
 
 function calcStyle(event: PopupEvent) {
   // console.log("direction is",event.direction)

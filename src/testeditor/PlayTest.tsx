@@ -14,14 +14,7 @@ import { GameState } from "../engine/gamestate"
 import { drawImage } from "../imageeditor/ImageEditorView"
 import { findActorForInstance } from "../mapeditor/ActorEditor"
 import { useWatchAllProps } from "../model/base"
-import {
-  ActorLayer,
-  GameDoc,
-  GameMap,
-  GameTest,
-  MapCell,
-  TileLayer,
-} from "../model/datamodel"
+import { ActorLayer, GameDoc, GameMap, GameTest, MapCell, TileLayer } from "../model/datamodel"
 import { Anim } from "./Anim"
 
 function generateGamestate(
@@ -130,13 +123,7 @@ export function PlayTest(props: {
   const redraw = () => {
     if (!ref.current) return
     anim.setGamestate(
-      generateGamestate(
-        ref.current,
-        doc,
-        map,
-        viewport.scale(tileSize.w),
-        props.physicsDebug,
-      ),
+      generateGamestate(ref.current, doc, map, viewport.scale(tileSize.w), props.physicsDebug),
     )
     const phs: PhysicsConstants = {
       gravity: test.getPropValue("gravity"),
@@ -154,10 +141,7 @@ export function PlayTest(props: {
     }
   }
   useWatchAllProps(test, () => redraw())
-  useEffect(
-    () => redraw(),
-    [doc, test, zoom, grid, ref, viewport, props.physicsDebug],
-  )
+  useEffect(() => redraw(), [doc, test, zoom, grid, ref, viewport, props.physicsDebug])
   useEffect(() => {
     if (playing) {
       anim.stop()

@@ -9,9 +9,7 @@ import { PlayTest } from "./PlayTest"
 export function TestMapPlayer(props: { test: GameTest; doc: GameDoc }) {
   const { test, doc } = props
   const mapid = test.getPropValue("map")
-  const map = mapid
-    ? doc.getPropValue("maps").find((map) => map.getUUID() === mapid)
-    : undefined
+  const map = mapid ? doc.getPropValue("maps").find((map) => map.getUUID() === mapid) : undefined
   const [playing, setPlaying] = useState(false)
   const [zoom, setZoom] = useState(3)
   const [grid, setGrid] = useState(false)
@@ -21,9 +19,7 @@ export function TestMapPlayer(props: { test: GameTest; doc: GameDoc }) {
   return (
     <>
       <div className={"toolbar"}>
-        <button onClick={() => togglePlaying()}>
-          {playing ? "pause" : "play"}
-        </button>
+        <button onClick={() => togglePlaying()}>{playing ? "pause" : "play"}</button>
         <label>{test.getPropValue("name") as string}</label>
         <button onClick={() => setZoom(zoom + 1)}>+</button>
         <label>{zoom}</label>
@@ -34,9 +30,7 @@ export function TestMapPlayer(props: { test: GameTest; doc: GameDoc }) {
           selected={grid}
           selectedIcon={Icons.GridSelected}
         />
-        <button onClick={() => setPhysicsDebug(!physicsDebug)}>
-          collisons
-        </button>
+        <button onClick={() => setPhysicsDebug(!physicsDebug)}>collisons</button>
       </div>
       {map && (
         <PlayTest

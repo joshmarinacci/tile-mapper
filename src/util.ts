@@ -11,11 +11,7 @@ export function strokeBounds(
   ctx.strokeRect(bounds.x, bounds.y, bounds.w, bounds.h)
 }
 
-export function fillBounds(
-  ctx: CanvasRenderingContext2D,
-  bounds: Bounds,
-  color: string,
-) {
+export function fillBounds(ctx: CanvasRenderingContext2D, bounds: Bounds, color: string) {
   ctx.fillStyle = color
   ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h)
 }

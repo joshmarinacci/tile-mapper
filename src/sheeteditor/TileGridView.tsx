@@ -123,13 +123,9 @@ export function TileGridView(props: {
   const rebuild_model = (sheet: Sheet) => {
     const grid = new SparseGridModel<Tile>()
     const tiles = sheet.getPropValue("tiles")
-    const positioned = tiles.filter(
-      (t) => t.getPropValue("gridPosition").x >= 0,
-    )
+    const positioned = tiles.filter((t) => t.getPropValue("gridPosition").x >= 0)
     positioned.forEach((t) => grid.addAt(t))
-    const unpositioned = tiles.filter(
-      (t) => t.getPropValue("gridPosition").x < 0,
-    )
+    const unpositioned = tiles.filter((t) => t.getPropValue("gridPosition").x < 0)
     unpositioned.forEach((t) => grid.addAtEmpty(t))
     return grid
   }
@@ -137,10 +133,7 @@ export function TileGridView(props: {
 
   const doc = useContext(DocContext)
   const ref = useRef<HTMLCanvasElement>(null)
-  const size =
-    data.length > 0
-      ? data[0].getPropValue("size")
-      : doc.getPropValue("tileSize")
+  const size = data.length > 0 ? data[0].getPropValue("size") : doc.getPropValue("tileSize")
   const [down, setDown] = useState<boolean>(false)
   const [target, setTarget] = useState<Point>(new Point(-1, -1))
 
@@ -158,20 +151,10 @@ export function TileGridView(props: {
         drawEditableSprite(ctx, options.scale, value, options.palette)
         ctx.restore()
         if (options.showGrid) {
-          strokeBounds(
-            ctx,
-            bounds.grow(-1).add(new Point(0.5, 0.5)),
-            "black",
-            1,
-          )
+          strokeBounds(ctx, bounds.grow(-1).add(new Point(0.5, 0.5)), "black", 1)
         }
         if (value === props.selected) {
-          strokeBounds(
-            ctx,
-            bounds.grow(-1).add(new Point(0.5, 0.5)),
-            "orange",
-            3,
-          )
+          strokeBounds(ctx, bounds.grow(-1).add(new Point(0.5, 0.5)), "orange", 3)
         }
       }
       if (props.selected && down) {
@@ -186,10 +169,7 @@ export function TileGridView(props: {
       }
     }
   }
-  useEffect(
-    () => redraw(),
-    [target, down, options.scale, options.showGrid, model],
-  )
+  useEffect(() => redraw(), [target, down, options.scale, options.showGrid, model])
 
   useWatchAllProps(props.sheet, () => setModel(rebuild_model(props.sheet)))
 

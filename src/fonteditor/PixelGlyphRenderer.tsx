@@ -11,10 +11,7 @@ export type GlyphDrawOptions = {
   drawNames: boolean
   scale: number
 }
-export const PixelGlyphRenderer: ListViewRenderer<
-  PixelGlyph,
-  GlyphDrawOptions
-> = (props: {
+export const PixelGlyphRenderer: ListViewRenderer<PixelGlyph, GlyphDrawOptions> = (props: {
   value: PixelGlyph
   selected: boolean
   options: GlyphDrawOptions

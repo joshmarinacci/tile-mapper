@@ -4,12 +4,7 @@ import { appendToList } from "../model/base"
 import { Sheet, Tile } from "../model/datamodel"
 import { GlobalState } from "../state"
 import { docToJSON } from "./json"
-import {
-  deleteLocalDoc,
-  listLocalDocs,
-  loadLocalDoc,
-  saveLocalStorage,
-} from "./local"
+import { deleteLocalDoc, listLocalDocs, loadLocalDoc, saveLocalStorage } from "./local"
 
 class FakeLocalStorage implements Storage {
   // [name: string]: any

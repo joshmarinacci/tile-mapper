@@ -4,14 +4,7 @@ import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 import { map_to_canvas } from "../actions/actions"
 import { PICO8 } from "../common/common"
 import { appendToList, restoreClassFromJSON } from "../model/base"
-import {
-  GameDoc,
-  GameMap,
-  MapCell,
-  Sheet,
-  Tile,
-  TileLayer,
-} from "../model/datamodel"
+import { GameDoc, GameMap, MapCell, Sheet, Tile, TileLayer } from "../model/datamodel"
 import { GlobalState } from "../state"
 import { writeMetadata } from "./vendor"
 
@@ -203,10 +196,7 @@ export async function savePNGJSON(state: GlobalState) {
     tEXt: { SOURCE: json_string },
   })
   const final_blob = new Blob([out_buffer as BlobPart], { type: "image/png" })
-  forceDownloadBlob(
-    state.getPropValue("doc").getPropValue("name") + ".json.png",
-    final_blob,
-  )
+  forceDownloadBlob(state.getPropValue("doc").getPropValue("name") + ".json.png", final_blob)
 }
 
 export type Metadata = { tEXt: { keyword: any; SOURCE: any } }

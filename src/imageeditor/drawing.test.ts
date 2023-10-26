@@ -27,13 +27,7 @@ describe("basic drawing", () => {
     //normal rect
     {
       layer.fillAll(0)
-      drawRect(
-        layer.getPropValue("data"),
-        12,
-        new Point(0, 0),
-        new Point(20, 20),
-        undefined,
-      )
+      drawRect(layer.getPropValue("data"), 12, new Point(0, 0), new Point(20, 20), undefined)
       expect(layer.getPixel(new Point(0, 0))).toBe(12)
       expect(layer.getPixel(new Point(1, 0))).toBe(12)
       expect(layer.getPixel(new Point(18, 0))).toBe(12)
@@ -48,13 +42,7 @@ describe("basic drawing", () => {
     // inverse rect
     {
       layer.fillAll(0)
-      drawRect(
-        layer.getPropValue("data"),
-        12,
-        new Point(20, 20),
-        new Point(0, 0),
-        undefined,
-      )
+      drawRect(layer.getPropValue("data"), 12, new Point(20, 20), new Point(0, 0), undefined)
       expect(layer.getPixel(new Point(0, 0))).toBe(12)
       expect(layer.getPixel(new Point(20, 0))).toBe(12)
       expect(layer.getPixel(new Point(21, 0))).toBe(0)
@@ -63,13 +51,7 @@ describe("basic drawing", () => {
     // partly off screen
     {
       layer.fillAll(0)
-      drawRect(
-        layer.getPropValue("data"),
-        12,
-        new Point(-10, 0),
-        new Point(20, 20),
-        undefined,
-      )
+      drawRect(layer.getPropValue("data"), 12, new Point(-10, 0), new Point(20, 20), undefined)
       expect(layer.getPixel(new Point(0, 0))).toBe(12)
       expect(layer.getPixel(new Point(0, 1))).toBe(0)
     }
@@ -82,13 +64,7 @@ describe("basic drawing", () => {
 
     {
       layer.fillAll(0)
-      drawEllipse(
-        layer.getPropValue("data"),
-        13,
-        new Point(0, 0),
-        new Point(20, 20),
-        undefined,
-      )
+      drawEllipse(layer.getPropValue("data"), 13, new Point(0, 0), new Point(20, 20), undefined)
     }
   })
 })

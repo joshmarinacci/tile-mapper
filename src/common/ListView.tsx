@@ -35,10 +35,7 @@ export function ListView<T, O extends ListViewOptions>(props: {
 }) {
   const Cell = props.renderer || DefaultListViewRenderer
   return (
-    <div
-      className={`list-view ${props.className} ${props.direction}`}
-      style={props.style}
-    >
+    <div className={`list-view ${props.className} ${props.direction}`} style={props.style}>
       {props.data.map((v, i) => {
         return (
           <div
@@ -49,11 +46,7 @@ export function ListView<T, O extends ListViewOptions>(props: {
             key={i}
             onClick={() => props.setSelected(v)}
           >
-            <Cell
-              value={v}
-              selected={props.selected === v}
-              options={props.options}
-            />
+            <Cell value={v} selected={props.selected === v} options={props.options} />
           </div>
         )
       })}
