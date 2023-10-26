@@ -1,19 +1,17 @@
 import { Point } from "josh_js_util"
 import { HBox } from "josh_react_util"
-import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
+import React, { MouseEvent, useEffect, useRef, useState } from "react"
 
 import { drawGrid } from "../actions/actions"
-import { Icons, ImagePalette } from "../common/common"
+import { Icons } from "../common/common"
 import { IconButton, ToggleButton } from "../common/common-components"
 import { ICON_CACHE } from "../iconcache"
 import { useWatchAllProps, useWatchProp } from "../model/base"
-import { DocContext } from "../model/contexts"
 import { PixelGlyph } from "../model/datamodel"
 import { drawGlyph } from "./PixelFontEditorView"
 
-export function PixelGlyphEditor(props: { glyph: PixelGlyph; palette: ImagePalette }) {
-  const doc = useContext(DocContext)
-  const { palette, glyph } = props
+export function PixelGlyphEditor(props: { glyph: PixelGlyph }) {
+  const { glyph } = props
   const [down, setDown] = useState<boolean>(false)
   const [grid, setGrid] = useState<boolean>(false)
   const [fillOnce, setFillOnce] = useState<boolean>(false)

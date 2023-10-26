@@ -29,7 +29,7 @@ export class MoveObjectTool implements ObjectTool {
     }
   }
 
-  onMouseUp(evt: ObjectToolEvent) {
+  onMouseUp() {
     this.down = false
   }
 

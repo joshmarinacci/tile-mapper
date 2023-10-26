@@ -5,7 +5,7 @@ import { PropsBase, useWatchAllProps } from "../model/base"
 import { ImagePixelLayer } from "../model/datamodel"
 import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
 
-type FillToolSettingsType = {}
+type FillToolSettingsType = object
 
 function calculateDirections() {
   return [new Point(-1, 0), new Point(1, 0), new Point(0, -1), new Point(0, 1)]
@@ -32,7 +32,7 @@ export class FillTool extends PropsBase<FillToolSettingsType> implements PixelTo
     this.name = "fill"
   }
 
-  drawOverlay(ovr: ToolOverlayInfo): void {}
+  drawOverlay(): void {}
 
   onMouseDown(evt: PixelToolEvent): void {
     if (evt.layer) {
@@ -41,9 +41,9 @@ export class FillTool extends PropsBase<FillToolSettingsType> implements PixelTo
     }
   }
 
-  onMouseMove(evt: PixelToolEvent): void {}
+  onMouseMove(): void {}
 
-  onMouseUp(evt: PixelToolEvent): void {}
+  onMouseUp(): void {}
 }
 
 export function FillToolSettings(props: { tool: FillTool }) {

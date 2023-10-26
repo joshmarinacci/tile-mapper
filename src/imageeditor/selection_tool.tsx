@@ -2,9 +2,9 @@ import { Bounds } from "josh_js_util"
 import React from "react"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
-import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
+import { PixelTool, PixelToolEvent } from "./tool"
 
-type SelectionToolSettingsType = {}
+type SelectionToolSettingsType = object
 
 export class SelectionTool extends PropsBase<SelectionToolSettingsType> implements PixelTool {
   name: string
@@ -16,7 +16,7 @@ export class SelectionTool extends PropsBase<SelectionToolSettingsType> implemen
     this.down = false
   }
 
-  drawOverlay(ovr: ToolOverlayInfo): void {}
+  drawOverlay(): void {}
 
   onMouseDown(evt: PixelToolEvent): void {
     if (!evt.layer) return

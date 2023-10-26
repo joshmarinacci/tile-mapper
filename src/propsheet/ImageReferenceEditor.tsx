@@ -27,7 +27,7 @@ export function ImageReferenceEditor<T>(props: {
     <ListSelect
       selected={selected}
       setSelected={(v) => {
-        if (v) props.target.setPropValue(props.name, v.getUUID())
+        if (v) props.target.setPropValue(props.name, v.getUUID() as T[keyof T])
       }}
       renderer={ImageNameRenderer}
       data={data}
