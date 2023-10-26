@@ -8,10 +8,7 @@ import { GlobalState } from "../state"
 import { down_arrow_triangle, Icons } from "./common"
 import { PopupContext } from "./popup"
 
-export function EditableLabel(props: {
-  onChange: (str: string) => void
-  value: string
-}) {
+export function EditableLabel(props: { onChange: (str: string) => void; value: string }) {
   const [editing, setEditing] = useState(false)
   const [value, setValue] = useState(props.value)
   if (editing) {
@@ -67,21 +64,20 @@ export interface ReactMenuAction extends MenuAction {
 }
 
 export function ToolbarActionButton(props: {
-  state: GlobalState
   action: MenuAction
   disabled?: boolean
 }): JSX.Element {
+  const state = useContext(StateContext)
   const { action, disabled = false } = props
   if (action.type === "react") {
-    return (action as ReactMenuAction).makeComponent(props.state) as JSX.Element
+    return (action as ReactMenuAction).makeComponent(state) as JSX.Element
   }
   const icon = <></>
   // if(action.icon) {
   //     icon = <span  className="material-icons material-symbols-rounded">{action.icon}</span>
   // }
   const perform = async () => {
-    if (action.type === "simple")
-      await (action as SimpleMenuAction).perform(props.state)
+    if (action.type === "simple") await (action as SimpleMenuAction).perform(state)
   }
   return (
     <button className={"menu-button"} onClick={perform} disabled={disabled}>
@@ -94,11 +90,7 @@ export function ToolbarActionButton(props: {
 export function MenuList(props: { children: ReactNode }) {
   return <div className={"menu-list"}>{props.children}</div>
 }
-export function DropdownButton(props: {
-  title?: string
-  icon?: Icons
-  children: ReactNode
-}) {
+export function DropdownButton(props: { title?: string; icon?: Icons; children: ReactNode }) {
   const { title, icon, children } = props
   const pm = useContext(PopupContext)
   return (
@@ -150,9 +142,7 @@ export function Pane(props: {
   } else {
     return (
       <div className={`pane ${className}`}>
-        {props.header
-          ? props.header
-          : props.title && <header>{props.title}</header>}
+        {props.header ? props.header : props.title && <header>{props.title}</header>}
         <div
           className={"pane-content-wrapper"}
           style={{
@@ -201,11 +191,7 @@ export function ToggleButton(props: {
   )
 }
 
-export function IconButton(props: {
-  onClick: () => void
-  icon: Icons
-  text?: string
-}) {
+export function IconButton(props: { onClick: () => void; icon: Icons; text?: string }) {
   return (
     <button onClick={props.onClick}>
       {props.text ? props.text : ""}
@@ -213,3 +199,5 @@ export function IconButton(props: {
     </button>
   )
 }
+
+export const StateContext = React.createContext(new GlobalState())
