@@ -1,8 +1,8 @@
 import React, { useContext } from "react"
 
-import { DocContext } from "../common/common-components"
 import { ListSelect } from "../common/ListSelect"
 import { PropDef, PropsBase } from "../model/base"
+import { DocContext } from "../model/contexts"
 import { SImage } from "../model/datamodel"
 
 function ImageNameRenderer<T extends SImage, O>(props: {

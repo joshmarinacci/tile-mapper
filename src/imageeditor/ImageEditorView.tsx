@@ -6,12 +6,13 @@ import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import { Icons, ImagePalette } from "../common/common"
-import { DocContext, IconButton, Pane, ToggleButton } from "../common/common-components"
+import { IconButton, Pane, ToggleButton } from "../common/common-components"
 import { ListView, ListViewDirection } from "../common/ListView"
 import { PaletteColorPickerPane } from "../common/Palette"
 import { ShareImageDialog } from "../common/ShareImageDialog"
 import { drawTextRun } from "../fonteditor/PixelFontPreview"
 import { appendToList, PropsBase, removeFromList, useWatchAllProps } from "../model/base"
+import { DocContext } from "../model/contexts"
 import {
   GameDoc,
   ImageLayerType,
@@ -70,9 +71,7 @@ export function drawImage(
           const txt = obj.getPropValue("text")
           const color = obj.getPropValue("color")
           if (font_ref) {
-            console.log("drawing with font", font_ref)
             const font = doc.getPropValue("fonts").find((fnt) => fnt.getUUID() === font_ref)
-            console.log("found font is", font)
             if (font) {
               ctx.save()
               ctx.translate(pt.x * scale, pt.y * scale)

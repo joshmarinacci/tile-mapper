@@ -13,6 +13,7 @@ import {
 import { AddImageDialog } from "../actions/AddImageDialog"
 import { AddSheetToDocButton, AddTestToDocButton } from "../actions/reactactions"
 import { appendToList, PropDef, PropsBase, useWatchProp } from "../model/base"
+import { DocContext, StateContext } from "../model/contexts"
 import {
   Actor,
   GameDoc,
@@ -25,13 +26,7 @@ import {
   SImage,
 } from "../model/datamodel"
 import { down_arrow_triangle, right_arrow_triangle } from "./common"
-import {
-  DocContext,
-  DropdownButton,
-  MenuList,
-  StateContext,
-  ToolbarActionButton,
-} from "./common-components"
+import { DropdownButton, MenuList, ToolbarActionButton } from "./common-components"
 import { PopupContext } from "./popup"
 
 function PropertyList<T, K extends keyof T>(props: {

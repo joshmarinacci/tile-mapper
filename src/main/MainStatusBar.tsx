@@ -3,6 +3,7 @@ import React, { useContext, useState } from "react"
 
 import { left_arrow_triangle, right_arrow_triangle } from "../common/common"
 import { StateContext } from "../common/common-components"
+import { StateContext } from "../model/contexts"
 
 export function MainStatusBar() {
   const state = useContext(StateContext)

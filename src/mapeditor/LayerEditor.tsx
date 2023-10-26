@@ -5,9 +5,9 @@ import { Spacer } from "josh_react_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import { exportPNG } from "../actions/actions"
-import { DocContext } from "../common/common-components"
 import { ICON_CACHE } from "../iconcache"
 import { PropsBase, useWatchAllProps, useWatchProp } from "../model/base"
+import { DocContext } from "../model/contexts"
 import {
   ActorInstance,
   ActorLayer,

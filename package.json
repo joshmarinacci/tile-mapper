@@ -25,6 +25,7 @@
   "scripts": {
     "start": "mkdir -p build && cp public/* build && esbuild src/index.tsx --bundle --outdir=build --watch --serve --servedir=build",
     "build": "mkdir -p build && cp public/* build && esbuild src/index.tsx --bundle --outdir=build",
+    "tsc": "tsc",
     "test": "vitest run --dir src"
   },
   "devDependencies": {

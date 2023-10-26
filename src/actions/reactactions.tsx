@@ -1,10 +1,11 @@
 import { DialogContext } from "josh_react_util"
 import React, { useContext } from "react"
 
-import { DocContext, ReactMenuAction, StateContext } from "../common/common-components"
+import { ReactMenuAction } from "../common/common-components"
 import { ListFilesDialog } from "../io/ListFilesDialog"
 import { LoadFileDialog } from "../io/LoadPNGJSONFileDialog"
 import { appendToList } from "../model/base"
+import { DocContext, StateContext } from "../model/contexts"
 import { GameTest, Sheet } from "../model/datamodel"
 import { GlobalState } from "../state"
 import { loadPNGJSON } from "./actions"

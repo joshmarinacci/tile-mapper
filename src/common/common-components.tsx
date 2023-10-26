@@ -2,8 +2,8 @@ import { toClass } from "josh_react_util"
 import React, { ReactNode, useContext, useState } from "react"
 
 import { ICON_CACHE } from "../iconcache"
-import { ActionRegistry, MenuAction, SimpleMenuAction } from "../model/base"
-import { GameDoc } from "../model/datamodel"
+import { MenuAction, SimpleMenuAction } from "../model/base"
+import { StateContext } from "../model/contexts"
 import { GlobalState } from "../state"
 import { down_arrow_triangle, Icons } from "./common"
 import { PopupContext } from "./popup"
@@ -55,8 +55,6 @@ export function EditableLabel(props: { onChange: (str: string) => void; value: s
 //         })}
 //     </>
 // }
-const AR = new ActionRegistry()
-export const ActionRegistryContext = React.createContext(AR)
 
 export interface ReactMenuAction extends MenuAction {
   type: "react"
@@ -104,8 +102,6 @@ export function DropdownButton(props: { title?: string; icon?: Icons; children: 
     </button>
   )
 }
-
-export const DocContext = React.createContext<GameDoc>(null)
 
 export function Pane(props: {
   title?: string
@@ -199,5 +195,3 @@ export function IconButton(props: { onClick: () => void; icon: Icons; text?: str
     </button>
   )
 }
-
-export const StateContext = React.createContext<GlobalState>(null)

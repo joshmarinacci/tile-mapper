@@ -2,8 +2,8 @@ import "./MapEditor.css"
 
 import React, { useContext, useState } from "react"
 
-import { DocContext } from "../common/common-components"
 import { PropsBase } from "../model/base"
+import { DocContext } from "../model/contexts"
 import { GameMap, MapLayerType, Sheet, Tile } from "../model/datamodel"
 import { PropSheet } from "../propsheet/propsheet"
 import { CompactSheetAndTileSelector } from "../sheeteditor/TileListView"

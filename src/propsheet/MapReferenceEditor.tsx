@@ -1,8 +1,8 @@
 import React, { useContext } from "react"
 
-import { DocContext } from "../common/common-components"
 import { ListSelect } from "../common/ListSelect"
 import { PropDef, PropsBase } from "../model/base"
+import { DocContext } from "../model/contexts"
 import { GameMap } from "../model/datamodel"
 
 function MapNameRenderer<T extends GameMap, O>(props: { value: T; selected: boolean; options: O }) {

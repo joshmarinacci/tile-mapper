@@ -4,9 +4,10 @@ import React, { MouseEvent, useContext, useEffect, useRef, useState } from "reac
 
 import { drawGrid } from "../actions/actions"
 import { Icons, ImagePalette } from "../common/common"
-import { DocContext, IconButton, ToggleButton } from "../common/common-components"
+import { IconButton, ToggleButton } from "../common/common-components"
 import { ICON_CACHE } from "../iconcache"
 import { useWatchProp } from "../model/base"
+import { DocContext } from "../model/contexts"
 import { Tile } from "../model/datamodel"
 
 function calculateDirections() {

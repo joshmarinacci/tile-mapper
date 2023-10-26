@@ -3,7 +3,7 @@ import "./TestView.css"
 import { HBox } from "josh_react_util"
 import React, { useContext } from "react"
 
-import { DocContext } from "../common/common-components"
+import { DocContext } from "../model/contexts"
 import { GameTest } from "../model/datamodel"
 import { TestMapPlayer } from "./TestMapPlayer"
 
