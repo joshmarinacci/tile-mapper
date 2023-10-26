@@ -1,4 +1,4 @@
-import { Spacer, toClass } from "josh_react_util"
+import { toClass } from "josh_react_util"
 import React, { ReactNode, useContext, useState } from "react"
 
 import { ICON_CACHE } from "../iconcache"

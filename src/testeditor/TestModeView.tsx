@@ -1,14 +1,13 @@
 import "./TestView.css"
 
 import { HBox } from "josh_react_util"
-import React, { useContext, useState } from "react"
+import React, { useContext } from "react"
 
 import { DocContext } from "../common/common-components"
-import { GameMap, GameTest } from "../model/datamodel"
-import { GlobalState } from "../state"
+import { GameTest } from "../model/datamodel"
 import { TestMapPlayer } from "./TestMapPlayer"
 
-export function TestModeView(props: { state: GlobalState; test: GameTest }) {
+export function TestModeView(props: { test: GameTest }) {
   const { test } = props
   const doc = useContext(DocContext)
 

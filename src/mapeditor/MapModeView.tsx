@@ -3,16 +3,14 @@ import "./MapEditor.css"
 import React, { useContext, useState } from "react"
 
 import { DocContext } from "../common/common-components"
-import { DividerColumnBox } from "../common/DividerColumnBox"
 import { PropsBase } from "../model/base"
 import { GameMap, MapLayerType, Sheet, Tile } from "../model/datamodel"
 import { PropSheet } from "../propsheet/propsheet"
 import { CompactSheetAndTileSelector } from "../sheeteditor/TileListView"
-import { GlobalState } from "../state"
 import { LayerEditor } from "./LayerEditor"
 import { LayerList } from "./LayerList"
 
-export function MapModeView(props: { state: GlobalState; map: GameMap }) {
+export function MapModeView(props: { map: GameMap }) {
   const doc = useContext(DocContext)
   const selectedMap = props.map
   const layers = selectedMap.getPropValue("layers")

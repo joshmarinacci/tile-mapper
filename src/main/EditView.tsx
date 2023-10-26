@@ -1,7 +1,6 @@
-import React, { useContext } from "react"
+import React from "react"
 
 import { ActorEditView } from "../ActorEditView"
-import { StateContext } from "../common/common-components"
 import { PixelFontEditorView } from "../fonteditor/PixelFontEditorView"
 import { ImageEditorView } from "../imageeditor/ImageEditorView"
 import { MapModeView } from "../mapeditor/MapModeView"
@@ -12,24 +11,23 @@ import { TestModeView } from "../testeditor/TestModeView"
 
 export function EditView(props: { selection: PropsBase<unknown> | undefined }) {
   const { selection } = props
-  const state = useContext(StateContext)
   if (selection instanceof Sheet) {
-    return <TileSheetEditor state={state} sheet={selection as Sheet} />
+    return <TileSheetEditor sheet={selection as Sheet} />
   }
   if (selection instanceof Actor) {
-    return <ActorEditView state={state} actor={selection as Actor} />
+    return <ActorEditView actor={selection as Actor} />
   }
   if (selection instanceof GameMap) {
-    return <MapModeView state={state} map={selection as GameMap} />
+    return <MapModeView map={selection as GameMap} />
   }
   if (selection instanceof GameTest) {
-    return <TestModeView state={state} test={selection as GameTest} />
+    return <TestModeView test={selection as GameTest} />
   }
   if (selection instanceof SImage) {
-    return <ImageEditorView state={state} image={selection as SImage} />
+    return <ImageEditorView image={selection as SImage} />
   }
   if (selection instanceof PixelFont) {
-    return <PixelFontEditorView state={state} font={selection as PixelFont} />
+    return <PixelFontEditorView font={selection as PixelFont} />
   }
   return (
     <div style={{ padding: "1rem" }} className={"editor-view"}>

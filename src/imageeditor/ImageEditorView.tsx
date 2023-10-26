@@ -7,7 +7,6 @@ import React, { MouseEvent, useContext, useEffect, useRef, useState } from "reac
 
 import { Icons, ImagePalette } from "../common/common"
 import { DocContext, IconButton, Pane, ToggleButton } from "../common/common-components"
-import { DividerColumnBox } from "../common/DividerColumnBox"
 import { ListView, ListViewDirection } from "../common/ListView"
 import { PaletteColorPickerPane } from "../common/Palette"
 import { ShareImageDialog } from "../common/ShareImageDialog"
@@ -22,7 +21,6 @@ import {
   TextObject,
 } from "../model/datamodel"
 import { PropSheet } from "../propsheet/propsheet"
-import { GlobalState } from "../state"
 import { strokeBounds } from "../util"
 import { EllipseTool, EllipseToolSettings } from "./ellipse_tool"
 import { EraserTool, EraserToolSettings } from "./eraser_tool"
@@ -152,7 +150,7 @@ function drawCanvas(
   }
 }
 
-export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
+export function ImageEditorView(props: { image: SImage }) {
   const { image } = props
   const doc = useContext(DocContext)
   const palette = doc.getPropValue("palette")
@@ -171,7 +169,6 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
   const [objectTool, setObjectTool] = useState<ObjectTool>(() => new MoveObjectTool())
   const [count, setCount] = useState(0)
   const size = image.getPropValue("size")
-  const [columnWidth, setColumnWidth] = useState(300)
   const [selectionRect, setSelectionRect] = useState<Bounds | undefined>()
   const [selectedObject, setSelectedObject] = useState<TextObject | undefined>()
 
