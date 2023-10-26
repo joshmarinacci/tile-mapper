@@ -12,6 +12,9 @@ export const LayerItemRenderer: ListViewRenderer<PropsBase<ImageLayerType>, neve
   options: never
 }) => {
   const { value } = props
+  const name = value.getPropValue("name")
+  const opacity = value.getPropValue("opacity")
+  const visible = value.getPropValue("visible")
   useWatchProp(value, "name")
   useWatchProp(value, "visible")
   useWatchProp(value, "opacity")
@@ -19,11 +22,11 @@ export const LayerItemRenderer: ListViewRenderer<PropsBase<ImageLayerType>, neve
     <div className={"std-list-item"} style={{ justifyContent: "space-between" }}>
       {value instanceof ImagePixelLayer && <Icon name={Icons.PixelLayer} />}
       {value instanceof ImageObjectLayer && <Icon name={Icons.ObjectLayer} />}
-      <b>{value.getPropValue("name")}</b>
-      <i>{value.getPropValue("opacity").toFixed(2)}</i>
+      <b>{name}</b>
+      <i>{opacity.toFixed(2)}</i>
       <Icon
         onClick={() => value.setPropValue("visible", !value.getPropValue("visible"))}
-        name={value.getPropValue("visible") ? Icons.EyeOpen : Icons.EyeClosed}
+        name={visible ? Icons.EyeOpen : Icons.EyeClosed}
       />
     </div>
   )

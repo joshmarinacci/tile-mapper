@@ -16,7 +16,6 @@ import { appendToList, PropDef, PropsBase, useWatchProp } from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
 import {
   Actor,
-  GameDoc,
   GameMap,
   GameTest,
   ImagePixelLayer,
@@ -31,7 +30,7 @@ import { PopupContext } from "./popup"
 
 function PropertyList<T, K extends keyof T>(props: {
   target: PropsBase<T>
-  value: GameDoc[]
+  value: T[K]
   name: keyof T
   def: PropDef<T[K]>
   selection: unknown
@@ -53,7 +52,7 @@ function PropertyList<T, K extends keyof T>(props: {
   }
   const addMap = () => {
     const map = new GameMap({ name: "new map" })
-    appendToList(target, "maps", map)
+    appendToList(doc, "maps", map)
     state.setSelection(map)
   }
   const addActor = () => {
@@ -66,15 +65,15 @@ function PropertyList<T, K extends keyof T>(props: {
     })
     const bounds = new Bounds(0, 0, size.w, size.h)
     layer.rebuildFromCanvas(sprite)
-    appendToList(sprite, "layers", layer)
-    appendToList(target, "canvases", sprite)
+    sprite.appendLayer(layer)
+    appendToList(doc, "canvases", sprite)
     const actor = new Actor({
       name: "new actor",
       viewbox: bounds,
       hitbox: bounds,
       sprite: sprite.getUUID(),
     })
-    appendToList(target, name, actor)
+    appendToList(doc, "actors", actor)
     state.setSelection(actor)
   }
 
@@ -89,9 +88,9 @@ function PropertyList<T, K extends keyof T>(props: {
             opacity: 1.0,
             visible: true,
           })
-          appendToList(canvas, "layers", layer)
+          canvas.appendLayer(layer)
           layer.rebuildFromCanvas(canvas)
-          appendToList(target, "canvases", canvas)
+          appendToList(doc, "canvases", canvas)
           state.setSelection(canvas)
         }}
       />,
@@ -100,9 +99,9 @@ function PropertyList<T, K extends keyof T>(props: {
   const addFont = () => {
     const font = new PixelFont({ name: "unnamed font" })
     const glyph = new PixelGlyph({ name: "A" })
-    glyph.getPropValue("data").fill((n) => -1)
+    glyph.getPropValue("data").fill(() => -1)
     appendToList(font, "glyphs", glyph)
-    appendToList(target, name, font)
+    appendToList(doc, "fonts", font)
     state.setSelection(font)
   }
 
@@ -147,7 +146,7 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown
     console.log(obj)
     throw new Error(`trying to render an invalid object ${obj.constructor.name}`)
   }
-  const expandable = obj.getAllPropDefs().filter(([a, b]) => b.expandable)
+  const expandable = obj.getAllPropDefs().filter(([, b]) => b.expandable)
   const style = {
     "tree-object": true,
     selected: state.getPropValue("selection") === obj,

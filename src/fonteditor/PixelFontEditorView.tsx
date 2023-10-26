@@ -34,10 +34,6 @@ export function PixelFontEditorView(props: { font: PixelFont }) {
   const [selected, setSelected] = useState<PixelGlyph | undefined>()
   const [drawNames, setDrawNames] = useState(true)
   const [scale, setScale] = useState(1)
-  const palette: ImagePalette = {
-    name: "B",
-    colors: ["#000000", "#ff0000"],
-  }
 
   const add_glyph = () => {
     const glyph = new PixelGlyph({ name: "X" })
@@ -85,9 +81,7 @@ export function PixelFontEditorView(props: { font: PixelFont }) {
         <PropSheet target={selected} collapsable={true} />
         <PixelFontPreview font={props.font} />
       </div>
-      <div className={"editor-view"}>
-        {selected && <PixelGlyphEditor glyph={selected} palette={palette} />}
-      </div>
+      <div className={"editor-view"}>{selected && <PixelGlyphEditor glyph={selected} />}</div>
     </>
   )
 }
