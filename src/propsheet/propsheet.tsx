@@ -5,6 +5,7 @@ import React, { useContext, useEffect, useRef } from "react"
 import { drawEditableSprite } from "../common/common"
 import { DocContext, Pane } from "../common/common-components"
 import { PropDef, PropsBase, useWatchProp } from "../model/base"
+import { ActorType } from "../model/datamodel"
 import { ActorTypeEditor } from "./ActorTypeEditor"
 import { BoundsPropEditor } from "./BoundsPropEditor"
 import { ImageReferenceEditor } from "./ImageReferenceEditor"
@@ -48,7 +49,12 @@ function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDe
   if (def.type === "string") {
     if (def.custom === "actor-type") {
       return (
-        <ActorTypeEditor key={`editor_${name.toString()}`} target={target} def={def} name={name} />
+        <ActorTypeEditor
+          key={`editor_${name.toString()}`}
+          target={target as unknown as PropsBase<ActorType>}
+          def={def}
+          name={name}
+        />
       )
     }
     if (def.custom === "palette-color") {

@@ -67,7 +67,7 @@ function Main3() {
             }}
           >
             <header>Document</header>
-            <ObjectTreeView obj={doc} state={state} selection={selection} />
+            <ObjectTreeView obj={doc} selection={selection} />
           </div>
         </div>
       )}

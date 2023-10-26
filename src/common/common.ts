@@ -1,5 +1,5 @@
 import bmp, { BitsPerPixel, IImage } from "@wokwi/bmp-ts"
-import { ArrayGrid, Point } from "josh_js_util"
+import { Point } from "josh_js_util"
 
 import { Sheet, Tile } from "../model/datamodel"
 

@@ -8,7 +8,7 @@ export function PointPropEditor<T>(props: {
   name: keyof T
   target: PropsBase<T>
 }) {
-  const { target, def, name } = props
+  const { target, name } = props
   const val = target.getPropValue(name) as Point
   return (
     <>

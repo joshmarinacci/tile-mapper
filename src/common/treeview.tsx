@@ -25,7 +25,7 @@ import {
 } from "../model/datamodel"
 import { GlobalState } from "../state"
 import { down_arrow_triangle, right_arrow_triangle } from "./common"
-import { DropdownButton, MenuList, ToolbarActionButton } from "./common-components"
+import { DropdownButton, MenuList, StateContext, ToolbarActionButton } from "./common-components"
 import { PopupContext } from "./popup"
 
 function PropertyList<T, K extends keyof T>(props: {
@@ -144,12 +144,9 @@ function PropertyList<T, K extends keyof T>(props: {
   )
 }
 
-export function ObjectTreeView<T>(props: {
-  obj: PropsBase<T>
-  state: GlobalState
-  selection: unknown
-}) {
-  const { obj, state } = props
+export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown }) {
+  const { obj } = props
+  const state = useContext(StateContext)
   const select = (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
     e.stopPropagation()
@@ -171,22 +168,16 @@ export function ObjectTreeView<T>(props: {
     select(e)
     const items: ReactNode[] = []
     if (obj instanceof Sheet) {
-      items.push(
-        <ToolbarActionButton key={"delete-sheet"} state={state} action={DeleteSheetAction} />,
-      )
+      items.push(<ToolbarActionButton key={"delete-sheet"} action={DeleteSheetAction} />)
     }
     if (obj instanceof GameMap) {
-      items.push(<ToolbarActionButton key={"delete-map"} state={state} action={DeleteMapAction} />)
+      items.push(<ToolbarActionButton key={"delete-map"} action={DeleteMapAction} />)
     }
     if (obj instanceof Actor) {
-      items.push(
-        <ToolbarActionButton key="delete-actor" state={state} action={DeleteActorAction} />,
-      )
+      items.push(<ToolbarActionButton key="delete-actor" action={DeleteActorAction} />)
     }
     if (obj instanceof GameTest) {
-      items.push(
-        <ToolbarActionButton key="delete-test" state={state} action={DeleteGameTestAction} />,
-      )
+      items.push(<ToolbarActionButton key="delete-test" action={DeleteGameTestAction} />)
     }
     pm.show_at(<MenuList>{items}</MenuList>, e.target, "right")
   }

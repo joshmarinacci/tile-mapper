@@ -8,7 +8,7 @@ export function BoundsPropEditor<T>(props: {
   name: keyof T
   target: PropsBase<T>
 }) {
-  const { target, name, def } = props
+  const { target, name } = props
   const val = target.getPropValue(name) as Bounds
   return (
     <>

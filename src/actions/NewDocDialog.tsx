@@ -19,11 +19,6 @@ function make_new_doc(width: number, height: number, palette: ImagePalette) {
   appendToList(doc, "sheets", sheet)
   return doc
 }
-
-type Pal = {
-  name: string
-  pal: ImagePalette
-}
 const PALS: ImagePalette[] = [PICO8, MINECRAFT, RESURRECT64]
 
 export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
@@ -41,11 +36,7 @@ export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
       <header>new document</header>
       <section className={"standard-form"}>
         <label>width</label>{" "}
-        <input
-          type={"number"}
-          value={width}
-          onChange={(e) => setWidth(parseInt(e.target.value))}
-        />
+        <input type={"number"} value={width} onChange={(e) => setWidth(parseInt(e.target.value))} />
         <label>height</label>{" "}
         <input
           type={"number"}
@@ -56,9 +47,7 @@ export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
         <select
           value={pal.name}
           onChange={(e) => {
-            const pp = PALS.find(
-              (p) => p.name === e.target.value,
-            ) as ImagePalette
+            const pp = PALS.find((p) => p.name === e.target.value) as ImagePalette
             setPal(pp)
           }}
         >

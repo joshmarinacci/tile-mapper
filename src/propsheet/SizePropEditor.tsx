@@ -8,7 +8,7 @@ export function SizePropEditor<T>(props: {
   name: keyof T
   target: PropsBase<T>
 }) {
-  const { def, name, target } = props
+  const { name, target } = props
   const val = target.getPropValue(name) as Size
   return (
     <>
