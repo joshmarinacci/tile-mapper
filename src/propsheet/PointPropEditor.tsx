@@ -20,7 +20,7 @@ export function PointPropEditor<T>(props: {
         onChange={(e) => {
           const v = parseInt(e.target.value)
           const point = new Point(v, val.y)
-          target.setPropValue(props.name, point)
+          target.setPropValue(props.name, point as T[keyof T])
         }}
       />
       <label key={`editor_${name.toString()}_y_label`}>y</label>
@@ -31,7 +31,7 @@ export function PointPropEditor<T>(props: {
         onChange={(e) => {
           const v = parseInt(e.target.value)
           const point = new Point(val.x, v)
-          props.target.setPropValue(props.name, point)
+          props.target.setPropValue(props.name, point as T[keyof T])
         }}
       />
     </>

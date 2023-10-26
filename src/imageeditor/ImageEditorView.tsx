@@ -165,7 +165,7 @@ export function ImageEditorView(props: { image: SImage }) {
   })
   const canvasRef = useRef(null)
   const [pixelTool, setPixelTool] = useState<PixelTool>(() => new PencilTool())
-  const [objectTool, setObjectTool] = useState<ObjectTool>(() => new MoveObjectTool())
+  const [objectTool] = useState<ObjectTool>(() => new MoveObjectTool())
   const [count, setCount] = useState(0)
   const size = image.getPropValue("size")
   const [selectionRect, setSelectionRect] = useState<Bounds | undefined>()
@@ -240,7 +240,7 @@ export function ImageEditorView(props: { image: SImage }) {
       visible: true,
     })
     layer.resizeAndClear(image.getPropValue("size"))
-    appendToList(image, "layers", layer)
+    image.appendLayer(layer)
   }
   const new_object_layer = () => {
     const layer = new ImageObjectLayer({
@@ -248,7 +248,7 @@ export function ImageEditorView(props: { image: SImage }) {
       opacity: 1.0,
       visible: true,
     })
-    appendToList(image, "layers", layer)
+    image.appendLayer(layer)
   }
   const del_layer = () => {
     if (!layer) return

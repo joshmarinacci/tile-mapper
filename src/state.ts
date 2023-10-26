@@ -75,7 +75,7 @@ export class GlobalState extends PropsBase<GlobalStateType> {
     if (typeof localStorage !== "undefined") {
       this.localStorage = localStorage
     } else {
-      this.localStorage = opts.localStorage as Storage
+      this.localStorage = opts?.localStorage as Storage
     }
   }
 

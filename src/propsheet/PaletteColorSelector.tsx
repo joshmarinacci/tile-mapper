@@ -20,8 +20,8 @@ function PaletteColorNameRenderer<T extends string, O>(props: {
   )
 }
 
-export function PaletteColorSelector<T>(props: {
-  def: PropDef<T[keyof T]>
+export function PaletteColorSelector<T, V = T[keyof T]>(props: {
+  def: PropDef<V>
   name: keyof T
   target: PropsBase<T>
 }) {
@@ -31,7 +31,9 @@ export function PaletteColorSelector<T>(props: {
   return (
     <ListSelect
       selected={current}
-      setSelected={(v) => props.target.setPropValue(props.name, v)}
+      setSelected={(v) => {
+        if (v) props.target.setPropValue(props.name, v)
+      }}
       renderer={PaletteColorNameRenderer}
       data={palette.colors}
       options={{}}

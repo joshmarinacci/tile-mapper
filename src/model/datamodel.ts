@@ -381,6 +381,10 @@ export class SImage extends PropsBase<SImageType> {
     this.getPropValue("layers").forEach((lay) => lay.crop(rect))
     this.setPropValue("size", rect.size())
   }
+
+  appendLayer(layer: ImagePixelLayer | ImageObjectLayer) {
+    appendToList(this, "layers", layer as unknown as PropsBase<ImageLayerType>)
+  }
 }
 
 CLASS_REGISTRY.register("SImage", SImage, SImageDefs)

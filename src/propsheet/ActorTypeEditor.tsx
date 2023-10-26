@@ -22,7 +22,9 @@ export function ActorTypeEditor<T extends ActorType>(props: {
   return (
     <ListSelect
       selected={props.target.getPropValue("kind")}
-      setSelected={(kind: ActorKind) => props.target.setPropValue("kind", kind)}
+      setSelected={(kind: ActorKind | undefined) => {
+        if (kind) props.target.setPropValue("kind", kind)
+      }}
       renderer={ActorTypeRenderer}
       data={["item", "player", "enemy"]}
       options={{}}

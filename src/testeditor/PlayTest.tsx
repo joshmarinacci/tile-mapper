@@ -45,7 +45,7 @@ function generateGamestate(
     canvas.width = img.getPropValue("size").w
     canvas.height = img.getPropValue("size").h
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
-    drawImage(ctx, img, doc.getPropValue("palette"), 1)
+    drawImage(doc, ctx, img, doc.getPropValue("palette"), 1)
     cache.addCachedTile(img.getPropValue("name"), img.getUUID(), {
       name: img.getPropValue("name"),
       id: img.getUUID(),
@@ -118,7 +118,7 @@ export function PlayTest(props: {
   const tileSize = doc.getPropValue("tileSize")
   const viewport = test.getPropValue("viewport") as Size
   const ref = useRef<HTMLCanvasElement>(null)
-  const [anim, setAnim] = useState(() => new Anim())
+  const [anim] = useState(() => new Anim())
 
   const redraw = () => {
     if (!ref.current) return
