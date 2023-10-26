@@ -4,7 +4,7 @@ import React from "react"
 import { PropsBase, useWatchAllProps } from "../model/base"
 import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
 
-type MoveToolSettingsType = {}
+type MoveToolSettingsType = object
 
 export function copyContentsFrom(
   src: ArrayGrid<number>,

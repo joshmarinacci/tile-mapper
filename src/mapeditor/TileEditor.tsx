@@ -3,7 +3,7 @@ import { toClass } from "josh_react_util"
 import React from "react"
 
 import { GameDoc, MapCell, TileLayer } from "../model/datamodel"
-import { DrawArgs, MouseEventArgs, MouseHandler } from "./editorbase"
+import { MouseEventArgs, MouseHandler } from "./editorbase"
 
 function calculateDirections() {
   return [new Point(-1, 0), new Point(1, 0), new Point(0, -1), new Point(0, 1)]
@@ -107,7 +107,7 @@ export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
     if (tile) layer.getPropValue("data").set(pt, { tile: tile._id })
   }
 
-  onMouseUp(v: MouseEventArgs<TileLayer>): void {}
+  onMouseUp(): void {}
 
-  drawOverlay(v: DrawArgs<TileLayer>) {}
+  drawOverlay() {}
 }

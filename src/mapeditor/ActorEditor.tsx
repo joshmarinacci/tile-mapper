@@ -35,7 +35,7 @@ export function drawActorlayer(
         if (img) {
           ctx.save()
           ctx.translate(box.x, box.y)
-          drawImage(ctx, img, doc.getPropValue("palette"), scale)
+          drawImage(doc, ctx, img, doc.getPropValue("palette"), scale)
           ctx.restore()
           return
         }
@@ -146,7 +146,7 @@ export class ActorLayerMouseHandler implements MouseHandler<ActorLayer> {
     }
   }
 
-  onMouseUp(v: MouseEventArgs<ActorLayer>): void {}
+  onMouseUp(): void {}
 
   drawOverlay(v: DrawArgs<ActorLayer>): void {
     if (v.selectedActor) {
