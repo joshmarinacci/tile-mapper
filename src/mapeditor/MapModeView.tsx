@@ -21,17 +21,10 @@ export function MapModeView(props: { state: GlobalState; map: GameMap }) {
     sheets[0].getPropValue("tiles")[0],
   )
   const [selectedLayer, setSelectedLayer] = useState<PropsBase<MapLayerType> | undefined>(layers[0])
-  const [columnWidth, setColumnWidth] = useState(300)
-
   return (
-    <div
-      className={"map-editor"}
-      style={{
-        gridTemplateColumns: `${columnWidth}px 1fr`,
-      }}
-    >
-      {!selectedMap && <div>no map selected</div>}
-      <DividerColumnBox value={columnWidth} onChange={setColumnWidth}>
+    <>
+      <div className={"tool-column"}>
+        {!selectedMap && <div>no map selected</div>}
         <CompactSheetAndTileSelector
           selectedTile={selectedTile}
           setSelectedTile={setSelectedTile}
@@ -44,14 +37,16 @@ export function MapModeView(props: { state: GlobalState; map: GameMap }) {
           setSelectedLayer={setSelectedLayer}
         />
         <PropSheet target={selectedLayer} title={"Layer Info"} collapsable />
-      </DividerColumnBox>
-      <LayerEditor
-        key={"layer-editor"}
-        map={props.map}
-        layer={selectedLayer}
-        tile={selectedTile}
-        setSelectedTile={setSelectedTile}
-      />
-    </div>
+      </div>
+      <div className={"editor-view"}>
+        <LayerEditor
+          key={"layer-editor"}
+          map={props.map}
+          layer={selectedLayer}
+          tile={selectedTile}
+          setSelectedTile={setSelectedTile}
+        />
+      </div>
+    </>
   )
 }

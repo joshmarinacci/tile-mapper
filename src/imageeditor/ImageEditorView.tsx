@@ -303,13 +303,8 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
   }
 
   return (
-    <div
-      className={"image-editor-view"}
-      style={{
-        gridTemplateColumns: `${columnWidth}px 1fr`,
-      }}
-    >
-      <DividerColumnBox value={columnWidth} onChange={setColumnWidth}>
+    <>
+      <div className={"tool-column"}>
         <Pane key={"layer-list"} title={"layers"} collapsable={true}>
           <div className={"toolbar"}>
             <IconButton onClick={() => new_pixel_layer()} icon={Icons.Plus} text={"pixels"} />
@@ -428,108 +423,110 @@ export function ImageEditorView(props: { image: SImage; state: GlobalState }) {
           <button onClick={exportPNG}>export PNG</button>
           <button onClick={sharePNG}>share PNG</button>
         </div>
-      </DividerColumnBox>
-      <div className={"image-editor-canvas-wrapper"}>
-        <canvas
-          ref={canvasRef}
-          width={size.w * scale}
-          height={size.h * scale}
-          onContextMenu={(e) => {
-            e.preventDefault()
-            e.stopPropagation()
-            const pt = canvasToImage(e)
-            if (layer instanceof ImagePixelLayer) {
-              const color = layer.getPixel(pt)
-              setDrawColor(palette.colors[color])
-            }
-          }}
-          onMouseDown={(e) => {
-            if (e.button == 2) return
-            if (layer instanceof ImageObjectLayer) {
-              objectTool.onMouseDown({
-                layer: layer,
-                pt: canvasToImage(e),
-                e: e,
-                markDirty: () => {
-                  setCount(count + 1)
-                },
-                selectedObject: selectedObject,
-                setSelectedObject: setSelectedObject,
-              })
-            }
-            if (layer instanceof ImagePixelLayer) {
-              pixelTool.onMouseDown({
-                color: palette.colors.indexOf(drawColor),
-                pt: canvasToImage(e),
-                e: e,
-                layer: layer,
-                palette: palette,
-                selection: selectionRect,
-                setSelectionRect: (rect) => setSelectionRect(rect),
-                markDirty: () => {
-                  setCount(count + 1)
-                },
-              })
-            }
-          }}
-          onMouseMove={(e) => {
-            if (layer instanceof ImageObjectLayer) {
-              objectTool.onMouseMove({
-                layer: layer,
-                pt: canvasToImage(e),
-                e: e,
-                markDirty: () => {
-                  setCount(count + 1)
-                },
-                selectedObject: selectedObject,
-                setSelectedObject: setSelectedObject,
-              })
-            }
-            if (layer instanceof ImagePixelLayer) {
-              pixelTool.onMouseMove({
-                color: palette.colors.indexOf(drawColor),
-                pt: canvasToImage(e),
-                e: e,
-                layer: layer,
-                palette: palette,
-                selection: selectionRect,
-                setSelectionRect: (rect) => setSelectionRect(rect),
-                markDirty: () => {
-                  setCount(count + 1)
-                },
-              })
-            }
-          }}
-          onMouseUp={(e) => {
-            if (layer instanceof ImageObjectLayer) {
-              objectTool.onMouseUp({
-                layer: layer,
-                pt: canvasToImage(e),
-                e: e,
-                markDirty: () => {
-                  setCount(count + 1)
-                },
-                selectedObject: selectedObject,
-                setSelectedObject: setSelectedObject,
-              })
-            }
-            if (layer instanceof ImagePixelLayer) {
-              pixelTool.onMouseUp({
-                color: palette.colors.indexOf(drawColor),
-                pt: canvasToImage(e),
-                e: e,
-                layer: layer,
-                palette: palette,
-                selection: selectionRect,
-                setSelectionRect: (rect) => setSelectionRect(rect),
-                markDirty: () => {
-                  setCount(count + 1)
-                },
-              })
-            }
-          }}
-        />
       </div>
-    </div>
+      <div className={"editor-view"}>
+        <div>
+          <canvas
+            ref={canvasRef}
+            width={size.w * scale}
+            height={size.h * scale}
+            onContextMenu={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              const pt = canvasToImage(e)
+              if (layer instanceof ImagePixelLayer) {
+                const color = layer.getPixel(pt)
+                setDrawColor(palette.colors[color])
+              }
+            }}
+            onMouseDown={(e) => {
+              if (e.button == 2) return
+              if (layer instanceof ImageObjectLayer) {
+                objectTool.onMouseDown({
+                  layer: layer,
+                  pt: canvasToImage(e),
+                  e: e,
+                  markDirty: () => {
+                    setCount(count + 1)
+                  },
+                  selectedObject: selectedObject,
+                  setSelectedObject: setSelectedObject,
+                })
+              }
+              if (layer instanceof ImagePixelLayer) {
+                pixelTool.onMouseDown({
+                  color: palette.colors.indexOf(drawColor),
+                  pt: canvasToImage(e),
+                  e: e,
+                  layer: layer,
+                  palette: palette,
+                  selection: selectionRect,
+                  setSelectionRect: (rect) => setSelectionRect(rect),
+                  markDirty: () => {
+                    setCount(count + 1)
+                  },
+                })
+              }
+            }}
+            onMouseMove={(e) => {
+              if (layer instanceof ImageObjectLayer) {
+                objectTool.onMouseMove({
+                  layer: layer,
+                  pt: canvasToImage(e),
+                  e: e,
+                  markDirty: () => {
+                    setCount(count + 1)
+                  },
+                  selectedObject: selectedObject,
+                  setSelectedObject: setSelectedObject,
+                })
+              }
+              if (layer instanceof ImagePixelLayer) {
+                pixelTool.onMouseMove({
+                  color: palette.colors.indexOf(drawColor),
+                  pt: canvasToImage(e),
+                  e: e,
+                  layer: layer,
+                  palette: palette,
+                  selection: selectionRect,
+                  setSelectionRect: (rect) => setSelectionRect(rect),
+                  markDirty: () => {
+                    setCount(count + 1)
+                  },
+                })
+              }
+            }}
+            onMouseUp={(e) => {
+              if (layer instanceof ImageObjectLayer) {
+                objectTool.onMouseUp({
+                  layer: layer,
+                  pt: canvasToImage(e),
+                  e: e,
+                  markDirty: () => {
+                    setCount(count + 1)
+                  },
+                  selectedObject: selectedObject,
+                  setSelectedObject: setSelectedObject,
+                })
+              }
+              if (layer instanceof ImagePixelLayer) {
+                pixelTool.onMouseUp({
+                  color: palette.colors.indexOf(drawColor),
+                  pt: canvasToImage(e),
+                  e: e,
+                  layer: layer,
+                  palette: palette,
+                  selection: selectionRect,
+                  setSelectionRect: (rect) => setSelectionRect(rect),
+                  markDirty: () => {
+                    setCount(count + 1)
+                  },
+                })
+              }
+            }}
+          />
+        </div>
+      </div>
+    </>
   )
 }

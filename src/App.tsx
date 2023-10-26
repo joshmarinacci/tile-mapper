@@ -1,7 +1,7 @@
 import "./App.css"
 
 import { DialogContainer, DialogContext, DialogContextImpl, Spacer } from "josh_react_util"
-import React, { useContext, useState } from "react"
+import React, { ReactElement, useContext, useState } from "react"
 
 import {
   DocToBMP,
@@ -12,13 +12,13 @@ import {
 } from "./actions/actions"
 import { LoadLocalStorageAction, NewDocAction, UploadPNGJSONAction } from "./actions/reactactions"
 import { ActorEditView } from "./ActorEditView"
+import { left_arrow_triangle, right_arrow_triangle } from "./common/common"
 import {
   ActionRegistryContext,
   DocContext,
   DropdownButton,
   ToolbarActionButton,
 } from "./common/common-components"
-import { MainView } from "./common/MainView"
 import { PopupContainer, PopupContext, PopupContextImpl } from "./common/popup"
 import { ObjectTreeView } from "./common/treeview"
 import Example from "./example.json"
@@ -59,27 +59,24 @@ function getEditView(state: GlobalState, selection: unknown) {
     return <PixelFontEditorView state={state} font={selection as PixelFont} />
   }
   return (
-    <div style={{ padding: "1rem" }}>
+    <div style={{ padding: "1rem" }} className={"editor-view"}>
       <h3>Select item from the left</h3>
     </div>
   )
 }
 
-function MainWrapper(props: { state: GlobalState }): JSX.Element {
+function MainWrapper(props: { state: GlobalState }): ReactElement {
   const [doc, setDoc] = useState(props.state.getPropValue("doc") as GameDoc)
   useWatchProp(props.state, "doc", () => setDoc(props.state.getPropValue("doc")))
   return (
     <DocContext.Provider value={doc}>
-      <Main2 />
+      <Main3 state={props.state} />
     </DocContext.Provider>
   )
 }
 
-function Main2() {
-  const doc = useContext(DocContext)
-  const [selection, setSelection] = useState<PropsBase<unknown> | undefined>(undefined)
-  useWatchAllProps(STATE, (s) => setSelection(s.getPropValue("selection")))
-  const toolbar = (
+function MainToolbar() {
+  return (
     <div className={"toolbar across"}>
       <button className={"logo"}>Tile-Mapper</button>
       <ToolbarActionButton action={NewDocAction} state={STATE} />
@@ -96,23 +93,81 @@ function Main2() {
       </DropdownButton>
     </div>
   )
-  const left_column = (
-    <div
-      className={"tree-wrapper pane"}
-      style={{
-        alignSelf: "stretch",
-        overflow: "auto",
-      }}
-    >
-      <header>Document</header>
-      <ObjectTreeView obj={doc} state={STATE} selection={selection} />
+}
+
+function MainStatusBar(props: { state: GlobalState }) {
+  const [showLeft, setShowLeft] = useState(props.state.getPropValue("showLeft"))
+  const [showRight, setShowRight] = useState(props.state.getPropValue("showRight"))
+  return (
+    <div className={"bottom-statusbar hbox"}>
+      <button
+        onClick={() => {
+          console.log("setting to", !showLeft)
+          setShowLeft(!showLeft)
+          props.state.setPropValue("showLeft", !showLeft)
+        }}
+      >
+        {showLeft ? left_arrow_triangle : right_arrow_triangle}
+      </button>
+      <Spacer />
+      <label>greetings, earthling!</label>
+      <Spacer />
+      <button
+        onClick={() => {
+          setShowRight(!showRight)
+          props.state.setPropValue("showRight", !showRight)
+        }}
+      >
+        {showRight ? right_arrow_triangle : left_arrow_triangle}
+      </button>
     </div>
   )
-  const editView = getEditView(STATE, selection)
-  const center_column = <div className={"editor-view"}>{editView}</div>
-  const right_column = <PropSheet target={selection} collapsable={false} />
+}
+
+function Main3(props: { state: GlobalState }) {
+  const { state } = props
+  const doc = useContext(DocContext)
+  const [selection, setSelection] = useState<PropsBase<unknown> | undefined>(undefined)
+  useWatchAllProps(STATE, (s) => setSelection(s.getPropValue("selection")))
+
+  const showLeft = state.getPropValue("showLeft")
+  const showRight = state.getPropValue("showRight")
+  console.log(showLeft, " ", showRight)
   return (
-    <MainView left={left_column} center={center_column} right={right_column} toolbar={toolbar} />
+    <div
+      className={"master-wrapper"}
+      style={{
+        gridTemplateColumns: `[start] 0px ${
+          showLeft ? "[left-sidebar] 150px" : ""
+        } [tool-column] 300px [editor-view] 1fr ${showRight ? "[right-sidebar] 300px" : ""} [end]`,
+      }}
+    >
+      <div className={"top-toolbar"}>
+        <MainToolbar />
+      </div>
+
+      {showLeft && (
+        <div className={"left-sidebar"}>
+          <div
+            className={"tree-wrapper pane"}
+            style={{
+              alignSelf: "stretch",
+              overflow: "auto",
+            }}
+          >
+            <header>Document</header>
+            <ObjectTreeView obj={doc} state={state} selection={selection} />
+          </div>
+        </div>
+      )}
+      {getEditView(state, selection)}
+      {showRight && (
+        <div className={"right-sidebar"}>
+          <PropSheet target={selection} collapsable={false} />
+        </div>
+      )}
+      <MainStatusBar state={state} />
+    </div>
   )
 }
 

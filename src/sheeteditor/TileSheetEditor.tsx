@@ -22,7 +22,6 @@ export function TileSheetEditor(props: { sheet: Sheet; state: GlobalState }) {
   const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
   const tile = sheet.getPropValue("selectedTile")
   const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20))
-  const [columnWidth, setColumnWidth] = useState(300)
 
   useEffect(() => {
     const tiles = sheet.getPropValue("tiles")
@@ -31,13 +30,8 @@ export function TileSheetEditor(props: { sheet: Sheet; state: GlobalState }) {
   useWatchProp(sheet, "selectedTile")
 
   return (
-    <div
-      className={"tile-sheet-editor"}
-      style={{
-        gridTemplateColumns: `${columnWidth}px 1fr`,
-      }}
-    >
-      <DividerColumnBox value={columnWidth} onChange={setColumnWidth}>
+    <>
+      <div className={"tool-column"}>
         {sheet && (
           <Pane collapsable={true} title={"Tile Sheet"}>
             <TileListView
@@ -55,23 +49,25 @@ export function TileSheetEditor(props: { sheet: Sheet; state: GlobalState }) {
             <TestMap tile={tile} mapArray={maparray} palette={palette} />
           </Pane>
         )}
-      </DividerColumnBox>
-      <VBox>
-        <PaletteColorPickerPane
-          drawColor={drawColor}
-          setDrawColor={setDrawColor}
-          palette={palette}
-        />
-        {tile && (
-          <PixelGridEditor
-            selectedColor={palette.colors.indexOf(drawColor)}
-            setSelectedColor={(n) => setDrawColor(palette.colors[n])}
-            tile={tile}
+      </div>
+      <div className={"editor-view"}>
+        <VBox>
+          <PaletteColorPickerPane
+            drawColor={drawColor}
+            setDrawColor={setDrawColor}
             palette={palette}
           />
-        )}
-        {!tile && <div>no tile selected</div>}
-      </VBox>
-    </div>
+          {tile && (
+            <PixelGridEditor
+              selectedColor={palette.colors.indexOf(drawColor)}
+              setSelectedColor={(n) => setDrawColor(palette.colors[n])}
+              tile={tile}
+              palette={palette}
+            />
+          )}
+          {!tile && <div>no tile selected</div>}
+        </VBox>
+      </div>
+    </>
   )
 }

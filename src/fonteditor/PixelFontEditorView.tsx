@@ -62,8 +62,8 @@ export function PixelFontEditorView(props: { state: GlobalState; font: PixelFont
     scale: scale,
   }
   return (
-    <div className={"hbox"}>
-      <div className={"vbox"} style={{ maxWidth: "300px" }}>
+    <>
+      <div className={"vbox tool-column"} style={{ maxWidth: "300px" }}>
         <div className={"toolbar"}>
           <button onClick={add_glyph}>add glyph</button>
           <button onClick={toggle_draw_names}>names</button>
@@ -86,7 +86,9 @@ export function PixelFontEditorView(props: { state: GlobalState; font: PixelFont
         <PropSheet target={selected} collapsable={true} />
         <PixelFontPreview font={props.font} />
       </div>
-      {selected && <PixelGlyphEditor glyph={selected} palette={palette} />}
-    </div>
+      <div className={"editor-view"}>
+        {selected && <PixelGlyphEditor glyph={selected} palette={palette} />}
+      </div>
+    </>
   )
 }

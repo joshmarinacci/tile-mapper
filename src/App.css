@@ -29,22 +29,66 @@ html body {
   margin: 0;
 }
 
-.editor-view {
-  display: flex;
-  flex-direction: row;
+/* ========== master layout =========== */
+.master-wrapper {
   border: 0px solid red;
-  align-items: stretch;
-  overflow: scroll;
-  align-self: stretch;
-  grid-column-start: 2;
-  grid-column-end: 3;
-  grid-row-start: 2;
-  grid-row-end: 3;
+  display: grid;
+  grid-template-columns: [start] 0px [left-sidebar] 150px [tool-column] 300px [editor-view] 1fr [right-sidebar] 300px [end];
+  grid-template-rows: [top-statusbar] auto [middle] 1fr [bottom-statusbar] 3rem [end];
+  height: 99vh;
+  max-height: 99vh;
 }
 
-.across {
-  grid-column-start: 1;
-  grid-column-end: 4;
+.top-toolbar {
+  grid-column-start: start;
+  grid-column-end: end;
+  grid-row: top-statusbar;
+  border: 0px solid black;
+}
+.left-sidebar {
+  grid-column: left-sidebar;
+  grid-row: middle;
+  border: 0px solid red;
+  overflow: auto;
+}
+.tool-column {
+  grid-column: tool-column;
+  grid-row: middle;
+  border: 1px solid green;
+  border-width: 0 3px 0 0;
+  overflow: auto;
+}
+.editor-toolbar {
+  grid-column: editor-view;
+  grid-row: middle;
+}
+.editor-view {
+  grid-column: editor-view;
+  grid-row: middle;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+}
+.editor-canvas {
+  overflow: auto;
+}
+.right-sidebar {
+  grid-column: right-sidebar;
+  grid-row: middle;
+  border: 0px solid red;
+  overflow: auto;
+}
+.bottom-statusbar {
+  grid-row: bottom-statusbar;
+  grid-column-start: start;
+  grid-column-end: end;
+  border: 0px solid black;
+}
+
+/* ============= general styling ============ */
+.bottom-statusbar {
+  border-color: black;
+  border-width: 1px 0 0 0;
 }
 
 .pane {
