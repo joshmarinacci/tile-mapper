@@ -79,6 +79,13 @@ export const SaveLocalStorageAction: SimpleMenuAction = {
   title: "Save",
   description: "save the document in the browsers internal storage",
   tags: ["save", "local"],
+  shortcut: {
+    key: "s",
+    meta: true,
+    alt: false,
+    control: false,
+    shift: false,
+  },
   perform: async (state) => {
     await saveLocalStorage(state, false)
   },

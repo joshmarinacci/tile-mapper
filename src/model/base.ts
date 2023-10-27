@@ -278,7 +278,7 @@ export type Shortcut = {
 }
 
 export interface MenuAction {
-  type: string
+  type: "react" | "simple"
   title: string
   shortcut?: Shortcut
   description?: string

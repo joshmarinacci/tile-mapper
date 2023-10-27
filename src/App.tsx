@@ -2,9 +2,14 @@ import "./App.css"
 import "./divider.css"
 
 import { DialogContainer, DialogContext, DialogContextImpl } from "josh_react_util"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useState } from "react"
 
-import { DocToBMP, ExportToJSONAction, ImportFromJSONAction } from "./actions/actions"
+import {
+  DocToBMP,
+  ExportToJSONAction,
+  ImportFromJSONAction,
+  SaveLocalStorageAction,
+} from "./actions/actions"
 import { NewDocAction } from "./actions/reactactions"
 import { PopupContainer, PopupContext, PopupContextImpl } from "./common/popup"
 import { ObjectTreeView } from "./common/treeview"
@@ -14,14 +19,27 @@ import { Divider } from "./main/Divider"
 import { EditView } from "./main/EditView"
 import { MainStatusBar } from "./main/MainStatusBar"
 import { MainToolbar } from "./main/MainToolbar"
-import { ActionRegistry, PropsBase, useWatchAllProps, useWatchProp } from "./model/base"
+import {
+  ActionRegistry,
+  PropsBase,
+  SimpleMenuAction,
+  useWatchAllProps,
+  useWatchProp,
+} from "./model/base"
 import { ActionRegistryContext, DocContext, StateContext } from "./model/contexts"
 import { GameDoc } from "./model/datamodel"
 import { PropSheet } from "./propsheet/propsheet"
 import { GlobalState } from "./state"
 
 const AR = new ActionRegistry()
-AR.register([ExportToJSONAction, DocToBMP, DocToBMP, ImportFromJSONAction, NewDocAction])
+AR.register([
+  ExportToJSONAction,
+  DocToBMP,
+  DocToBMP,
+  ImportFromJSONAction,
+  NewDocAction,
+  SaveLocalStorageAction,
+])
 
 const gstate = new GlobalState()
 gstate.setPropValue("doc", make_doc_from_json(Example))
@@ -35,6 +53,23 @@ function Main3() {
 
   const showLeft = state.getPropValue("showLeft")
   const showRight = state.getPropValue("showRight")
+  useEffect(() => {
+    const hand = (e) => {
+      const act = AR.match(e)
+      if (act) {
+        e.preventDefault()
+        if (act.type === "simple") {
+          ;(act as SimpleMenuAction).perform(state).then(() => {
+            console.log("action complete")
+          })
+        }
+      }
+    }
+    window.addEventListener("keydown", hand)
+    return () => {
+      window.removeEventListener("keydown", hand)
+    }
+  }, [state])
   return (
     <div
       className={"master-wrapper"}
