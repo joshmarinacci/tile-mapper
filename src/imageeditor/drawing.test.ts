@@ -1,7 +1,6 @@
 import { Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
-import { appendToList } from "../model/base"
 import { ImagePixelLayer, SImage } from "../model/datamodel"
 import { drawEllipse } from "./ellipse_tool"
 import { drawRect } from "./rect_tool"
@@ -10,7 +9,7 @@ describe("basic drawing", () => {
   it("should fill the canvas", async () => {
     const canvas = new SImage({ size: new Size(50, 50) })
     const layer = new ImagePixelLayer({ visible: true, opacity: 1.0 })
-    appendToList(canvas, "layers", layer)
+    canvas.appendLayer(layer)
     layer.rebuildFromCanvas(canvas)
 
     layer.fillAll(0)
@@ -21,7 +20,7 @@ describe("basic drawing", () => {
   it("should draw a rectangle", async () => {
     const canvas = new SImage({ size: new Size(50, 50) })
     const layer = new ImagePixelLayer({ visible: true, opacity: 1.0 })
-    appendToList(canvas, "layers", layer)
+    canvas.appendLayer(layer)
     layer.rebuildFromCanvas(canvas)
 
     //normal rect
@@ -48,7 +47,7 @@ describe("basic drawing", () => {
       expect(layer.getPixel(new Point(21, 0))).toBe(0)
     }
 
-    // partly off screen
+    // partly off-screen
     {
       layer.fillAll(0)
       drawRect(layer.getPropValue("data"), 12, new Point(-10, 0), new Point(20, 20), undefined)
@@ -59,7 +58,7 @@ describe("basic drawing", () => {
   it("should draw an ellipse", async () => {
     const canvas = new SImage({ size: new Size(50, 50) })
     const layer = new ImagePixelLayer({ visible: true, opacity: 1.0 })
-    appendToList(canvas, "layers", layer)
+    canvas.appendLayer(layer)
     layer.rebuildFromCanvas(canvas)
 
     {

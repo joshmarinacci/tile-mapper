@@ -1,8 +1,9 @@
 import { ArrayGrid, Point } from "josh_js_util"
-import React, { MouseEvent, useEffect, useRef, useState } from "react"
+import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import { drawEditableSprite, Icons, ImagePalette } from "../common/common"
 import { ICON_CACHE } from "../iconcache"
+import { DocContext } from "../model/contexts"
 import { Tile } from "../model/datamodel"
 
 export function TestMap(props: {
@@ -10,6 +11,8 @@ export function TestMap(props: {
   mapArray: ArrayGrid<Tile>
   palette: ImagePalette
 }) {
+  const doc = useContext(DocContext)
+  const tileSize = doc.getPropValue("tileSize")
   const { tile, mapArray } = props
   const ref = useRef<HTMLCanvasElement>(null)
   const [down, setDown] = useState<boolean>(false)
@@ -29,26 +32,24 @@ export function TestMap(props: {
       mapArray.forEach((v, n) => {
         if (v) {
           ctx.save()
-          ctx.translate(n.x * tile.width() * scale, n.y * tile.height() * scale)
+          ctx.translate(n.x * tileSize.w * scale, n.y * tileSize.h * scale)
           drawEditableSprite(ctx, scale, v, props.palette)
           if (grid) {
             ctx.strokeStyle = "gray"
-            ctx.strokeRect(0, 0, tile.width() * scale, tile.height() * scale)
+            ctx.strokeRect(0, 0, tileSize.w * scale, tileSize.h * scale)
           }
           ctx.restore()
         }
       })
     }
   }
-  useEffect(() => {
-    redraw()
-  }, [grid, count])
+  useEffect(() => redraw(), [grid, count])
 
   useEffect(() => {
     redraw()
     const hand = () => redraw()
-    tile.onAny(hand)
-    return () => tile.offAny(hand)
+    tile?.onAny(hand)
+    return () => tile?.offAny(hand)
   }, [tile])
 
   const canvasToImage = (e: MouseEvent<HTMLCanvasElement>) => {
@@ -56,7 +57,7 @@ export function TestMap(props: {
     let pt = new Point(e.clientX, e.clientY)
       .subtract(new Point(rect.left, rect.top))
       .scale(1 / scale)
-    pt = new Point(pt.x / tile.width(), pt.y / tile.height()).floor()
+    pt = new Point(pt.x / tileSize.w, pt.y / tileSize.h).floor()
     return pt
   }
   return (
@@ -70,13 +71,13 @@ export function TestMap(props: {
         height={32 * 10}
         onMouseDown={(e) => {
           setDown(true)
-          mapArray.set(canvasToImage(e), tile)
+          if (tile) mapArray.set(canvasToImage(e), tile)
           setCount(count + 1)
           redraw()
         }}
         onMouseMove={(e) => {
           if (down) {
-            mapArray.set(canvasToImage(e), tile)
+            if (tile) mapArray.set(canvasToImage(e), tile)
             redraw()
           }
         }}

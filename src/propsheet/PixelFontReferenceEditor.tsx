@@ -6,11 +6,11 @@ import { DocContext } from "../model/contexts"
 import { PixelFont } from "../model/datamodel"
 
 function PixelFontNameRenderer<T extends PixelFont, O>(props: {
-  value: T
+  value: T | undefined
   selected: boolean
   options: O
 }) {
-  if (!props.value) return <div>undefined</div>
+  if (!props.value) return <div>missing</div>
   return <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
 }
 
@@ -26,7 +26,9 @@ export function PixelFontReferenceEditor<T>(props: {
   return (
     <ListSelect
       selected={selected}
-      setSelected={(v) => props.target.setPropValue(props.name, v.getUUID())}
+      setSelected={(v) => {
+        if (v) props.target.setPropValue(props.name, v.getUUID() as T[keyof T])
+      }}
       renderer={PixelFontNameRenderer}
       data={data}
       options={{}}

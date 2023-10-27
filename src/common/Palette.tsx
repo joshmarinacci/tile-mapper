@@ -8,7 +8,7 @@ import { DropdownButton, Pane } from "./common-components"
 import { ListView, ListViewDirection, ListViewOptions } from "./ListView"
 
 const PaletteColorRenderer = (props: {
-  value: string
+  value: string | undefined
   selected: boolean
   options: ListViewOptions
 }) => {

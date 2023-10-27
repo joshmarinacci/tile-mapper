@@ -1,21 +1,21 @@
 import "./ListView.css"
 
 import { toClass } from "josh_react_util"
-import React from "react"
+import React, { ReactElement } from "react"
 
 export type ListViewOptions = Record<string, unknown>
 export type ListViewRenderer<T, O extends ListViewOptions> = (props: {
-  value: T
+  value: T | undefined
   selected: boolean
   options: O
-}) => JSX.Element
+}) => ReactElement
 
 export function DefaultListViewRenderer<T>(props: {
-  value: T
+  value: T | undefined
   selected: boolean
   options: ListViewOptions
 }) {
-  if (props.value) <div>{props.value + ""}</div>
+  if (props.value) return <div>{props.value + ""}</div>
   return <div>unknown</div>
 }
 export enum ListViewDirection {

@@ -5,8 +5,12 @@ import { PropDef, PropsBase } from "../model/base"
 import { DocContext } from "../model/contexts"
 import { GameMap } from "../model/datamodel"
 
-function MapNameRenderer<T extends GameMap, O>(props: { value: T; selected: boolean; options: O }) {
-  if (!props.value) return <div>undefined</div>
+function MapNameRenderer<T extends GameMap, O>(props: {
+  value: T | undefined
+  selected: boolean
+  options: O
+}) {
+  if (!props.value) return <div>missing</div>
   return <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
 }
 
@@ -23,7 +27,9 @@ export function MapReferenceEditor<T>(props: {
   return (
     <ListSelect
       selected={selected}
-      setSelected={(v) => target.setPropValue(name, v.getUUID())}
+      setSelected={(v) => {
+        if (v) target.setPropValue(name, v.getUUID() as T[keyof T])
+      }}
       renderer={MapNameRenderer}
       data={data}
       options={{}}

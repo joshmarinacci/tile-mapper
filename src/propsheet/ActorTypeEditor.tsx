@@ -5,7 +5,7 @@ import { PropDef, PropsBase } from "../model/base"
 import { ActorKind, ActorType } from "../model/datamodel"
 
 function ActorTypeRenderer<T extends ActorKind, O>(props: {
-  value: T
+  value: T | undefined
   selected: boolean
   options: O
 }) {

@@ -11,7 +11,14 @@ import {
   DeleteSheetAction,
 } from "../actions/actions"
 import { AddImageDialog } from "../actions/AddImageDialog"
-import { AddSheetToDocButton, AddTestToDocButton } from "../actions/reactactions"
+import {
+  AddActorToDocButton,
+  AddCanvasToDocButton,
+  AddFontToDocButton,
+  AddMapToDocButton,
+  AddSheetToDocButton,
+  AddTestToDocButton,
+} from "../actions/reactactions"
 import { appendToList, PropDef, PropsBase, useWatchProp } from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
 import {
@@ -42,68 +49,8 @@ function PropertyList<T, K extends keyof T>(props: {
   useWatchProp(target, name)
   const doc = useContext(DocContext)
   const state = useContext(StateContext)
-  const addSheet = () => {
-    const sheet = new Sheet({
-      name: "unnamed sheet",
-      tileSize: doc.getPropValue("tileSize"),
-    })
-    appendToList(doc, "sheets", sheet)
-    state.setSelection(sheet)
-  }
-  const addMap = () => {
-    const map = new GameMap({ name: "new map" })
-    appendToList(doc, "maps", map)
-    state.setSelection(map)
-  }
-  const addActor = () => {
-    const size = new Size(16, 16)
-    const sprite = new SImage({ name: "new actor sprite", size: size })
-    const layer = new ImagePixelLayer({
-      name: "layer",
-      opacity: 1.0,
-      visible: true,
-    })
-    const bounds = new Bounds(0, 0, size.w, size.h)
-    layer.rebuildFromCanvas(sprite)
-    sprite.appendLayer(layer)
-    appendToList(doc, "canvases", sprite)
-    const actor = new Actor({
-      name: "new actor",
-      viewbox: bounds,
-      hitbox: bounds,
-      sprite: sprite.getUUID(),
-    })
-    appendToList(doc, "actors", actor)
-    state.setSelection(actor)
-  }
 
   const dm = useContext(DialogContext)
-  const addCanvas = () => {
-    dm.show(
-      <AddImageDialog
-        onComplete={(size) => {
-          const canvas = new SImage({ name: "blank canvas", size: size })
-          const layer = new ImagePixelLayer({
-            name: "new pixel layer",
-            opacity: 1.0,
-            visible: true,
-          })
-          canvas.appendLayer(layer)
-          layer.rebuildFromCanvas(canvas)
-          appendToList(doc, "canvases", canvas)
-          state.setSelection(canvas)
-        }}
-      />,
-    )
-  }
-  const addFont = () => {
-    const font = new PixelFont({ name: "unnamed font" })
-    const glyph = new PixelGlyph({ name: "A" })
-    glyph.getPropValue("data").fill(() => -1)
-    appendToList(font, "glyphs", glyph)
-    appendToList(doc, "fonts", font)
-    state.setSelection(font)
-  }
 
   return (
     <li className={"tree-item"}>
@@ -113,20 +60,19 @@ function PropertyList<T, K extends keyof T>(props: {
         </button>
         <b>{name.toString()}</b>
         <DropdownButton title={"..."}>
-          {name === "sheets" && <button onClick={addSheet}>Add Sheet</button>}
-          {name === "sheets" && <AddSheetToDocButton state={state} />}
-          {name === "maps" && <button onClick={addMap}>Add Map</button>}
+          {name === "sheets" && <AddSheetToDocButton />}
+          {name === "maps" && <AddMapToDocButton />}
           {name === "tests" && <AddTestToDocButton />}
-          {name === "actors" && <button onClick={addActor}>Add Actor</button>}
-          {name === "canvases" && <button onClick={addCanvas}>Add Canvas</button>}
-          {name === "fonts" && <button onClick={addFont}>Add Font</button>}
+          {name === "actors" && <AddActorToDocButton />}
+          {name === "canvases" && <AddCanvasToDocButton />}
+          {name === "fonts" && <AddFontToDocButton />}
           {/*<button onClick={() => add()}>Add</button>*/}
         </DropdownButton>
       </p>
       {open && (
         <ul key={"children"} className={"tree-list"}>
           {values.map((val) => {
-            return <ObjectTreeView key={val._id} obj={val} selection={props.selection} />
+            return <ObjectTreeView key={val.getUUID()} obj={val} selection={props.selection} />
           })}
         </ul>
       )}
@@ -151,7 +97,7 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown
     "tree-object": true,
     selected: state.getPropValue("selection") === obj,
   }
-  useWatchProp(obj, "name")
+  useWatchProp(obj, "name" as keyof T)
   const pm = useContext(PopupContext)
   const showContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
@@ -179,7 +125,7 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown
         onClick={select}
         onContextMenu={showContextMenu}
       >
-        {obj.getPropValue("name") as string}
+        {obj.getPropValue("name" as keyof T) as string}
       </p>
       {expandable.map(([key, def]) => {
         return (

@@ -6,11 +6,11 @@ import { DocContext } from "../model/contexts"
 import { SImage } from "../model/datamodel"
 
 function ImageNameRenderer<T extends SImage, O>(props: {
-  value: T
+  value: T | undefined
   selected: boolean
   options: O
 }) {
-  if (!props.value) return <div>undefined</div>
+  if (!props.value) return <div>missing</div>
   return <div className={"std-list-item"}>{props.value.getPropValue("name")}</div>
 }
 

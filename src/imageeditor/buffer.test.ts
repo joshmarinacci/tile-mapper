@@ -30,7 +30,7 @@ describe("array grid test", () => {
 
   it("can copy sub array grids", async () => {
     const arr1 = new ArrayGrid<number>(10, 10)
-    arr1.fill((n) => 24)
+    arr1.fill(() => 24)
     const arr2 = new ArrayGrid<number>(10, 10)
     arr2.fill(() => 25)
     expect(arr1.w).toBe(10)
@@ -47,9 +47,9 @@ describe("array grid test", () => {
 
   it("can copy sub array offset", async () => {
     const arr1 = new ArrayGrid<number>(10, 10)
-    arr1.fill((n) => 24)
+    arr1.fill(() => 24)
     const arr2 = new ArrayGrid<number>(10, 10)
-    arr2.fill((n) => 25)
+    arr2.fill(() => 25)
     expect(arr1.w).toBe(10)
     expect(arr2.w).toBe(10)
     copyContentsFrom(arr1, new Bounds(2, 2, 2, 2), arr2, new Point(0, 0))
@@ -62,9 +62,9 @@ describe("array grid test", () => {
 
   it("can copy sub array offset with offset", async () => {
     const arr1 = new ArrayGrid<number>(10, 10)
-    arr1.fill((n) => 24)
+    arr1.fill(() => 24)
     const arr2 = new ArrayGrid<number>(10, 10)
-    arr2.fill((n) => 25)
+    arr2.fill(() => 25)
     expect(arr1.w).toBe(10)
     expect(arr2.w).toBe(10)
     copyContentsFrom(arr1, new Bounds(2, 2, 2, 2), arr2, new Point(2, 2))
@@ -80,10 +80,10 @@ describe("array grid test", () => {
 
   it("can copy 2x2 at 2x2 with different values", async () => {
     const arr1 = new ArrayGrid<number>(10, 10)
-    arr1.fill((n) => 24)
+    arr1.fill(() => 24)
     arr1.set_at(3, 3, 28)
     const arr2 = new ArrayGrid<number>(10, 10)
-    arr2.fill((n) => 25)
+    arr2.fill(() => 25)
     copyContentsFrom(arr1, new Bounds(2, 2, 2, 2), arr2, new Point(0, 0))
     expect(arr2.get_at(0, 0)).toBe(24)
     expect(arr2.get_at(1, 1)).toBe(28)

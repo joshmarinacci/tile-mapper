@@ -80,7 +80,7 @@ export class GlobalState extends PropsBase<GlobalStateType> {
   }
 
   clearSelection() {
-    this.setPropValue("selection", undefined)
+    this.setPropValue("selection", undefined as unknown as PropsBase<unknown>)
   }
 
   setSelection<T>(doc: PropsBase<T>) {

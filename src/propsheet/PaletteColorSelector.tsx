@@ -5,23 +5,23 @@ import { PropDef, PropsBase } from "../model/base"
 import { DocContext } from "../model/contexts"
 
 function PaletteColorNameRenderer<T extends string, O>(props: {
-  value: T
+  value: T | undefined
   selected: boolean
   options: O
 }) {
   return (
     <div
       style={{
-        backgroundColor: `${props.value.toString()}`,
+        backgroundColor: `${props.value?.toString()}`,
       }}
     >
-      {props.value.toString()}
+      {props.value?.toString()}
     </div>
   )
 }
 
-export function PaletteColorSelector<T, V = T[keyof T]>(props: {
-  def: PropDef<V>
+export function PaletteColorSelector<T>(props: {
+  def: PropDef<string>
   name: keyof T
   target: PropsBase<T>
 }) {
@@ -29,14 +29,14 @@ export function PaletteColorSelector<T, V = T[keyof T]>(props: {
   const current = props.target.getPropValue(props.name)
   const palette = doc.getPropValue("palette")
   return (
-    <ListSelect
-      selected={current}
+    <ListSelect<string, never>
+      selected={current as string}
       setSelected={(v) => {
-        if (v) props.target.setPropValue(props.name, v)
+        if (v) props.target.setPropValue(props.name, v as T[keyof T])
       }}
       renderer={PaletteColorNameRenderer}
       data={palette.colors}
-      options={{}}
+      options={undefined as never}
     />
   )
 }

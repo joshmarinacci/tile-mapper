@@ -25,11 +25,12 @@ type TilePreviewOptions = {
 } & ListViewOptions
 
 export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (props: {
-  value: Tile
+  value: Tile | undefined
   selected: boolean
   options: TilePreviewOptions
 }) => {
   const { value, options, selected } = props
+  if (!value) return <div>missing</div>
   const ref = useRef<HTMLCanvasElement>(null)
   const redraw = () => {
     if (ref.current && value) {
@@ -65,17 +66,18 @@ export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (
         width={value.width()}
         height={value.height()}
       ></canvas>
-      {options.showNames && <b>{props.value.getPropValue("name")}</b>}
+      {options.showNames && <b>{value.getPropValue("name")}</b>}
     </div>
   )
 }
 
 const SheetPreviewRenderer: ListViewRenderer<Sheet, never> = (props: {
-  value: Sheet
+  value: Sheet | undefined
   selected: boolean
   options: ListViewOptions
 }) => {
   const { selected, value } = props
+  if (!value) return <div className={"std-dropdown-item"}>missing</div>
   return (
     <div
       className={toClass({

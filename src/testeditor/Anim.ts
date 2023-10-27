@@ -5,12 +5,12 @@ import { GameState } from "../engine/gamestate"
 
 export class Anim {
   private cache: TileCache
-  private game_state: GameState
+  private game_state: GameState | undefined
   private zoom: number
   private callback: () => void
   private playing: boolean
   private physics: PhysicsConstants
-  private target: HTMLCanvasElement
+  private target: HTMLCanvasElement | undefined
   private keydown_handler: (e: KeyboardEvent) => void
   private keyup_handler: (e: KeyboardEvent) => void
 
@@ -19,10 +19,10 @@ export class Anim {
     this.zoom = 1
     this.cache = new TileCache(new Size(8, 8))
     this.keydown_handler = (e: KeyboardEvent) => {
-      this.game_state.getKeyboard().keydown(e.code)
+      this.game_state?.getKeyboard().keydown(e.code)
     }
     this.keyup_handler = (e: KeyboardEvent) => {
-      this.game_state.getKeyboard().keyup(e.code)
+      this.game_state?.getKeyboard().keyup(e.code)
     }
 
     this.physics = {
@@ -59,6 +59,7 @@ export class Anim {
   }
 
   drawOnce() {
+    if (!this.game_state) return
     const map = this.game_state.getCurrentMap()
     const ctx = this.game_state.getDrawingSurface()
     const vp = this.game_state.getViewport()

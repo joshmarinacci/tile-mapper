@@ -60,7 +60,7 @@ export function LayerEditor(props: {
           drawTileLayer(ctx, doc, layer as TileLayer, scale, grid)
         }
         if (layer instanceof ActorLayer) {
-          drawActorlayer(ctx, doc, layer as ActorLayer, scale, grid)
+          drawActorlayer(ctx, doc, layer as ActorLayer, scale)
         }
       })
       if (handler)

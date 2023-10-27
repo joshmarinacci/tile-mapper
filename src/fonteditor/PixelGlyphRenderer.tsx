@@ -12,11 +12,14 @@ export type GlyphDrawOptions = {
   scale: number
 }
 export const PixelGlyphRenderer: ListViewRenderer<PixelGlyph, GlyphDrawOptions> = (props: {
-  value: PixelGlyph
+  value: PixelGlyph | undefined
   selected: boolean
   options: GlyphDrawOptions
 }) => {
   const { value } = props
+  if (!value) {
+    return <div>missing</div>
+  }
   const ref = useRef<HTMLCanvasElement>(null)
   const size = value.getPropValue("size")
   const scale = props.options.scale
@@ -52,7 +55,7 @@ export const PixelGlyphRenderer: ListViewRenderer<PixelGlyph, GlyphDrawOptions> 
             left: "5px",
           }}
         >
-          {props.value.getPropValue("name")}
+          {value.getPropValue("name")}
         </span>
       )}
       <canvas

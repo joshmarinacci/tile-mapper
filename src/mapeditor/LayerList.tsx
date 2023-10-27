@@ -16,11 +16,12 @@ import { GameMap, MapLayerType, TileLayer } from "../model/datamodel"
 import { ResizeLayerDialog } from "./ResizeLayerDialog"
 
 const LayerNameRenderer: ListViewRenderer<PropsBase<MapLayerType>, never> = (props: {
-  value: PropsBase<MapLayerType>
+  value: PropsBase<MapLayerType> | undefined
   selected: boolean
   options: never
 }) => {
   const { value } = props
+  if (!value) return <div className={"std-list-item"}>missing</div>
   useWatchProp(value, "name")
   useWatchProp(value, "visible")
   return (

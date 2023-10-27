@@ -1,3 +1,4 @@
+import { Bounds, Size } from "josh_js_util"
 import { DialogContext } from "josh_react_util"
 import React, { useContext } from "react"
 
@@ -6,9 +7,19 @@ import { ListFilesDialog } from "../io/ListFilesDialog"
 import { LoadFileDialog } from "../io/LoadPNGJSONFileDialog"
 import { appendToList } from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
-import { GameTest, Sheet } from "../model/datamodel"
+import {
+  Actor,
+  GameMap,
+  GameTest,
+  ImagePixelLayer,
+  PixelFont,
+  PixelGlyph,
+  Sheet,
+  SImage,
+} from "../model/datamodel"
 import { GlobalState } from "../state"
 import { loadPNGJSON } from "./actions"
+import { AddImageDialog } from "./AddImageDialog"
 import { NewDocDialog } from "./NewDocDialog"
 
 function NewDocButton(props: { state: GlobalState }) {
@@ -25,6 +36,7 @@ function NewDocButton(props: { state: GlobalState }) {
   }
   return <button onClick={show}>New</button>
 }
+
 export const NewDocAction: ReactMenuAction = {
   type: "react",
   title: "new",
@@ -32,6 +44,7 @@ export const NewDocAction: ReactMenuAction = {
     return <NewDocButton state={state} />
   },
 }
+
 function LoadDocButton(props: { state: GlobalState }): JSX.Element {
   const dm = useContext(DialogContext)
   const showOpenDialog = () => dm.show(<ListFilesDialog state={props.state} />)
@@ -84,22 +97,94 @@ export function AddTestToDocButton() {
   )
 }
 
-export function AddSheetToDocButton(props: { state: GlobalState }) {
+export function AddSheetToDocButton() {
   const doc = useContext(DocContext)
-  // const state = useContext(StateContext)
-  const state = props.state
-  return (
-    <button
-      onClick={() => {
-        const sheet = new Sheet({
-          name: "unnamed sheet",
-          tileSize: doc.getPropValue("tileSize"),
-        })
-        appendToList(doc, "sheets", sheet)
-        state.setSelection(sheet)
-      }}
-    >
-      Add Sheet To Doc
-    </button>
-  )
+  const state = useContext(StateContext)
+  const perform = () => {
+    const sheet = new Sheet({
+      name: "unnamed sheet",
+      tileSize: doc.getPropValue("tileSize"),
+    })
+    appendToList(doc, "sheets", sheet)
+    state.setSelection(sheet)
+  }
+  return <button onClick={perform}> Add Sheet To Doc </button>
+}
+
+export function AddMapToDocButton() {
+  const doc = useContext(DocContext)
+  const state = useContext(StateContext)
+  const perform = () => {
+    const map = new GameMap({ name: "new map" })
+    appendToList(doc, "maps", map)
+    state.setSelection(map)
+  }
+  return <button onClick={perform}> Add Map To Doc </button>
+}
+
+export function AddActorToDocButton() {
+  const doc = useContext(DocContext)
+  const state = useContext(StateContext)
+  const perform = () => {
+    const size = new Size(16, 16)
+    const sprite = new SImage({ name: "new actor sprite", size: size })
+    const layer = new ImagePixelLayer({
+      name: "layer",
+      opacity: 1.0,
+      visible: true,
+    })
+    const bounds = new Bounds(0, 0, size.w, size.h)
+    layer.rebuildFromCanvas(sprite)
+    sprite.appendLayer(layer)
+    appendToList(doc, "canvases", sprite)
+    const actor = new Actor({
+      name: "new actor",
+      viewbox: bounds,
+      hitbox: bounds,
+      sprite: sprite.getUUID(),
+    })
+    appendToList(doc, "actors", actor)
+    state.setSelection(actor)
+  }
+  return <button onClick={perform}> Add Actor To Doc </button>
+}
+
+export function AddCanvasToDocButton() {
+  const doc = useContext(DocContext)
+  const state = useContext(StateContext)
+  const dm = useContext(DialogContext)
+  const perform = () => {
+    dm.show(
+      <AddImageDialog
+        onComplete={(size) => {
+          const canvas = new SImage({ name: "blank canvas", size: size })
+          const layer = new ImagePixelLayer({
+            name: "new pixel layer",
+            opacity: 1.0,
+            visible: true,
+          })
+          canvas.appendLayer(layer)
+          layer.rebuildFromCanvas(canvas)
+          appendToList(doc, "canvases", canvas)
+          state.setSelection(canvas)
+        }}
+      />,
+    )
+  }
+  return <button onClick={perform}> Add Canvas To Doc </button>
+}
+
+export function AddFontToDocButton() {
+  const doc = useContext(DocContext)
+  const state = useContext(StateContext)
+  const dm = useContext(DialogContext)
+  const perform = () => {
+    const font = new PixelFont({ name: "unnamed font" })
+    const glyph = new PixelGlyph({ name: "A" })
+    glyph.getPropValue("data").fill(() => -1)
+    appendToList(font, "glyphs", glyph)
+    appendToList(doc, "fonts", font)
+    state.setSelection(font)
+  }
+  return <button onClick={perform}> Add Font To Doc </button>
 }

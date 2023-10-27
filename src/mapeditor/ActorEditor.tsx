@@ -22,7 +22,6 @@ export function drawActorlayer(
   doc: GameDoc,
   layer: ActorLayer,
   scale: number,
-  grid: boolean,
 ) {
   layer.getPropValue("actors").forEach((inst) => {
     const position = inst.getPropValue("position")
@@ -47,7 +46,7 @@ export function drawActorlayer(
 }
 
 const ActorPreviewRenderer: ListViewRenderer<Actor, never> = (props: {
-  value: Actor
+  value: Actor | undefined
   selected: boolean
   options?: ListViewOptions
 }) => {
@@ -110,7 +109,6 @@ export function drawSelectedActor(
   doc: GameDoc,
   inst: ActorInstance,
   scale: number,
-  grid: boolean,
 ) {
   const position = inst.getPropValue("position")
   const source = findActorForInstance(inst, doc)
@@ -150,7 +148,7 @@ export class ActorLayerMouseHandler implements MouseHandler<ActorLayer> {
 
   drawOverlay(v: DrawArgs<ActorLayer>): void {
     if (v.selectedActor) {
-      drawSelectedActor(v.ctx, v.doc, v.selectedActor, v.scale, v.grid)
+      drawSelectedActor(v.ctx, v.doc, v.selectedActor, v.scale)
     }
   }
 }

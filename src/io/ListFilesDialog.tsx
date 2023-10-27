@@ -6,10 +6,10 @@ import { GlobalState } from "../state"
 import { TILE_MAPPER_DOCUMENT } from "./json"
 import { JSONDocReference, listLocalDocs, loadLocalDoc } from "./local"
 
-function FileItemRenderer(props: { value: JSONDocReference }) {
+function FileItemRenderer(props: { value: JSONDocReference | undefined }) {
   return (
     <div className={"std-list-item"}>
-      <b>{props.value.name}</b>
+      <b>{props.value?.name}</b>
     </div>
   )
 }
