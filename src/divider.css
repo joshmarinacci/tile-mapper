@@ -1,0 +1,17 @@
+.divider {
+  position: relative;
+  grid-column-start: divider;
+  border: 0px solid green;
+  background-color: black;
+  user-select: none;
+}
+
+.divider .handle {
+  position: absolute;
+  bottom: 16px;
+  border: 0px solid black;
+  left: -16px;
+  background-color: black;
+  width: 32px;
+  height: 16px;
+}

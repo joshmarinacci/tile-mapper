@@ -54,8 +54,7 @@ html body {
 .tool-column {
   grid-column: tool-column;
   grid-row: middle;
-  border: 1px solid green;
-  border-width: 0 3px 0 0;
+  border: 0px solid black;
   overflow: auto;
 }
 .editor-toolbar {
