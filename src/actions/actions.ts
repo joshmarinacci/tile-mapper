@@ -344,3 +344,20 @@ export function drawGrid(
   ctx.stroke()
   ctx.restore()
 }
+
+export function calculate_context_actions<T>(obj: PropsBase<T>) {
+  const actions = []
+  if (obj instanceof Sheet) {
+    actions.push(DeleteSheetAction)
+  }
+  if (obj instanceof GameMap) {
+    actions.push(DeleteMapAction)
+  }
+  if (obj instanceof Actor) {
+    actions.push(DeleteActorAction)
+  }
+  if (obj instanceof GameTest) {
+    actions.push(DeleteGameTestAction)
+  }
+  return actions
+}

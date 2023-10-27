@@ -1,16 +1,9 @@
 import "./treeview.css"
 
-import { Bounds, Size } from "josh_js_util"
-import { DialogContext, toClass } from "josh_react_util"
-import React, { MouseEvent, ReactNode, useContext, useState } from "react"
+import { toClass } from "josh_react_util"
+import React, { MouseEvent, useContext, useState } from "react"
 
-import {
-  DeleteActorAction,
-  DeleteGameTestAction,
-  DeleteMapAction,
-  DeleteSheetAction,
-} from "../actions/actions"
-import { AddImageDialog } from "../actions/AddImageDialog"
+import { calculate_context_actions } from "../actions/actions"
 import {
   AddActorToDocButton,
   AddCanvasToDocButton,
@@ -19,18 +12,8 @@ import {
   AddSheetToDocButton,
   AddTestToDocButton,
 } from "../actions/reactactions"
-import { appendToList, PropDef, PropsBase, useWatchProp } from "../model/base"
-import { DocContext, StateContext } from "../model/contexts"
-import {
-  Actor,
-  GameMap,
-  GameTest,
-  ImagePixelLayer,
-  PixelFont,
-  PixelGlyph,
-  Sheet,
-  SImage,
-} from "../model/datamodel"
+import { PropDef, PropsBase, useWatchProp } from "../model/base"
+import { StateContext } from "../model/contexts"
 import { down_arrow_triangle, right_arrow_triangle } from "./common"
 import { DropdownButton, MenuList, ToolbarActionButton } from "./common-components"
 import { PopupContext } from "./popup"
@@ -47,11 +30,6 @@ function PropertyList<T, K extends keyof T>(props: {
   const [open, setOpen] = useState(true)
   const toggle = () => setOpen(!open)
   useWatchProp(target, name)
-  const doc = useContext(DocContext)
-  const state = useContext(StateContext)
-
-  const dm = useContext(DialogContext)
-
   return (
     <li className={"tree-item"}>
       <p key={"section-description"} className={"section"}>
@@ -66,7 +44,6 @@ function PropertyList<T, K extends keyof T>(props: {
           {name === "actors" && <AddActorToDocButton />}
           {name === "canvases" && <AddCanvasToDocButton />}
           {name === "fonts" && <AddFontToDocButton />}
-          {/*<button onClick={() => add()}>Add</button>*/}
         </DropdownButton>
       </p>
       {open && (
@@ -102,19 +79,8 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown
   const showContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
     select(e)
-    const items: ReactNode[] = []
-    if (obj instanceof Sheet) {
-      items.push(<ToolbarActionButton key={"delete-sheet"} action={DeleteSheetAction} />)
-    }
-    if (obj instanceof GameMap) {
-      items.push(<ToolbarActionButton key={"delete-map"} action={DeleteMapAction} />)
-    }
-    if (obj instanceof Actor) {
-      items.push(<ToolbarActionButton key="delete-actor" action={DeleteActorAction} />)
-    }
-    if (obj instanceof GameTest) {
-      items.push(<ToolbarActionButton key="delete-test" action={DeleteGameTestAction} />)
-    }
+    const actions = calculate_context_actions(obj)
+    const items = actions.map((act) => <ToolbarActionButton action={act} />)
     pm.show_at(<MenuList>{items}</MenuList>, e.target, "right")
   }
   return (
