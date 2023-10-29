@@ -73,23 +73,23 @@ export const ImportFromJSONAction: SimpleMenuAction = {
   },
 }
 
-export const SaveLocalStorageAction: SimpleMenuAction = {
-  type: "simple",
-  // icon:SupportedIcons.SaveDocument,
-  title: "Save",
-  description: "save the document in the browsers internal storage",
-  tags: ["save", "local"],
-  shortcut: {
-    key: "s",
-    meta: true,
-    alt: false,
-    control: false,
-    shift: false,
-  },
-  perform: async (state) => {
-    await saveLocalStorage(state, false)
-  },
-}
+// export const SaveLocalStorageAction: SimpleMenuAction = {
+//   type: "simple",
+//   // icon:SupportedIcons.SaveDocument,
+//   title: "Save",
+//   description: "save the document in the browsers internal storage",
+//   tags: ["save", "local"],
+//   shortcut: {
+//     key: "s",
+//     meta: true,
+//     alt: false,
+//     control: false,
+//     shift: false,
+//   },
+//   perform: async (state) => {
+//     await saveLocalStorage(state, false)
+//   },
+// }
 export const SavePNGJSONAction: SimpleMenuAction = {
   type: "simple",
   // icon:SupportedIcons.SaveDocument,

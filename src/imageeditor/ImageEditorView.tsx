@@ -326,6 +326,12 @@ export function ImageEditorView(props: { image: SImage }) {
         </Pane>
         <PropSheet target={layer} title={"Layer Info"} collapsable={true} />
         <div className={"toolbar"}>
+          <button onClick={exportPNG}>export PNG</button>
+          <button onClick={sharePNG}>share PNG</button>
+        </div>
+      </div>
+      <div className={"editor-view"}>
+        <div className={"toolbar"}>
           <IconButton onClick={() => setZoom(zoom + 1)} icon={Icons.Plus} />
           <IconButton onClick={() => setZoom(zoom - 1)} icon={Icons.Minus} />
           <ToggleButton
@@ -334,98 +340,92 @@ export function ImageEditorView(props: { image: SImage }) {
             selected={grid}
             selectedIcon={Icons.GridSelected}
           />
-        </div>
-        {layer instanceof ImagePixelLayer && (
+          {layer instanceof ImagePixelLayer && (
+            <div className={"toolbar"}>
+              <ToggleButton
+                icon={Icons.Selection}
+                selectedIcon={Icons.SelectionSelected}
+                selected={pixelTool.name === "selection"}
+                onClick={() => setPixelTool(new SelectionTool())}
+              />
+              <ToggleButton
+                icon={Icons.Move}
+                selected={pixelTool.name === "move"}
+                onClick={() => setPixelTool(new MoveTool())}
+              />
+              <ToggleButton
+                icon={Icons.Pencil}
+                selected={pixelTool.name === "pencil"}
+                onClick={() => setPixelTool(new PencilTool())}
+              />
+              <ToggleButton
+                icon={Icons.Eraser}
+                selected={pixelTool.name === "eraser"}
+                onClick={() => setPixelTool(new EraserTool())}
+              />
+              <ToggleButton
+                onClick={() => setPixelTool(new LineTool())}
+                icon={Icons.Line}
+                selected={pixelTool.name === "line"}
+              />
+              <ToggleButton
+                onClick={() => setPixelTool(new RectTool())}
+                icon={Icons.Rect}
+                selectedIcon={Icons.RectSelected}
+                selected={pixelTool.name === "rect"}
+              />
+              <ToggleButton
+                onClick={() => setPixelTool(new EllipseTool())}
+                icon={Icons.Ellipse}
+                selected={pixelTool.name === "ellipse"}
+              />
+              <ToggleButton
+                onClick={() => setPixelTool(new FillTool())}
+                icon={Icons.PaintBucket}
+                selected={pixelTool.name === "fill"}
+              />
+              <button onClick={() => crop()}>crop</button>
+            </div>
+          )}
+          {layer instanceof ImageObjectLayer && (
+            <div className={"toolbar"}>
+              <ToggleButton
+                onClick={() => {
+                  const font = doc.getPropValue("fonts").find((fnt) => fnt)
+                  const textobj = new TextObject({
+                    name: "new text",
+                    text: "ABC",
+                    position: new Point(10, 10),
+                    font: font?.getUUID(),
+                  })
+                  appendToList(layer, "data", textobj)
+                  setSelectedObject(textobj)
+                }}
+                icon={Icons.Plus}
+                selected={false}
+                text={"new text"}
+              />
+              <ToggleButton
+                icon={Icons.SelectionSelected}
+                selected={pixelTool.name === "delete"}
+                text={"delete object"}
+                onClick={() => deleteSelectedObject()}
+              />
+            </div>
+          )}
+          {layer instanceof ImageObjectLayer && selectedObject && (
+            <PropSheet target={selectedObject} collapsable={true} />
+          )}
           <div className={"toolbar"}>
-            <ToggleButton
-              icon={Icons.Selection}
-              selectedIcon={Icons.SelectionSelected}
-              selected={pixelTool.name === "selection"}
-              onClick={() => setPixelTool(new SelectionTool())}
-            />
-            <ToggleButton
-              icon={Icons.Move}
-              selected={pixelTool.name === "move"}
-              onClick={() => setPixelTool(new MoveTool())}
-            />
-            <ToggleButton
-              icon={Icons.Pencil}
-              selected={pixelTool.name === "pencil"}
-              onClick={() => setPixelTool(new PencilTool())}
-            />
-            <ToggleButton
-              icon={Icons.Eraser}
-              selected={pixelTool.name === "eraser"}
-              onClick={() => setPixelTool(new EraserTool())}
-            />
-            <ToggleButton
-              onClick={() => setPixelTool(new LineTool())}
-              icon={Icons.Line}
-              selected={pixelTool.name === "line"}
-            />
-            <ToggleButton
-              onClick={() => setPixelTool(new RectTool())}
-              icon={Icons.Rect}
-              selectedIcon={Icons.RectSelected}
-              selected={pixelTool.name === "rect"}
-            />
-            <ToggleButton
-              onClick={() => setPixelTool(new EllipseTool())}
-              icon={Icons.Ellipse}
-              selected={pixelTool.name === "ellipse"}
-            />
-            <ToggleButton
-              onClick={() => setPixelTool(new FillTool())}
-              icon={Icons.PaintBucket}
-              selected={pixelTool.name === "fill"}
-            />
-            <button onClick={() => crop()}>crop</button>
+            <b>{pixelTool.name} settings</b>
+            {tool_settings}
           </div>
-        )}
-        {layer instanceof ImageObjectLayer && (
-          <div className={"toolbar"}>
-            <ToggleButton
-              onClick={() => {
-                const font = doc.getPropValue("fonts").find((fnt) => fnt)
-                const textobj = new TextObject({
-                  name: "new text",
-                  text: "ABC",
-                  position: new Point(10, 10),
-                  font: font?.getUUID(),
-                })
-                appendToList(layer, "data", textobj)
-                setSelectedObject(textobj)
-              }}
-              icon={Icons.Plus}
-              selected={false}
-              text={"new text"}
-            />
-            <ToggleButton
-              icon={Icons.SelectionSelected}
-              selected={pixelTool.name === "delete"}
-              text={"delete object"}
-              onClick={() => deleteSelectedObject()}
-            />
-          </div>
-        )}
-        {layer instanceof ImageObjectLayer && selectedObject && (
-          <PropSheet target={selectedObject} collapsable={true} />
-        )}
-        <div className={"toolbar"}>
-          <b>{pixelTool.name} settings</b>
-          {tool_settings}
+          <PaletteColorPickerPane
+            drawColor={drawColor}
+            setDrawColor={setDrawColor}
+            palette={palette}
+          />
         </div>
-        <PaletteColorPickerPane
-          drawColor={drawColor}
-          setDrawColor={setDrawColor}
-          palette={palette}
-        />
-        <div className={"toolbar"}>
-          <button onClick={exportPNG}>export PNG</button>
-          <button onClick={sharePNG}>share PNG</button>
-        </div>
-      </div>
-      <div className={"editor-view"}>
         <div>
           <canvas
             ref={canvasRef}
