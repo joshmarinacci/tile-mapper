@@ -32,6 +32,7 @@ import { MoveTool, MoveToolSettings } from "./move_tool"
 import { MoveObjectTool } from "./MoveObjectTool"
 import { PencilTool, PencilToolSettings } from "./pencil_tool"
 import { RectTool, RectToolSettings } from "./rect_tool"
+import { ResizeImageDialog } from "./ResizeImageDialog"
 import { SelectionTool, SelectionToolSettings } from "./selection_tool"
 import { ObjectTool, PixelTool } from "./tool"
 
@@ -281,6 +282,9 @@ export function ImageEditorView(props: { image: SImage }) {
     image.setPropValue("layers", layers)
   }
 
+  const resize_image = () => {
+    dm.show(<ResizeImageDialog image={image} />)
+  }
   let tool_settings = <div>no tool selected</div>
   if (pixelTool instanceof PencilTool) tool_settings = <PencilToolSettings tool={pixelTool} />
   if (pixelTool instanceof EraserTool) tool_settings = <EraserToolSettings tool={pixelTool} />
@@ -308,6 +312,7 @@ export function ImageEditorView(props: { image: SImage }) {
             <IconButton onClick={() => del_layer()} icon={Icons.Trashcan} />
             <IconButton onClick={() => move_layer_down()} icon={Icons.UpArrow} />
             <IconButton onClick={() => move_layer_up()} icon={Icons.DownArrow} />
+            <IconButton onClick={() => resize_image()} icon={Icons.Resize} />
           </div>
           <ListView
             className={"layers"}

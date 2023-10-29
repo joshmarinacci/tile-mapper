@@ -287,7 +287,11 @@ const ImagePixelLayerDefs: DefList<ImagePixelLayerType> = {
   opacity: FloatDef,
   data: ImagePixelLayerData,
 }
-export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> {
+interface ImageLayerAPI {
+  crop(rect: Bounds): void
+  resize(size: Size): void
+}
+export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> implements ImageLayerAPI {
   constructor(opts?: PropValues<ImagePixelLayerType>) {
     super(ImagePixelLayerDefs, opts)
   }
@@ -332,6 +336,15 @@ export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> {
     }
     this.setPropValue("data", newData)
   }
+  resize(size: Size) {
+    const data = this.getPropValue("data")
+    const newData = ArrayGrid.fromSize<number>(size)
+    newData.fill((n) => {
+      if (data.isValidIndex(n)) return data.get(n)
+      return -1
+    })
+    this.setPropValue("data", newData)
+  }
 }
 CLASS_REGISTRY.register("ImageLayer", ImagePixelLayer, ImagePixelLayerDefs)
 
@@ -347,10 +360,12 @@ const ImageObjectLayerDefs: DefList<ImageObjectLayerType> = {
   data: ImageObjectLayerData,
 }
 
-export class ImageObjectLayer extends PropsBase<ImageObjectLayerType> {
+export class ImageObjectLayer extends PropsBase<ImageObjectLayerType> implements ImageLayerAPI {
   constructor(opts?: PropValues<ImageObjectLayerType>) {
     super(ImageObjectLayerDefs, opts)
   }
+  crop(rect: Bounds): void {}
+  resize(size: Size): void {}
 }
 
 CLASS_REGISTRY.register("ImageObjectLayer", ImageObjectLayer, ImageObjectLayerDefs)
@@ -384,6 +399,11 @@ export class SImage extends PropsBase<SImageType> {
 
   appendLayer(layer: ImagePixelLayer | ImageObjectLayer) {
     appendToList(this, "layers", layer as unknown as PropsBase<ImageLayerType>)
+  }
+
+  resize(size: Size) {
+    this.getPropValue("layers").forEach((lay) => lay.resize(size))
+    this.setPropValue("size", size)
   }
 }
 
