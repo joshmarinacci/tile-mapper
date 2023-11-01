@@ -1,28 +1,20 @@
+import { IndexedDBImpl, JDObject } from "dbobject_api_ts"
 import { make_logger, Size } from "josh_js_util"
 
+import { restoreClassFromJSON } from "../model/base"
 import { GameDoc } from "../model/datamodel"
 import { GlobalState } from "../state"
-import { docToJSON, JSONDocV5, make_doc_from_json, TILE_MAPPER_DOCUMENT } from "./json"
 
 export type JSONDocReference = {
   uuid: string
   name: string
-  kind: string
-  thumbnail?: string
-  creationDate: Date
-  updateDate: Date
+  // kind: string
+  // thumbnail?: string
+  // creationDate: Date
+  // updateDate: Date
 }
 export type JSONDocIndex = {
   docs: JSONDocReference[]
-}
-
-function loadIndex(state: GlobalState): JSONDocIndex {
-  const index = state.localStorage.getItem("index")
-  if (index) {
-    return JSON.parse(index) as JSONDocIndex
-  } else {
-    return { docs: [] }
-  }
 }
 
 function scaleCropCanvasTo(original_canvas: HTMLCanvasElement, size: Size) {
@@ -48,57 +40,98 @@ function scaleCropCanvasTo(original_canvas: HTMLCanvasElement, size: Size) {
   return new_canvas
 }
 
-export async function saveLocalStorage(state: GlobalState, withThumbnail: boolean) {
-  // const log = make_logger('local')
-  const json_obj = docToJSON(state.getPropValue("doc"))
-  console.log("generated json", json_obj)
+export async function saveLocalDoc(state: GlobalState) {
   const doc = state.getPropValue("doc")
-  // log.info('json is',json_obj)
-  //first save the doc itself
-  state.localStorage.setItem(doc.getUUID(), JSON.stringify(json_obj, null, "    "))
-  //now save a thumbnail
-  let thumbnail_url = ""
-  if (withThumbnail) {
-    const canvas = await stateToCanvas(state)
-    const thumbnail = scaleCropCanvasTo(canvas, new Size(64, 64))
-    thumbnail_url = thumbnail.toDataURL("png")
+  const db = new IndexedDBImpl()
+  await db.open()
+  if (false) {
+    await db.destroy()
+    console.log("deleted all docs")
   }
-
-  const index: JSONDocIndex = loadIndex(state)
-  console.log("index before is", index)
-  const old_doc = index.docs.find((dr) => dr.uuid === doc.getUUID())
-  if (old_doc) {
-    old_doc.name = doc.getPropValue("name")
-    old_doc.updateDate = new Date(Date.now())
-    old_doc.thumbnail = thumbnail_url
-    old_doc.kind = TILE_MAPPER_DOCUMENT
+  const res = await db.search({
+    and: [
+      {
+        prop: "class",
+        op: "equals",
+        value: "Doc",
+      },
+      {
+        prop: "id",
+        op: "equals",
+        value: doc.getUUID(),
+      },
+    ],
+  })
+  console.log("res is", res)
+  if (res.success) {
+    console.log("there is an existing doc, need to update it")
+    const res2 = await db.update_object_props(res.data[0].uuid, doc.toJSON())
+    console.log("res is", res2)
+    console.log("saved")
   } else {
-    index.docs.push({
-      kind: TILE_MAPPER_DOCUMENT,
-      uuid: doc.getUUID(),
-      name: doc.getPropValue("name"),
-      creationDate: new Date(Date.now()),
-      updateDate: new Date(Date.now()),
-      thumbnail: thumbnail_url,
-    })
+    console.log("no existing doc, make a enw one")
+    const res2 = await db.new_object(doc.toJSON())
+    console.log("res is", res2)
+    console.log("saved")
   }
-  console.log("saving back the index", index)
-  state.localStorage.setItem("index", JSON.stringify(index, null, "    "))
 }
 
-export async function listLocalDocs(state: GlobalState) {
-  return loadIndex(state).docs
+export async function listLocalDocs(state: GlobalState): Promise<JSONDocReference[]> {
+  const db = new IndexedDBImpl()
+  await db.open()
+  const res = await db.search({
+    and: [
+      {
+        prop: "class",
+        op: "equals",
+        value: "Doc",
+      },
+    ],
+  })
+  const versions = new Map<string, number>()
+  res.data.forEach((doc_node) => {
+    const uuid = doc_node.uuid
+    const version = doc_node.version
+    if (!versions.has(uuid)) {
+      versions.set(uuid, version)
+      return
+    } else {
+      const cur_ver = versions.get(uuid) as number
+      if (version > cur_ver) {
+        versions.set(doc_node.uuid, doc_node.version)
+      }
+    }
+  })
+  console.log("versions are", versions)
+  const unique: JDObject[] = (res.data as JDObject[]).filter(
+    (node: JDObject) => versions.has(node.uuid) && versions.get(node.uuid) === node.version,
+  )
+  const doc_list = unique.map((doc_node) => {
+    console.log("doc is", doc_node)
+    const docr: JSONDocReference = {
+      name: doc_node.props.props.name,
+      uuid: doc_node.uuid,
+    }
+    return docr
+    // return doc_node.props.props.name
+  })
+  console.log("got back docs", doc_list)
+  return doc_list
 }
+
 export async function loadLocalDoc(state: GlobalState, uuid: string): Promise<GameDoc> {
+  const db = new IndexedDBImpl()
+  await db.open()
   const log = make_logger("local")
-  const index: JSONDocIndex = loadIndex(state)
-  log.info("the index is", index)
-  const docref = index.docs.find((dr) => dr.uuid === uuid)
-  log.info("docref is", docref)
-  const json = state.localStorage.getItem(uuid)
-  if (json) {
-    const obj: JSONDocV5 = JSON.parse(json)
-    return make_doc_from_json(obj)
+  const res = await db.get_object(uuid)
+  console.log("res is", res)
+  if (res.success) {
+    const doc_json = res.data[0].props
+    console.log("got back the result", res, doc_json)
+    console.log("the doc name is ", doc_json.props.name)
+    const doc2 = restoreClassFromJSON(doc_json) as GameDoc
+    console.log("doc2 is", doc2)
+    return doc2
   } else {
     throw new Error(`no such document with uuid: ${uuid}`)
   }

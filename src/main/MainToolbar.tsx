@@ -4,7 +4,7 @@ import React from "react"
 import {
   ExportToJSONAction,
   ImportFromJSONAction,
-  // SaveLocalStorageAction,
+  SaveLocalStorageAction,
   SavePNGJSONAction,
 } from "../actions/actions"
 import { LoadLocalStorageAction, NewDocAction, UploadPNGJSONAction } from "../actions/reactactions"
@@ -16,7 +16,7 @@ export function MainToolbar() {
       <button className={"logo"}>Tile-Mapper</button>
       <ToolbarActionButton action={NewDocAction} />
       <ToolbarActionButton action={LoadLocalStorageAction} />
-      {/*<ToolbarActionButton action={SaveLocalStorageAction} />*/}
+      <ToolbarActionButton action={SaveLocalStorageAction} />
       <Spacer />
       <DropdownButton title={"Export"}>
         <ToolbarActionButton action={SavePNGJSONAction} />

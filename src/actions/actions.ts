@@ -1,7 +1,7 @@
 import { ArrayGrid, Point, Size } from "josh_js_util"
 import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 
-import { canvas_to_bmp, ImagePalette, sheet_to_canvas } from "../common/common"
+import { canvas_to_bmp, Icons, ImagePalette, sheet_to_canvas } from "../common/common"
 import {
   docToJSON,
   fileToJson,
@@ -11,7 +11,7 @@ import {
   Metadata,
   savePNGJSON,
 } from "../io/json"
-import { saveLocalStorage } from "../io/local"
+import { saveLocalDoc } from "../io/local"
 import { readMetadata } from "../io/vendor"
 import { appendToList, PropsBase, removeFromList, SimpleMenuAction } from "../model/base"
 import {
@@ -73,23 +73,23 @@ export const ImportFromJSONAction: SimpleMenuAction = {
   },
 }
 
-// export const SaveLocalStorageAction: SimpleMenuAction = {
-//   type: "simple",
-//   // icon:SupportedIcons.SaveDocument,
-//   title: "Save",
-//   description: "save the document in the browsers internal storage",
-//   tags: ["save", "local"],
-//   shortcut: {
-//     key: "s",
-//     meta: true,
-//     alt: false,
-//     control: false,
-//     shift: false,
-//   },
-//   perform: async (state) => {
-//     await saveLocalStorage(state, false)
-//   },
-// }
+export const SaveLocalStorageAction: SimpleMenuAction = {
+  type: "simple",
+  icon: Icons.Eraser,
+  title: "Save",
+  description: "save the document in the browsers internal storage",
+  tags: ["save", "local"],
+  shortcut: {
+    key: "s",
+    meta: true,
+    alt: false,
+    control: false,
+    shift: false,
+  },
+  perform: async (state) => {
+    await saveLocalDoc(state)
+  },
+}
 export const SavePNGJSONAction: SimpleMenuAction = {
   type: "simple",
   // icon:SupportedIcons.SaveDocument,

@@ -8,7 +8,7 @@ import {
   DocToBMP,
   ExportToJSONAction,
   ImportFromJSONAction,
-  // SaveLocalStorageAction,
+  SaveLocalStorageAction,
 } from "./actions/actions"
 import { NewDocAction } from "./actions/reactactions"
 import { PopupContainer, PopupContext, PopupContextImpl } from "./common/popup"
@@ -38,7 +38,7 @@ AR.register([
   DocToBMP,
   ImportFromJSONAction,
   NewDocAction,
-  // SaveLocalStorageAction,
+  SaveLocalStorageAction,
 ])
 
 const gstate = new GlobalState()

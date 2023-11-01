@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useState } from "react"
 
 import { ListView, ListViewDirection } from "../common/ListView"
 import { GlobalState } from "../state"
-import { TILE_MAPPER_DOCUMENT } from "./json"
 import { JSONDocReference, listLocalDocs, loadLocalDoc } from "./local"
 
 function FileItemRenderer(props: { value: JSONDocReference | undefined }) {
@@ -19,9 +18,9 @@ export function ListFilesDialog(props: { state: GlobalState }) {
   const [files, setFiles] = useState<JSONDocReference[]>([])
   const [selected, setSelected] = useState<JSONDocReference | undefined>()
   useEffect(() => {
-    listLocalDocs(props.state).then((files) => {
-      const f2 = files.filter((f) => f.kind === TILE_MAPPER_DOCUMENT)
-      setFiles(f2)
+    listLocalDocs(props.state).then((files: JSONDocReference[]) => {
+      // const f2 = files.filter((f) => f.kind === TILE_MAPPER_DOCUMENT)
+      setFiles(files)
     })
   }, [state])
   const cancel = () => dm.hide()

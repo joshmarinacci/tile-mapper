@@ -1,6 +1,7 @@
 import { genId } from "josh_js_util"
 import { useEffect, useState } from "react"
 
+import { Icons } from "../common/common"
 import { GlobalState } from "../state"
 
 export type UUID = string
@@ -282,7 +283,7 @@ export interface MenuAction {
   title: string
   shortcut?: Shortcut
   description?: string
-  // icon?:SupportedIcons,
+  icon?: Icons
   tags?: string[]
 }
 
