@@ -4,7 +4,8 @@ import React, { useContext, useState } from "react"
 
 import { ImagePalette, MINECRAFT, PICO8, RESURRECT64 } from "../common/common"
 import { appendToList } from "../model/base"
-import { GameDoc, Sheet, Tile } from "../model/datamodel"
+import { Sheet, Tile } from "../model/datamodel"
+import { GameDoc } from "../model/gamedoc"
 
 function make_new_doc(width: number, height: number, palette: ImagePalette) {
   const TS = new Size(width, height)

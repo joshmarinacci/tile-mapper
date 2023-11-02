@@ -2,7 +2,8 @@ import { Size } from "josh_js_util"
 
 import { PICO8 } from "./common/common"
 import { DefList, PropDef, PropsBase, PropValues } from "./model/base"
-import { BooleanDef, GameDoc } from "./model/datamodel"
+import { BooleanDef } from "./model/datamodel"
+import { GameDoc } from "./model/gamedoc"
 
 type GlobalStateType = {
   doc: GameDoc

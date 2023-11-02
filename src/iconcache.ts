@@ -1,6 +1,7 @@
 import { ImagePalette } from "./common/common"
 import { make_doc_from_json } from "./io/json"
-import { gen_canvas, Tile } from "./model/datamodel"
+import { Tile } from "./model/datamodel"
+import { gen_canvas } from "./model/gamedoc"
 import Icons from "./resources/icons.json"
 
 class IconCache {

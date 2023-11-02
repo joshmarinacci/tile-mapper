@@ -12,8 +12,9 @@ import {
   AddSheetToDocButton,
   AddTestToDocButton,
 } from "../actions/reactactions"
-import { PropDef, PropsBase, useWatchProp } from "../model/base"
+import { PropsBase, useWatchProp } from "../model/base"
 import { StateContext } from "../model/contexts"
+import { GameDoc } from "../model/gamedoc"
 import { down_arrow_triangle, right_arrow_triangle } from "./common"
 import { DropdownButton, MenuList, ToolbarActionButton } from "./common-components"
 import { PopupContext } from "./popup"
@@ -22,11 +23,10 @@ function PropertyList<T, K extends keyof T>(props: {
   target: PropsBase<T>
   value: T[K]
   name: keyof T
-  def: PropDef<T[K]>
   selection: unknown
 }) {
   const { value, name, target } = props
-  const values = value as []
+  // const values = value as []
   const [open, setOpen] = useState(true)
   const toggle = () => setOpen(!open)
   useWatchProp(target, name)
@@ -48,9 +48,10 @@ function PropertyList<T, K extends keyof T>(props: {
       </p>
       {open && (
         <ul key={"children"} className={"tree-list"}>
-          {values.map((val) => {
-            return <ObjectTreeView key={val.getUUID()} obj={val} selection={props.selection} />
-          })}
+          {Array.isArray(value) &&
+            (value as []).map((val) => {
+              return <ObjectTreeView key={val.getUUID()} obj={val} selection={props.selection} />
+            })}
         </ul>
       )}
     </li>
@@ -93,18 +94,20 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown
       >
         {obj.getPropValue("name" as keyof T) as string}
       </p>
-      {expandable.map(([key, def]) => {
+      {expandable.map(([key]) => {
         return (
           <PropertyList
             key={key.toString()}
             target={obj}
             value={obj.getPropValue(key)}
             name={key}
-            def={def}
             selection={props.selection}
           />
         )
       })}
+      {obj instanceof GameDoc && (
+        <ObjectTreeView obj={obj.getPropValue("camera")} selection={props.selection} />
+      )}
     </ul>
   )
 }

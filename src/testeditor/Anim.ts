@@ -1,5 +1,5 @@
 import { Size } from "josh_js_util"
-import { PhysicsConstants, TileCache, updateViewport } from "retrogami-engine"
+import { PhysicsConstants, TileCache } from "retrogami-engine"
 
 import { GameState } from "../engine/gamestate"
 
