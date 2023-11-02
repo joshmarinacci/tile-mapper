@@ -59,7 +59,6 @@ describe("database tests", () => {
     console.log("doc 2 is", doc2)
     await db.destroy()
   })
-
   it("it should be able to query a list of docs", async () => {
     const db = new IndexedDBImpl()
     await db.open()
@@ -94,4 +93,42 @@ describe("database tests", () => {
     // console.log("doc 2 is",doc2)
     await db.destroy()
   })
+  it("should be able to delete a document", async () => {
+    const doc = new GameDoc()
+    const sheet = new Sheet()
+    appendToList(doc, "sheets", sheet)
+
+    const db = new IndexedDBImpl()
+    await db.open()
+
+    {
+      const objs = await db.get_all_objects()
+      expect(objs.success).toBeTruthy()
+      expect(objs.data.length).toBe(0)
+    }
+
+    const new_result = await db.new_object(doc.toJSON())
+    expect(new_result.success).toBeTruthy()
+    expect(new_result.data.length).toBe(1)
+
+    const objs = await db.get_all_objects()
+    expect(objs.success).toBeTruthy()
+    expect(objs.data.length).toBe(1)
+    const delete_result = await db.delete_object(new_result.data[0].uuid)
+    console.log(delete_result)
+    // expect(delete_result.success).toBeTruthy()
+
+    {
+      const objs = await db.get_all_objects()
+      expect(objs.success).toBeTruthy()
+      expect(objs.data.length).toBe(0)
+    }
+  })
 })
+
+//- [ ] Save. And version if already exists.
+// - [ ] List only latest versions
+// - [ ] Delete all
+// - [ ] Delete specific items. Really just marks as deleted
+// - [ ] Queries won’t return deleted unless special flag
+// - [ ] Destroy should be considered dangerous
