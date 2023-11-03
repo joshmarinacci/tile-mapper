@@ -54,7 +54,7 @@ class AnimationProxy {
     this.layer.drawSelf(ctx, this.camera, null, null, 3)
     // console.log("anim count", this.anims.runningAnimationCount())
     if (this.particleAnim) {
-      // console.log(this.particleAnim.isRunning(), this.particleAnim.currentParticleCount())
+      console.log(this.particleAnim.isRunning(), this.particleAnim.currentParticleCount())
     }
   }
 
@@ -78,25 +78,11 @@ const ANIM_PROXY = new AnimationProxy()
 
 function ParticleSimView(props: { playing: boolean; step: number; fx: ParticleFX }) {
   const ref = useRef<HTMLCanvasElement>(null)
-  // useEffect(() => {
-  //     if(ref.current) {
-  //         ANIM_PROXY.setCanvas(ref.current)
-  //         ANIM_PROXY.resetParticles(props.fx)
-  //         if(props.playing) {
-  //             ANIM_PROXY.start()
-  //         } else {
-  //             ANIM_PROXY.stop()
-  //         }
-  //     }
-  // }, [props.playing])
-  // useEffect(() => {
-  //     if(ref.current) {
-  //         ANIM_PROXY.setCanvas(ref.current)
-  //         ANIM_PROXY.stop()
-  //         ANIM_PROXY.resetParticles(props.fx)
-  //         // ANIM_PROXY.step()
-  //     }
-  // }, [props.step])
+  useEffect(() => {
+    return () => {
+      ANIM_PROXY.stop()
+    }
+  }, [props.fx])
   useWatchAllProps(props.fx, () => {
     console.log("fx changed")
     if (ref.current) {
