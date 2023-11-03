@@ -6,7 +6,11 @@ import { ImageEditorView } from "../imageeditor/ImageEditorView"
 import { MapModeView } from "../mapeditor/MapModeView"
 import { PropsBase } from "../model/base"
 import { Actor, GameMap, GameTest, PixelFont, Sheet, SImage } from "../model/datamodel"
+import { ParticleFX } from "../model/particlefx"
+import { SoundFX } from "../model/soundfx"
+import { ParticleFXEditorView } from "../particleeditor/ParticleFXEditorView"
 import { TileSheetEditor } from "../sheeteditor/TileSheetEditor"
+import { SoundFXEditorView } from "../soundeditor/SoundFXEditorView"
 import { TestModeView } from "../testeditor/TestModeView"
 
 export function EditView(props: { selection: PropsBase<unknown> | undefined }) {
@@ -28,6 +32,12 @@ export function EditView(props: { selection: PropsBase<unknown> | undefined }) {
   }
   if (selection instanceof PixelFont) {
     return <PixelFontEditorView font={selection as PixelFont} />
+  }
+  if (selection instanceof ParticleFX) {
+    return <ParticleFXEditorView fx={selection as ParticleFX} />
+  }
+  if (selection instanceof SoundFX) {
+    return <SoundFXEditorView fx={selection as SoundFX} />
   }
   return (
     <div style={{ padding: "1rem" }} className={"editor-view"}>
