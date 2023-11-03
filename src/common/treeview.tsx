@@ -9,7 +9,9 @@ import {
   AddCanvasToDocButton,
   AddFontToDocButton,
   AddMapToDocButton,
+  AddParticleFXToDocButton,
   AddSheetToDocButton,
+  AddSoundFXToDocButton,
   AddTestToDocButton,
 } from "../actions/reactactions"
 import { PropsBase, useWatchProp } from "../model/base"
@@ -44,6 +46,8 @@ function PropertyList<T, K extends keyof T>(props: {
           {name === "actors" && <AddActorToDocButton />}
           {name === "canvases" && <AddCanvasToDocButton />}
           {name === "fonts" && <AddFontToDocButton />}
+          {name === "assets" && <AddSoundFXToDocButton />}
+          {name === "assets" && <AddParticleFXToDocButton />}
         </DropdownButton>
       </p>
       {open && (

@@ -17,6 +17,8 @@ import {
   Sheet,
   SImage,
 } from "../model/datamodel"
+import { ParticleFX } from "../model/particlefx"
+import { SoundFX } from "../model/soundfx"
 import { GlobalState } from "../state"
 import { loadPNGJSON } from "./actions"
 import { AddImageDialog } from "./AddImageDialog"
@@ -187,4 +189,25 @@ export function AddFontToDocButton() {
     state.setSelection(font)
   }
   return <button onClick={perform}> Add Font To Doc </button>
+}
+
+export function AddSoundFXToDocButton() {
+  const doc = useContext(DocContext)
+  const state = useContext(StateContext)
+  const perform = () => {
+    const fx = new SoundFX({ name: "unnamed" })
+    appendToList(doc, "assets", fx)
+    state.setSelection(fx)
+  }
+  return <button onClick={perform}>Add Sound Effect</button>
+}
+export function AddParticleFXToDocButton() {
+  const doc = useContext(DocContext)
+  const state = useContext(StateContext)
+  const perform = () => {
+    const fx = new ParticleFX({ name: "unnamed" })
+    appendToList(doc, "assets", fx)
+    state.setSelection(fx)
+  }
+  return <button onClick={perform}> Add Particle Effect </button>
 }

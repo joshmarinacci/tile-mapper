@@ -27,10 +27,6 @@ import {
   Tile,
 } from "./datamodel"
 
-const PixelFontListDef: PropDefBuilder<PixelFont[]> = ObjectListDef.copy()
-  .withHidden(true)
-  .withExpandable(true)
-
 export type DocType = {
   name: string
   sheets: Sheet[]
@@ -41,9 +37,14 @@ export type DocType = {
   fonts: PixelFont[]
   palette: ImagePalette
   tileSize: Size
+  assets: PropsBase<unknown>[]
   camera: Camera
 }
-export const TestsListDef: PropDef<GameTest[]> = {
+const PixelFontListDef: PropDefBuilder<PixelFont[]> = ObjectListDef.copy()
+  .withHidden(true)
+  .withExpandable(true)
+
+const TestsListDef: PropDef<GameTest[]> = {
   type: "array",
   editable: false,
   hidden: true,
@@ -54,7 +55,7 @@ export const TestsListDef: PropDef<GameTest[]> = {
   fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
   expandable: true,
 }
-export const SheetsListDef: PropDef<Sheet[]> = {
+const SheetsListDef: PropDef<Sheet[]> = {
   type: "array",
   editable: false,
   hidden: true,
@@ -65,7 +66,7 @@ export const SheetsListDef: PropDef<Sheet[]> = {
   fromJSON: (v) => v.map((sheet) => restoreClassFromJSON(sheet)),
   expandable: true,
 }
-export const ActorsListDef: PropDef<Actor[]> = {
+const ActorsListDef: PropDef<Actor[]> = {
   type: "array",
   editable: false,
   watchChildren: false,
@@ -76,7 +77,7 @@ export const ActorsListDef: PropDef<Actor[]> = {
   expandable: true,
   hidden: true,
 }
-export const MapsListDef: PropDef<GameMap[]> = {
+const MapsListDef: PropDef<GameMap[]> = {
   type: "array",
   editable: false,
   hidden: true,
@@ -87,7 +88,7 @@ export const MapsListDef: PropDef<GameMap[]> = {
   fromJSON: (v) => v.map((map) => restoreClassFromJSON(map)),
   expandable: true,
 }
-export const CanvasesListDef: PropDef<SImage[]> = {
+const CanvasesListDef: PropDef<SImage[]> = {
   type: "array",
   editable: false,
   hidden: true,
@@ -109,6 +110,7 @@ const GameDocDefs: DefList<DocType> = {
   palette: PaletteDef,
   tileSize: SizeDef,
   camera: CameraPropDef,
+  assets: ObjectListDef.copy().withHidden(false).withExpandable(true),
 }
 
 export function gen_canvas(tile: Tile, palette: ImagePalette) {

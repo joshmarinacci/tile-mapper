@@ -32,7 +32,7 @@ CLASS_REGISTRY.register("Camera", Camera, CameraDefs)
 export const CameraPropDef = new PropDefBuilder<Camera>({
   type: "object",
   format: () => "camera",
-  default: () => new Camera(),
+  default: () => new Camera({ name: "camera" }),
   toJSON: (v) => v.toJSON(),
   fromJSON: (v) => restoreClassFromJSON(v),
 }).withHidden(false)

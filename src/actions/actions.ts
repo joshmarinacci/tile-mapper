@@ -17,7 +17,6 @@ import { appendToList, PropsBase, removeFromList, SimpleMenuAction } from "../mo
 import {
   Actor,
   ActorLayer,
-  GameDoc,
   GameMap,
   GameTest,
   MapLayerType,
@@ -25,6 +24,9 @@ import {
   Tile,
   TileLayer,
 } from "../model/datamodel"
+import { GameDoc } from "../model/gamedoc"
+import { ParticleFX } from "../model/particlefx"
+import { SoundFX } from "../model/soundfx"
 import { GlobalState } from "../state"
 
 export const ExportToJSONAction: SimpleMenuAction = {
@@ -319,6 +321,31 @@ export const DeleteGameTestAction: SimpleMenuAction = {
     }
   },
 }
+export const DeleteParticleFXAction: SimpleMenuAction = {
+  type: "simple",
+  title: "delete particle effect",
+  icon: Icons.Actor,
+  perform: async (state) => {
+    const sel = state.getPropValue("selection")
+    if (sel instanceof ParticleFX) {
+      removeFromList(state.getPropValue("doc"), "assets", sel as ParticleFX)
+      state.clearSelection()
+    }
+  },
+}
+
+export const DeleteSoundFXAction: SimpleMenuAction = {
+  type: "simple",
+  title: "delete sound effect",
+  icon: Icons.Actor,
+  perform: async (state) => {
+    const sel = state.getPropValue("selection")
+    if (sel instanceof SoundFX) {
+      removeFromList(state.getPropValue("doc"), "assets", sel as SoundFX)
+      state.clearSelection()
+    }
+  },
+}
 
 export function drawGrid(
   current: HTMLCanvasElement,
@@ -365,6 +392,12 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
   }
   if (obj instanceof GameTest) {
     actions.push(DeleteGameTestAction)
+  }
+  if (obj instanceof ParticleFX) {
+    actions.push(DeleteParticleFXAction)
+  }
+  if (obj instanceof SoundFX) {
+    actions.push(DeleteSoundFXAction)
   }
   return actions
 }
