@@ -5,8 +5,8 @@ import { ParticleFX } from "../model/particlefx"
 export function ParticleFXEditorView(props: { fx: ParticleFX }) {
   return (
     <>
-      <div>column</div>
-      <div>particle effects editor</div>
+      <div className={"vbox tool-column"}>particle tools</div>
+      <div className={"editor-view"}>particle effects view</div>
     </>
   )
 }

@@ -5,8 +5,8 @@ import { SoundFX } from "../model/soundfx"
 export function SoundFXEditorView(props: { fx: SoundFX }) {
   return (
     <>
-      <div>column</div>
-      <div>sound effects editor</div>
+      <div className={"vbox tool-column"}>sound effects toosl</div>
+      <div className={"editor-view"}>sound effects editor</div>
     </>
   )
 }
