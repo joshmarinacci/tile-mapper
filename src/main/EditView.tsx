@@ -1,10 +1,12 @@
 import React from "react"
 
 import { ActorEditView } from "../ActorEditView"
+import { CameraEditorView } from "../CameraEditorView"
 import { PixelFontEditorView } from "../fonteditor/PixelFontEditorView"
 import { ImageEditorView } from "../imageeditor/ImageEditorView"
 import { MapModeView } from "../mapeditor/MapModeView"
 import { PropsBase } from "../model/base"
+import { Camera } from "../model/camera"
 import { Actor, GameMap, GameTest, PixelFont, Sheet, SImage } from "../model/datamodel"
 import { ParticleFX } from "../model/particlefx"
 import { SoundFX } from "../model/soundfx"
@@ -38,6 +40,9 @@ export function EditView(props: { selection: PropsBase<unknown> | undefined }) {
   }
   if (selection instanceof SoundFX) {
     return <SoundFXEditorView fx={selection as SoundFX} />
+  }
+  if (selection instanceof Camera) {
+    return <CameraEditorView camera={selection as Camera} />
   }
   return (
     <div style={{ padding: "1rem" }} className={"editor-view"}>
