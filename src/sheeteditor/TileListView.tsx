@@ -126,6 +126,7 @@ export function TileListView(props: {
   useWatchProp(sheet, "showNames")
   useWatchProp(sheet, "viewMode")
   useWatchProp(sheet, "locked")
+  useEffect(() => setTiles(sheet.getPropValue("tiles")), [sheet])
   return (
     <div className={"tile-list-view"}>
       {editable && (
