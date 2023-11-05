@@ -1,5 +1,5 @@
-import { Bounds, Size } from "josh_js_util"
-import { Enemy, KeyboardManager, Layer, PhysicsManager, Player } from "retrogami-engine"
+import { Size } from "josh_js_util"
+import { Camera, Enemy, KeyboardManager, Layer, PhysicsManager, Player } from "retrogami-engine"
 
 export type GameMap = {
   name: string
@@ -9,7 +9,7 @@ export type GameMap = {
 export class GameState {
   map: GameMap
   private canvas: HTMLCanvasElement
-  private viewport: Bounds
+  private camera: Camera
   private keyboard: KeyboardManager
   private players: Player[]
   private physics: PhysicsManager
@@ -30,7 +30,7 @@ export class GameState {
     }
     this.canvas.style.border = "1px solid red"
     this.keyboard = new KeyboardManager()
-    this.viewport = new Bounds(0, 0, size.w, size.h)
+    this.camera = new Camera()
     this.players = []
     this.enemies = []
     this.physics = new PhysicsManager()
@@ -49,10 +49,6 @@ export class GameState {
     ctx.fillStyle = "black"
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
     return ctx
-  }
-
-  getViewport() {
-    return this.viewport
   }
 
   getKeyboard() {
@@ -77,5 +73,9 @@ export class GameState {
 
   addEnemy(badguy: Enemy) {
     this.enemies.push(badguy)
+  }
+
+  getCamera() {
+    return this.camera
   }
 }

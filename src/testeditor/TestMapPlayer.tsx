@@ -3,7 +3,8 @@ import React, { useState } from "react"
 import { Icons } from "../common/common"
 import { ToggleButton } from "../common/common-components"
 import { useWatchProp } from "../model/base"
-import { GameDoc, GameTest } from "../model/datamodel"
+import { GameTest } from "../model/datamodel"
+import { GameDoc } from "../model/gamedoc"
 import { PlayTest } from "./PlayTest"
 
 export function TestMapPlayer(props: { test: GameTest; doc: GameDoc }) {

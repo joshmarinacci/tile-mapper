@@ -12,9 +12,9 @@ export function TestModeView(props: { test: GameTest }) {
   const doc = useContext(DocContext)
 
   return (
-    <div>
-      <HBox>hi</HBox>
-      {test && <TestMapPlayer doc={doc} test={test} />}
-    </div>
+    <>
+      <HBox className={"tool-column"}>hi</HBox>
+      <div className={"editor-view"}>{test && <TestMapPlayer doc={doc} test={test} />}</div>
+    </>
   )
 }

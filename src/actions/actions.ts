@@ -14,6 +14,7 @@ import {
 import { saveLocalDoc } from "../io/local"
 import { readMetadata } from "../io/vendor"
 import { appendToList, PropsBase, removeFromList, SimpleMenuAction } from "../model/base"
+import { Camera } from "../model/camera"
 import {
   Actor,
   ActorLayer,
@@ -351,30 +352,31 @@ export function drawGrid(
   current: HTMLCanvasElement,
   scale: number,
   tileSize: Size,
-  viewport: Size,
+  camera: Camera,
 ) {
   const ctx = current.getContext("2d") as CanvasRenderingContext2D
   ctx.strokeStyle = "#000000"
   ctx.lineWidth = 0.5
+  const size = camera.getPropValue("viewport").size()
   ctx.save()
   ctx.beginPath()
-  for (let i = 0; i < viewport.w; i++) {
+  for (let i = 0; i < size.w; i++) {
     ctx.moveTo(i * scale * tileSize.w, 0)
-    ctx.lineTo(i * scale * tileSize.w, viewport.h * scale * tileSize.h)
+    ctx.lineTo(i * scale * tileSize.w, size.h * scale * tileSize.h)
   }
-  for (let i = 0; i < viewport.h; i++) {
+  for (let i = 0; i < size.h; i++) {
     ctx.moveTo(0, i * scale * tileSize.h)
-    ctx.lineTo(viewport.w * scale * tileSize.h, i * scale * tileSize.w)
+    ctx.lineTo(size.w * scale * tileSize.h, i * scale * tileSize.w)
   }
   ctx.stroke()
 
   ctx.beginPath()
   ctx.lineWidth = 3.0
-  const mx = new Point(viewport.w / 2, viewport.h / 2).floor()
+  const mx = new Point(size.w / 2, size.h / 2).floor()
   ctx.moveTo(mx.x * scale * tileSize.w, 0)
-  ctx.lineTo(mx.x * scale * tileSize.w, viewport.h * scale * tileSize.h)
+  ctx.lineTo(mx.x * scale * tileSize.w, size.h * scale * tileSize.h)
   ctx.moveTo(0, mx.y * scale * tileSize.h)
-  ctx.lineTo(viewport.w * scale * tileSize.h, mx.x * scale * tileSize.h)
+  ctx.lineTo(size.w * scale * tileSize.h, mx.x * scale * tileSize.h)
   ctx.stroke()
   ctx.restore()
 }

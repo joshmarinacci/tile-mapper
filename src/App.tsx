@@ -27,7 +27,7 @@ import {
   useWatchProp,
 } from "./model/base"
 import { ActionRegistryContext, DocContext, StateContext } from "./model/contexts"
-import { GameDoc } from "./model/datamodel"
+import { GameDoc } from "./model/gamedoc"
 import { PropSheet } from "./propsheet/propsheet"
 import { GlobalState } from "./state"
 

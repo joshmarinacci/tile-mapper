@@ -1,5 +1,5 @@
 import { Size } from "josh_js_util"
-import { PhysicsConstants, TileCache } from "retrogami-engine"
+import { ImageCache, PhysicsConstants, TileCache } from "retrogami-engine"
 
 import { GameState } from "../engine/gamestate"
 
@@ -62,17 +62,26 @@ export class Anim {
     if (!this.game_state) return
     const map = this.game_state.getCurrentMap()
     const ctx = this.game_state.getDrawingSurface()
-    const vp = this.game_state.getViewport()
     const players = this.game_state.getPlayers()
     this.game_state
       .getPhysics()
-      .updatePlayer(players, map.layers, this.game_state.getKeyboard(), this.cache, this.physics)
+      .updatePlayer(
+        players,
+        map.layers,
+        this.game_state.getKeyboard(),
+        this.cache,
+        this.physics,
+        () => {},
+      )
     this.game_state.getPhysics().updateEnemies(this.game_state.getEnemies(), map.layers, this.cache)
-    updateViewport(vp, players, this.zoom)
+    this.game_state.getCamera().trackActor(players[0])
     // this.log("drawing", players.length, map.layers.length, vp.left())
     ctx.fillStyle = "magenta"
     ctx.save()
-    map.layers.forEach((layer) => layer.drawSelf(ctx, vp, this.cache, this.zoom))
+    const ic = new ImageCache()
+    map.layers.forEach((layer) =>
+      layer.drawSelf(ctx, this.game_state.getCamera(), this.cache, ic, this.zoom),
+    )
     ctx.restore()
   }
 

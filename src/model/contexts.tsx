@@ -2,7 +2,7 @@ import React from "react"
 
 import { GlobalState } from "../state"
 import { ActionRegistry } from "./base"
-import { GameDoc } from "./datamodel"
+import { GameDoc } from "./gamedoc"
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore

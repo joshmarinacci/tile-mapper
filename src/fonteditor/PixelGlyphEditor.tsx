@@ -1,12 +1,13 @@
 import { Point } from "josh_js_util"
 import { HBox } from "josh_react_util"
-import React, { MouseEvent, useEffect, useRef, useState } from "react"
+import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import { drawGrid } from "../actions/actions"
 import { Icons } from "../common/common"
 import { IconButton, ToggleButton } from "../common/common-components"
 import { ICON_CACHE } from "../iconcache"
 import { useWatchAllProps, useWatchProp } from "../model/base"
+import { DocContext } from "../model/contexts"
 import { PixelGlyph } from "../model/datamodel"
 import { drawGlyph } from "./PixelFontEditorView"
 
@@ -19,6 +20,7 @@ export function PixelGlyphEditor(props: { glyph: PixelGlyph }) {
   const [color, setColor] = useState(0)
   const dpi = window.devicePixelRatio
   const scale = Math.pow(2, zoom)
+  const doc = useContext(DocContext)
   const ref = useRef<HTMLCanvasElement>(null)
   const redraw = () => {
     if (!ref.current) return
@@ -34,7 +36,7 @@ export function PixelGlyphEditor(props: { glyph: PixelGlyph }) {
     const sc = scale * dpi
     const size = glyph.getPropValue("size")
     drawGlyph(ctx, glyph, new Point(0, 0), "black", sc)
-    drawGrid(canvas, (scale / size.w) * dpi, size, size)
+    drawGrid(canvas, (scale / size.w) * dpi, size, doc.getPropValue("camera"))
 
     ctx.fillStyle = "cyan"
     const baseline = glyph.getPropValue("baseline")

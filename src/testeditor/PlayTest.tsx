@@ -1,9 +1,10 @@
-import { ArrayGrid, Size } from "josh_js_util"
+import { ArrayGrid } from "josh_js_util"
 import React, { useEffect, useRef, useState } from "react"
 import {
   ActorLayer as ACL,
   PhysicsConstants,
   Player,
+  RIGHT,
   TileCache,
   TilemapLayer,
   TileReference,
@@ -14,17 +15,19 @@ import { GameState } from "../engine/gamestate"
 import { drawImage } from "../imageeditor/ImageEditorView"
 import { findActorForInstance } from "../mapeditor/ActorEditor"
 import { useWatchAllProps } from "../model/base"
-import { ActorLayer, GameDoc, GameMap, GameTest, MapCell, TileLayer } from "../model/datamodel"
+import { Camera } from "../model/camera"
+import { ActorLayer, GameMap, GameTest, MapCell, TileLayer } from "../model/datamodel"
+import { GameDoc } from "../model/gamedoc"
 import { Anim } from "./Anim"
 
 function generateGamestate(
   current: HTMLCanvasElement,
   doc: GameDoc,
   map: GameMap,
-  size: Size,
+  camera: Camera,
   physicsDebug: boolean,
 ) {
-  const gamestate = new GameState(current, size)
+  const gamestate = new GameState(current, camera.getPropValue("viewport").size())
   const cache = new TileCache(doc.getPropValue("tileSize"))
   // pre-cache all of the tiles
   doc.getPropValue("sheets").forEach((sht) => {
@@ -92,6 +95,9 @@ function generateGamestate(
             vy: 0,
             vx: 0,
             standing: false,
+            dir: RIGHT,
+            opacity: 1.0,
+            originalPosition: pos,
           }
           actors.addActor(val)
           if (real_actor.getPropValue("kind") === "player") {
@@ -116,15 +122,13 @@ export function PlayTest(props: {
 }) {
   const { doc, map, test, zoom, grid, playing } = props
   const tileSize = doc.getPropValue("tileSize")
-  const viewport = test.getPropValue("viewport") as Size
+  const camera = doc.getPropValue("camera")
   const ref = useRef<HTMLCanvasElement>(null)
   const [anim] = useState(() => new Anim())
 
   const redraw = () => {
     if (!ref.current) return
-    anim.setGamestate(
-      generateGamestate(ref.current, doc, map, viewport.scale(tileSize.w), props.physicsDebug),
-    )
+    anim.setGamestate(generateGamestate(ref.current, doc, map, camera, props.physicsDebug))
     const phs: PhysicsConstants = {
       gravity: test.getPropValue("gravity"),
       jump_power: test.getPropValue("jump_power"),
@@ -137,11 +141,11 @@ export function PlayTest(props: {
     anim.setZoom(zoom)
     anim.drawOnce()
     if (grid) {
-      drawGrid(ref.current, zoom, tileSize, viewport)
+      drawGrid(ref.current, zoom, tileSize, camera)
     }
   }
   useWatchAllProps(test, () => redraw())
-  useEffect(() => redraw(), [doc, test, zoom, grid, ref, viewport, props.physicsDebug])
+  useEffect(() => redraw(), [doc, test, zoom, grid, ref, props.physicsDebug])
   useEffect(() => {
     if (playing) {
       anim.stop()
@@ -155,8 +159,8 @@ export function PlayTest(props: {
       <canvas
         ref={ref}
         tabIndex={0}
-        width={viewport.w * tileSize.w * zoom}
-        height={viewport.h * tileSize.h * zoom}
+        width={camera.getPropValue("viewport").w * tileSize.w * zoom}
+        height={camera.getPropValue("viewport").h * tileSize.h * zoom}
       ></canvas>
     </div>
   )

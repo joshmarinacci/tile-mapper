@@ -61,7 +61,7 @@ export function PixelGridEditor(props: {
           ctx.fillRect(i * sc, j * sc, sc, sc)
         }
       }
-      drawGrid(canvas, (scale / size.w) * dpi, size, size)
+      drawGrid(canvas, (scale / size.w) * dpi, size, doc.getPropValue("camera"))
     }
   }
   useEffect(() => redraw(), [down, grid, zoom, tile])

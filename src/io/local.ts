@@ -1,8 +1,8 @@
 import { IndexedDBImpl, JDObject } from "dbobject_api_ts"
-import { make_logger, Size } from "josh_js_util"
+import { Size } from "josh_js_util"
 
 import { restoreClassFromJSON } from "../model/base"
-import { GameDoc } from "../model/datamodel"
+import { GameDoc } from "../model/gamedoc"
 import { GlobalState } from "../state"
 
 export type JSONDocReference = {
@@ -44,10 +44,10 @@ export async function saveLocalDoc(state: GlobalState) {
   const doc = state.getPropValue("doc")
   const db = new IndexedDBImpl()
   await db.open()
-  if (false) {
-    await db.destroy()
-    console.log("deleted all docs")
-  }
+  // if (false) {
+  //   await db.destroy()
+  //   console.log("deleted all docs")
+  // }
   const res = await db.search({
     and: [
       {
@@ -122,15 +122,10 @@ export async function listLocalDocs(state: GlobalState): Promise<JSONDocReferenc
 export async function loadLocalDoc(state: GlobalState, uuid: string): Promise<GameDoc> {
   const db = new IndexedDBImpl()
   await db.open()
-  const log = make_logger("local")
   const res = await db.get_object(uuid)
-  console.log("res is", res)
   if (res.success) {
     const doc_json = res.data[0].props
-    console.log("got back the result", res, doc_json)
-    console.log("the doc name is ", doc_json.props.name)
     const doc2 = restoreClassFromJSON(doc_json) as GameDoc
-    console.log("doc2 is", doc2)
     return doc2
   } else {
     throw new Error(`no such document with uuid: ${uuid}`)
