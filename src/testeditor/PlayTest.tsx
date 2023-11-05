@@ -5,7 +5,6 @@ import {
   PhysicsConstants,
   Player,
   RIGHT,
-  TileCache,
   TilemapLayer,
   TileReference,
 } from "retrogami-engine"
@@ -15,7 +14,6 @@ import { GameState } from "../engine/gamestate"
 import { drawImage } from "../imageeditor/ImageEditorView"
 import { findActorForInstance } from "../mapeditor/ActorEditor"
 import { useWatchAllProps } from "../model/base"
-import { Camera } from "../model/camera"
 import { ActorLayer, GameMap, GameTest, MapCell, TileLayer } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
 import { Anim } from "./Anim"
@@ -24,17 +22,15 @@ function generateGamestate(
   current: HTMLCanvasElement,
   doc: GameDoc,
   map: GameMap,
-  camera: Camera,
   physicsDebug: boolean,
 ) {
-  const gamestate = new GameState(current, camera.getPropValue("viewport").size())
-  const cache = new TileCache(doc.getPropValue("tileSize"))
+  const gamestate = new GameState(current, doc)
   // pre-cache all of the tiles
   doc.getPropValue("sheets").forEach((sht) => {
     sht.getPropValue("tiles").forEach((tile) => {
       const can = doc.lookup_canvas(tile.getUUID())
       if (can) {
-        cache.addCachedTile(tile.getPropValue("name"), tile.getUUID(), {
+        gamestate.tileCache.addCachedTile(tile.getPropValue("name"), tile.getUUID(), {
           name: tile.getPropValue("name"),
           id: tile.getUUID(),
           blocking: tile.getPropValue("blocking"),
@@ -49,12 +45,13 @@ function generateGamestate(
     canvas.height = img.getPropValue("size").h
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
     drawImage(doc, ctx, img, doc.getPropValue("palette"), 1)
-    cache.addCachedTile(img.getPropValue("name"), img.getUUID(), {
-      name: img.getPropValue("name"),
-      id: img.getUUID(),
-      blocking: false,
-      canvas: canvas,
-    })
+    gamestate.imageCache.addImage(img.getPropValue("name"), img.getUUID(), canvas)
+    // tileCache.addCachedTile(img.getPropValue("name"), img.getUUID(), {
+    //   name: img.getPropValue("name"),
+    //   id: img.getUUID(),
+    //   blocking: false,
+    //   canvas: canvas,
+    // })
   })
   // turn each layer of the map into a layer of the engine
   map.getPropValue("layers").forEach((layer) => {
@@ -108,7 +105,7 @@ function generateGamestate(
     }
   })
   if (physicsDebug) gamestate.addLayer(gamestate.getPhysics())
-  return { game_state: gamestate, cache }
+  return gamestate
 }
 
 export function PlayTest(props: {
@@ -128,7 +125,7 @@ export function PlayTest(props: {
 
   const redraw = () => {
     if (!ref.current) return
-    anim.setGamestate(generateGamestate(ref.current, doc, map, camera, props.physicsDebug))
+    anim.setGamestate(generateGamestate(ref.current, doc, map, props.physicsDebug))
     const phs: PhysicsConstants = {
       gravity: test.getPropValue("gravity"),
       jump_power: test.getPropValue("jump_power"),

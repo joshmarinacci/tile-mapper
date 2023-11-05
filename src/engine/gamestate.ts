@@ -1,5 +1,15 @@
-import { Size } from "josh_js_util"
-import { Camera, Enemy, KeyboardManager, Layer, PhysicsManager, Player } from "retrogami-engine"
+import {
+  Camera,
+  Enemy,
+  ImageCache,
+  KeyboardManager,
+  Layer,
+  PhysicsManager,
+  Player,
+  TileCache,
+} from "retrogami-engine"
+
+import { GameDoc } from "../model/gamedoc"
 
 export type GameMap = {
   name: string
@@ -14,8 +24,10 @@ export class GameState {
   private players: Player[]
   private physics: PhysicsManager
   private enemies: Enemy[]
+  public tileCache: TileCache
+  public imageCache: ImageCache
 
-  constructor(canvas: HTMLCanvasElement, size: Size) {
+  constructor(canvas: HTMLCanvasElement, doc: GameDoc) {
     this.map = {
       name: "level1",
       layers: [],
@@ -25,15 +37,18 @@ export class GameState {
     } else {
       this.canvas = document.createElement("canvas")
       document.body.append(this.canvas)
-      this.canvas.width = size.w
-      this.canvas.height = size.h
+      const viewportSize = doc.getPropValue("camera").getPropValue("viewport")
+      this.canvas.width = viewportSize.w
+      this.canvas.height = viewportSize.h
     }
     this.canvas.style.border = "1px solid red"
     this.keyboard = new KeyboardManager()
-    this.camera = new Camera()
     this.players = []
     this.enemies = []
     this.physics = new PhysicsManager()
+    this.imageCache = new ImageCache()
+    this.tileCache = new TileCache(doc.getPropValue("tileSize"))
+    this.camera = new Camera()
   }
 
   addPlayer(player: Player) {

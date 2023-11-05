@@ -1,10 +1,8 @@
-import { Size } from "josh_js_util"
-import { ImageCache, PhysicsConstants, TileCache } from "retrogami-engine"
+import { PhysicsConstants } from "retrogami-engine"
 
 import { GameState } from "../engine/gamestate"
 
 export class Anim {
-  private cache: TileCache
   private game_state: GameState | undefined
   private zoom: number
   private callback: () => void
@@ -17,7 +15,6 @@ export class Anim {
   constructor() {
     this.playing = false
     this.zoom = 1
-    this.cache = new TileCache(new Size(8, 8))
     this.keydown_handler = (e: KeyboardEvent) => {
       this.game_state?.getKeyboard().keydown(e.code)
     }
@@ -53,9 +50,8 @@ export class Anim {
     console.log("Anim", ...args)
   }
 
-  setGamestate(params: { cache: TileCache; game_state: GameState }) {
-    this.cache = params.cache
-    this.game_state = params.game_state
+  setGamestate(gameState: GameState) {
+    this.game_state = gameState
   }
 
   drawOnce() {
@@ -69,18 +65,19 @@ export class Anim {
         players,
         map.layers,
         this.game_state.getKeyboard(),
-        this.cache,
+        this.game_state.tileCache,
         this.physics,
         () => {},
       )
-    this.game_state.getPhysics().updateEnemies(this.game_state.getEnemies(), map.layers, this.cache)
+    this.game_state
+      .getPhysics()
+      .updateEnemies(this.game_state.getEnemies(), map.layers, this.game_state.tileCache)
     this.game_state.getCamera().trackActor(players[0])
-    // this.log("drawing", players.length, map.layers.length, vp.left())
     ctx.fillStyle = "magenta"
     ctx.save()
-    const ic = new ImageCache()
+    const gs = this.game_state as GameState
     map.layers.forEach((layer) =>
-      layer.drawSelf(ctx, this.game_state.getCamera(), this.cache, ic, this.zoom),
+      layer.drawSelf(ctx, gs.getCamera(), gs.tileCache, gs.imageCache, this.zoom),
     )
     ctx.restore()
   }
