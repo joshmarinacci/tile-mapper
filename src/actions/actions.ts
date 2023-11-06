@@ -21,7 +21,9 @@ import {
   GameMap,
   GameTest,
   MapLayerType,
+  PixelFont,
   Sheet,
+  SImage,
   Tile,
   TileLayer,
 } from "../model/datamodel"
@@ -322,6 +324,33 @@ export const DeleteGameTestAction: SimpleMenuAction = {
     }
   },
 }
+
+export const DeleteImageAction: SimpleMenuAction = {
+  type: "simple",
+  title: "delete image",
+  icon: Icons.Trashcan,
+  perform: async (state) => {
+    const sel = state.getPropValue("selection")
+    if (sel instanceof SImage) {
+      removeFromList(state.getPropValue("doc"), "canvases", sel as SImage)
+      state.clearSelection()
+    }
+  },
+}
+
+export const DeletePixelFontAction: SimpleMenuAction = {
+  type: "simple",
+  title: "delete font",
+  icon: Icons.Trashcan,
+  perform: async (state) => {
+    const sel = state.getPropValue("selection")
+    if (sel instanceof PixelFont) {
+      removeFromList(state.getPropValue("doc"), "fonts", sel as PixelFont)
+      state.clearSelection()
+    }
+  },
+}
+
 export const DeleteParticleFXAction: SimpleMenuAction = {
   type: "simple",
   title: "delete particle effect",
@@ -400,6 +429,12 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
   }
   if (obj instanceof SoundFX) {
     actions.push(DeleteSoundFXAction)
+  }
+  if (obj instanceof PixelFont) {
+    actions.push(DeletePixelFontAction)
+  }
+  if (obj instanceof SImage) {
+    actions.push(DeleteImageAction)
   }
   return actions
 }

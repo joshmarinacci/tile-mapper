@@ -15,10 +15,13 @@ import {
   AddTestToDocButton,
 } from "../actions/reactactions"
 import { PropsBase, useWatchProp } from "../model/base"
+import { Camera } from "../model/camera"
 import { StateContext } from "../model/contexts"
+import { Actor, GameMap, PixelFont, Sheet, SImage } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
-import { down_arrow_triangle, right_arrow_triangle } from "./common"
-import { DropdownButton, MenuList, ToolbarActionButton } from "./common-components"
+import { ParticleFX } from "../model/particlefx"
+import { down_arrow_triangle, Icons, right_arrow_triangle } from "./common"
+import { DropdownButton, Icon, MenuList, ToolbarActionButton } from "./common-components"
 import { PopupContext } from "./popup"
 
 function PropertyList<T, K extends keyof T>(props: {
@@ -62,14 +65,47 @@ function PropertyList<T, K extends keyof T>(props: {
   )
 }
 
-export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown }) {
+function TreeObjectIcon(props: { obj: PropsBase<T> }) {
+  const { obj } = props
+  if (obj instanceof Sheet) return <Icon name={Icons.Sheet} />
+  if (obj instanceof GameMap) return <Icon name={Icons.Sheet} />
+  if (obj instanceof Camera) return <Icon name={Icons.Camera} />
+  if (obj instanceof Actor) return <Icon name={Icons.Actor} />
+  if (obj instanceof SImage) return <Icon name={Icons.Image} />
+  if (obj instanceof PixelFont) return <Icon name={Icons.Font} />
+  if (obj instanceof ParticleFX) return <Icon name={Icons.ParticleEffect} />
+  if (obj instanceof GameDoc) return <Icon name={Icons.Document} />
+  return <Icon name={Icons.Object} />
+}
+
+function TreeObjectView(props: { obj: PropsBase<T> }) {
   const { obj } = props
   const state = useContext(StateContext)
+  const pm = useContext(PopupContext)
   const select = (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
     e.stopPropagation()
     state.setSelection(obj)
   }
+  const showContextMenu = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault()
+    select(e)
+    const actions = calculate_context_actions(obj)
+    const items = actions.map((act) => <ToolbarActionButton action={act} />)
+    pm.show_at(<MenuList>{items}</MenuList>, e.target, "right")
+  }
+  return (
+    <p className={"description"} onClick={select} onContextMenu={showContextMenu}>
+      <TreeObjectIcon obj={obj} />
+      &nbsp;
+      {obj.getPropValue("name" as keyof T) as string}
+    </p>
+  )
+}
+
+export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown }) {
+  const { obj } = props
+  const state = useContext(StateContext)
   if (!obj.getAllPropDefs) {
     console.log(obj)
     throw new Error(`trying to render an invalid object ${obj.constructor.name}`)
@@ -81,23 +117,9 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown
   }
   useWatchProp(obj, "name" as keyof T)
   const pm = useContext(PopupContext)
-  const showContextMenu = (e: React.MouseEvent<HTMLElement>) => {
-    e.preventDefault()
-    select(e)
-    const actions = calculate_context_actions(obj)
-    const items = actions.map((act) => <ToolbarActionButton action={act} />)
-    pm.show_at(<MenuList>{items}</MenuList>, e.target, "right")
-  }
   return (
     <ul key={obj._id} className={toClass(style)}>
-      <p
-        key={obj._id + "description"}
-        className={"description"}
-        onClick={select}
-        onContextMenu={showContextMenu}
-      >
-        {obj.getPropValue("name" as keyof T) as string}
-      </p>
+      <TreeObjectView key={obj._id + "description"} obj={obj} />
       {expandable.map(([key]) => {
         return (
           <PropertyList

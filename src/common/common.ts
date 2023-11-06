@@ -216,9 +216,11 @@ export const left_arrow_triangle = "◀"
 
 export enum Icons {
   DownArrow = "down-arrow",
+  DownArrowInverted = "down-arrow-white",
   UpArrow = "up-arrow",
   LeftArrow = "left-arrow",
   RightArrow = "right-arrow",
+  RightArrowInverted = "right-arrow-white",
   Plus = "plus",
   Minus = "minus",
   Trashcan = "trashcan",
@@ -245,4 +247,12 @@ export enum Icons {
   DividerHandle = "divider-handle",
   PixelLayer = "pixel-layer",
   ObjectLayer = "object-layer",
+  Camera = "camera",
+  Object = "object",
+  Close = "close",
+  Sheet = "sheet",
+  ParticleEffect = "particle-effect",
+  Font = "font",
+  Image = "image",
+  Document = "document",
 }
