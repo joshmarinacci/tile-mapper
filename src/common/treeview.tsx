@@ -120,6 +120,9 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown
   return (
     <ul key={obj._id} className={toClass(style)}>
       <TreeObjectView key={obj._id + "description"} obj={obj} />
+      {obj instanceof GameDoc && (
+        <ObjectTreeView obj={obj.getPropValue("camera")} selection={props.selection} />
+      )}
       {expandable.map(([key]) => {
         return (
           <PropertyList
@@ -131,9 +134,6 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown
           />
         )
       })}
-      {obj instanceof GameDoc && (
-        <ObjectTreeView obj={obj.getPropValue("camera")} selection={props.selection} />
-      )}
     </ul>
   )
 }

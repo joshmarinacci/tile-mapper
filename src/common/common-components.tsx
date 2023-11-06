@@ -1,3 +1,5 @@
+import "./common.css"
+
 import { toClass } from "josh_react_util"
 import React, { ReactNode, useContext, useState } from "react"
 
@@ -187,10 +189,16 @@ export function ToggleButton(props: {
   )
 }
 
-export function IconButton(props: { onClick: () => void; icon: Icons; text?: string }) {
+export function IconButton(props: {
+  onClick: () => void
+  icon: Icons
+  text?: string
+  tooltip?: string
+}) {
   return (
-    <button onClick={props.onClick}>
+    <button onClick={props.onClick} data-text={props.tooltip} className={"tooltip"}>
       {props.text ? props.text : ""}
+
       <Icon name={props.icon} />
     </button>
   )

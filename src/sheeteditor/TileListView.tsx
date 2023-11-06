@@ -131,11 +131,23 @@ export function TileListView(props: {
     <div className={"tile-list-view"}>
       {editable && (
         <div className={"toolbar"}>
-          <IconButton onClick={add_tile} icon={Icons.Tile} text={"+"} />
-          <IconButton onClick={dup_tile} icon={Icons.Duplicate} />
-          <IconButton onClick={delete_tile} icon={Icons.Trashcan} />
-          <IconButton onClick={use_grid_view} icon={Icons.Grid} />
-          <IconButton onClick={use_list_view} icon={Icons.Selection} />
+          <IconButton onClick={add_tile} icon={Icons.Tile} tooltip={"create new tile"} />
+          <IconButton
+            onClick={dup_tile}
+            icon={Icons.Duplicate}
+            tooltip={"duplicate selected tile"}
+          />
+          <IconButton
+            onClick={delete_tile}
+            icon={Icons.Trashcan}
+            tooltip={"delete selected tile"}
+          />
+          <IconButton onClick={use_grid_view} icon={Icons.Grid} tooltip={"organize by position"} />
+          <IconButton
+            onClick={use_list_view}
+            icon={Icons.Selection}
+            tooltip={"organize by order"}
+          />
           <Spacer />
           <DropdownButton icon={Icons.Gear}>
             <button onClick={() => sheet.setPropValue("showNames", !showNames)}>show names</button>

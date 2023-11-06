@@ -307,12 +307,38 @@ export function ImageEditorView(props: { image: SImage }) {
       <div className={"tool-column"}>
         <Pane key={"layer-list"} title={"layers"} collapsable={true}>
           <div className={"toolbar"}>
-            <IconButton onClick={() => new_pixel_layer()} icon={Icons.Plus} text={"pixels"} />
-            <IconButton onClick={() => new_object_layer()} icon={Icons.Plus} text={"objects"} />
-            <IconButton onClick={() => del_layer()} icon={Icons.Trashcan} />
-            <IconButton onClick={() => move_layer_down()} icon={Icons.UpArrow} />
-            <IconButton onClick={() => move_layer_up()} icon={Icons.DownArrow} />
-            <IconButton onClick={() => resize_image()} icon={Icons.Resize} />
+            <IconButton
+              onClick={() => new_pixel_layer()}
+              icon={Icons.Plus}
+              text={"pixels"}
+              tooltip={"create pixel layer"}
+            />
+            <IconButton
+              onClick={() => new_object_layer()}
+              icon={Icons.Plus}
+              text={"objects"}
+              tooltip={"create actor layer"}
+            />
+            <IconButton
+              onClick={() => del_layer()}
+              icon={Icons.Trashcan}
+              tooltip={"delete selected layer"}
+            />
+            <IconButton
+              onClick={() => move_layer_down()}
+              icon={Icons.UpArrow}
+              tooltip={"move layer up"}
+            />
+            <IconButton
+              onClick={() => move_layer_up()}
+              icon={Icons.DownArrow}
+              tooltip={"move layer down"}
+            />
+            <IconButton
+              onClick={() => resize_image()}
+              icon={Icons.Resize}
+              tooltip={"resize layer"}
+            />
           </div>
           <ListView
             className={"layers"}

@@ -13,7 +13,7 @@ import { DropdownButton, ToolbarActionButton } from "../common/common-components
 export function MainToolbar() {
   return (
     <div className={"toolbar across"}>
-      <button className={"logo"}>Tile-Mapper</button>
+      <button className={"logo"}>RetroGami</button>
       <ToolbarActionButton action={NewDocAction} />
       <ToolbarActionButton action={LoadLocalStorageAction} />
       <ToolbarActionButton action={SaveLocalStorageAction} />
