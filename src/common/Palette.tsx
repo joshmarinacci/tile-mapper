@@ -3,7 +3,7 @@ import "./Palette.css"
 import { Spacer, toClass } from "josh_react_util"
 import React, { useState } from "react"
 
-import { ImagePalette } from "./common"
+import { Icons, ImagePalette } from "./common"
 import { DropdownButton, Pane } from "./common-components"
 import { ListView, ListViewDirection, ListViewOptions } from "./ListView"
 
@@ -41,7 +41,7 @@ export function PaletteColorPickerPane(props: {
       <header>
         <label>Palette</label>
         <Spacer />
-        <DropdownButton title={"options"}>
+        <DropdownButton icon={Icons.Gear}>
           <button onClick={() => setSize(16)}>16px</button>
           <button onClick={() => setSize(32)}>32px</button>
           <button onClick={() => setSize(64)}>64px</button>
