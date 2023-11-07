@@ -5,7 +5,6 @@ import { CameraEditorView } from "../CameraEditorView"
 import { PixelFontEditorView } from "../fonteditor/PixelFontEditorView"
 import { ImageEditorView } from "../imageeditor/ImageEditorView"
 import { MapModeView } from "../mapeditor/MapModeView"
-import { PropsBase } from "../model/base"
 import { Camera } from "../model/camera"
 import { Actor, GameMap, GameTest, PixelFont, Sheet, SImage } from "../model/datamodel"
 import { ParticleFX } from "../model/particlefx"
@@ -13,10 +12,15 @@ import { SoundFX } from "../model/soundfx"
 import { ParticleFXEditorView } from "../particleeditor/ParticleFXEditorView"
 import { TileSheetEditor } from "../sheeteditor/TileSheetEditor"
 import { SoundFXEditorView } from "../soundeditor/SoundFXEditorView"
+import { SelectionPath } from "../state"
 import { TestModeView } from "../testeditor/TestModeView"
 
-export function EditView(props: { selection: PropsBase<unknown> | undefined }) {
-  const { selection } = props
+export function EditView(props: { selection: SelectionPath }) {
+  if (props.selection.isEmpty()) return <div>nothing</div>
+  if ("getUUID" in props.selection.start()) {
+    console.log("its a good selection")
+  }
+  const selection = props.selection.start()
   if (selection instanceof Sheet) {
     return <TileSheetEditor sheet={selection as Sheet} />
   }
@@ -44,9 +48,12 @@ export function EditView(props: { selection: PropsBase<unknown> | undefined }) {
   if (selection instanceof Camera) {
     return <CameraEditorView camera={selection as Camera} />
   }
-  return (
-    <div style={{ padding: "1rem" }} className={"editor-view"}>
-      <h3>Select item from the left</h3>
-    </div>
-  )
+  if (!selection) {
+    return (
+      <div style={{ padding: "1rem" }} className={"editor-view"}>
+        <h3>Select item from the left</h3>
+      </div>
+    )
+  }
+  return <EditView selection={props.selection.parent()} />
 }

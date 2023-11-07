@@ -93,14 +93,14 @@ function Main3() {
             }}
           >
             <header>Document</header>
-            <ObjectTreeView obj={doc} selection={selection} />
+            <ObjectTreeView obj={doc} />
           </div>
         </div>
       )}
-      {<EditView selection={selection} />}
+      {<EditView selection={state.getSelectionPath()} />}
       {showRight && (
         <div className={"right-sidebar"}>
-          <PropSheet target={selection} collapsable={false} />
+          <PropSheet target={state.getSelectionPath().start()} collapsable={false} />
         </div>
       )}
       <MainStatusBar />

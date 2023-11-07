@@ -7,9 +7,8 @@ import React, { useContext, useEffect, useState } from "react"
 import { Pane } from "../common/common-components"
 import { PaletteColorPickerPane } from "../common/Palette"
 import { useWatchProp } from "../model/base"
-import { DocContext } from "../model/contexts"
+import { DocContext, StateContext } from "../model/contexts"
 import { Sheet, Tile } from "../model/datamodel"
-import { PropSheet } from "../propsheet/propsheet"
 import { TestMap } from "../testeditor/TestMap"
 import { PixelGridEditor } from "./PixelGridEditor"
 import { TileListView } from "./TileListView"
@@ -17,6 +16,7 @@ import { TileListView } from "./TileListView"
 export function TileSheetEditor(props: { sheet: Sheet }) {
   const { sheet } = props
   const doc = useContext(DocContext)
+  const state = useContext(StateContext)
   const palette = doc.getPropValue("palette")
   const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
   const tile = sheet.getPropValue("selectedTile")
@@ -37,12 +37,14 @@ export function TileSheetEditor(props: { sheet: Sheet }) {
               editable={true}
               sheet={sheet}
               tile={tile}
-              setTile={(tile) => sheet.setPropValue("selectedTile", tile)}
+              setTile={(tile) => {
+                sheet.setPropValue("selectedTile", tile)
+                state.setSelectionTarget(tile)
+              }}
               palette={palette}
             />
           </Pane>
         )}
-        {tile && <PropSheet target={tile} title={"Tile Info"} collapsable={true} />}
         {tile && (
           <Pane collapsable={true} title={"Scratch"}>
             <TestMap tile={tile} mapArray={maparray} palette={palette} />

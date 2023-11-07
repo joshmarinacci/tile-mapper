@@ -28,7 +28,6 @@ function PropertyList<T, K extends keyof T>(props: {
   target: PropsBase<T>
   value: T[K]
   name: keyof T
-  selection: unknown
 }) {
   const { value, name, target } = props
   // const values = value as []
@@ -57,7 +56,7 @@ function PropertyList<T, K extends keyof T>(props: {
         <ul key={"children"} className={"tree-list"}>
           {Array.isArray(value) &&
             (value as []).map((val) => {
-              return <ObjectTreeView key={val.getUUID()} obj={val} selection={props.selection} />
+              return <ObjectTreeView key={val.getUUID()} obj={val} />
             })}
         </ul>
       )}
@@ -85,7 +84,7 @@ function TreeObjectView(props: { obj: PropsBase<T> }) {
   const select = (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
     e.stopPropagation()
-    state.setSelection(obj)
+    state.setSelectionTarget(obj)
   }
   const showContextMenu = (e: React.MouseEvent<HTMLElement>) => {
     e.preventDefault()
@@ -103,7 +102,7 @@ function TreeObjectView(props: { obj: PropsBase<T> }) {
   )
 }
 
-export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown }) {
+export function ObjectTreeView<T>(props: { obj: PropsBase<T> }) {
   const { obj } = props
   const state = useContext(StateContext)
   if (!obj.getAllPropDefs) {
@@ -111,18 +110,16 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown
     throw new Error(`trying to render an invalid object ${obj.constructor.name}`)
   }
   const expandable = obj.getAllPropDefs().filter(([, b]) => b.expandable)
+  const selected = state.getSelectionPath().contains(obj)
   const style = {
     "tree-object": true,
-    selected: state.getPropValue("selection") === obj,
+    selected: selected,
   }
   useWatchProp(obj, "name" as keyof T)
-  const pm = useContext(PopupContext)
   return (
     <ul key={obj._id} className={toClass(style)}>
       <TreeObjectView key={obj._id + "description"} obj={obj} />
-      {obj instanceof GameDoc && (
-        <ObjectTreeView obj={obj.getPropValue("camera")} selection={props.selection} />
-      )}
+      {obj instanceof GameDoc && <ObjectTreeView obj={obj.getPropValue("camera")} />}
       {expandable.map(([key]) => {
         return (
           <PropertyList
@@ -130,7 +127,6 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T>; selection: unknown
             target={obj}
             value={obj.getPropValue(key)}
             name={key}
-            selection={props.selection}
           />
         )
       })}

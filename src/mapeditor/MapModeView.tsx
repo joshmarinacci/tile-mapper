@@ -3,15 +3,15 @@ import "./MapEditor.css"
 import React, { useContext, useState } from "react"
 
 import { PropsBase } from "../model/base"
-import { DocContext } from "../model/contexts"
+import { DocContext, StateContext } from "../model/contexts"
 import { GameMap, MapLayerType, Sheet, Tile } from "../model/datamodel"
-import { PropSheet } from "../propsheet/propsheet"
 import { CompactSheetAndTileSelector } from "../sheeteditor/TileListView"
 import { LayerEditor } from "./LayerEditor"
 import { LayerList } from "./LayerList"
 
 export function MapModeView(props: { map: GameMap }) {
   const doc = useContext(DocContext)
+  const state = useContext(StateContext)
   const selectedMap = props.map
   const layers = selectedMap.getPropValue("layers")
   const sheets = doc.getPropValue("sheets") as Sheet[]
@@ -32,9 +32,12 @@ export function MapModeView(props: { map: GameMap }) {
           editable={true}
           map={selectedMap}
           layer={selectedLayer}
-          setSelectedLayer={setSelectedLayer}
+          setSelectedLayer={(l) => {
+            setSelectedLayer(l)
+            state.setSelectionTarget(l)
+          }}
         />
-        <PropSheet target={selectedLayer} title={"Layer Info"} collapsable />
+        {/*<PropSheet target={selectedLayer} title={"Layer Info"} collapsable />*/}
       </div>
       <div className={"editor-view"}>
         <LayerEditor

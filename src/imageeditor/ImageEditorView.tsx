@@ -12,15 +12,15 @@ import { PaletteColorPickerPane } from "../common/Palette"
 import { ShareImageDialog } from "../common/ShareImageDialog"
 import { drawTextRun } from "../fonteditor/PixelFontPreview"
 import { appendToList, PropsBase, removeFromList, useWatchAllProps } from "../model/base"
-import { DocContext } from "../model/contexts"
+import { DocContext, StateContext } from "../model/contexts"
 import {
-  GameDoc,
   ImageLayerType,
   ImageObjectLayer,
   ImagePixelLayer,
   SImage,
   TextObject,
 } from "../model/datamodel"
+import { GameDoc } from "../model/gamedoc"
 import { PropSheet } from "../propsheet/propsheet"
 import { strokeBounds } from "../util"
 import { EllipseTool, EllipseToolSettings } from "./ellipse_tool"
@@ -153,6 +153,7 @@ function drawCanvas(
 export function ImageEditorView(props: { image: SImage }) {
   const { image } = props
   const doc = useContext(DocContext)
+  const state = useContext(StateContext)
   const palette = doc.getPropValue("palette")
   const [grid, setGrid] = useState(false)
   const [zoom, setZoom] = useState(3)
@@ -343,14 +344,17 @@ export function ImageEditorView(props: { image: SImage }) {
           <ListView
             className={"layers"}
             selected={layer}
-            setSelected={setLayer}
+            setSelected={(layer) => {
+              setLayer(layer)
+              state.setSelectionTarget(layer)
+            }}
             renderer={LayerItemRenderer}
             data={props.image.getPropValue("layers")}
             direction={ListViewDirection.VerticalFill}
             options={undefined as never}
           />
         </Pane>
-        <PropSheet target={layer} title={"Layer Info"} collapsable={true} />
+        {/*<PropSheet target={layer} title={"Layer Info"} collapsable={true} />*/}
         <div className={"toolbar"}>
           <button onClick={exportPNG}>export PNG</button>
           <button onClick={sharePNG}>share PNG</button>
