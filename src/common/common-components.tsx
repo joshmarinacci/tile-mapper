@@ -183,8 +183,8 @@ export function ToggleButton(props: {
         selected: props.selected,
       })}
     >
-      {props.text ? props.text : ""}
       <Icon name={icon} />
+      {props.text ? " " + props.text : ""}
     </button>
   )
 }
