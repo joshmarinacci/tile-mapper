@@ -18,7 +18,7 @@ import {
   Tile,
   TileLayer,
 } from "../model/datamodel"
-import { PlayTest } from "../testeditor/PlayTest"
+import { PlayTest } from "../preview/PlayTest"
 import { ActorLayerMouseHandler, ActorLayerToolbar, drawActorlayer } from "./ActorEditor"
 import { MouseHandler } from "./editorbase"
 import { drawTileLayer, TileLayerMouseHandler, TileLayerToolbar } from "./TileEditor"

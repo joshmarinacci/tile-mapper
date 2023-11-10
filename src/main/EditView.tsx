@@ -6,14 +6,13 @@ import { PixelFontEditorView } from "../fonteditor/PixelFontEditorView"
 import { ImageEditorView } from "../imageeditor/ImageEditorView"
 import { MapModeView } from "../mapeditor/MapModeView"
 import { Camera } from "../model/camera"
-import { Actor, GameMap, GameTest, PixelFont, Sheet, SImage } from "../model/datamodel"
+import { Actor, GameMap, PixelFont, Sheet, SImage } from "../model/datamodel"
 import { ParticleFX } from "../model/particlefx"
 import { SoundFX } from "../model/soundfx"
 import { ParticleFXEditorView } from "../particleeditor/ParticleFXEditorView"
 import { TileSheetEditor } from "../sheeteditor/TileSheetEditor"
 import { SoundFXEditorView } from "../soundeditor/SoundFXEditorView"
 import { SelectionPath } from "../state"
-import { TestModeView } from "../testeditor/TestModeView"
 
 export function EditView(props: { selection: SelectionPath }) {
   if (props.selection.isEmpty()) return <div>nothing</div>

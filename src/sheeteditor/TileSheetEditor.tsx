@@ -9,8 +9,8 @@ import { PaletteColorPickerPane } from "../common/Palette"
 import { useWatchProp } from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
 import { Sheet, Tile } from "../model/datamodel"
-import { TestMap } from "../testeditor/TestMap"
 import { PixelGridEditor } from "./PixelGridEditor"
+import { TestMap } from "./TestMap"
 import { TileListView } from "./TileListView"
 
 export function TileSheetEditor(props: { sheet: Sheet }) {

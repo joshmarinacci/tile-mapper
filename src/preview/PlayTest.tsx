@@ -17,10 +17,10 @@ import { findActorForInstance } from "../mapeditor/ActorEditor"
 import { DocContext } from "../model/contexts"
 import { ActorLayer, GameMap, MapCell, TileLayer } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
-import { ActorDebugOverlay } from "../preview/ActorDebugLayer"
-import { GridDebugOverlay } from "../preview/GridDebugOverlay"
-import { ViewportDebugOverlay } from "../preview/ViewportDebugOverlay"
+import { ActorDebugOverlay } from "./ActorDebugLayer"
 import { Anim } from "./Anim"
+import { GridDebugOverlay } from "./GridDebugOverlay"
+import { ViewportDebugOverlay } from "./ViewportDebugOverlay"
 
 function generateGamestate(
   current: HTMLCanvasElement,
