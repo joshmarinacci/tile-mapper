@@ -1,7 +1,7 @@
 import "./MapEditor.css"
 
 import { Point } from "josh_js_util"
-import { Spacer } from "josh_react_util"
+import { DialogContext, Spacer } from "josh_react_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import { exportPNG } from "../actions/actions"
@@ -18,6 +18,7 @@ import {
   Tile,
   TileLayer,
 } from "../model/datamodel"
+import { PlayTest } from "../testeditor/PlayTest"
 import { ActorLayerMouseHandler, ActorLayerToolbar, drawActorlayer } from "./ActorEditor"
 import { MouseHandler } from "./editorbase"
 import { drawTileLayer, TileLayerMouseHandler, TileLayerToolbar } from "./TileEditor"
@@ -83,6 +84,10 @@ export function LayerEditor(props: {
     return new Point(e.clientX, e.clientY).subtract(new Point(rect.left, rect.top)).scale(1 / scale)
   }
   const [fillOnce, setFillOnce] = useState<boolean>(false)
+  const dm = useContext(DialogContext)
+  const start_playing = () => {
+    dm.show(<PlayTest map={map} />)
+  }
 
   useEffect(() => redraw(), [zoom, layer])
   const onMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
@@ -144,7 +149,7 @@ export function LayerEditor(props: {
         <button onClick={() => setZoom(zoom + 1)}>+</button>
         <button onClick={() => setZoom(zoom - 1)}>-</button>
         <Spacer />
-        <button>Play</button>
+        <button onClick={start_playing}>Play</button>
         <Spacer />
         <DropdownButton icon={Icons.Gear}>
           <button onClick={() => exportPNG(doc, map, 1)}>png 1x</button>

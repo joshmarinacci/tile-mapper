@@ -410,9 +410,6 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
   if (obj instanceof Actor) {
     actions.push(DeleteActorAction)
   }
-  if (obj instanceof GameTest) {
-    actions.push(DeleteGameTestAction)
-  }
   if (obj instanceof ParticleFX) {
     actions.push(DeleteParticleFXAction)
   }

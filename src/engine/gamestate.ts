@@ -9,6 +9,7 @@ import {
   TileCache,
 } from "retrogami-engine"
 
+import { Camera as CameraModel } from "../model/camera"
 import { GameDoc } from "../model/gamedoc"
 
 export type GameMap = {
@@ -26,6 +27,7 @@ export class GameState {
   private enemies: Enemy[]
   public tileCache: TileCache
   public imageCache: ImageCache
+  public doc: GameDoc
 
   constructor(canvas: HTMLCanvasElement, doc: GameDoc) {
     this.map = {
@@ -41,6 +43,7 @@ export class GameState {
       this.canvas.width = viewportSize.w
       this.canvas.height = viewportSize.h
     }
+    this.doc = doc
     this.canvas.style.border = "1px solid red"
     this.keyboard = new KeyboardManager()
     this.players = []
@@ -48,7 +51,12 @@ export class GameState {
     this.physics = new PhysicsManager()
     this.imageCache = new ImageCache()
     this.tileCache = new TileCache(doc.getPropValue("tileSize"))
+    const ts = doc.getPropValue("tileSize")
+    const cam = doc.getPropValue("camera") as CameraModel
+    cam.getPropValue("viewport")
     this.camera = new Camera()
+    this.camera.viewport = cam.getPropValue("viewport").scale(ts.w)
+    this.camera.focus = cam.getPropValue("focus").scale(ts.w)
   }
 
   addPlayer(player: Player) {

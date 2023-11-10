@@ -1,5 +1,6 @@
 import { ArrayGrid } from "josh_js_util"
-import React, { useEffect, useRef, useState } from "react"
+import { DialogContext } from "josh_react_util"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import {
   ActorLayer as ACL,
   PhysicsConstants,
@@ -13,9 +14,12 @@ import { drawGrid } from "../actions/actions"
 import { GameState } from "../engine/gamestate"
 import { drawImage } from "../imageeditor/ImageEditorView"
 import { findActorForInstance } from "../mapeditor/ActorEditor"
-import { useWatchAllProps } from "../model/base"
-import { ActorLayer, GameMap, GameTest, MapCell, TileLayer } from "../model/datamodel"
+import { DocContext } from "../model/contexts"
+import { ActorLayer, GameMap, MapCell, TileLayer } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
+import { ActorDebugOverlay } from "../preview/ActorDebugLayer"
+import { GridDebugOverlay } from "../preview/GridDebugOverlay"
+import { ViewportDebugOverlay } from "../preview/ViewportDebugOverlay"
 import { Anim } from "./Anim"
 
 function generateGamestate(
@@ -23,7 +27,7 @@ function generateGamestate(
   doc: GameDoc,
   map: GameMap,
   physicsDebug: boolean,
-) {
+): GameState {
   const gamestate = new GameState(current, doc)
   // pre-cache all of the tiles
   doc.getPropValue("sheets").forEach((sht) => {
@@ -46,12 +50,6 @@ function generateGamestate(
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
     drawImage(doc, ctx, img, doc.getPropValue("palette"), 1)
     gamestate.imageCache.addImage(img.getPropValue("name"), img.getUUID(), canvas)
-    // tileCache.addCachedTile(img.getPropValue("name"), img.getUUID(), {
-    //   name: img.getPropValue("name"),
-    //   id: img.getUUID(),
-    //   blocking: false,
-    //   canvas: canvas,
-    // })
   })
   // turn each layer of the map into a layer of the engine
   map.getPropValue("layers").forEach((layer) => {
@@ -105,44 +103,53 @@ function generateGamestate(
     }
   })
   if (physicsDebug) gamestate.addLayer(gamestate.getPhysics())
+  gamestate.addLayer(new ActorDebugOverlay(gamestate))
+  gamestate.addLayer(new ViewportDebugOverlay(gamestate))
+  gamestate.addLayer(new GridDebugOverlay(gamestate))
   return gamestate
 }
 
-export function PlayTest(props: {
-  playing: boolean
-  doc: GameDoc
-  map: GameMap
-  test: GameTest
-  zoom: number
-  grid: boolean
-  physicsDebug: boolean
-}) {
-  const { doc, map, test, zoom, grid, playing } = props
+export function PlayTest(props: { map: GameMap }) {
+  const { map } = props
+  const doc = useContext(DocContext)
   const tileSize = doc.getPropValue("tileSize")
   const camera = doc.getPropValue("camera")
   const ref = useRef<HTMLCanvasElement>(null)
   const [anim] = useState(() => new Anim())
+  const [playing, setPlaying] = useState(true)
+
+  const physicsDebug = true
+
+  const zoom = 5
+  const grid = true
 
   const redraw = () => {
     if (!ref.current) return
-    anim.setGamestate(generateGamestate(ref.current, doc, map, props.physicsDebug))
+    anim.setGamestate(generateGamestate(ref.current, doc, map, physicsDebug))
     const phs: PhysicsConstants = {
-      gravity: test.getPropValue("gravity"),
-      jump_power: test.getPropValue("jump_power"),
-      move_speed: test.getPropValue("move_speed"),
-      move_speed_max: test.getPropValue("move_speed_max"),
-      friction: test.getPropValue("friction"),
+      // gravity: test.getPropValue("gravity"),
+      gravity: 0.15,
+      // jump_power: test.getPropValue("jump_power"),
+      jump_power: -2.0,
+      // move_speed: test.getPropValue("move_speed"),
+      move_speed: 0.08,
+
+      // move_speed_max: test.getPropValue("move_speed_max"),
+      move_speed_max: 1.5,
+      // friction: test.getPropValue("friction"),
+      friction: 0.98,
     }
     anim.setPhysicsConstants(phs)
     anim.setKeyboardTarget(ref.current)
     anim.setZoom(zoom)
     anim.drawOnce()
+    const dpi = window.devicePixelRatio
     if (grid) {
-      drawGrid(ref.current, zoom, tileSize, camera)
+      drawGrid(ref.current, zoom * dpi, tileSize, camera)
     }
   }
-  useWatchAllProps(test, () => redraw())
-  useEffect(() => redraw(), [doc, test, zoom, grid, ref, props.physicsDebug])
+  // useWatchAllProps(test, () => redraw())
+  useEffect(() => redraw(), [doc, zoom, grid, ref, physicsDebug])
   useEffect(() => {
     if (playing) {
       anim.stop()
@@ -151,14 +158,34 @@ export function PlayTest(props: {
       anim.stop()
     }
   }, [playing])
+  const dm = useContext(DialogContext)
+  const dismiss = () => {
+    setPlaying(false)
+    dm.hide()
+  }
+  const viewport = camera.getPropValue("viewport")
   return (
-    <div>
-      <canvas
-        ref={ref}
-        tabIndex={0}
-        width={camera.getPropValue("viewport").w * tileSize.w * zoom}
-        height={camera.getPropValue("viewport").h * tileSize.h * zoom}
-      ></canvas>
+    <div
+      className={"dialog"}
+      style={{
+        maxWidth: "80vw",
+        minWidth: "80vw",
+        maxHeight: "80vh",
+        minHeight: "80vh",
+      }}
+    >
+      <header>Play test</header>
+      <section>
+        <canvas
+          ref={ref}
+          tabIndex={0}
+          width={(viewport.w + 5) * tileSize.w * zoom}
+          height={(viewport.h + 5) * tileSize.h * zoom}
+        ></canvas>
+      </section>
+      <footer>
+        <button onClick={dismiss}>dismiss</button>
+      </footer>
     </div>
   )
 }
