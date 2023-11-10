@@ -30,9 +30,6 @@ export function EditView(props: { selection: SelectionPath }) {
   if (selection instanceof GameMap) {
     return <MapModeView map={selection as GameMap} />
   }
-  if (selection instanceof GameTest) {
-    return <TestModeView test={selection as GameTest} />
-  }
   if (selection instanceof SImage) {
     return <ImageEditorView image={selection as SImage} />
   }

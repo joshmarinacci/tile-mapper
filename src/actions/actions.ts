@@ -313,17 +313,6 @@ export const DeleteActorAction: SimpleMenuAction = {
     }
   },
 }
-export const DeleteGameTestAction: SimpleMenuAction = {
-  type: "simple",
-  title: "delete test",
-  perform: async (state) => {
-    const sel = state.getPropValue("selection")
-    if (sel instanceof GameTest) {
-      removeFromList(state.getPropValue("doc"), "tests", sel as GameTest)
-      state.clearSelection()
-    }
-  },
-}
 
 export const DeleteImageAction: SimpleMenuAction = {
   type: "simple",

@@ -32,7 +32,6 @@ export type DocType = {
   sheets: Sheet[]
   maps: GameMap[]
   actors: Actor[]
-  tests: GameTest[]
   canvases: SImage[]
   fonts: PixelFont[]
   palette: ImagePalette
@@ -44,17 +43,6 @@ const PixelFontListDef: PropDefBuilder<PixelFont[]> = ObjectListDef.copy()
   .withHidden(true)
   .withExpandable(true)
 
-const TestsListDef: PropDef<GameTest[]> = {
-  type: "array",
-  editable: false,
-  hidden: true,
-  watchChildren: false,
-  default: () => [],
-  format: (v) => "tests list",
-  toJSON: (v) => v.map((n) => n.toJSON()),
-  fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
-  expandable: true,
-}
 const SheetsListDef: PropDef<Sheet[]> = {
   type: "array",
   editable: false,
@@ -104,7 +92,6 @@ const GameDocDefs: DefList<DocType> = {
   sheets: SheetsListDef,
   maps: MapsListDef,
   actors: ActorsListDef,
-  tests: TestsListDef,
   canvases: CanvasesListDef,
   fonts: PixelFontListDef,
   palette: PaletteDef,

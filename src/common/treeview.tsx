@@ -44,7 +44,6 @@ function PropertyList<T, K extends keyof T>(props: {
         <DropdownButton title={"..."}>
           {name === "sheets" && <AddSheetToDocButton />}
           {name === "maps" && <AddMapToDocButton />}
-          {name === "tests" && <AddTestToDocButton />}
           {name === "actors" && <AddActorToDocButton />}
           {name === "canvases" && <AddCanvasToDocButton />}
           {name === "fonts" && <AddFontToDocButton />}

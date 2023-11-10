@@ -579,7 +579,7 @@ type GameMapType = {
 const LayerListDef: PropDef<PropsBase<any>[]> = {
   type: "array",
   editable: false,
-  expandable: false,
+  expandable: true,
   default: () => [],
   hidden: true,
   format: (v) => "layers",

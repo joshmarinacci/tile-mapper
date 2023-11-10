@@ -37,7 +37,6 @@ export function MapModeView(props: { map: GameMap }) {
             state.setSelectionTarget(l)
           }}
         />
-        {/*<PropSheet target={selectedLayer} title={"Layer Info"} collapsable />*/}
       </div>
       <div className={"editor-view"}>
         <LayerEditor

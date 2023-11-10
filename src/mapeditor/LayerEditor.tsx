@@ -5,6 +5,8 @@ import { Spacer } from "josh_react_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import { exportPNG } from "../actions/actions"
+import { Icons } from "../common/common"
+import { DropdownButton } from "../common/common-components"
 import { ICON_CACHE } from "../iconcache"
 import { PropsBase, useWatchAllProps, useWatchProp } from "../model/base"
 import { DocContext } from "../model/contexts"
@@ -142,9 +144,13 @@ export function LayerEditor(props: {
         <button onClick={() => setZoom(zoom + 1)}>+</button>
         <button onClick={() => setZoom(zoom - 1)}>-</button>
         <Spacer />
-        <button onClick={() => exportPNG(doc, map, 1)}>png 1x</button>
-        <button onClick={() => exportPNG(doc, map, 2)}>png 2x</button>
-        <button onClick={() => exportPNG(doc, map, 4)}>png 4x</button>
+        <button>Play</button>
+        <Spacer />
+        <DropdownButton icon={Icons.Gear}>
+          <button onClick={() => exportPNG(doc, map, 1)}>png 1x</button>
+          <button onClick={() => exportPNG(doc, map, 2)}>png 2x</button>
+          <button onClick={() => exportPNG(doc, map, 4)}>png 4x</button>
+        </DropdownButton>
       </div>
       {layer instanceof TileLayer && (
         <TileLayerToolbar layer={layer} fillOnce={fillOnce} setFillOnce={setFillOnce} />

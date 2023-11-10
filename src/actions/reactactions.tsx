@@ -10,7 +10,6 @@ import { DocContext, StateContext } from "../model/contexts"
 import {
   Actor,
   GameMap,
-  GameTest,
   ImagePixelLayer,
   PixelFont,
   PixelGlyph,
@@ -81,22 +80,6 @@ export const UploadPNGJSONAction: ReactMenuAction = {
   makeComponent: (state: GlobalState) => {
     return <UploadButton state={state} />
   },
-}
-
-export function AddTestToDocButton() {
-  const doc = useContext(DocContext)
-  const state = useContext(StateContext)
-  return (
-    <button
-      onClick={() => {
-        const test = new GameTest({ name: "a new test" })
-        appendToList(doc, "tests", test)
-        state.setSelection(test)
-      }}
-    >
-      Add Test To Doc
-    </button>
-  )
 }
 
 export function AddSheetToDocButton() {
@@ -179,7 +162,6 @@ export function AddCanvasToDocButton() {
 export function AddFontToDocButton() {
   const doc = useContext(DocContext)
   const state = useContext(StateContext)
-  const dm = useContext(DialogContext)
   const perform = () => {
     const font = new PixelFont({ name: "unnamed font" })
     const glyph = new PixelGlyph({ name: "A" })
