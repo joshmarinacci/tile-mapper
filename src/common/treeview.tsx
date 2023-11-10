@@ -12,7 +12,6 @@ import {
   AddParticleFXToDocButton,
   AddSheetToDocButton,
   AddSoundFXToDocButton,
-  AddTestToDocButton,
 } from "../actions/reactactions"
 import { PropsBase, useWatchProp } from "../model/base"
 import { Camera } from "../model/camera"
@@ -20,6 +19,7 @@ import { StateContext } from "../model/contexts"
 import { Actor, GameMap, PixelFont, Sheet, SImage } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
 import { ParticleFX } from "../model/particlefx"
+import { PhysicsSettings } from "../model/physicsSettings"
 import { down_arrow_triangle, Icons, right_arrow_triangle } from "./common"
 import { DropdownButton, Icon, MenuList, ToolbarActionButton } from "./common-components"
 import { PopupContext } from "./popup"
@@ -68,6 +68,7 @@ function TreeObjectIcon(props: { obj: PropsBase<T> }) {
   if (obj instanceof Sheet) return <Icon name={Icons.Sheet} />
   if (obj instanceof GameMap) return <Icon name={Icons.Sheet} />
   if (obj instanceof Camera) return <Icon name={Icons.Camera} />
+  if (obj instanceof PhysicsSettings) return <Icon name={Icons.Camera} />
   if (obj instanceof Actor) return <Icon name={Icons.Actor} />
   if (obj instanceof SImage) return <Icon name={Icons.Image} />
   if (obj instanceof PixelFont) return <Icon name={Icons.Font} />
@@ -119,6 +120,7 @@ export function ObjectTreeView<T>(props: { obj: PropsBase<T> }) {
     <ul key={obj._id} className={toClass(style)}>
       <TreeObjectView key={obj._id + "description"} obj={obj} />
       {obj instanceof GameDoc && <ObjectTreeView obj={obj.getPropValue("camera")} />}
+      {obj instanceof GameDoc && <ObjectTreeView obj={obj.getPropValue("physics")} />}
       {expandable.map(([key]) => {
         return (
           <PropertyList

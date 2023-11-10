@@ -16,7 +16,6 @@ import { Camera, CameraPropDef } from "./camera"
 import {
   Actor,
   GameMap,
-  GameTest,
   NameDef,
   ObjectListDef,
   PaletteDef,
@@ -26,6 +25,7 @@ import {
   SizeDef,
   Tile,
 } from "./datamodel"
+import { PhysicsSettings, PhysicsSettingsPropDef } from "./physicsSettings"
 
 export type DocType = {
   name: string
@@ -38,6 +38,7 @@ export type DocType = {
   tileSize: Size
   assets: PropsBase<unknown>[]
   camera: Camera
+  physics: PhysicsSettings
 }
 const PixelFontListDef: PropDefBuilder<PixelFont[]> = ObjectListDef.copy()
   .withHidden(true)
@@ -97,6 +98,7 @@ const GameDocDefs: DefList<DocType> = {
   palette: PaletteDef,
   tileSize: SizeDef,
   camera: CameraPropDef,
+  physics: PhysicsSettingsPropDef,
   assets: ObjectListDef.copy().withHidden(false).withExpandable(true),
 }
 

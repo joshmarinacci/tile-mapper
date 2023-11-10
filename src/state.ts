@@ -19,6 +19,7 @@ import {
 } from "./model/datamodel"
 import { GameDoc } from "./model/gamedoc"
 import { ParticleFX } from "./model/particlefx"
+import { PhysicsSettings } from "./model/physicsSettings"
 
 type GlobalStateType = {
   doc: GameDoc
@@ -126,6 +127,9 @@ export class SelectionPath {
       this.path = [target]
     }
     if (doc) {
+      if (target instanceof PhysicsSettings) {
+        this.path = [target, doc]
+      }
       if (target instanceof Camera) {
         this.path = [target, doc]
       }

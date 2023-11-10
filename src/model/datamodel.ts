@@ -118,12 +118,6 @@ export const PaletteDef = new PropDefBuilder<ImagePalette>({
   },
 }).withEditable(false)
 
-const JumpDef: PropDef<number> = FloatDef.copy().withDefault(() => -5)
-const GravityDef = FloatDef.copy().withDefault(() => 0.2)
-const MoveSpeedDef = FloatDef.copy().withDefault(() => 0.5)
-const MaxFallSpeedDef = FloatDef.copy().withDefault(() => 0.5)
-const FrictionDef = FloatDef.copy().withDefault(() => 0.99)
-
 export type MapCell = {
   tile: string //id of the sprite used to draw this
 }
@@ -707,11 +701,6 @@ const TestDefs: DefList<TestType> = {
     fromJSON: (v) => v,
   },
   viewport: ViewportDef,
-  gravity: GravityDef,
-  jump_power: JumpDef,
-  move_speed: FloatDef,
-  move_speed_max: FloatDef,
-  friction: FloatDef,
 }
 
 export class GameTest extends PropsBase<TestType> {

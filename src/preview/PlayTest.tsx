@@ -19,6 +19,7 @@ export function PlayTest(props: { map: GameMap }) {
   const doc = useContext(DocContext)
   const tileSize = doc.getPropValue("tileSize")
   const camera = doc.getPropValue("camera")
+  const physics = doc.getPropValue("physics")
   const ref = useRef<HTMLCanvasElement>(null)
   const [anim] = useState(() => new Anim())
   const [playing, setPlaying] = useState(true)
@@ -27,8 +28,7 @@ export function PlayTest(props: { map: GameMap }) {
   const [showActors, setShowActors] = useState(true)
   const [showHidden, setShowHidden] = useState(true)
   const [showPhysics, setShowPhysics] = useState(true)
-
-  const zoom = 4
+  const [zoom, setZoom] = useState(3)
 
   const redraw = () => {
     if (!ref.current) return
@@ -40,17 +40,11 @@ export function PlayTest(props: { map: GameMap }) {
 
     anim.setGamestate(gameState)
     const phs: PhysicsConstants = {
-      // gravity: test.getPropValue("gravity"),
-      gravity: 0.15,
-      // jump_power: test.getPropValue("jump_power"),
-      jump_power: -2.0,
-      // move_speed: test.getPropValue("move_speed"),
-      move_speed: 0.08,
-
-      // move_speed_max: test.getPropValue("move_speed_max"),
-      move_speed_max: 1.5,
-      // friction: test.getPropValue("friction"),
-      friction: 0.98,
+      gravity: physics.getPropValue("gravity"),
+      jump_power: physics.getPropValue("jump_power"),
+      move_speed: physics.getPropValue("move_speed"),
+      move_speed_max: physics.getPropValue("move_speed_max"),
+      friction: physics.getPropValue("friction"),
     }
     anim.setPhysicsConstants(phs)
     anim.setKeyboardTarget(ref.current)
@@ -63,6 +57,7 @@ export function PlayTest(props: { map: GameMap }) {
     [doc, zoom, showGrid, showViewport, showHidden, showActors, ref, showPhysics],
   )
   useWatchAllProps(camera, () => redraw())
+  useWatchAllProps(physics, () => redraw())
   useEffect(() => {
     if (playing) {
       anim.stop()
@@ -89,6 +84,11 @@ export function PlayTest(props: { map: GameMap }) {
     >
       <header>Play test</header>
       <section className={"vbox"}>
+        <div className={"toolbar"}>
+          <button onClick={() => setZoom(zoom - 1)}>zoom in</button>
+          <label>{zoom}</label>
+          <button onClick={() => setZoom(zoom + 1)}>zoom out</button>
+        </div>
         <div className={"toolbar"}>
           <label>Debug</label>
           <ToggleButton
@@ -133,8 +133,19 @@ export function PlayTest(props: { map: GameMap }) {
             tabIndex={0}
             width={(viewport.w + 5) * tileSize.w * zoom}
             height={(viewport.h + 5) * tileSize.h * zoom}
+            style={{
+              alignSelf: "start",
+            }}
           ></canvas>
-          <PropSheet target={camera} collapsable={true} />
+          <div
+            className={"vbox"}
+            style={{
+              overflow: "clip",
+            }}
+          >
+            <PropSheet target={camera} collapsable={true} title={"camera"} />
+            <PropSheet target={physics} collapsable={true} title={"physics"} />
+          </div>
         </div>
       </section>
       <footer>

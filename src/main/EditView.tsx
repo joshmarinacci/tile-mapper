@@ -8,8 +8,10 @@ import { MapModeView } from "../mapeditor/MapModeView"
 import { Camera } from "../model/camera"
 import { Actor, GameMap, PixelFont, Sheet, SImage } from "../model/datamodel"
 import { ParticleFX } from "../model/particlefx"
+import { PhysicsSettings } from "../model/physicsSettings"
 import { SoundFX } from "../model/soundfx"
 import { ParticleFXEditorView } from "../particleeditor/ParticleFXEditorView"
+import { PhysicsSettingEditorView } from "../PhysicsSettingEditorView"
 import { TileSheetEditor } from "../sheeteditor/TileSheetEditor"
 import { SoundFXEditorView } from "../soundeditor/SoundFXEditorView"
 import { SelectionPath } from "../state"
@@ -43,6 +45,9 @@ export function EditView(props: { selection: SelectionPath }) {
   }
   if (selection instanceof Camera) {
     return <CameraEditorView camera={selection as Camera} />
+  }
+  if (selection instanceof PhysicsSettings) {
+    return <PhysicsSettingEditorView physics={selection as PhysicsSettings} />
   }
   if (!selection) {
     return (
