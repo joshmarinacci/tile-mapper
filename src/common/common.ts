@@ -255,4 +255,7 @@ export enum Icons {
   Font = "font",
   Image = "image",
   Document = "document",
+  Blank = "blank",
+  Checkmark = "check",
+  Map = "map",
 }

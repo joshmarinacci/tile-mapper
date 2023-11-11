@@ -16,7 +16,7 @@ import {
 import { PropsBase, useWatchProp } from "../model/base"
 import { Camera } from "../model/camera"
 import { StateContext } from "../model/contexts"
-import { Actor, GameMap, PixelFont, Sheet, SImage } from "../model/datamodel"
+import { Actor, ActorLayer, GameMap, PixelFont, Sheet, SImage, TileLayer } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
 import { ParticleFX } from "../model/particlefx"
 import { PhysicsSettings } from "../model/physicsSettings"
@@ -63,10 +63,10 @@ function PropertyList<T, K extends keyof T>(props: {
   )
 }
 
-function TreeObjectIcon(props: { obj: PropsBase<T> }) {
+function TreeObjectIcon<T>(props: { obj: PropsBase<T> }) {
   const { obj } = props
   if (obj instanceof Sheet) return <Icon name={Icons.Sheet} />
-  if (obj instanceof GameMap) return <Icon name={Icons.Sheet} />
+  if (obj instanceof GameMap) return <Icon name={Icons.Map} />
   if (obj instanceof Camera) return <Icon name={Icons.Camera} />
   if (obj instanceof PhysicsSettings) return <Icon name={Icons.Camera} />
   if (obj instanceof Actor) return <Icon name={Icons.Actor} />
@@ -74,6 +74,8 @@ function TreeObjectIcon(props: { obj: PropsBase<T> }) {
   if (obj instanceof PixelFont) return <Icon name={Icons.Font} />
   if (obj instanceof ParticleFX) return <Icon name={Icons.ParticleEffect} />
   if (obj instanceof GameDoc) return <Icon name={Icons.Document} />
+  if (obj instanceof ActorLayer) return <Icon name={Icons.Actor} />
+  if (obj instanceof TileLayer) return <Icon name={Icons.Tile} />
   return <Icon name={Icons.Object} />
 }
 

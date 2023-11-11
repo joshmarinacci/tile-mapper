@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 
 import { deleteTile, duplicate_tile, export_bmp } from "../actions/actions"
 import { drawEditableSprite, Icons, ImagePalette } from "../common/common"
-import { DropdownButton, IconButton, Pane } from "../common/common-components"
+import { CheckToggleButton, DropdownButton, IconButton, Pane } from "../common/common-components"
 import { ListSelect } from "../common/ListSelect"
 import { ListView, ListViewDirection, ListViewOptions, ListViewRenderer } from "../common/ListView"
 import { PopupContext } from "../common/popup"
@@ -150,16 +150,14 @@ export function TileListView(props: {
           />
           <Spacer />
           <DropdownButton icon={Icons.Gear}>
-            <button onClick={() => sheet.setPropValue("showNames", !showNames)}>show names</button>
-            <button onClick={() => sheet.setPropValue("showGrid", !showGrid)}>show grid</button>
-            <button onClick={() => setScale(1)}>1x</button>
-            <button onClick={() => setScale(2)}>2x</button>
-            <button onClick={() => setScale(4)}>4x</button>
-            <button onClick={() => setScale(8)}>8x</button>
-            <button onClick={() => setScale(16)}>16x</button>
-            <button onClick={() => sheet.setPropValue("locked", !locked)}>
-              {locked ? "unlock" : "lock"}
-            </button>
+            <CheckToggleButton target={sheet} prop={"showNames"} text={"show names"} />
+            <CheckToggleButton target={sheet} prop={"showGrid"} text={"show grid"} />
+            <button onClick={() => setScale(1)}>1x size</button>
+            <button onClick={() => setScale(2)}>2x size</button>
+            <button onClick={() => setScale(4)}>4x size</button>
+            <button onClick={() => setScale(8)}>8x size</button>
+            <button onClick={() => setScale(16)}>16x size</button>
+            <CheckToggleButton target={sheet} prop={"locked"} text={"locked"} />
             <button onClick={() => export_bmp(sheet, palette)}>export sheet to BMP</button>
           </DropdownButton>
         </div>

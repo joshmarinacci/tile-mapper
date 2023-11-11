@@ -4,7 +4,7 @@ import { toClass } from "josh_react_util"
 import React, { ReactNode, useContext, useState } from "react"
 
 import { ICON_CACHE } from "../iconcache"
-import { MenuAction, SimpleMenuAction } from "../model/base"
+import { MenuAction, PropsBase, SimpleMenuAction } from "../model/base"
 import { StateContext } from "../model/contexts"
 import { GlobalState } from "../state"
 import { down_arrow_triangle, Icons } from "./common"
@@ -199,6 +199,25 @@ export function IconButton(props: {
     <button onClick={props.onClick} data-text={props.tooltip} className={"tooltip"}>
       <Icon name={props.icon} />
       {props.text ? props.text : ""}
+    </button>
+  )
+}
+
+export function CheckToggleButton<T extends PropsBase<any>>(props: {
+  target: T
+  prop: string
+  text: string
+}) {
+  const { target, prop, text } = props
+  const selected = target.getPropValue(prop)
+  return (
+    <button
+      onClick={() => {
+        target.setPropValue(prop, !selected)
+      }}
+    >
+      <Icon name={selected ? Icons.Checkmark : Icons.Blank} />
+      {text}
     </button>
   )
 }
