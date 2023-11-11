@@ -1,8 +1,10 @@
 import { ArrayGrid, Point } from "josh_js_util"
-import { toClass } from "josh_react_util"
 import React from "react"
 
-import { GameDoc, MapCell, TileLayer } from "../model/datamodel"
+import { Icons } from "../common/common"
+import { ToggleButton } from "../common/common-components"
+import { MapCell, TileLayer } from "../model/datamodel"
+import { GameDoc } from "../model/gamedoc"
 import { MouseEventArgs, MouseHandler } from "./editorbase"
 
 function calculateDirections() {
@@ -71,9 +73,12 @@ export function TileLayerToolbar(props: {
   return (
     <div className={"toolbar"}>
       <label>tiles</label>
-      <button onClick={() => setFillOnce(true)} className={toClass({ selected: fillOnce })}>
-        fill
-      </button>
+      <ToggleButton
+        selected={fillOnce}
+        icon={Icons.PaintBucket}
+        onClick={() => setFillOnce(true)}
+        text="fill"
+      />
     </div>
   )
 }

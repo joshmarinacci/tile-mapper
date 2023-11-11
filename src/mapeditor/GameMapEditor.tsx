@@ -9,7 +9,7 @@ import { CompactSheetAndTileSelector } from "../sheeteditor/TileListView"
 import { LayerEditor } from "./LayerEditor"
 import { LayerList } from "./LayerList"
 
-export function MapModeView(props: { map: GameMap }) {
+export function GameMapEditor(props: { map: GameMap }) {
   const doc = useContext(DocContext)
   const state = useContext(StateContext)
   const selectedMap = props.map

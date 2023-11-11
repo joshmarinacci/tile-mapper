@@ -315,8 +315,13 @@ export function ImageEditorView(props: { image: SImage }) {
                 tooltip={"resize layer"}
                 text={"resize layer"}
               />
-              <button onClick={() => exportImageToPNG(doc, image, 4)}>export PNG 4x</button>
-              <button onClick={sharePNG}>share PNG</button>
+              <IconButton
+                icon={Icons.Download}
+                onClick={() => exportImageToPNG(doc, image, 4)}
+                text={"PNG 4x"}
+                tooltip={"download entire image as 4x scaled PNG"}
+              />
+              <IconButton icon={Icons.Share} onClick={sharePNG} text={"share png"} />
             </DropdownButton>
           </div>
           <ListView

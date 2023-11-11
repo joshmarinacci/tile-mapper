@@ -157,7 +157,11 @@ export function TileListView(props: {
           <button onClick={() => setScale(8)}>8x size</button>
           <button onClick={() => setScale(16)}>16x size</button>
           <CheckToggleButton target={sheet} prop={"locked"} text={"locked"} />
-          <button onClick={() => export_bmp(sheet, palette)}>export sheet to BMP</button>
+          <IconButton
+            icon={Icons.Share}
+            onClick={() => export_bmp(sheet, palette)}
+            text={"export sheet to BMP"}
+          />
         </DropdownButton>
       </div>
       {view === "list" && (

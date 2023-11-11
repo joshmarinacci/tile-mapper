@@ -1,8 +1,9 @@
 import { Point } from "josh_js_util"
+import { Spacer } from "josh_react_util"
 import React, { useContext, useState } from "react"
 
 import { Icons } from "../common/common"
-import { DropdownButton } from "../common/common-components"
+import { DropdownButton, IconButton, ToggleButton } from "../common/common-components"
 import { ListView, ListViewDirection } from "../common/ListView"
 import { appendToList, useWatchAllProps, useWatchProp } from "../model/base"
 import { StateContext } from "../model/contexts"
@@ -61,9 +62,25 @@ export function PixelFontEditorView(props: { font: PixelFont }) {
     <>
       <div className={"vbox tool-column"} style={{ maxWidth: "300px" }}>
         <div className={"toolbar"}>
-          <button onClick={add_glyph}>add glyph</button>
-          <button onClick={toggle_draw_names}>names</button>
-          <button onClick={sort}>sort</button>
+          <IconButton
+            icon={Icons.Plus}
+            onClick={add_glyph}
+            text={"glyph"}
+            tooltip={"add new font glyph"}
+          />
+          <ToggleButton
+            onClick={toggle_draw_names}
+            icon={Icons.Font}
+            selected={drawNames}
+            text={"names"}
+          />
+          <IconButton
+            onClick={sort}
+            text={"sort"}
+            icon={Icons.Sort}
+            tooltip={"sort glyphs by codepoint"}
+          />
+          <Spacer />
           <DropdownButton icon={Icons.Gear}>
             <button onClick={() => setScale(1)}>1x</button>
             <button onClick={() => setScale(2)}>2x</button>

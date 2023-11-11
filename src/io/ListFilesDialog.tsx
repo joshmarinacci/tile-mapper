@@ -28,6 +28,7 @@ export function ListFilesDialog(props: { state: GlobalState }) {
     const doc = await loadLocalDoc(state, file.uuid)
     state.setPropValue("doc", doc)
     state.setSelection(doc)
+    state.setSelectionTarget(doc)
     dm.hide()
   }
 

@@ -258,4 +258,12 @@ export enum Icons {
   Blank = "blank",
   Checkmark = "check",
   Map = "map",
+  Play = "play",
+  Pause = "pause",
+  Step = "step",
+  Stop = "stop",
+  Download = "download",
+  Share = "share",
+  Sort = "sort",
+  Save = "save",
 }

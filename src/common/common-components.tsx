@@ -72,10 +72,7 @@ export function ToolbarActionButton(props: {
   if (action.type === "react") {
     return (action as ReactMenuAction).makeComponent(state) as JSX.Element
   }
-  const icon = <></>
-  // if(action.icon) {
-  //     icon = <span  className="material-icons material-symbols-rounded">{action.icon}</span>
-  // }
+  const icon = action.icon ? <Icon name={action.icon} /> : ""
   const perform = async () => {
     if (action.type === "simple") await (action as SimpleMenuAction).perform(state)
   }

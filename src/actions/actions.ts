@@ -82,7 +82,7 @@ export const ImportFromJSONAction: SimpleMenuAction = {
 
 export const SaveLocalStorageAction: SimpleMenuAction = {
   type: "simple",
-  icon: Icons.Eraser,
+  icon: Icons.Save,
   title: "Save",
   description: "save the document in the browsers internal storage",
   tags: ["save", "local"],

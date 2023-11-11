@@ -4,7 +4,7 @@ import { ActorEditView } from "../ActorEditView"
 import { CameraEditorView } from "../CameraEditorView"
 import { PixelFontEditorView } from "../fonteditor/PixelFontEditorView"
 import { ImageEditorView } from "../imageeditor/ImageEditorView"
-import { MapModeView } from "../mapeditor/MapModeView"
+import { GameMapEditor } from "../mapeditor/GameMapEditor"
 import { Camera } from "../model/camera"
 import { Actor, GameMap, PixelFont, Sheet, SImage } from "../model/datamodel"
 import { ParticleFX } from "../model/particlefx"
@@ -29,7 +29,7 @@ export function EditView(props: { selection: SelectionPath }) {
     return <ActorEditView actor={selection as Actor} />
   }
   if (selection instanceof GameMap) {
-    return <MapModeView map={selection as GameMap} />
+    return <GameMapEditor map={selection as GameMap} />
   }
   if (selection instanceof SImage) {
     return <ImageEditorView image={selection as SImage} />

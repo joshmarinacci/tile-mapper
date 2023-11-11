@@ -3,7 +3,7 @@ import React, { useEffect, useRef, useState } from "react"
 import { AnimationLayer, AnimationManager, Camera, ParticleAnim } from "retrogami-engine"
 
 import { Icons } from "../common/common"
-import { IconButton } from "../common/common-components"
+import { IconButton, ToggleButton } from "../common/common-components"
 import { useWatchAllProps } from "../model/base"
 import { ParticleFX } from "../model/particlefx"
 
@@ -103,8 +103,13 @@ export function ParticleFXEditorView(props: { fx: ParticleFX }) {
       <div className={"vbox tool-column"}>particle tools</div>
       <div className={"editor-view"}>
         <div className={"toolbar"}>
-          <IconButton onClick={() => setPlaying(!playing)} icon={Icons.Actor} />
-          <IconButton onClick={() => setStep(step + 1)} icon={Icons.Actor} />
+          <ToggleButton
+            onClick={() => setPlaying(!playing)}
+            icon={Icons.Play}
+            selected={playing}
+            selectedIcon={Icons.Pause}
+          />
+          <IconButton onClick={() => setStep(step + 1)} icon={Icons.Step} />
         </div>
         <ParticleSimView playing={playing} step={step} fx={props.fx} />
       </div>

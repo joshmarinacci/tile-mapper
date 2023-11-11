@@ -6,7 +6,7 @@ import React, { MouseEvent, useContext, useEffect, useRef, useState } from "reac
 
 import { exportMapToPNG } from "../actions/actions"
 import { Icons } from "../common/common"
-import { DropdownButton } from "../common/common-components"
+import { DropdownButton, IconButton, ToggleButton } from "../common/common-components"
 import { ICON_CACHE } from "../iconcache"
 import { PropsBase, useWatchAllProps, useWatchProp } from "../model/base"
 import { DocContext } from "../model/contexts"
@@ -145,16 +145,42 @@ export function LayerEditor(props: {
   return (
     <div className={"layer-editor"}>
       <div className={"toolbar"}>
-        <button onClick={() => setGrid(!grid)}>grid</button>
-        <button onClick={() => setZoom(zoom + 1)}>+</button>
-        <button onClick={() => setZoom(zoom - 1)}>-</button>
+        <ToggleButton
+          onClick={() => setGrid(!grid)}
+          icon={Icons.Grid}
+          selected={grid}
+          selectedIcon={Icons.GridSelected}
+          text={"grid"}
+        />
+        <IconButton onClick={() => setZoom(zoom + 1)} icon={Icons.Plus} tooltip={"zoom in"} />
+        <IconButton onClick={() => setZoom(zoom - 1)} icon={Icons.Minus} tooltip={"zoom out"} />
         <Spacer />
-        <button onClick={start_playing}>Play</button>
+        <IconButton
+          onClick={start_playing}
+          icon={Icons.Play}
+          text={"run"}
+          tooltip={"run game map in simulator"}
+        />
         <Spacer />
         <DropdownButton icon={Icons.Gear}>
-          <button onClick={() => exportMapToPNG(doc, map, 1)}>png 1x</button>
-          <button onClick={() => exportMapToPNG(doc, map, 2)}>png 2x</button>
-          <button onClick={() => exportMapToPNG(doc, map, 4)}>png 4x</button>
+          <IconButton
+            onClick={() => exportMapToPNG(doc, map, 1)}
+            icon={Icons.Download}
+            text={"png 1x"}
+            tooltip={"download entire map as 1x png"}
+          />
+          <IconButton
+            onClick={() => exportMapToPNG(doc, map, 2)}
+            icon={Icons.Download}
+            text={"png 2x"}
+            tooltip={"download entire map as 2x png"}
+          />
+          <IconButton
+            onClick={() => exportMapToPNG(doc, map, 4)}
+            icon={Icons.Download}
+            text={"png 4x"}
+            tooltip={"download entire map as 4x png"}
+          />
         </DropdownButton>
       </div>
       {layer instanceof TileLayer && (

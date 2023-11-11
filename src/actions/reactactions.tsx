@@ -2,7 +2,8 @@ import { Bounds, Size } from "josh_js_util"
 import { DialogContext } from "josh_react_util"
 import React, { useContext } from "react"
 
-import { ReactMenuAction } from "../common/common-components"
+import { Icons } from "../common/common"
+import { IconButton, ReactMenuAction } from "../common/common-components"
 import { ListFilesDialog } from "../io/ListFilesDialog"
 import { LoadFileDialog } from "../io/LoadPNGJSONFileDialog"
 import { appendToList } from "../model/base"
@@ -35,12 +36,20 @@ function NewDocButton(props: { state: GlobalState }) {
       />,
     )
   }
-  return <button onClick={show}>New</button>
+  return (
+    <IconButton
+      onClick={show}
+      icon={Icons.Document}
+      text={"New Game"}
+      tooltip={"create a new empty game documenet"}
+    />
+  )
 }
 
 export const NewDocAction: ReactMenuAction = {
   type: "react",
   title: "new",
+  icon: Icons.Document,
   makeComponent: (state) => {
     return <NewDocButton state={state} />
   },
@@ -49,7 +58,14 @@ export const NewDocAction: ReactMenuAction = {
 function LoadDocButton(props: { state: GlobalState }): JSX.Element {
   const dm = useContext(DialogContext)
   const showOpenDialog = () => dm.show(<ListFilesDialog state={props.state} />)
-  return <button onClick={showOpenDialog}> Open</button>
+  return (
+    <IconButton
+      onClick={showOpenDialog}
+      icon={Icons.Document}
+      text={"Open Existing Game"}
+      tooltip={"Load previously saved game from browser storage"}
+    />
+  )
 }
 
 export const LoadLocalStorageAction: ReactMenuAction = {
