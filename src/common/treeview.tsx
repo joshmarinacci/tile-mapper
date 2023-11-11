@@ -20,6 +20,7 @@ import { Actor, ActorLayer, GameMap, PixelFont, Sheet, SImage, TileLayer } from 
 import { GameDoc } from "../model/gamedoc"
 import { ParticleFX } from "../model/particlefx"
 import { PhysicsSettings } from "../model/physicsSettings"
+import { SoundFX } from "../model/soundfx"
 import { down_arrow_triangle, Icons, right_arrow_triangle } from "./common"
 import { DropdownButton, Icon, MenuList, ToolbarActionButton } from "./common-components"
 import { PopupContext } from "./popup"
@@ -72,6 +73,7 @@ function TreeObjectIcon<T>(props: { obj: PropsBase<T> }) {
   if (obj instanceof Actor) return <Icon name={Icons.Actor} />
   if (obj instanceof SImage) return <Icon name={Icons.Image} />
   if (obj instanceof PixelFont) return <Icon name={Icons.Font} />
+  if (obj instanceof SoundFX) return <Icon name={Icons.Stop} />
   if (obj instanceof ParticleFX) return <Icon name={Icons.ParticleEffect} />
   if (obj instanceof GameDoc) return <Icon name={Icons.Document} />
   if (obj instanceof ActorLayer) return <Icon name={Icons.Actor} />

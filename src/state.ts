@@ -20,6 +20,7 @@ import {
 import { GameDoc } from "./model/gamedoc"
 import { ParticleFX } from "./model/particlefx"
 import { PhysicsSettings } from "./model/physicsSettings"
+import { SoundFX } from "./model/soundfx"
 
 type GlobalStateType = {
   doc: GameDoc
@@ -149,6 +150,9 @@ export class SelectionPath {
         this.path = [target, doc]
       }
       if (target instanceof ParticleFX) {
+        this.path = [target, doc]
+      }
+      if (target instanceof SoundFX) {
         this.path = [target, doc]
       }
       if (target instanceof Tile) {
