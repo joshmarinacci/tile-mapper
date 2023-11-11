@@ -1,12 +1,13 @@
 import "./SImageEditorView.css"
 
 import { Bounds, Point } from "josh_js_util"
-import { DialogContext } from "josh_react_util"
-import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
+import { DialogContext, Spacer } from "josh_react_util"
+import { canvas_to_blob } from "josh_web_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
+import { exportImageToPNG, new_object_layer, new_pixel_layer } from "../actions/actions"
 import { Icons, ImagePalette } from "../common/common"
-import { IconButton, Pane, ToggleButton } from "../common/common-components"
+import { DropdownButton, IconButton, Pane, ToggleButton } from "../common/common-components"
 import { ListView, ListViewDirection } from "../common/ListView"
 import { PaletteColorPickerPane } from "../common/Palette"
 import { ShareImageDialog } from "../common/ShareImageDialog"
@@ -197,19 +198,6 @@ export function ImageEditorView(props: { image: SImage }) {
   useEffect(() => redraw(), [canvasRef, zoom, grid, count, image])
   useWatchAllProps(image, () => setCount(count + 1))
 
-  const exportPNG = async () => {
-    const scale = 4
-    const canvas = document.createElement("canvas")
-    const size = image.getPropValue("size").scale(scale)
-    canvas.width = size.w
-    canvas.height = size.h
-    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
-    drawImage(doc, ctx, image, palette, scale)
-
-    const blob = await canvas_to_blob(canvas)
-    forceDownloadBlob(`${image.getPropValue("name") as string}.${scale}x.png`, blob)
-  }
-
   const sharePNG = async () => {
     const scale = 4
     const canvas = document.createElement("canvas")
@@ -234,23 +222,6 @@ export function ImageEditorView(props: { image: SImage }) {
       .subtract(new Point(rect.left, rect.top))
       .scale(1 / scale)
       .floor()
-  }
-  const new_pixel_layer = () => {
-    const layer = new ImagePixelLayer({
-      name: "new pixel layer",
-      opacity: 1.0,
-      visible: true,
-    })
-    layer.resizeAndClear(image.getPropValue("size"))
-    image.appendLayer(layer)
-  }
-  const new_object_layer = () => {
-    const layer = new ImageObjectLayer({
-      name: "new object layer",
-      opacity: 1.0,
-      visible: true,
-    })
-    image.appendLayer(layer)
   }
   const del_layer = () => {
     if (!layer) return
@@ -309,21 +280,16 @@ export function ImageEditorView(props: { image: SImage }) {
         <Pane key={"layer-list"} title={"layers"} collapsable={true}>
           <div className={"toolbar"}>
             <IconButton
-              onClick={() => new_pixel_layer()}
+              onClick={() => new_pixel_layer(image)}
               icon={Icons.Plus}
               text={"pixels"}
               tooltip={"create pixel layer"}
             />
             <IconButton
-              onClick={() => new_object_layer()}
+              onClick={() => new_object_layer(image)}
               icon={Icons.Plus}
               text={"objects"}
               tooltip={"create actor layer"}
-            />
-            <IconButton
-              onClick={() => del_layer()}
-              icon={Icons.Trashcan}
-              tooltip={"delete selected layer"}
             />
             <IconButton
               onClick={() => move_layer_down()}
@@ -335,11 +301,23 @@ export function ImageEditorView(props: { image: SImage }) {
               icon={Icons.DownArrow}
               tooltip={"move layer down"}
             />
-            <IconButton
-              onClick={() => resize_image()}
-              icon={Icons.Resize}
-              tooltip={"resize layer"}
-            />
+            <Spacer />
+            <DropdownButton icon={Icons.Gear}>
+              <IconButton
+                onClick={() => del_layer()}
+                icon={Icons.Trashcan}
+                tooltip={"delete selected layer"}
+                text={"delete selected layer"}
+              />
+              <IconButton
+                onClick={() => resize_image()}
+                icon={Icons.Resize}
+                tooltip={"resize layer"}
+                text={"resize layer"}
+              />
+              <button onClick={() => exportImageToPNG(doc, image, 4)}>export PNG 4x</button>
+              <button onClick={sharePNG}>share PNG</button>
+            </DropdownButton>
           </div>
           <ListView
             className={"layers"}
@@ -354,11 +332,6 @@ export function ImageEditorView(props: { image: SImage }) {
             options={undefined as never}
           />
         </Pane>
-        {/*<PropSheet target={layer} title={"Layer Info"} collapsable={true} />*/}
-        <div className={"toolbar"}>
-          <button onClick={exportPNG}>export PNG</button>
-          <button onClick={sharePNG}>share PNG</button>
-        </div>
       </div>
       <div className={"editor-view"}>
         <div className={"toolbar"}>
@@ -370,6 +343,8 @@ export function ImageEditorView(props: { image: SImage }) {
             selected={grid}
             selectedIcon={Icons.GridSelected}
           />
+        </div>
+        <div className={"toolbar"}>
           {layer instanceof ImagePixelLayer && (
             <div className={"toolbar"}>
               <ToggleButton
@@ -450,12 +425,12 @@ export function ImageEditorView(props: { image: SImage }) {
             <b>{pixelTool.name} settings</b>
             {tool_settings}
           </div>
-          <PaletteColorPickerPane
-            drawColor={drawColor}
-            setDrawColor={setDrawColor}
-            palette={palette}
-          />
         </div>
+        <PaletteColorPickerPane
+          drawColor={drawColor}
+          setDrawColor={setDrawColor}
+          palette={palette}
+        />
         <div>
           <canvas
             ref={canvasRef}

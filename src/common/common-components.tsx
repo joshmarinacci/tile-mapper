@@ -197,9 +197,8 @@ export function IconButton(props: {
 }) {
   return (
     <button onClick={props.onClick} data-text={props.tooltip} className={"tooltip"}>
-      {props.text ? props.text : ""}
-
       <Icon name={props.icon} />
+      {props.text ? props.text : ""}
     </button>
   )
 }

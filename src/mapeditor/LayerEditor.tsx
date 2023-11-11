@@ -4,7 +4,7 @@ import { Point } from "josh_js_util"
 import { DialogContext, Spacer } from "josh_react_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
-import { exportPNG } from "../actions/actions"
+import { exportMapToPNG } from "../actions/actions"
 import { Icons } from "../common/common"
 import { DropdownButton } from "../common/common-components"
 import { ICON_CACHE } from "../iconcache"
@@ -152,9 +152,9 @@ export function LayerEditor(props: {
         <button onClick={start_playing}>Play</button>
         <Spacer />
         <DropdownButton icon={Icons.Gear}>
-          <button onClick={() => exportPNG(doc, map, 1)}>png 1x</button>
-          <button onClick={() => exportPNG(doc, map, 2)}>png 2x</button>
-          <button onClick={() => exportPNG(doc, map, 4)}>png 4x</button>
+          <button onClick={() => exportMapToPNG(doc, map, 1)}>png 1x</button>
+          <button onClick={() => exportMapToPNG(doc, map, 2)}>png 2x</button>
+          <button onClick={() => exportMapToPNG(doc, map, 4)}>png 4x</button>
         </DropdownButton>
       </div>
       {layer instanceof TileLayer && (

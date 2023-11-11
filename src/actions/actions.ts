@@ -2,6 +2,7 @@ import { ArrayGrid, Point, Size } from "josh_js_util"
 import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 
 import { canvas_to_bmp, Icons, ImagePalette, sheet_to_canvas } from "../common/common"
+import { drawImage } from "../imageeditor/ImageEditorView"
 import {
   docToJSON,
   fileToJson,
@@ -19,7 +20,8 @@ import {
   Actor,
   ActorLayer,
   GameMap,
-  GameTest,
+  ImageObjectLayer,
+  ImagePixelLayer,
   MapLayerType,
   PixelFont,
   Sheet,
@@ -225,7 +227,7 @@ export function map_to_canvas(map: GameMap, doc: GameDoc, scale: number): HTMLCa
   return canvas
 }
 
-export async function exportPNG(doc: GameDoc, map: GameMap, scale: number) {
+export async function exportMapToPNG(doc: GameDoc, map: GameMap, scale: number) {
   const can = map_to_canvas(map, doc, scale)
   const blob = await canvas_to_blob(can)
   forceDownloadBlob(`${map.getPropValue("name") as string}.${scale}x.png`, blob)
@@ -364,6 +366,38 @@ export const DeleteSoundFXAction: SimpleMenuAction = {
       state.clearSelection()
     }
   },
+}
+
+export const new_pixel_layer = (image: SImage) => {
+  const layer = new ImagePixelLayer({
+    name: "new pixel layer",
+    opacity: 1.0,
+    visible: true,
+  })
+  layer.resizeAndClear(image.getPropValue("size"))
+  image.appendLayer(layer)
+}
+
+export const new_object_layer = (image: SImage) => {
+  const layer = new ImageObjectLayer({
+    name: "new object layer",
+    opacity: 1.0,
+    visible: true,
+  })
+  image.appendLayer(layer)
+}
+
+export const exportImageToPNG = async (doc: GameDoc, image: SImage, scale: number) => {
+  const canvas = document.createElement("canvas")
+  const size = image.getPropValue("size").scale(scale)
+  canvas.width = size.w
+  canvas.height = size.h
+  const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+  const palette = doc.getPropValue("palette")
+  drawImage(doc, ctx, image, palette, scale)
+
+  const blob = await canvas_to_blob(canvas)
+  forceDownloadBlob(`${image.getPropValue("name") as string}.${scale}x.png`, blob)
 }
 
 export function drawGrid(

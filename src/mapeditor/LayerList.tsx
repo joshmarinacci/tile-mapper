@@ -1,4 +1,4 @@
-import { DialogContext } from "josh_react_util"
+import { DialogContext, Spacer } from "josh_react_util"
 import React, { useContext } from "react"
 
 import {
@@ -9,7 +9,7 @@ import {
   move_layer_up,
 } from "../actions/actions"
 import { Icons } from "../common/common"
-import { Icon, Pane } from "../common/common-components"
+import { DropdownButton, Icon, IconButton, Pane } from "../common/common-components"
 import { ListView, ListViewDirection, ListViewRenderer } from "../common/ListView"
 import { PropsBase, useWatchProp } from "../model/base"
 import { GameMap, MapLayerType, TileLayer } from "../model/datamodel"
@@ -58,18 +58,21 @@ export function LayerList(props: {
           <button onClick={() => add_actor_layer(props.map)}>
             + <Icon name={Icons.Actor} />
           </button>
-          <button onClick={() => delete_map_layer(layer, props.map)}>
-            <Icon name={Icons.Trashcan} />
-          </button>
           <button onClick={() => move_layer_up(layer, props.map)}>
             <Icon name={Icons.DownArrow} />
           </button>
           <button onClick={() => move_layer_down(layer, props.map)}>
             <Icon name={Icons.UpArrow} />
           </button>
-          <button onClick={() => resize()}>
-            <Icon name={Icons.Resize} />
-          </button>
+          <Spacer />
+          <DropdownButton icon={Icons.Gear}>
+            <IconButton onClick={() => resize()} icon={Icons.Resize} text={"resize layer"} />
+            <IconButton
+              onClick={() => delete_map_layer(layer, props.map)}
+              icon={Icons.Trashcan}
+              text={"delete selected layer"}
+            />
+          </DropdownButton>
         </div>
       )}
       <ListView
