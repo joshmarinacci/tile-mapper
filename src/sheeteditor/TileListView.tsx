@@ -160,6 +160,7 @@ export function TileListView(props: {
             <button onClick={() => sheet.setPropValue("locked", !locked)}>
               {locked ? "unlock" : "lock"}
             </button>
+            <button onClick={() => export_bmp(sheet, palette)}>export sheet to BMP</button>
           </DropdownButton>
         </div>
       )}
@@ -182,11 +183,6 @@ export function TileListView(props: {
           sheet={sheet}
           options={{ showNames, scale, sheet, showGrid, palette, locked }}
         />
-      )}
-      {editable && (
-        <div className={"toolbar"}>
-          <button onClick={() => export_bmp(sheet, palette)}>to BMP</button>
-        </div>
       )}
     </div>
   )
