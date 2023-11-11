@@ -129,39 +129,37 @@ export function TileListView(props: {
   useEffect(() => setTiles(sheet.getPropValue("tiles")), [sheet])
   return (
     <div className={"tile-list-view"}>
-      {editable && (
-        <div className={"toolbar"}>
-          <IconButton onClick={add_tile} icon={Icons.Tile} tooltip={"create new tile"} />
-          <IconButton
-            onClick={dup_tile}
-            icon={Icons.Duplicate}
-            tooltip={"duplicate selected tile"}
-          />
-          <IconButton
-            onClick={delete_tile}
-            icon={Icons.Trashcan}
-            tooltip={"delete selected tile"}
-          />
-          <IconButton onClick={use_grid_view} icon={Icons.Grid} tooltip={"organize by position"} />
-          <IconButton
-            onClick={use_list_view}
-            icon={Icons.Selection}
-            tooltip={"organize by order"}
-          />
-          <Spacer />
-          <DropdownButton icon={Icons.Gear}>
-            <CheckToggleButton target={sheet} prop={"showNames"} text={"show names"} />
-            <CheckToggleButton target={sheet} prop={"showGrid"} text={"show grid"} />
-            <button onClick={() => setScale(1)}>1x size</button>
-            <button onClick={() => setScale(2)}>2x size</button>
-            <button onClick={() => setScale(4)}>4x size</button>
-            <button onClick={() => setScale(8)}>8x size</button>
-            <button onClick={() => setScale(16)}>16x size</button>
-            <CheckToggleButton target={sheet} prop={"locked"} text={"locked"} />
-            <button onClick={() => export_bmp(sheet, palette)}>export sheet to BMP</button>
-          </DropdownButton>
-        </div>
-      )}
+      <div className={"toolbar"}>
+        {editable && (
+          <>
+            <IconButton onClick={add_tile} icon={Icons.Tile} tooltip={"create new tile"} />
+            <IconButton
+              onClick={dup_tile}
+              icon={Icons.Duplicate}
+              tooltip={"duplicate selected tile"}
+            />
+            <IconButton
+              onClick={delete_tile}
+              icon={Icons.Trashcan}
+              tooltip={"delete selected tile"}
+            />
+          </>
+        )}
+        <IconButton onClick={use_grid_view} icon={Icons.Grid} tooltip={"organize by position"} />
+        <IconButton onClick={use_list_view} icon={Icons.Selection} tooltip={"organize by order"} />
+        <Spacer />
+        <DropdownButton icon={Icons.Gear}>
+          <CheckToggleButton target={sheet} prop={"showNames"} text={"show names"} />
+          <CheckToggleButton target={sheet} prop={"showGrid"} text={"show grid"} />
+          <button onClick={() => setScale(1)}>1x size</button>
+          <button onClick={() => setScale(2)}>2x size</button>
+          <button onClick={() => setScale(4)}>4x size</button>
+          <button onClick={() => setScale(8)}>8x size</button>
+          <button onClick={() => setScale(16)}>16x size</button>
+          <CheckToggleButton target={sheet} prop={"locked"} text={"locked"} />
+          <button onClick={() => export_bmp(sheet, palette)}>export sheet to BMP</button>
+        </DropdownButton>
+      </div>
       {view === "list" && (
         <ListView
           className={"tile-list"}
