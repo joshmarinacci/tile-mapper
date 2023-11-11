@@ -97,9 +97,9 @@ const GameDocDefs: DefList<DocType> = {
   fonts: PixelFontListDef,
   palette: PaletteDef,
   tileSize: SizeDef,
-  camera: CameraPropDef,
-  physics: PhysicsSettingsPropDef,
-  assets: ObjectListDef.copy().withHidden(false).withExpandable(true),
+  camera: CameraPropDef.withHidden(true),
+  physics: PhysicsSettingsPropDef.withHidden(true),
+  assets: ObjectListDef.copy().withHidden(true).withExpandable(true),
 }
 
 export function gen_canvas(tile: Tile, palette: ImagePalette) {

@@ -4,7 +4,7 @@ import { Icons } from "./common/common"
 import { IconButton } from "./common/common-components"
 import { drawImage } from "./imageeditor/ImageEditorView"
 import { useWatchAllProps, useWatchProp } from "./model/base"
-import { DocContext } from "./model/contexts"
+import { DocContext, StateContext } from "./model/contexts"
 import { Actor } from "./model/datamodel"
 import { strokeBounds } from "./util"
 
@@ -35,18 +35,27 @@ function SpriteView(props: {
 }
 
 export function ActorEditView(props: { actor: Actor }) {
-  const [zoom, setZoom] = useState(0)
+  const [zoom, setZoom] = useState(4)
   const sprite = props.actor.getPropValue("sprite")
   useWatchAllProps(props.actor)
   useWatchProp(props.actor, "hitbox")
   const scale = Math.pow(2, zoom)
+  const state = useContext(StateContext)
+  const doc = useContext(DocContext)
+  const editSprite = () => {
+    const img = doc.getPropValue("canvases").find((img) => img.getUUID() === sprite)
+    if (img) {
+      state.setSelectionTarget(img)
+    }
+  }
   return (
     <>
       <div className={"tool-column"}> tool column </div>
       <div className={"editor-view"}>
         <div className={"toolbar"}>
-          <IconButton onClick={() => setZoom(zoom - 1)} icon={Icons.Minus} />
-          <IconButton onClick={() => setZoom(zoom + 1)} icon={Icons.Plus} />
+          <IconButton onClick={() => setZoom(zoom - 1)} icon={Icons.Minus} tooltip={"zoom in"} />
+          <IconButton onClick={() => setZoom(zoom + 1)} icon={Icons.Plus} tooltip={"zoom out"} />
+          <button onClick={() => editSprite()}>edit sprite</button>
         </div>
         {sprite && (
           <SpriteView
