@@ -21,8 +21,9 @@ import { GameDoc } from "../model/gamedoc"
 import { ParticleFX } from "../model/particlefx"
 import { PhysicsSettings } from "../model/physicsSettings"
 import { SoundFX } from "../model/soundfx"
-import { down_arrow_triangle, Icons, right_arrow_triangle } from "./common"
+import { down_arrow_triangle, right_arrow_triangle } from "./common"
 import { DropdownButton, Icon, MenuList, ToolbarActionButton } from "./common-components"
+import { Icons } from "./icons"
 import { PopupContext } from "./popup"
 
 function PropertyList<T, K extends keyof T>(props: {

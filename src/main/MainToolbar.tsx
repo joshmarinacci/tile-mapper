@@ -8,8 +8,8 @@ import {
   SavePNGJSONAction,
 } from "../actions/actions"
 import { LoadLocalStorageAction, NewDocAction, UploadPNGJSONAction } from "../actions/reactactions"
-import { Icons } from "../common/common"
 import { DropdownButton, IconButton, ToolbarActionButton } from "../common/common-components"
+import { Icons } from "../common/icons"
 
 export function MainToolbar() {
   return (
@@ -19,17 +19,17 @@ export function MainToolbar() {
       <ToolbarActionButton action={LoadLocalStorageAction} />
       <ToolbarActionButton action={SaveLocalStorageAction} />
       <Spacer />
-      <DropdownButton title={"Help"}>
+      <DropdownButton title={"Help"} icon={Icons.QuestionMark}>
         <IconButton
           onClick={() => {
             window.open("https://retrogami.dev/docs/gettingstarted/")
           }}
-          icon={Icons.Sort}
+          icon={Icons.QuestionMark}
           text={"getting started"}
           tooltip={"open the Getting Started Guide in a new tab"}
         />
       </DropdownButton>
-      <DropdownButton title={"Export"}>
+      <DropdownButton title={"Export"} icon={Icons.Download}>
         <ToolbarActionButton action={SavePNGJSONAction} />
         <ToolbarActionButton action={UploadPNGJSONAction} />
         <ToolbarActionButton action={ExportToJSONAction} />

@@ -8,8 +8,8 @@ import {
   move_layer_down,
   move_layer_up,
 } from "../actions/actions"
-import { Icons } from "../common/common"
 import { DropdownButton, Icon, IconButton, Pane } from "../common/common-components"
+import { Icons } from "../common/icons"
 import { ListView, ListViewDirection, ListViewRenderer } from "../common/ListView"
 import { PropsBase, useWatchProp } from "../model/base"
 import { GameMap, MapLayerType, TileLayer } from "../model/datamodel"

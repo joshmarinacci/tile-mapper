@@ -1,7 +1,8 @@
 import { ArrayGrid, Point, Size } from "josh_js_util"
 import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 
-import { canvas_to_bmp, Icons, ImagePalette, sheet_to_canvas } from "../common/common"
+import { canvas_to_bmp, ImagePalette, sheet_to_canvas } from "../common/common"
+import { Icons } from "../common/icons"
 import { drawImage } from "../imageeditor/ImageEditorView"
 import {
   docToJSON,

@@ -443,7 +443,7 @@ const SheetDefs: DefList<SheetType> = {
   showNames: TransientBooleanDef,
   showGrid: TransientBooleanDef,
   locked: TransientBooleanDef,
-  viewMode: StringDef.withDefault(() => "list"),
+  viewMode: StringDef.withDefault(() => "list").withHidden(true),
 }
 
 export class Sheet extends PropsBase<SheetType> {

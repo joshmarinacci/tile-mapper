@@ -1,7 +1,7 @@
 import React from "react"
 
-import { Icons } from "../common/common"
 import { Icon } from "../common/common-components"
+import { Icons } from "../common/icons"
 import { ListViewRenderer } from "../common/ListView"
 import { PropsBase, useWatchProp } from "../model/base"
 import { ImageLayerType, ImageObjectLayer, ImagePixelLayer } from "../model/datamodel"

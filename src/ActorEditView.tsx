@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useRef, useState } from "react"
 
-import { Icons } from "./common/common"
 import { IconButton } from "./common/common-components"
+import { Icons } from "./common/icons"
 import { drawImage } from "./imageeditor/ImageEditorView"
 import { useWatchAllProps, useWatchProp } from "./model/base"
 import { DocContext, StateContext } from "./model/contexts"

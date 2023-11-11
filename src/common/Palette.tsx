@@ -3,8 +3,9 @@ import "./Palette.css"
 import { Spacer, toClass } from "josh_react_util"
 import React, { useState } from "react"
 
-import { Icons, ImagePalette } from "./common"
+import { ImagePalette } from "./common"
 import { DropdownButton, Pane } from "./common-components"
+import { Icons } from "./icons"
 import { ListView, ListViewDirection, ListViewOptions } from "./ListView"
 
 const PaletteColorRenderer = (props: {

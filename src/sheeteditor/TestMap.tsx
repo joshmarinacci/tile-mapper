@@ -1,7 +1,8 @@
 import { ArrayGrid, Point } from "josh_js_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
-import { drawEditableSprite, Icons, ImagePalette } from "../common/common"
+import { drawEditableSprite, ImagePalette } from "../common/common"
+import { Icons } from "../common/icons"
 import { ICON_CACHE } from "../iconcache"
 import { DocContext } from "../model/contexts"
 import { Tile } from "../model/datamodel"

@@ -7,7 +7,8 @@ import { ICON_CACHE } from "../iconcache"
 import { MenuAction, PropsBase, SimpleMenuAction } from "../model/base"
 import { StateContext } from "../model/contexts"
 import { GlobalState } from "../state"
-import { down_arrow_triangle, Icons } from "./common"
+import { down_arrow_triangle } from "./common"
+import { Icons } from "./icons"
 import { PopupContext } from "./popup"
 
 export function EditableLabel(props: { onChange: (str: string) => void; value: string }) {

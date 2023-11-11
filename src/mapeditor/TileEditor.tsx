@@ -1,8 +1,8 @@
 import { ArrayGrid, Point } from "josh_js_util"
 import React from "react"
 
-import { Icons } from "../common/common"
 import { ToggleButton } from "../common/common-components"
+import { Icons } from "../common/icons"
 import { MapCell, TileLayer } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
 import { MouseEventArgs, MouseHandler } from "./editorbase"

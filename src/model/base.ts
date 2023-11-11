@@ -1,7 +1,7 @@
 import { genId } from "josh_js_util"
 import { useEffect, useState } from "react"
 
-import { Icons } from "../common/common"
+import { Icons } from "../common/icons"
 import { GlobalState } from "../state"
 
 export type UUID = string

@@ -2,8 +2,8 @@ import { Point, toRadians } from "josh_js_util"
 import React, { useEffect, useRef, useState } from "react"
 import { AnimationLayer, AnimationManager, Camera, ParticleAnim } from "retrogami-engine"
 
-import { Icons } from "../common/common"
 import { IconButton, ToggleButton } from "../common/common-components"
+import { Icons } from "../common/icons"
 import { useWatchAllProps } from "../model/base"
 import { ParticleFX } from "../model/particlefx"
 

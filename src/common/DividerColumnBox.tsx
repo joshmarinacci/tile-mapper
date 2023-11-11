@@ -3,7 +3,7 @@ import "./DividerColumnBox.css"
 import React, { ReactNode } from "react"
 
 import { ICON_CACHE } from "../iconcache"
-import { Icons } from "./common"
+import { Icons } from "./icons"
 
 export function DividerColumnBox(props: {
   value: number

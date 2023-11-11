@@ -4,8 +4,15 @@ import { Spacer, toClass } from "josh_react_util"
 import React, { useContext, useEffect, useRef, useState } from "react"
 
 import { deleteTile, duplicate_tile, export_bmp } from "../actions/actions"
-import { drawEditableSprite, Icons, ImagePalette } from "../common/common"
-import { CheckToggleButton, DropdownButton, IconButton, Pane } from "../common/common-components"
+import { drawEditableSprite, ImagePalette } from "../common/common"
+import {
+  CheckToggleButton,
+  DropdownButton,
+  IconButton,
+  Pane,
+  ToggleButton,
+} from "../common/common-components"
+import { Icons } from "../common/icons"
 import { ListSelect } from "../common/ListSelect"
 import { ListView, ListViewDirection, ListViewOptions, ListViewRenderer } from "../common/ListView"
 import { PopupContext } from "../common/popup"
@@ -151,11 +158,41 @@ export function TileListView(props: {
         <DropdownButton icon={Icons.Gear}>
           <CheckToggleButton target={sheet} prop={"showNames"} text={"show names"} />
           <CheckToggleButton target={sheet} prop={"showGrid"} text={"show grid"} />
-          <button onClick={() => setScale(1)}>1x size</button>
-          <button onClick={() => setScale(2)}>2x size</button>
-          <button onClick={() => setScale(4)}>4x size</button>
-          <button onClick={() => setScale(8)}>8x size</button>
-          <button onClick={() => setScale(16)}>16x size</button>
+          <ToggleButton
+            onClick={() => setScale(1)}
+            icon={Icons.Blank}
+            selected={scale === 1}
+            selectedIcon={Icons.Checkmark}
+            text={"1x size"}
+          />
+          <ToggleButton
+            onClick={() => setScale(2)}
+            icon={Icons.Blank}
+            selected={scale === 2}
+            selectedIcon={Icons.Checkmark}
+            text={"2x size"}
+          />
+          <ToggleButton
+            onClick={() => setScale(4)}
+            icon={Icons.Blank}
+            selected={scale === 4}
+            selectedIcon={Icons.Checkmark}
+            text={"4x size"}
+          />
+          <ToggleButton
+            onClick={() => setScale(8)}
+            icon={Icons.Blank}
+            selected={scale === 8}
+            selectedIcon={Icons.Checkmark}
+            text={"8x size"}
+          />
+          <ToggleButton
+            onClick={() => setScale(16)}
+            icon={Icons.Blank}
+            selected={scale === 16}
+            selectedIcon={Icons.Checkmark}
+            text={"16x size"}
+          />
           <CheckToggleButton target={sheet} prop={"locked"} text={"locked"} />
           <IconButton
             icon={Icons.Share}
