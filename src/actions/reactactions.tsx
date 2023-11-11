@@ -196,6 +196,7 @@ export function AddSoundFXToDocButton() {
     const fx = new SoundFX({ name: "unnamed" })
     appendToList(doc, "assets", fx)
     state.setSelection(fx)
+    state.setSelectionTarget(fx)
   }
   return <button onClick={perform}>Add Sound Effect</button>
 }
