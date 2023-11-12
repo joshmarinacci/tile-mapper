@@ -46,7 +46,7 @@ export function map_to_canvas(map: GameMap, doc: GameDoc, scale: number): HTMLCa
   return canvas
 }
 
-export const add_tile_layer = (map: GameMap) => {
+const add_tile_layer = (map: GameMap) => {
   const layer = new TileLayer({
     name: "new tile layer",
     size: new Size(20, 10),
@@ -56,7 +56,7 @@ export const add_tile_layer = (map: GameMap) => {
   })
   appendToList(map, "layers", layer)
 }
-export const add_actor_layer = (map: GameMap) => {
+const add_actor_layer = (map: GameMap) => {
   const layer = new ActorLayer({
     name: "new actor layer",
     visible: true,
@@ -64,7 +64,7 @@ export const add_actor_layer = (map: GameMap) => {
   })
   appendToList(map, "layers", layer)
 }
-export const delete_map_layer = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
+const delete_map_layer = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
   if (!layer) return
   let layers = map.getPropValue("layers") as PropsBase<MapLayerType>[]
   layers = layers.slice()
@@ -74,31 +74,19 @@ export const delete_map_layer = (layer: PropsBase<MapLayerType> | undefined, map
   }
   map.setPropValue("layers", layers)
 }
-export const DeleteTileLayerAction: SimpleMenuAction = {
+export const DeleteMapLayerAction: SimpleMenuAction = {
   type: "simple",
   title: "delete tile layer",
   icon: Icons.Trashcan,
   perform: async (state) => {
     const path = state.getSelectionPath()
-    if (path.start() instanceof TileLayer) {
+    if (path.start() instanceof TileLayer || path.start() instanceof ActorLayer) {
       const map: GameMap = path.parent().start()
       delete_map_layer(path.start() as PropsBase<MapLayerType>, map)
     }
   },
 }
-export const DeleteActorLayerAction: SimpleMenuAction = {
-  type: "simple",
-  title: "delete actor layer",
-  icon: Icons.Trashcan,
-  perform: async (state) => {
-    const path = state.getSelectionPath()
-    if (path.start() instanceof ActorLayer) {
-      const map: GameMap = path.parent().start()
-      delete_map_layer(path.start() as PropsBase<MapLayerType>, map)
-    }
-  },
-}
-export const move_layer_up = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
+const move_layer_up = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
   console.log("moving layer up")
   if (!layer) return
   let layers = map.getPropValue("layers") as PropsBase<MapLayerType>[]
@@ -121,6 +109,16 @@ export const MoveMapLayerUpAction: SimpleMenuAction = {
     }
   },
 }
+const move_layer_down = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
+  if (!layer) return
+  let layers = map.getPropValue("layers") as PropsBase<MapLayerType>[]
+  layers = layers.slice()
+  const n = layers.indexOf(layer)
+  if (n <= 0) return
+  layers.splice(n, 1)
+  layers.splice(n - 1, 0, layer)
+  map.setPropValue("layers", layers)
+}
 export const MoveMapLayerDownAction: SimpleMenuAction = {
   type: "simple",
   title: "move layer down",
@@ -132,16 +130,6 @@ export const MoveMapLayerDownAction: SimpleMenuAction = {
       move_layer_down(path.start() as PropsBase<MapLayerType>, map)
     }
   },
-}
-export const move_layer_down = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
-  if (!layer) return
-  let layers = map.getPropValue("layers") as PropsBase<MapLayerType>[]
-  layers = layers.slice()
-  const n = layers.indexOf(layer)
-  if (n <= 0) return
-  layers.splice(n, 1)
-  layers.splice(n - 1, 0, layer)
-  map.setPropValue("layers", layers)
 }
 export const DeleteMapAction: SimpleMenuAction = {
   type: "simple",
@@ -168,5 +156,46 @@ export const ExportMapToPNGAction: SimpleMenuAction = {
     const doc = state.getPropValue("doc")
     const map: GameMap = state.getPropValue("selection")
     await exportMapToPNG(doc, map, 1)
+  },
+}
+
+export const AddTileLayerToMapAction: SimpleMenuAction = {
+  type: "simple",
+  icon: Icons.Plus,
+  title: "add tile layer",
+  perform: async (state) => {
+    const path = state.getSelectionPath()
+    if (path.start() instanceof GameMap) {
+      const map = path.start() as GameMap
+      add_tile_layer(map)
+    }
+    if (path.start() instanceof TileLayer) {
+      const map = path.parent().start() as GameMap
+      add_tile_layer(map)
+    }
+    if (path.start() instanceof ActorLayer) {
+      const map = path.parent().start() as GameMap
+      add_tile_layer(map)
+    }
+  },
+}
+export const AddActorLayerToMapAction: SimpleMenuAction = {
+  type: "simple",
+  icon: Icons.Plus,
+  title: "add map layer",
+  perform: async (state) => {
+    const path = state.getSelectionPath()
+    if (path.start() instanceof GameMap) {
+      const map = path.start() as GameMap
+      add_actor_layer(map)
+    }
+    if (path.start() instanceof TileLayer) {
+      const map = path.parent().start() as GameMap
+      add_actor_layer(map)
+    }
+    if (path.start() instanceof ActorLayer) {
+      const map = path.parent().start() as GameMap
+      add_actor_layer(map)
+    }
   },
 }

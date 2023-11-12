@@ -2,13 +2,19 @@ import { DialogContext, Spacer } from "josh_react_util"
 import React, { useContext } from "react"
 
 import {
-  add_actor_layer,
-  add_tile_layer,
-  delete_map_layer,
-  move_layer_down,
-  move_layer_up,
+  AddActorLayerToMapAction,
+  AddTileLayerToMapAction,
+  DeleteMapLayerAction,
+  MoveMapLayerDownAction,
+  MoveMapLayerUpAction,
 } from "../actions/gamemap"
-import { DropdownButton, Icon, IconButton, Pane } from "../common/common-components"
+import {
+  DropdownButton,
+  Icon,
+  IconButton,
+  Pane,
+  ToolbarActionButton,
+} from "../common/common-components"
 import { Icons } from "../common/icons"
 import { ListView, ListViewDirection, ListViewRenderer } from "../common/ListView"
 import { PropsBase, useWatchProp } from "../model/base"
@@ -52,26 +58,14 @@ export function LayerList(props: {
     <Pane className={"layer-list-view"} collapsable={true} title={"Layers"}>
       {props.editable && (
         <div className={"toolbar"}>
-          <button onClick={() => add_tile_layer(props.map)}>
-            + <Icon name={Icons.Tile} />
-          </button>
-          <button onClick={() => add_actor_layer(props.map)}>
-            + <Icon name={Icons.Actor} />
-          </button>
-          <button onClick={() => move_layer_up(layer, props.map)}>
-            <Icon name={Icons.DownArrow} />
-          </button>
-          <button onClick={() => move_layer_down(layer, props.map)}>
-            <Icon name={Icons.UpArrow} />
-          </button>
+          <ToolbarActionButton action={AddTileLayerToMapAction} />
+          <ToolbarActionButton action={AddActorLayerToMapAction} />
           <Spacer />
           <DropdownButton icon={Icons.Gear}>
+            <ToolbarActionButton action={MoveMapLayerUpAction} />
+            <ToolbarActionButton action={MoveMapLayerDownAction} />
             <IconButton onClick={() => resize()} icon={Icons.Resize} text={"resize layer"} />
-            <IconButton
-              onClick={() => delete_map_layer(layer, props.map)}
-              icon={Icons.Trashcan}
-              text={"delete selected layer"}
-            />
+            <ToolbarActionButton action={DeleteMapLayerAction} />
           </DropdownButton>
         </div>
       )}

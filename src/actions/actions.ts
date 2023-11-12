@@ -15,9 +15,10 @@ import { Sheet } from "../model/sheet"
 import { SoundFX } from "../model/soundfx"
 import { GlobalState } from "../state"
 import {
-  DeleteActorLayerAction,
+  AddActorLayerToMapAction,
+  AddTileLayerToMapAction,
   DeleteMapAction,
-  DeleteTileLayerAction,
+  DeleteMapLayerAction,
   ExportMapToPNGAction,
   MoveMapLayerDownAction,
   MoveMapLayerUpAction,
@@ -217,14 +218,11 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
   if (obj instanceof GameMap) {
     actions.push(DeleteMapAction)
     actions.push(ExportMapToPNGAction)
+    actions.push(AddTileLayerToMapAction)
+    actions.push(AddActorLayerToMapAction)
   }
-  if (obj instanceof TileLayer) {
-    actions.push(DeleteTileLayerAction)
-    actions.push(MoveMapLayerUpAction)
-    actions.push(MoveMapLayerDownAction)
-  }
-  if (obj instanceof ActorLayer) {
-    actions.push(DeleteActorLayerAction)
+  if (obj instanceof TileLayer || obj instanceof ActorLayer) {
+    actions.push(DeleteMapLayerAction)
     actions.push(MoveMapLayerUpAction)
     actions.push(MoveMapLayerDownAction)
   }
