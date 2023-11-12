@@ -60,8 +60,8 @@ function Main3() {
     <div
       className={"master-wrapper"}
       style={{
-        gridTemplateColumns: `[start] 0px ${showLeft ? "[left-sidebar] 200px" : ""} [tool-column] ${
-          toolWidth - (showLeft ? 200 : 0) - 10
+        gridTemplateColumns: `[start] 0px ${showLeft ? "[left-sidebar] 300px" : ""} [tool-column] ${
+          toolWidth - (showLeft ? 300 : 0) - 10
         }px [divider] 1px [editor-view] 1fr ${showRight ? "[right-sidebar] 300px" : ""} [end]`,
       }}
     >
