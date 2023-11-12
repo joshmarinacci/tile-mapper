@@ -115,7 +115,6 @@ export class SelectionPath {
   path: PropsBase<unknown>[]
 
   constructor(target?: PropsBase<unknown>, doc?: GameDoc) {
-    console.log("making a path from", target, "to", doc)
     this.path = []
     if (target instanceof GameDoc) {
       this.path = [target]

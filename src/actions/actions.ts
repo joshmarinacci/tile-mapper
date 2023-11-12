@@ -23,6 +23,7 @@ import {
 import {
   AddNewImageObjectLayerAction,
   AddNewImagePixelLayerAction,
+  CopyImageToClipboardAction,
   DeleteImageLayerAction,
   ExportImageToPNGAction,
   MoveImageLayerDownAction,
@@ -216,6 +217,7 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
     actions.push(ExportImageToPNGAction)
     actions.push(AddNewImagePixelLayerAction)
     actions.push(AddNewImageObjectLayerAction)
+    actions.push(CopyImageToClipboardAction)
   }
   if (obj instanceof ImagePixelLayer || obj instanceof ImageObjectLayer) {
     actions.push(DeleteImageLayerAction)

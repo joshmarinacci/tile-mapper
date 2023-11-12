@@ -137,3 +137,33 @@ const move_layer_up = (layer: PropsBase<ImageLayerType>, image: SImage) => {
   layers.splice(n - 1, 0, layer)
   image.setPropValue("layers", layers)
 }
+
+export const CopyImageToClipboardAction: SimpleMenuAction = {
+  type: "simple",
+  title: "copy image to clipboard",
+  perform: async (state: GlobalState) => {
+    const path = state.getSelectionPath()
+    if (path.start() instanceof SImage) {
+      const doc = state.getPropValue("doc")
+      const image = path.start() as unknown as SImage
+      const scale = 2
+      const canvas = document.createElement("canvas")
+      const size = image.getPropValue("size").scale(scale)
+      canvas.width = size.w
+      canvas.height = size.h
+      const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+      const palette = doc.getPropValue("palette")
+      drawImage(doc, ctx, image, palette, scale)
+      try {
+        const blob = await canvas_to_blob(canvas)
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            "image/png": blob,
+          }),
+        ])
+      } catch (e) {
+        console.log("could not copy to clipboard")
+      }
+    }
+  },
+}

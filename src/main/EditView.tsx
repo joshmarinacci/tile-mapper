@@ -22,9 +22,6 @@ import { SelectionPath } from "../state"
 
 export function EditView(props: { selection: SelectionPath }) {
   if (props.selection.isEmpty()) return <div>nothing</div>
-  if ("getUUID" in props.selection.start()) {
-    console.log("its a good selection")
-  }
   const selection = props.selection.start()
   if (selection instanceof Sheet) {
     return <TileSheetEditor sheet={selection as Sheet} />
