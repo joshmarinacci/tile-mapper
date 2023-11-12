@@ -1,31 +1,16 @@
 import { Size } from "josh_js_util"
 
 import { drawEditableSprite, ImagePalette } from "../common/common"
-import { make_doc_from_json } from "../io/json"
-import StdFont from "../resources/std_font.json"
-import {
-  CLASS_REGISTRY,
-  DefList,
-  PropDef,
-  PropDefBuilder,
-  PropsBase,
-  PropValues,
-  restoreClassFromJSON,
-} from "./base"
+import { Actor } from "./actor"
+import { DefList, PropDef, PropsBase, PropValues, restoreClassFromJSON } from "./base"
 import { Camera, CameraPropDef } from "./camera"
-import {
-  Actor,
-  GameMap,
-  NameDef,
-  ObjectListDef,
-  PaletteDef,
-  PixelFont,
-  Sheet,
-  SImage,
-  SizeDef,
-  Tile,
-} from "./datamodel"
+import { NameDef, ObjectListDef, PaletteDef, SizeDef } from "./datamodel"
+import { GameMap } from "./gamemap"
+import { SImage } from "./image"
 import { PhysicsSettings, PhysicsSettingsPropDef } from "./physicsSettings"
+import { PixelFont, PixelFontListDef } from "./pixelfont"
+import { Sheet } from "./sheet"
+import { Tile } from "./tile"
 
 export type DocType = {
   name: string
@@ -40,9 +25,6 @@ export type DocType = {
   camera: Camera
   physics: PhysicsSettings
 }
-const PixelFontListDef: PropDefBuilder<PixelFont[]> = ObjectListDef.copy()
-  .withHidden(true)
-  .withExpandable(true)
 
 const SheetsListDef: PropDef<Sheet[]> = {
   type: "array",
@@ -50,7 +32,7 @@ const SheetsListDef: PropDef<Sheet[]> = {
   hidden: true,
   watchChildren: false,
   default: () => [],
-  toJSON: (v) => v.map((sheet) => sheet.toJSON()),
+  toJSON: (v) => v.map((sheet: Sheet) => sheet.toJSON()),
   format: (v) => "sheets list",
   fromJSON: (v) => v.map((sheet) => restoreClassFromJSON(sheet)),
   expandable: true,
@@ -60,7 +42,7 @@ const ActorsListDef: PropDef<Actor[]> = {
   editable: false,
   watchChildren: false,
   default: () => [],
-  toJSON: (v) => v.map((actor) => actor.toJSON()),
+  toJSON: (v) => v.map((actor: Actor) => actor.toJSON()),
   format: (v) => "actors list",
   fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
   expandable: true,
@@ -88,7 +70,7 @@ const CanvasesListDef: PropDef<SImage[]> = {
   fromJSON: (v) => v.map((map) => restoreClassFromJSON(map)),
   expandable: true,
 }
-const GameDocDefs: DefList<DocType> = {
+export const GameDocDefs: DefList<DocType> = {
   name: NameDef,
   sheets: SheetsListDef,
   maps: MapsListDef,
@@ -171,8 +153,3 @@ export class GameDoc extends PropsBase<DocType> {
     }
   }
 }
-
-CLASS_REGISTRY.register("Doc", GameDoc, GameDocDefs)
-
-const DEFAULT_FONT = make_doc_from_json(StdFont)
-PixelFontListDef.withDefault(() => [DEFAULT_FONT.getPropValue("fonts")[0]])

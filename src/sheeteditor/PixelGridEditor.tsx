@@ -9,7 +9,7 @@ import { Icons } from "../common/icons"
 import { ICON_CACHE } from "../iconcache"
 import { useWatchProp } from "../model/base"
 import { DocContext } from "../model/contexts"
-import { Tile } from "../model/datamodel"
+import { Tile } from "../model/tile"
 
 function calculateDirections() {
   return [new Point(-1, 0), new Point(1, 0), new Point(0, -1), new Point(0, 1)]

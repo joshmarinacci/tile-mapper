@@ -1,7 +1,7 @@
 import { Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
-import { ImagePixelLayer, SImage } from "../model/datamodel"
+import { ImagePixelLayer, SImage } from "../model/image"
 import { drawEllipse } from "./ellipse_tool"
 import { drawRect } from "./rect_tool"
 

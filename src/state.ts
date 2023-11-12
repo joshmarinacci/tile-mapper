@@ -1,26 +1,19 @@
 import { Size } from "josh_js_util"
 
 import { PICO8 } from "./common/common"
+import { Actor } from "./model/actor"
 import { DefList, PropDef, PropsBase, PropValues } from "./model/base"
 import { Camera } from "./model/camera"
-import {
-  Actor,
-  ActorLayer,
-  BooleanDef,
-  GameMap,
-  ImageObjectLayer,
-  ImagePixelLayer,
-  PixelFont,
-  PixelGlyph,
-  Sheet,
-  SImage,
-  Tile,
-  TileLayer,
-} from "./model/datamodel"
+import { BooleanDef } from "./model/datamodel"
 import { GameDoc } from "./model/gamedoc"
+import { ActorLayer, GameMap, TileLayer } from "./model/gamemap"
+import { ImageObjectLayer, ImagePixelLayer, SImage } from "./model/image"
 import { ParticleFX } from "./model/particlefx"
 import { PhysicsSettings } from "./model/physicsSettings"
+import { PixelFont, PixelGlyph } from "./model/pixelfont"
+import { Sheet } from "./model/sheet"
 import { SoundFX } from "./model/soundfx"
+import { Tile } from "./model/tile"
 
 type GlobalStateType = {
   doc: GameDoc

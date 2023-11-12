@@ -3,7 +3,7 @@ import React, { useContext } from "react"
 import { ListSelect } from "../common/ListSelect"
 import { PropDef, PropsBase } from "../model/base"
 import { DocContext } from "../model/contexts"
-import { PixelFont } from "../model/datamodel"
+import { PixelFont } from "../model/pixelfont"
 
 function PixelFontNameRenderer<T extends PixelFont, O>(props: {
   value: T | undefined

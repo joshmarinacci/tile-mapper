@@ -3,9 +3,9 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 import { IconButton } from "./common/common-components"
 import { Icons } from "./common/icons"
 import { drawImage } from "./imageeditor/ImageEditorView"
+import { Actor } from "./model/actor"
 import { useWatchAllProps, useWatchProp } from "./model/base"
 import { DocContext, StateContext } from "./model/contexts"
-import { Actor } from "./model/datamodel"
 import { strokeBounds } from "./util"
 
 function SpriteView(props: {

@@ -12,7 +12,7 @@ import { DropdownButton, Icon, IconButton, Pane } from "../common/common-compone
 import { Icons } from "../common/icons"
 import { ListView, ListViewDirection, ListViewRenderer } from "../common/ListView"
 import { PropsBase, useWatchProp } from "../model/base"
-import { GameMap, MapLayerType, TileLayer } from "../model/datamodel"
+import { GameMap, MapLayerType, TileLayer } from "../model/gamemap"
 import { ResizeLayerDialog } from "./ResizeLayerDialog"
 
 const LayerNameRenderer: ListViewRenderer<PropsBase<MapLayerType>, never> = (props: {

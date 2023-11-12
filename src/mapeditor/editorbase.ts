@@ -1,7 +1,9 @@
 import { Point } from "josh_js_util"
 import React from "react"
 
-import { ActorInstance, GameDoc, Tile } from "../model/datamodel"
+import { GameDoc } from "../model/gamedoc"
+import { ActorInstance } from "../model/gamemap"
+import { Tile } from "../model/tile"
 
 export type MouseEventArgs<T> = {
   e: React.MouseEvent<HTMLCanvasElement>

@@ -2,7 +2,7 @@ import { Point } from "josh_js_util"
 import React from "react"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
-import { ImagePixelLayer } from "../model/datamodel"
+import { ImagePixelLayer } from "../model/image"
 import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
 
 type FillToolSettingsType = object

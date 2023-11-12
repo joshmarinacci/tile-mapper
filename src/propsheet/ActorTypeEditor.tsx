@@ -1,8 +1,8 @@
 import React from "react"
 
 import { ListSelect } from "../common/ListSelect"
+import { ActorKind, ActorType } from "../model/actor"
 import { PropDef, PropsBase } from "../model/base"
-import { ActorKind, ActorType } from "../model/datamodel"
 
 function ActorTypeRenderer<T extends ActorKind, O>(props: {
   value: T | undefined

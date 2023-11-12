@@ -1,9 +1,6 @@
 import { genId } from "josh_js_util"
 import { useEffect, useState } from "react"
 
-import { Icons } from "../common/icons"
-import { GlobalState } from "../state"
-
 export type UUID = string
 export type Getter<T> = () => T
 export type JSONValue = string | number | object | boolean | object[]
@@ -169,7 +166,7 @@ export class PropsBase<Type> {
   }
 
   toJSON() {
-    const clazz = CLASS_REGISTRY.lookupNameForObject(this)
+    const clazz = GlobalClassRegistry.lookupNameForObject(this)
     if (!clazz) throw new Error("class not found")
     const obj: JsonOut<Type> = {
       class: clazz,
@@ -270,65 +267,6 @@ export class PropDefBuilder<T> implements PropDef<T> {
   }
 }
 
-export type Shortcut = {
-  key: string
-  meta: boolean
-  shift: boolean
-  control: boolean
-  alt: boolean
-}
-
-export interface MenuAction {
-  type: "react" | "simple"
-  title: string
-  shortcut?: Shortcut
-  description?: string
-  icon?: Icons
-  tags?: string[]
-}
-
-export interface SimpleMenuAction extends MenuAction {
-  type: "simple"
-  perform: (state: GlobalState) => Promise<void>
-}
-
-export class ActionRegistry {
-  private actions: MenuAction[]
-  private by_key: Map<string, MenuAction[]>
-
-  constructor() {
-    this.actions = []
-    this.by_key = new Map()
-  }
-
-  match(e: React.KeyboardEvent): MenuAction | null {
-    if (this.by_key.has(e.key)) {
-      let actions = this.by_key.get(e.key)
-      if (!actions) return null
-      actions = actions.filter((a) => a.shortcut?.meta === e.metaKey)
-      actions = actions.filter((a) => a.shortcut?.shift === e.shiftKey)
-      if (actions.length > 0) return actions[0]
-    }
-    return null
-  }
-
-  register(actions: MenuAction[]) {
-    actions.forEach((a) => {
-      this.actions.push(a)
-      if (a.shortcut) {
-        let acts = this.by_key.get(a.shortcut.key)
-        if (!acts) acts = []
-        acts.push(a)
-        this.by_key.set(a.shortcut.key, acts)
-      }
-    })
-  }
-
-  all(): MenuAction[] {
-    return this.actions.slice()
-  }
-}
-
 export type AllPropsWatcher<T> = (v: T) => void
 
 export function useWatchAllProps<Type>(
@@ -364,41 +302,6 @@ export function useWatchProp<Type, Key extends keyof Type>(
   }, [target, count])
 }
 
-class ClassRegistry {
-  classByName: Map<string, unknown>
-  defsByName: Map<string, DefList<unknown>>
-  private namesByClass: Map<unknown, string>
-
-  constructor() {
-    this.classByName = new Map()
-    this.defsByName = new Map()
-    this.namesByClass = new Map()
-  }
-
-  register<Type>(name: string, clazz: unknown, defs: DefList<Type>) {
-    this.log("registering class", clazz)
-    this.classByName.set(name, clazz)
-    this.defsByName.set(name, defs)
-    this.namesByClass.set(clazz, name)
-  }
-
-  lookupNameForObject<Type>(target: PropsBase<Type>) {
-    const clazz = target.constructor
-    this.log("checking name", clazz)
-    if (this.namesByClass.has(clazz)) {
-      this.log("found class for target", clazz, this.namesByClass.get(clazz))
-      return this.namesByClass.get(clazz)
-    }
-    throw new Error("cannot serialize class")
-  }
-
-  private log(...args: unknown[]) {
-    // console.log("ClassRegistry",...args)
-  }
-}
-
-export const CLASS_REGISTRY = new ClassRegistry()
-
 const CLASS_NAME_MAP: Record<string, string> = {
   Doc2: "Doc",
   Sheet2: "Sheet",
@@ -408,12 +311,21 @@ const CLASS_NAME_MAP: Record<string, string> = {
   Test2: "GameTest",
 }
 
+let GlobalClassRegistry: ClassRegistry | undefined
+export function setGlobalClassRegistry(reg: ClassRegistry) {
+  GlobalClassRegistry = reg
+}
+export function getGlobalClassRegistry(): ClassRegistry {
+  if (!GlobalClassRegistry) throw new Error("global class registry not defined")
+  return GlobalClassRegistry
+}
+
 export function restoreClassFromJSON<Type>(json: JsonOut<Type>): PropsBase<Type> {
-  // console.log("restoring class", json)
+  // console.log("restoring class", json,'with reg',GlobalClassRegistry)
   if (CLASS_NAME_MAP[json.class]) json.class = CLASS_NAME_MAP[json.class]
-  const Clazz = CLASS_REGISTRY.classByName.get(json.class)
+  const Clazz = getGlobalClassRegistry().classByName.get(json.class)
   if (!Clazz) throw new Error(`class missing for ${json.class}`)
-  const defs = CLASS_REGISTRY.defsByName.get(json.class)
+  const defs = getGlobalClassRegistry().defsByName.get(json.class)
   if (!defs) throw new Error(`defs missing for ${json.class}`)
   const args = {}
   for (const key of Object.keys(defs)) {
@@ -454,4 +366,37 @@ export function removeFromList<Type, Key extends keyof Type, Value extends Type[
     data.splice(n, 1)
   }
   target.setPropValue(key, data as Value)
+}
+
+export class ClassRegistry {
+  classByName: Map<string, unknown>
+  defsByName: Map<string, DefList<unknown>>
+  private namesByClass: Map<unknown, string>
+
+  constructor() {
+    this.classByName = new Map()
+    this.defsByName = new Map()
+    this.namesByClass = new Map()
+  }
+
+  register<Type>(name: string, clazz: unknown, defs: DefList<Type>) {
+    this.log("registering class", name)
+    this.classByName.set(name, clazz)
+    this.defsByName.set(name, defs)
+    this.namesByClass.set(clazz, name)
+  }
+
+  lookupNameForObject<Type>(target: PropsBase<Type>) {
+    const clazz = target.constructor
+    this.log("checking name", clazz)
+    if (this.namesByClass.has(clazz)) {
+      this.log("found class for target", clazz, this.namesByClass.get(clazz))
+      return this.namesByClass.get(clazz)
+    }
+    throw new Error("cannot serialize class")
+  }
+
+  private log(...args: unknown[]) {
+    console.log("ClassRegistry", ...args)
+  }
 }

@@ -1,8 +1,12 @@
 import { Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
-import { appendToList, CLASS_REGISTRY, restoreClassFromJSON } from "../model/base"
-import { Actor, GameMap, PixelFont, PixelGlyph, Sheet, Tile, TileLayer } from "../model/datamodel"
+import { Actor } from "../model/actor"
+import { appendToList, restoreClassFromJSON } from "../model/base"
+import { GameMap, TileLayer } from "../model/gamemap"
+import { PixelFont, PixelGlyph } from "../model/pixelfont"
+import { Sheet } from "../model/sheet"
+import { Tile } from "../model/tile"
 
 function log(...args: unknown[]) {
   console.log("JSON TEST", ...args)

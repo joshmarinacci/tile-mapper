@@ -1,0 +1,38 @@
+import { Bounds } from "josh_js_util"
+
+import { DefList, PropsBase, PropValues } from "./base"
+import { BoundsDef, NameDef, StringDef } from "./datamodel"
+
+export type ActorKind = "player" | "enemy" | "item" | "other"
+export type ActorType = {
+  name: string
+  hitbox: Bounds
+  viewbox: Bounds
+  sprite: string | undefined
+  kind: ActorKind
+}
+export const ActorDefs: DefList<ActorType> = {
+  name: NameDef,
+  hitbox: BoundsDef,
+  viewbox: BoundsDef,
+  sprite: {
+    type: "reference",
+    custom: "image-reference",
+    editable: true,
+    hidden: false,
+    expandable: false,
+    default: () => undefined,
+    format: (v) => (v ? `uuid ${v}` : "unknown"),
+    toJSON: (v: string) => v,
+    fromJson: (v: string) => v,
+  },
+  kind: StringDef.copy()
+    .withDefault(() => "item")
+    .withCustom("actor-type"),
+}
+
+export class Actor extends PropsBase<ActorType> {
+  constructor(opts?: PropValues<ActorType>) {
+    super(ActorDefs, opts)
+  }
+}

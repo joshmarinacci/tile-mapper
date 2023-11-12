@@ -13,13 +13,17 @@ import {
   AddSheetToDocButton,
   AddSoundFXToDocButton,
 } from "../actions/reactactions"
+import { Actor } from "../model/actor"
 import { PropsBase, useWatchProp } from "../model/base"
 import { Camera } from "../model/camera"
 import { StateContext } from "../model/contexts"
-import { Actor, ActorLayer, GameMap, PixelFont, Sheet, SImage, TileLayer } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
+import { ActorLayer, GameMap, TileLayer } from "../model/gamemap"
+import { SImage } from "../model/image"
 import { ParticleFX } from "../model/particlefx"
 import { PhysicsSettings } from "../model/physicsSettings"
+import { PixelFont } from "../model/pixelfont"
+import { Sheet } from "../model/sheet"
 import { SoundFX } from "../model/soundfx"
 import { down_arrow_triangle, right_arrow_triangle } from "./common"
 import { DropdownButton, Icon, MenuList, ToolbarActionButton } from "./common-components"

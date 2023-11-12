@@ -1,4 +1,4 @@
-import { CLASS_REGISTRY, DefList, PropsBase, PropValues } from "./base"
+import { DefList, PropsBase, PropValues } from "./base"
 import { BooleanDef, FloatDef, IntegerDef, NameDef, StringDef } from "./datamodel"
 
 type ParticleFXType = {
@@ -16,7 +16,7 @@ type ParticleFXType = {
   infinite: boolean
 }
 
-const ParticleFXType: DefList<ParticleFXType> = {
+export const ParticleFXDefs: DefList<ParticleFXType> = {
   name: NameDef,
   color: StringDef.copy()
     .withDefault(() => "red")
@@ -35,7 +35,6 @@ const ParticleFXType: DefList<ParticleFXType> = {
 
 export class ParticleFX extends PropsBase<ParticleFXType> {
   constructor(opts?: PropValues<ParticleFXType>) {
-    super(ParticleFXType, opts)
+    super(ParticleFXDefs, opts)
   }
 }
-CLASS_REGISTRY.register("ParticleFX", ParticleFX, ParticleFXType)

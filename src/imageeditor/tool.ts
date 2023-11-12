@@ -2,7 +2,8 @@ import { Bounds, Point } from "josh_js_util"
 import React from "react"
 
 import { ImagePalette } from "../common/common"
-import { GameDoc, ImageObjectLayer, ImagePixelLayer, TextObject } from "../model/datamodel"
+import { GameDoc } from "../model/gamedoc"
+import { ImageObjectLayer, ImagePixelLayer, TextObject } from "../model/image"
 
 export type PixelToolEvent = {
   pt: Point // in image coords

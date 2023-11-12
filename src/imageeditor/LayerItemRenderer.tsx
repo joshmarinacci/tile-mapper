@@ -4,7 +4,7 @@ import { Icon } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { ListViewRenderer } from "../common/ListView"
 import { PropsBase, useWatchProp } from "../model/base"
-import { ImageLayerType, ImageObjectLayer, ImagePixelLayer } from "../model/datamodel"
+import { ImageLayerType, ImageObjectLayer, ImagePixelLayer } from "../model/image"
 
 export const LayerItemRenderer: ListViewRenderer<PropsBase<ImageLayerType>, never> = (props: {
   value: PropsBase<ImageLayerType> | undefined

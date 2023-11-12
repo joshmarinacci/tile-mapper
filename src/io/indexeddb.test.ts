@@ -6,7 +6,8 @@ import { make_logger, Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
 import { appendToList, restoreClassFromJSON } from "../model/base"
-import { GameDoc, Sheet, Tile } from "../model/datamodel"
+import { Sheet } from "../model/sheet"
+import { Tile } from "../model/tile"
 // indexedDB = new IDBFactory();
 
 // import { appendToList, CLASS_REGISTRY, restoreClassFromJSON } from "../model/base"

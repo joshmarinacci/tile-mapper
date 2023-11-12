@@ -4,7 +4,7 @@ import React, { useEffect, useRef } from "react"
 import { ListViewRenderer } from "../common/ListView"
 import { ICON_CACHE } from "../iconcache"
 import { useWatchAllProps } from "../model/base"
-import { PixelGlyph } from "../model/datamodel"
+import { PixelGlyph } from "../model/pixelfont"
 import { drawGlyph } from "./PixelFontEditorView"
 
 export type GlyphDrawOptions = {

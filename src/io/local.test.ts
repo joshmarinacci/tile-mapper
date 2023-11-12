@@ -1,10 +1,11 @@
 import { describe, expect, it } from "vitest"
 
 import { appendToList } from "../model/base"
-import { Sheet, Tile } from "../model/datamodel"
+import { Sheet } from "../model/sheet"
+import { Tile } from "../model/tile"
 import { GlobalState } from "../state"
 import { docToJSON } from "./json"
-import { deleteLocalDoc, listLocalDocs, loadLocalDoc, saveLocalStorage } from "./local"
+import { deleteLocalDoc, listLocalDocs, loadLocalDoc } from "./local"
 
 class FakeLocalStorage implements Storage {
   // [name: string]: any

@@ -9,7 +9,8 @@ import {
   rotateTile90CounterClock,
 } from "../actions/actions"
 import { MenuList } from "../common/common-components"
-import { Sheet, Tile } from "../model/datamodel"
+import { Sheet } from "../model/sheet"
+import { Tile } from "../model/tile"
 import { SparseGridModel } from "./TileGridView"
 
 export function TilePopupMenu(props: { value: Tile; grid?: SparseGridModel<Tile>; sheet: Sheet }) {

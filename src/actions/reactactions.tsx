@@ -6,18 +6,14 @@ import { IconButton, ReactMenuAction } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { ListFilesDialog } from "../io/ListFilesDialog"
 import { LoadFileDialog } from "../io/LoadPNGJSONFileDialog"
+import { Actor } from "../model/actor"
 import { appendToList } from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
-import {
-  Actor,
-  GameMap,
-  ImagePixelLayer,
-  PixelFont,
-  PixelGlyph,
-  Sheet,
-  SImage,
-} from "../model/datamodel"
+import { GameMap } from "../model/gamemap"
+import { ImagePixelLayer, SImage } from "../model/image"
 import { ParticleFX } from "../model/particlefx"
+import { PixelFont, PixelGlyph } from "../model/pixelfont"
+import { Sheet } from "../model/sheet"
 import { SoundFX } from "../model/soundfx"
 import { GlobalState } from "../state"
 import { loadPNGJSON } from "./actions"

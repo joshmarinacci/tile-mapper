@@ -1,7 +1,4 @@
-import { Size } from "josh_js_util"
-
 import {
-  CLASS_REGISTRY,
   DefList,
   PropDef,
   PropDefBuilder,
@@ -26,7 +23,7 @@ type PhysicsSettingsType = {
   friction: number
 }
 
-const PhysicsDefs: DefList<PhysicsSettingsType> = {
+export const PhysicsSettingsDefs: DefList<PhysicsSettingsType> = {
   name: NameDef,
   gravity: GravityDef,
   jump_power: JumpDef,
@@ -37,11 +34,9 @@ const PhysicsDefs: DefList<PhysicsSettingsType> = {
 
 export class PhysicsSettings extends PropsBase<PhysicsSettingsType> {
   constructor(opts?: PropValues<PhysicsSettingsType>) {
-    super(PhysicsDefs, opts)
+    super(PhysicsSettingsDefs, opts)
   }
 }
-
-CLASS_REGISTRY.register("PhysicsSettings", PhysicsSettings, PhysicsDefs)
 
 export const PhysicsSettingsPropDef = new PropDefBuilder<PhysicsSettings>({
   type: "object",

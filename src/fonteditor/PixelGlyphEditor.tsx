@@ -8,7 +8,7 @@ import { Icons } from "../common/icons"
 import { ICON_CACHE } from "../iconcache"
 import { useWatchAllProps, useWatchProp } from "../model/base"
 import { DocContext } from "../model/contexts"
-import { PixelGlyph } from "../model/datamodel"
+import { PixelGlyph } from "../model/pixelfont"
 import { drawGlyph } from "./PixelFontEditorView"
 
 export function PixelGlyphEditor(props: { glyph: PixelGlyph }) {

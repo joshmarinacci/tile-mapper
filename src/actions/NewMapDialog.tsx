@@ -3,7 +3,7 @@ import { DialogContext } from "josh_react_util"
 import React, { useContext, useState } from "react"
 
 import { appendToList } from "../model/base"
-import { GameMap, TileLayer } from "../model/datamodel"
+import { GameMap, TileLayer } from "../model/gamemap"
 
 export function NewMapDialog(props: { onComplete: (map: GameMap) => void }) {
   const [width, setWidth] = useState(10)

@@ -3,7 +3,7 @@ import React, { useContext } from "react"
 import { ListSelect } from "../common/ListSelect"
 import { PropDef, PropsBase } from "../model/base"
 import { DocContext } from "../model/contexts"
-import { GameMap } from "../model/datamodel"
+import { GameMap } from "../model/gamemap"
 
 function MapNameRenderer<T extends GameMap, O>(props: {
   value: T | undefined

@@ -2,7 +2,7 @@ import { Size } from "josh_js_util"
 import { DialogContext } from "josh_react_util"
 import React, { useContext, useState } from "react"
 
-import { SImage } from "../model/datamodel"
+import { SImage } from "../model/image"
 
 export function ResizeImageDialog(props: { image: SImage }) {
   const { image } = props

@@ -15,14 +15,14 @@ import { ShareImageDialog } from "../common/ShareImageDialog"
 import { drawTextRun } from "../fonteditor/PixelFontPreview"
 import { appendToList, PropsBase, removeFromList, useWatchAllProps } from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
+import { GameDoc } from "../model/gamedoc"
 import {
   ImageLayerType,
   ImageObjectLayer,
   ImagePixelLayer,
   SImage,
   TextObject,
-} from "../model/datamodel"
-import { GameDoc } from "../model/gamedoc"
+} from "../model/image"
 import { PropSheet } from "../propsheet/propsheet"
 import { strokeBounds } from "../util"
 import { EllipseTool, EllipseToolSettings } from "./ellipse_tool"

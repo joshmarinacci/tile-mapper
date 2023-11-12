@@ -1,13 +1,6 @@
 import { Bounds } from "josh_js_util"
 
-import {
-  CLASS_REGISTRY,
-  DefList,
-  PropDefBuilder,
-  PropsBase,
-  PropValues,
-  restoreClassFromJSON,
-} from "./base"
+import { DefList, PropDefBuilder, PropsBase, PropValues, restoreClassFromJSON } from "./base"
 import { BoundsDef, NameDef } from "./datamodel"
 
 type CameraType = {
@@ -16,7 +9,7 @@ type CameraType = {
   focus: Bounds
 }
 
-const CameraDefs: DefList<CameraType> = {
+export const CameraDefs: DefList<CameraType> = {
   focus: BoundsDef.copy(),
   name: NameDef,
   viewport: BoundsDef.copy(),
@@ -27,7 +20,6 @@ export class Camera extends PropsBase<CameraType> {
     super(CameraDefs, opts)
   }
 }
-CLASS_REGISTRY.register("Camera", Camera, CameraDefs)
 
 export const CameraPropDef = new PropDefBuilder<Camera>({
   type: "object",

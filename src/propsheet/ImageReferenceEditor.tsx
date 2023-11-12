@@ -3,7 +3,7 @@ import React, { useContext } from "react"
 import { ListSelect } from "../common/ListSelect"
 import { PropDef, PropsBase } from "../model/base"
 import { DocContext } from "../model/contexts"
-import { SImage } from "../model/datamodel"
+import { SImage } from "../model/image"
 
 function ImageNameRenderer<T extends SImage, O>(props: {
   value: T | undefined

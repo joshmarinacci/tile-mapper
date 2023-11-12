@@ -10,14 +10,8 @@ import { Icons } from "../common/icons"
 import { ICON_CACHE } from "../iconcache"
 import { PropsBase, useWatchAllProps, useWatchProp } from "../model/base"
 import { DocContext } from "../model/contexts"
-import {
-  ActorInstance,
-  ActorLayer,
-  GameMap,
-  MapLayerType,
-  Tile,
-  TileLayer,
-} from "../model/datamodel"
+import { ActorInstance, ActorLayer, GameMap, MapLayerType, TileLayer } from "../model/gamemap"
+import { Tile } from "../model/tile"
 import { PlayTest } from "../preview/PlayTest"
 import { ActorLayerMouseHandler, ActorLayerToolbar, drawActorlayer } from "./ActorEditor"
 import { MouseHandler } from "./editorbase"

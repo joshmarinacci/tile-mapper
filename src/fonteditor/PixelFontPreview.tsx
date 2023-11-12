@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from "react"
 
 import { DropdownButton } from "../common/common-components"
 import { useWatchAllProps } from "../model/base"
-import { PixelFont, PixelGlyph } from "../model/datamodel"
+import { PixelFont, PixelGlyph } from "../model/pixelfont"
 import { drawGlyph } from "./PixelFontEditorView"
 
 export function measureTextRun(text: string, font: PixelFont) {

@@ -1,7 +1,8 @@
 import bmp, { BitsPerPixel, IImage } from "@wokwi/bmp-ts"
 import { Point } from "josh_js_util"
 
-import { Sheet, Tile } from "../model/datamodel"
+import { Sheet } from "../model/sheet"
+import { Tile } from "../model/tile"
 
 export type ImagePalette = {
   name: string

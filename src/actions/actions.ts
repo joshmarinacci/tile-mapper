@@ -15,25 +15,77 @@ import {
 } from "../io/json"
 import { saveLocalDoc } from "../io/local"
 import { readMetadata } from "../io/vendor"
-import { appendToList, PropsBase, removeFromList, SimpleMenuAction } from "../model/base"
+import { Actor } from "../model/actor"
+import { appendToList, PropsBase, removeFromList } from "../model/base"
 import { Camera } from "../model/camera"
-import {
-  Actor,
-  ActorLayer,
-  GameMap,
-  ImageObjectLayer,
-  ImagePixelLayer,
-  MapLayerType,
-  PixelFont,
-  Sheet,
-  SImage,
-  Tile,
-  TileLayer,
-} from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
+import { ActorLayer, GameMap, MapLayerType, TileLayer } from "../model/gamemap"
+import { ImageObjectLayer, ImagePixelLayer, SImage } from "../model/image"
 import { ParticleFX } from "../model/particlefx"
+import { PixelFont } from "../model/pixelfont"
+import { Sheet } from "../model/sheet"
 import { SoundFX } from "../model/soundfx"
+import { Tile } from "../model/tile"
 import { GlobalState } from "../state"
+
+export type Shortcut = {
+  key: string
+  meta: boolean
+  shift: boolean
+  control: boolean
+  alt: boolean
+}
+
+export interface MenuAction {
+  type: "react" | "simple"
+  title: string
+  shortcut?: Shortcut
+  description?: string
+  icon?: Icons
+  tags?: string[]
+}
+
+export interface SimpleMenuAction extends MenuAction {
+  type: "simple"
+  perform: (state: GlobalState) => Promise<void>
+}
+
+export class ActionRegistry {
+  private actions: MenuAction[]
+  private by_key: Map<string, MenuAction[]>
+
+  constructor() {
+    this.actions = []
+    this.by_key = new Map()
+  }
+
+  match(e: React.KeyboardEvent): MenuAction | null {
+    if (this.by_key.has(e.key)) {
+      let actions = this.by_key.get(e.key)
+      if (!actions) return null
+      actions = actions.filter((a) => a.shortcut?.meta === e.metaKey)
+      actions = actions.filter((a) => a.shortcut?.shift === e.shiftKey)
+      if (actions.length > 0) return actions[0]
+    }
+    return null
+  }
+
+  register(actions: MenuAction[]) {
+    actions.forEach((a) => {
+      this.actions.push(a)
+      if (a.shortcut) {
+        let acts = this.by_key.get(a.shortcut.key)
+        if (!acts) acts = []
+        acts.push(a)
+        this.by_key.set(a.shortcut.key, acts)
+      }
+    })
+  }
+
+  all(): MenuAction[] {
+    return this.actions.slice()
+  }
+}
 
 export const ExportToJSONAction: SimpleMenuAction = {
   type: "simple",

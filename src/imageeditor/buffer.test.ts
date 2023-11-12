@@ -2,7 +2,7 @@ import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
 import { appendToList } from "../model/base"
-import { ImageObjectLayer, ImagePixelLayer, TextObject } from "../model/datamodel"
+import { ImageObjectLayer, ImagePixelLayer, TextObject } from "../model/image"
 import { copyContentsFrom } from "./move_tool"
 
 describe("array grid test", () => {

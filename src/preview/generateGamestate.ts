@@ -4,8 +4,9 @@ import { ActorLayer as ACL, Player, RIGHT, TilemapLayer, TileReference } from "r
 import { GameState } from "../engine/gamestate"
 import { drawImage } from "../imageeditor/ImageEditorView"
 import { findActorForInstance } from "../mapeditor/ActorEditor"
-import { ActorLayer, GameMap, MapCell, TileLayer } from "../model/datamodel"
+import { MapCell } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
+import { ActorLayer, GameMap, TileLayer } from "../model/gamemap"
 
 export function generateGamestate(
   current: HTMLCanvasElement,

@@ -3,8 +3,9 @@ import React from "react"
 
 import { ToggleButton } from "../common/common-components"
 import { Icons } from "../common/icons"
-import { MapCell, TileLayer } from "../model/datamodel"
+import { MapCell } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
+import { TileLayer } from "../model/gamemap"
 import { MouseEventArgs, MouseHandler } from "./editorbase"
 
 function calculateDirections() {

@@ -1,8 +1,6 @@
 import { ImagePalette } from "./common/common"
-import { make_doc_from_json } from "./io/json"
-import { Tile } from "./model/datamodel"
 import { gen_canvas } from "./model/gamedoc"
-import Icons from "./resources/icons.json"
+import { Tile } from "./model/tile"
 
 class IconCache {
   private icons: Map<string, string>
@@ -31,9 +29,3 @@ class IconCache {
 }
 
 export const ICON_CACHE = new IconCache()
-const ICONS_DOC = make_doc_from_json(Icons)
-ICONS_DOC.getPropValue("sheets").forEach((sheet) => {
-  sheet.getPropValue("tiles").forEach((tile) => {
-    ICON_CACHE.register(tile, ICONS_DOC.getPropValue("palette"))
-  })
-})
