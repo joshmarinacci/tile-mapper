@@ -4,14 +4,8 @@ import "./divider.css"
 import { DialogContainer, DialogContext, DialogContextImpl } from "josh_react_util"
 import React, { useContext, useEffect, useState } from "react"
 
-import {
-  ActionRegistry,
-  DocToBMP,
-  ExportToJSONAction,
-  ImportFromJSONAction,
-  SaveLocalStorageAction,
-  SimpleMenuAction,
-} from "./actions/actions"
+import { ActionRegistry, SimpleMenuAction } from "./actions/actions"
+import { ExportToJSONAction, ImportFromJSONAction, SaveLocalStorageAction } from "./actions/gamedoc"
 import { NewDocAction } from "./actions/reactactions"
 import { PopupContainer, PopupContext, PopupContextImpl } from "./common/popup"
 import { ObjectTreeView } from "./common/treeview"
@@ -31,14 +25,7 @@ import { GlobalState } from "./state"
 const reg = get_class_registry()
 console.log("registry is", reg)
 const AR = new ActionRegistry()
-AR.register([
-  ExportToJSONAction,
-  DocToBMP,
-  DocToBMP,
-  ImportFromJSONAction,
-  NewDocAction,
-  SaveLocalStorageAction,
-])
+AR.register([ExportToJSONAction, ImportFromJSONAction, NewDocAction, SaveLocalStorageAction])
 
 const gstate = new GlobalState()
 gstate.setPropValue("doc", make_doc_from_json(Example))

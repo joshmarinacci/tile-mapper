@@ -1,7 +1,7 @@
 import { ArrayGrid, Size } from "josh_js_util"
 import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 
-import { map_to_canvas } from "../actions/actions"
+import { map_to_canvas } from "../actions/gamemap"
 import { PICO8 } from "../common/common"
 import { appendToList, restoreClassFromJSON } from "../model/base"
 import { MapCell } from "../model/datamodel"

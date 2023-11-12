@@ -4,7 +4,7 @@ import { Point } from "josh_js_util"
 import { DialogContext, Spacer } from "josh_react_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
-import { exportMapToPNG } from "../actions/actions"
+import { exportMapToPNG } from "../actions/gamemap"
 import { DropdownButton, IconButton, ToggleButton } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { ICON_CACHE } from "../iconcache"

@@ -16,8 +16,8 @@ import { PixelFont, PixelGlyph } from "../model/pixelfont"
 import { Sheet } from "../model/sheet"
 import { SoundFX } from "../model/soundfx"
 import { GlobalState } from "../state"
-import { loadPNGJSON } from "./actions"
 import { AddImageDialog } from "./AddImageDialog"
+import { loadPNGJSON } from "./gamedoc"
 import { NewDocDialog } from "./NewDocDialog"
 
 function NewDocButton(props: { state: GlobalState }) {

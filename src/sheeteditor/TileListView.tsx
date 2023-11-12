@@ -3,7 +3,7 @@ import "./TileSheetView.css"
 import { Spacer, toClass } from "josh_react_util"
 import React, { useContext, useEffect, useRef, useState } from "react"
 
-import { deleteTile, duplicate_tile, export_bmp } from "../actions/actions"
+import { deleteTile, duplicate_tile, export_bmp } from "../actions/sheets"
 import { drawEditableSprite, ImagePalette } from "../common/common"
 import {
   CheckToggleButton,

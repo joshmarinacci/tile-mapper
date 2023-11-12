@@ -137,7 +137,7 @@ export function drawEditableSprite(
   }
 }
 
-export function sheet_to_canvas(sheet: Sheet, palette: ImagePalette) {
+export function sheet_to_canvas(sheet: Sheet, palette: ImagePalette): HTMLCanvasElement {
   const tiles = sheet.getPropValue("tiles") as Tile[]
   const sprite = tiles[0]
   const canvas = document.createElement("canvas")

@@ -1,7 +1,7 @@
 import { Bounds, Point } from "josh_js_util"
 import React, { useContext, useEffect, useRef, useState } from "react"
 
-import { duplicate_tile } from "../actions/actions"
+import { duplicate_tile } from "../actions/sheets"
 import { drawEditableSprite, ImagePalette } from "../common/common"
 import { PopupContext } from "../common/popup"
 import { useWatchAllProps } from "../model/base"

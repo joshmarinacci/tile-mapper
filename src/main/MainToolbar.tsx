@@ -6,7 +6,7 @@ import {
   ImportFromJSONAction,
   SaveLocalStorageAction,
   SavePNGJSONAction,
-} from "../actions/actions"
+} from "../actions/gamedoc"
 import { LoadLocalStorageAction, NewDocAction, UploadPNGJSONAction } from "../actions/reactactions"
 import { DropdownButton, IconButton, ToolbarActionButton } from "../common/common-components"
 import { Icons } from "../common/icons"

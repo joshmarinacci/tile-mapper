@@ -7,7 +7,7 @@ import {
   delete_map_layer,
   move_layer_down,
   move_layer_up,
-} from "../actions/actions"
+} from "../actions/gamemap"
 import { DropdownButton, Icon, IconButton, Pane } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { ListView, ListViewDirection, ListViewRenderer } from "../common/ListView"

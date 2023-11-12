@@ -7,7 +7,7 @@ import {
   flipTileAroundVertical,
   rotateTile90Clock,
   rotateTile90CounterClock,
-} from "../actions/actions"
+} from "../actions/sheets"
 import { MenuList } from "../common/common-components"
 import { Sheet } from "../model/sheet"
 import { Tile } from "../model/tile"
