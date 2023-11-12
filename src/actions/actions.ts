@@ -1,12 +1,9 @@
 import { Point, Size } from "josh_js_util"
-import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 
 import { Icons } from "../common/icons"
-import { drawImage } from "../imageeditor/ImageEditorView"
 import { Actor } from "../model/actor"
 import { PropsBase, removeFromList } from "../model/base"
 import { Camera } from "../model/camera"
-import { GameDoc } from "../model/gamedoc"
 import { ActorLayer, GameMap, TileLayer } from "../model/gamemap"
 import { ImageObjectLayer, ImagePixelLayer, SImage } from "../model/image"
 import { ParticleFX } from "../model/particlefx"
@@ -23,6 +20,14 @@ import {
   MoveMapLayerDownAction,
   MoveMapLayerUpAction,
 } from "./gamemap"
+import {
+  AddNewImageObjectLayerAction,
+  AddNewImagePixelLayerAction,
+  DeleteImageLayerAction,
+  ExportImageToPNGAction,
+  MoveImageLayerDownAction,
+  MoveImageLayerUpAction,
+} from "./image"
 import { DeleteSheetAction, ExportSheetToPNG } from "./sheets"
 
 export type Shortcut = {
@@ -144,38 +149,6 @@ export const DeleteSoundFXAction: SimpleMenuAction = {
   },
 }
 
-export const new_pixel_layer = (image: SImage) => {
-  const layer = new ImagePixelLayer({
-    name: "new pixel layer",
-    opacity: 1.0,
-    visible: true,
-  })
-  layer.resizeAndClear(image.getPropValue("size"))
-  image.appendLayer(layer)
-}
-
-export const new_object_layer = (image: SImage) => {
-  const layer = new ImageObjectLayer({
-    name: "new object layer",
-    opacity: 1.0,
-    visible: true,
-  })
-  image.appendLayer(layer)
-}
-
-export const exportImageToPNG = async (doc: GameDoc, image: SImage, scale: number) => {
-  const canvas = document.createElement("canvas")
-  const size = image.getPropValue("size").scale(scale)
-  canvas.width = size.w
-  canvas.height = size.h
-  const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
-  const palette = doc.getPropValue("palette")
-  drawImage(doc, ctx, image, palette, scale)
-
-  const blob = await canvas_to_blob(canvas)
-  forceDownloadBlob(`${image.getPropValue("name") as string}.${scale}x.png`, blob)
-}
-
 export function drawGrid(
   current: HTMLCanvasElement,
   scale: number,
@@ -240,6 +213,14 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
   }
   if (obj instanceof SImage) {
     actions.push(DeleteImageAction)
+    actions.push(ExportImageToPNGAction)
+    actions.push(AddNewImagePixelLayerAction)
+    actions.push(AddNewImageObjectLayerAction)
+  }
+  if (obj instanceof ImagePixelLayer || obj instanceof ImageObjectLayer) {
+    actions.push(DeleteImageLayerAction)
+    actions.push(MoveImageLayerUpAction)
+    actions.push(MoveImageLayerDownAction)
   }
   return actions
 }

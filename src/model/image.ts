@@ -157,6 +157,7 @@ const SImageLayerArrayDef = GenericDataArrayDef.copy()
   .withEditable(false)
   .withHidden(true)
   .withWatchChildren(true)
+  .withExpandable(true)
 export const SImageDefs: DefList<SImageType> = {
   name: NameDef,
   layers: SImageLayerArrayDef,
