@@ -5,10 +5,12 @@ import { DialogContainer, DialogContext, DialogContextImpl } from "josh_react_ut
 import React, { useContext, useEffect, useState } from "react"
 
 import {
+  ActionRegistry,
   DocToBMP,
   ExportToJSONAction,
   ImportFromJSONAction,
   SaveLocalStorageAction,
+  SimpleMenuAction,
 } from "./actions/actions"
 import { NewDocAction } from "./actions/reactactions"
 import { PopupContainer, PopupContext, PopupContextImpl } from "./common/popup"
@@ -19,18 +21,15 @@ import { Divider } from "./main/Divider"
 import { EditView } from "./main/EditView"
 import { MainStatusBar } from "./main/MainStatusBar"
 import { MainToolbar } from "./main/MainToolbar"
-import {
-  ActionRegistry,
-  PropsBase,
-  SimpleMenuAction,
-  useWatchAllProps,
-  useWatchProp,
-} from "./model/base"
+import { get_class_registry } from "./model"
+import { PropsBase, useWatchAllProps, useWatchProp } from "./model/base"
 import { ActionRegistryContext, DocContext, StateContext } from "./model/contexts"
 import { GameDoc } from "./model/gamedoc"
 import { PropSheet } from "./propsheet/propsheet"
 import { GlobalState } from "./state"
 
+const reg = get_class_registry()
+console.log("registry is", reg)
 const AR = new ActionRegistry()
 AR.register([
   ExportToJSONAction,
