@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useState } from "react"
 
 import { Pane } from "../common/common-components"
 import { PaletteColorPickerPane } from "../common/Palette"
-import { useWatchProp } from "../model/base"
+import { PropsBase, useWatchProp } from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
 import { Sheet } from "../model/sheet"
 import { Tile } from "../model/tile"
@@ -18,8 +18,7 @@ export function TileSheetEditor(props: { sheet: Sheet }) {
   const { sheet } = props
   const doc = useContext(DocContext)
   const state = useContext(StateContext)
-  const palette = doc.getPropValue("palette")
-  const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
+  const [drawColor, setDrawColor] = useState<string>(doc.palette().colors[0])
   const tile = sheet.getPropValue("selectedTile")
   const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20))
 
@@ -39,16 +38,17 @@ export function TileSheetEditor(props: { sheet: Sheet }) {
               sheet={sheet}
               tile={tile}
               setTile={(tile) => {
-                sheet.setPropValue("selectedTile", tile)
-                state.setSelectionTarget(tile)
+                if (tile) {
+                  sheet.setPropValue("selectedTile", tile)
+                  state.setSelectionTarget(tile as unknown as PropsBase<unknown>)
+                }
               }}
-              palette={palette}
             />
           </Pane>
         )}
         {tile && (
           <Pane collapsable={true} title={"Scratch"}>
-            <TestMap tile={tile} mapArray={maparray} palette={palette} />
+            <TestMap tile={tile} mapArray={maparray} />
           </Pane>
         )}
       </div>
@@ -57,14 +57,14 @@ export function TileSheetEditor(props: { sheet: Sheet }) {
           <PaletteColorPickerPane
             drawColor={drawColor}
             setDrawColor={setDrawColor}
-            palette={palette}
+            palette={doc.palette()}
           />
           {tile && (
             <PixelGridEditor
-              selectedColor={palette.colors.indexOf(drawColor)}
-              setSelectedColor={(n) => setDrawColor(palette.colors[n])}
+              selectedColor={doc.palette().colors.indexOf(drawColor)}
+              setSelectedColor={(n) => setDrawColor(doc.palette().colors[n])}
               tile={tile}
-              palette={palette}
+              palette={doc.palette()}
             />
           )}
           {!tile && <div>no tile selected</div>}

@@ -1,17 +1,13 @@
 import { ArrayGrid, Point } from "josh_js_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
-import { drawEditableSprite, ImagePalette } from "../common/common"
+import { drawEditableSprite } from "../common/common"
 import { Icons } from "../common/icons"
 import { ICON_CACHE } from "../iconcache"
 import { DocContext } from "../model/contexts"
 import { Tile } from "../model/tile"
 
-export function TestMap(props: {
-  tile: Tile | null
-  mapArray: ArrayGrid<Tile>
-  palette: ImagePalette
-}) {
+export function TestMap(props: { tile: Tile | null; mapArray: ArrayGrid<Tile> }) {
   const doc = useContext(DocContext)
   const tileSize = doc.getPropValue("tileSize")
   const { tile, mapArray } = props
@@ -34,7 +30,7 @@ export function TestMap(props: {
         if (v) {
           ctx.save()
           ctx.translate(n.x * tileSize.w * scale, n.y * tileSize.h * scale)
-          drawEditableSprite(ctx, scale, v, props.palette)
+          drawEditableSprite(ctx, scale, v, doc.palette())
           if (grid) {
             ctx.strokeStyle = "gray"
             ctx.strokeRect(0, 0, tileSize.w * scale, tileSize.h * scale)

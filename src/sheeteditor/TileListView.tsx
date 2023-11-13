@@ -103,10 +103,10 @@ export function TileListView(props: {
   sheet: Sheet
   tile: Tile | undefined
   setTile: (tile: Tile | undefined) => void
-  palette: ImagePalette
   editable: boolean
 }) {
-  const { sheet, tile, setTile, palette, editable } = props
+  const doc = useContext(DocContext)
+  const { sheet, tile, setTile, editable } = props
   const showNames = sheet.getPropValue("showNames")
   const showGrid = sheet.getPropValue("showGrid")
   const locked = sheet.getPropValue("locked")
@@ -197,7 +197,7 @@ export function TileListView(props: {
           <CheckToggleButton target={sheet} prop={"locked"} text={"locked"} />
           <IconButton
             icon={Icons.Share}
-            onClick={() => export_bmp(sheet, palette)}
+            onClick={() => export_bmp(sheet, doc.palette())}
             text={"export sheet to BMP"}
           />
         </DropdownButton>
@@ -209,7 +209,7 @@ export function TileListView(props: {
           setSelected={setTile}
           renderer={TilePreviewRenderer}
           data={tiles}
-          options={{ showNames, scale, sheet, showGrid, palette }}
+          options={{ showNames, scale, sheet, showGrid, palette: doc.palette() }}
           direction={ListViewDirection.HorizontalWrap}
         />
       )}
@@ -219,7 +219,7 @@ export function TileListView(props: {
           setSelected={setTile}
           data={tiles}
           sheet={sheet}
-          options={{ showNames, scale, sheet, showGrid, palette, locked }}
+          options={{ showNames, scale, sheet, showGrid, palette: doc.palette(), locked }}
         />
       )}
     </div>
@@ -256,7 +256,6 @@ export function CompactSheetAndTileSelector(props: {
           tile={selectedTile}
           editable={false}
           setTile={(t) => setSelectedTile(t)}
-          palette={doc.getPropValue("palette")}
         />
       )}
     </Pane>
