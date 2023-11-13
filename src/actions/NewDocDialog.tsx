@@ -2,7 +2,7 @@ import { Size } from "josh_js_util"
 import { DialogContext } from "josh_react_util"
 import React, { useContext, useState } from "react"
 
-import { ImagePalette, MINECRAFT, PICO8, RESURRECT64 } from "../common/common"
+import { GAMEBOY, ICECREAM_GB, ImagePalette, MINECRAFT, PICO8, RESURRECT64 } from "../common/common"
 import { appendToList } from "../model/base"
 import { GameDoc } from "../model/gamedoc"
 import { Sheet } from "../model/sheet"
@@ -21,7 +21,7 @@ function make_new_doc(width: number, height: number, palette: ImagePalette) {
   appendToList(doc, "sheets", sheet)
   return doc
 }
-const PALS: ImagePalette[] = [PICO8, MINECRAFT, RESURRECT64]
+const PALS: ImagePalette[] = [PICO8, GAMEBOY, MINECRAFT, RESURRECT64, ICECREAM_GB]
 
 export function NewDocDialog(props: { onComplete: (doc: GameDoc) => void }) {
   const [width, setWidth] = useState(16)

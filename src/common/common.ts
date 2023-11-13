@@ -7,6 +7,7 @@ import { Tile } from "../model/tile"
 export type ImagePalette = {
   name: string
   colors: string[]
+  url?: string
 }
 export const PICO8: ImagePalette = {
   name: "PICO8",
@@ -120,6 +121,16 @@ export const RESURRECT64: ImagePalette = {
     "#fdcbb0",
     "transparent",
   ],
+}
+export const ICECREAM_GB: ImagePalette = {
+  name: "ICE CREAM GB",
+  url: "https://lospec.com/palette-list/ice-cream-gb",
+  colors: ["#7c3f58", "#eb6b6f", "#f9a875", "#fff6d3"],
+}
+export const GAMEBOY: ImagePalette = {
+  name: "GAMEBOY",
+  url: "https://lospec.com/palette-list/nintendo-gameboy-bgb",
+  colors: ["#081820", "#346856", "#88c070", "#e0f8d0"],
 }
 
 export function drawEditableSprite(
