@@ -23,7 +23,7 @@ export const exportImageToPNG = async (doc: GameDoc, image: SImage, scale: numbe
 
 export const ExportImageToPNGAction: SimpleMenuAction = {
   type: "simple",
-  title: "export image to PNG",
+  title: "export image to PNG 1x",
   icon: Icons.Download,
   perform: async (state: GlobalState) => {
     const doc = state.getPropValue("doc")

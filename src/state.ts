@@ -1,20 +1,9 @@
 import { Size } from "josh_js_util"
 
 import { PICO8 } from "./common/common"
-import { GameAction } from "./model/action"
-import { Actor } from "./model/actor"
 import { DefList, PropDef, PropsBase, PropValues } from "./model/base"
-import { Camera } from "./model/camera"
 import { BooleanDef } from "./model/datamodel"
 import { GameDoc } from "./model/gamedoc"
-import { ActorLayer, GameMap, TileLayer } from "./model/gamemap"
-import { ImageObjectLayer, ImagePixelLayer, SImage } from "./model/image"
-import { ParticleFX } from "./model/particlefx"
-import { PhysicsSettings } from "./model/physicsSettings"
-import { PixelFont, PixelGlyph } from "./model/pixelfont"
-import { Sheet } from "./model/sheet"
-import { SoundFX } from "./model/soundfx"
-import { Tile } from "./model/tile"
 
 type GlobalStateType = {
   doc: GameDoc
@@ -121,80 +110,8 @@ export class SelectionPath {
       this.path = [target]
     }
     if (doc) {
-      if (target instanceof PhysicsSettings) {
-        this.path = [target, doc]
-      }
-      if (target instanceof Camera) {
-        this.path = [target, doc]
-      }
-      if (target instanceof Sheet) {
-        this.path = [target, doc]
-      }
-      if (target instanceof GameMap) {
-        this.path = [target, doc]
-      }
-      if (target instanceof Actor) {
-        this.path = [target, doc]
-      }
-      if (target instanceof SImage) {
-        this.path = [target, doc]
-      }
-      if (target instanceof PixelFont) {
-        this.path = [target, doc]
-      }
-      if (target instanceof ParticleFX) {
-        this.path = [target, doc]
-      }
-      if (target instanceof SoundFX) {
-        this.path = [target, doc]
-      }
-      if (target instanceof Tile) {
-        this.path = [target]
-        doc.getPropValue("sheets").forEach((sht) => {
-          if (sht.getPropValue("tiles").find((tile) => tile === target)) {
-            this.path.push(sht)
-          }
-        })
-        this.path.push(doc)
-      }
-      if (target instanceof TileLayer || target instanceof ActorLayer) {
-        this.path = [target]
-        doc.getPropValue("maps").forEach((map) => {
-          if (map.getPropValue("layers").find((layer) => layer === target)) {
-            this.path.push(map)
-          }
-        })
-        this.path.push(doc)
-      }
-      if (target instanceof ImagePixelLayer || target instanceof ImageObjectLayer) {
-        this.path = [target]
-        doc.getPropValue("canvases").forEach((map) => {
-          if (map.getPropValue("layers").find((layer) => layer === target)) {
-            this.path.push(map)
-          }
-        })
-        this.path.push(doc)
-      }
-      if (target instanceof PixelGlyph) {
-        this.path = [target]
-        doc.getPropValue("fonts").forEach((font) => {
-          if (font.getPropValue("glyphs").find((glyph) => glyph === target)) {
-            this.path.push(font)
-          }
-        })
-        this.path.push(doc)
-      }
-      if (target instanceof GameAction) {
-        this.path = [target]
-        doc.getPropValue("actors").forEach((a) => {
-          if (a.getPropValue("actions").find((act) => act === target)) {
-            this.path.push(a)
-          }
-        })
-        this.path.push(doc)
-      }
+      this.path = this.find_path_to_target(doc, target)
     }
-    console.log("path is", this.path)
   }
 
   isEmpty() {
@@ -210,8 +127,25 @@ export class SelectionPath {
   }
 
   parent() {
-    console.log("getting parent for", this.path.slice(1))
     const parts = this.path.slice(1)
     return new SelectionPath(parts[0], parts[1])
+  }
+
+  private find_path_to_target<T>(current: PropsBase<T>, target: PropsBase<T>): PropsBase<T>[] {
+    if (current === target) return [current]
+    for (const [name, def] of current.getAllPropDefs()) {
+      const val = current.getPropValue(name)
+      if (val === target) return [val]
+      if (def.type === "array") {
+        const arr = val as []
+        for (let i = 0; i < arr.length; i++) {
+          const res = this.find_path_to_target(arr[i], target)
+          if (res.length > 0) {
+            return [...res, current]
+          }
+        }
+      }
+    }
+    return []
   }
 }

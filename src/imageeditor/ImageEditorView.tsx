@@ -8,7 +8,7 @@ import React, { MouseEvent, useContext, useEffect, useRef, useState } from "reac
 import {
   AddNewImageObjectLayerAction,
   AddNewImagePixelLayerAction,
-  exportImageToPNG,
+  ExportImageToPNGAction,
   MoveImageLayerDownAction,
   MoveImageLayerUpAction,
 } from "../actions/image"
@@ -257,6 +257,20 @@ export function ImageEditorView(props: { image: SImage }) {
     }
   }
 
+  const add_text_object = () => {
+    if (layer instanceof ImageObjectLayer) {
+      const font = doc.getPropValue("fonts").find((fnt) => fnt)
+      const textobj = new TextObject({
+        name: "new text",
+        text: "ABC",
+        position: new Point(10, 10),
+        font: font?.getUUID(),
+      })
+      appendToList(layer, "data", textobj)
+      setSelectedObject(textobj)
+      state.setSelectionTarget(textobj)
+    }
+  }
   return (
     <>
       <div className={"tool-column"}>
@@ -274,12 +288,7 @@ export function ImageEditorView(props: { image: SImage }) {
                 tooltip={"resize layer"}
                 text={"resize layer"}
               />
-              <IconButton
-                icon={Icons.Download}
-                onClick={() => exportImageToPNG(doc, image, 4)}
-                text={"PNG 4x"}
-                tooltip={"download entire image as 4x scaled PNG"}
-              />
+              <ToolbarActionButton action={ExportImageToPNGAction} />
               <IconButton icon={Icons.Share} onClick={sharePNG} text={"share png"} />
             </DropdownButton>
           </div>
@@ -359,17 +368,7 @@ export function ImageEditorView(props: { image: SImage }) {
           {layer instanceof ImageObjectLayer && (
             <div className={"toolbar"}>
               <ToggleButton
-                onClick={() => {
-                  const font = doc.getPropValue("fonts").find((fnt) => fnt)
-                  const textobj = new TextObject({
-                    name: "new text",
-                    text: "ABC",
-                    position: new Point(10, 10),
-                    font: font?.getUUID(),
-                  })
-                  appendToList(layer, "data", textobj)
-                  setSelectedObject(textobj)
-                }}
+                onClick={add_text_object}
                 icon={Icons.Plus}
                 selected={false}
                 text={"new text"}
@@ -381,9 +380,6 @@ export function ImageEditorView(props: { image: SImage }) {
                 onClick={() => deleteSelectedObject()}
               />
             </div>
-          )}
-          {layer instanceof ImageObjectLayer && selectedObject && (
-            <PropSheet target={selectedObject} collapsable={true} />
           )}
           <div className={"toolbar"}>
             <b>{pixelTool.name} settings</b>
