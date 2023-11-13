@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 
 import { useWatchAllProps } from "./model/base"
 import { Camera } from "./model/camera"
@@ -22,6 +22,7 @@ export function CameraEditorView(props: { camera: Camera }) {
     anim.drawOnce()
   }
   useWatchAllProps(props.camera, () => redraw())
+  useEffect(() => redraw(), [props.camera])
   return (
     <>
       <div className={"vbox tool-column"}>camer tools</div>

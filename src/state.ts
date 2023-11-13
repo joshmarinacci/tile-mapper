@@ -135,7 +135,7 @@ export class SelectionPath {
     if (current === target) return [current]
     for (const [name, def] of current.getAllPropDefs()) {
       const val = current.getPropValue(name)
-      if (val === target) return [val]
+      if (val === target) return [val, current]
       if (def.type === "array") {
         const arr = val as []
         for (let i = 0; i < arr.length; i++) {
