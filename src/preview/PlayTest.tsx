@@ -143,8 +143,8 @@ export function PlayTest(props: { map: GameMap }) {
               overflow: "clip",
             }}
           >
-            <PropSheet target={camera} collapsable={true} title={"camera"} />
-            <PropSheet target={physics} collapsable={true} title={"physics"} />
+            <PropSheet target={camera} collapsable={true} collapsed={true} title={"camera"} />
+            <PropSheet target={physics} collapsable={true} collapsed={true} title={"physics"} />
           </div>
         </div>
       </section>

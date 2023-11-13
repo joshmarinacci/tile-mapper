@@ -159,6 +159,7 @@ export function PropSheet<T>(props: {
   title?: string
   target: PropsBase<T> | undefined
   collapsable: boolean
+  collapsed?: boolean
 }) {
   const { title, target } = props
   const header = <header key={"the-header"}>{title ? title : "props"}</header>
@@ -170,7 +171,12 @@ export function PropSheet<T>(props: {
     )
   const propnames = Array.from(target.getAllPropDefs()).filter(([, b]) => !b.hidden)
   return (
-    <Pane title={title ? title : "props"} collapsable={props.collapsable} className={"prop-sheet"}>
+    <Pane
+      title={title ? title : "props"}
+      collapsable={props.collapsable}
+      collapsed={props.collapsed}
+      className={"prop-sheet"}
+    >
       {/*{header}*/}
       <div className={"prop-sheet-contents"}>
         <label>UUID</label>

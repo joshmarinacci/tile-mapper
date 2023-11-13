@@ -110,9 +110,10 @@ export function Pane(props: {
   children: ReactNode
   collapsable?: boolean
   className?: string
+  collapsed?: boolean
 }) {
-  const { collapsable, className, title } = props
-  const [hide, setHide] = useState(false)
+  const { collapsable, className, title, collapsed = false } = props
+  const [hide, setHide] = useState(collapsed)
 
   if (props.collapsable) {
     return (
