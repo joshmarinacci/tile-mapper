@@ -96,7 +96,7 @@ export class Anim {
     this.game_state
       .getPhysics()
       .updateEnemies(this.game_state.getEnemies(), map.layers, this.game_state.tileCache)
-    this.game_state.getCamera().trackActor(players[0])
+    if (players.length > 0) this.game_state.getCamera().trackActor(players[0])
     ctx.fillStyle = "magenta"
     ctx.save()
     const gs = this.game_state as GameState
