@@ -1,7 +1,9 @@
+import { Bounds, Point } from "josh_js_util"
 import { KeyCodes, PhysicsConstants } from "retrogami-engine"
 
 import { GameState } from "../engine/gamestate"
 import { GameAction } from "../model/action"
+import { fillOutsideBounds } from "../util"
 import { parseBehaviorScript, ScriptContext } from "./scripting"
 
 export class Anim {
@@ -61,6 +63,7 @@ export class Anim {
 
   drawOnce() {
     if (!this.game_state) return
+    const gs = this.game_state as GameState
     const map = this.game_state.getCurrentMap()
     const ctx = this.game_state.getDrawingSurface()
     const players = this.game_state.getPlayers()
@@ -69,13 +72,13 @@ export class Anim {
       const actions: GameAction[] = play.actions as GameAction[]
       actions.forEach((act) => {
         const trigger = act.getPropValue("trigger")
-        if (this.game_state.getKeyboard().isJustPressed(KeyCodes.Space)) {
+        if (gs.getKeyboard().isJustPressed(KeyCodes.Space)) {
           if (trigger === "jump") {
             const script = parseBehaviorScript(act.getPropValue("code"))
             script(this.script_context)
           }
         }
-        if (this.game_state.getKeyboard().isJustPressed(KeyCodes.ArrowUp)) {
+        if (gs.getKeyboard().isJustPressed(KeyCodes.ArrowUp)) {
           if (trigger === "press-a") {
             parseBehaviorScript(act.getPropValue("code"))(this.script_context)
           }
@@ -99,12 +102,16 @@ export class Anim {
     if (players.length > 0) this.game_state.getCamera().trackActor(players[0])
     ctx.fillStyle = "magenta"
     ctx.save()
-    const gs = this.game_state as GameState
     map.layers.forEach((layer) =>
       layer.drawSelf(ctx, gs.getCamera(), gs.tileCache, gs.imageCache, this.zoom),
     )
-    this.game_state.getKeyboard().update()
     ctx.restore()
+    //drow over the boundaries
+    const vp = Bounds.fromPointSize(new Point(0, 0), gs.getCamera().viewport.size()).scale(
+      this.zoom,
+    )
+    fillOutsideBounds(ctx, vp, "blue", gs.getCanvasSize())
+    this.game_state.getKeyboard().update()
   }
 
   setZoom(zoom: number) {

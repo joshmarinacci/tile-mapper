@@ -1,3 +1,4 @@
+import { Size } from "josh_js_util"
 import {
   Camera,
   Enemy,
@@ -100,5 +101,9 @@ export class GameState {
 
   getCamera() {
     return this.camera
+  }
+
+  getCanvasSize() {
+    return new Size(this.canvas.width, this.canvas.height)
   }
 }
