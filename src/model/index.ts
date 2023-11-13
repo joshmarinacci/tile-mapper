@@ -2,6 +2,7 @@ import { ICON_CACHE } from "../iconcache"
 import { make_doc_from_json } from "../io/json"
 import Icons from "../resources/icons.json"
 import StdFont from "../resources/std_font.json"
+import { GameAction, GameActionDefs } from "./action"
 import { Actor, ActorDefs } from "./actor"
 import { ClassRegistry, setGlobalClassRegistry } from "./base"
 import { Camera, CameraDefs } from "./camera"
@@ -55,6 +56,7 @@ export function get_class_registry() {
   registry.register("PixelFont", PixelFont, PixelFontDefs)
   registry.register("Sheet", Sheet, SheetDefs)
   registry.register("SoundFX", SoundFX, SoundFXDefs)
+  registry.register("GameAction", GameAction, GameActionDefs)
   setGlobalClassRegistry(registry)
 
   const ICONS_DOC = make_doc_from_json(Icons)

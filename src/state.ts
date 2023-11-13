@@ -1,6 +1,7 @@
 import { Size } from "josh_js_util"
 
 import { PICO8 } from "./common/common"
+import { GameAction } from "./model/action"
 import { Actor } from "./model/actor"
 import { DefList, PropDef, PropsBase, PropValues } from "./model/base"
 import { Camera } from "./model/camera"
@@ -179,6 +180,15 @@ export class SelectionPath {
         doc.getPropValue("fonts").forEach((font) => {
           if (font.getPropValue("glyphs").find((glyph) => glyph === target)) {
             this.path.push(font)
+          }
+        })
+        this.path.push(doc)
+      }
+      if (target instanceof GameAction) {
+        this.path = [target]
+        doc.getPropValue("actors").forEach((a) => {
+          if (a.getPropValue("actions").find((act) => act === target)) {
+            this.path.push(a)
           }
         })
         this.path.push(doc)

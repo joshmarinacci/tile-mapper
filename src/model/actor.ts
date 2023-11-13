@@ -1,5 +1,6 @@
 import { Bounds } from "josh_js_util"
 
+import { GameAction, GameActionListDef } from "./action"
 import { DefList, PropsBase, PropValues } from "./base"
 import { BoundsDef, NameDef, StringDef } from "./datamodel"
 
@@ -10,6 +11,7 @@ export type ActorType = {
   viewbox: Bounds
   sprite: string | undefined
   kind: ActorKind
+  actions: GameAction[]
 }
 export const ActorDefs: DefList<ActorType> = {
   name: NameDef,
@@ -26,6 +28,7 @@ export const ActorDefs: DefList<ActorType> = {
     toJSON: (v: string) => v,
     fromJson: (v: string) => v,
   },
+  actions: GameActionListDef,
   kind: StringDef.copy()
     .withDefault(() => "item")
     .withCustom("actor-type"),

@@ -78,6 +78,7 @@ export function generateGamestate(
             dir: RIGHT,
             opacity: 1.0,
             originalPosition: pos,
+            actions: real_actor.getPropValue("actions"),
           }
           actors.addActor(val)
           if (real_actor.getPropValue("kind") === "player") {

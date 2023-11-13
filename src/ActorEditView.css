@@ -1,0 +1,9 @@
+.action-card {
+  border: 1px solid red;
+}
+.action-card textarea {
+  border: 1px solid green;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 100px;
+}

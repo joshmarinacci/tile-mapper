@@ -1,6 +1,8 @@
-import { PhysicsConstants } from "retrogami-engine"
+import { KeyCodes, PhysicsConstants } from "retrogami-engine"
 
 import { GameState } from "../engine/gamestate"
+import { GameAction } from "../model/action"
+import { parseBehaviorScript, ScriptContext } from "./scripting"
 
 export class Anim {
   private game_state: GameState | undefined
@@ -11,11 +13,13 @@ export class Anim {
   private target: HTMLCanvasElement | undefined
   private keydown_handler: (e: KeyboardEvent) => void
   private keyup_handler: (e: KeyboardEvent) => void
+  private script_context: ScriptContext
 
   constructor() {
     this.playing = false
     this.zoom = 1
     this.keydown_handler = (e: KeyboardEvent) => {
+      if (e.repeat) return
       this.game_state?.getKeyboard().keydown(e.code)
     }
     this.keyup_handler = (e: KeyboardEvent) => {
@@ -52,6 +56,7 @@ export class Anim {
 
   setGamestate(gameState: GameState) {
     this.game_state = gameState
+    this.script_context = new ScriptContext(this.game_state)
   }
 
   drawOnce() {
@@ -59,6 +64,25 @@ export class Anim {
     const map = this.game_state.getCurrentMap()
     const ctx = this.game_state.getDrawingSurface()
     const players = this.game_state.getPlayers()
+
+    players.forEach((play) => {
+      const actions: GameAction[] = play.actions as GameAction[]
+      actions.forEach((act) => {
+        const trigger = act.getPropValue("trigger")
+        if (this.game_state.getKeyboard().isJustPressed(KeyCodes.Space)) {
+          if (trigger === "jump") {
+            const script = parseBehaviorScript(act.getPropValue("code"))
+            script(this.script_context)
+          }
+        }
+        if (this.game_state.getKeyboard().isJustPressed(KeyCodes.ArrowUp)) {
+          if (trigger === "press-a") {
+            parseBehaviorScript(act.getPropValue("code"))(this.script_context)
+          }
+        }
+      })
+    })
+
     this.game_state
       .getPhysics()
       .updatePlayer(
@@ -79,6 +103,7 @@ export class Anim {
     map.layers.forEach((layer) =>
       layer.drawSelf(ctx, gs.getCamera(), gs.tileCache, gs.imageCache, this.zoom),
     )
+    this.game_state.getKeyboard().update()
     ctx.restore()
   }
 
