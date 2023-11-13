@@ -35,7 +35,6 @@ import {
   SImage,
   TextObject,
 } from "../model/image"
-import { PropSheet } from "../propsheet/propsheet"
 import { strokeBounds } from "../util"
 import { EllipseTool, EllipseToolSettings } from "./ellipse_tool"
 import { EraserTool, EraserToolSettings } from "./eraser_tool"
@@ -63,11 +62,11 @@ export function drawImage(
   palette: ImagePalette,
   scale: number,
 ) {
-  image.getPropValue("layers").forEach((layer) => {
+  image.layers().forEach((layer) => {
     if (layer instanceof ImagePixelLayer) {
-      if (!layer.getPropValue("visible")) return
+      if (!layer.visible()) return
       ctx.save()
-      ctx.globalAlpha = clamp(layer.getPropValue("opacity"), 0, 1)
+      ctx.globalAlpha = clamp(layer.opacity(), 0, 1)
       layer.getPropValue("data").forEach((n, p) => {
         ctx.fillStyle = palette.colors[n]
         if (n === -1) ctx.fillStyle = "transparent"
@@ -76,9 +75,9 @@ export function drawImage(
       ctx.restore()
     }
     if (layer instanceof ImageObjectLayer) {
-      if (!layer.getPropValue("visible")) return
+      if (!layer.visible()) return
       ctx.save()
-      ctx.globalAlpha = clamp(layer.getPropValue("opacity"), 0, 1)
+      ctx.globalAlpha = clamp(layer.opacity(), 0, 1)
       layer.getPropValue("data").forEach((obj) => {
         if (obj instanceof TextObject) {
           const pt = obj.getPropValue("position")
@@ -86,7 +85,7 @@ export function drawImage(
           const txt = obj.getPropValue("text")
           const color = obj.getPropValue("color")
           if (font_ref) {
-            const font = doc.getPropValue("fonts").find((fnt) => fnt.getUUID() === font_ref)
+            const font = doc.fonts().find((fnt) => fnt.getUUID() === font_ref)
             if (font) {
               ctx.save()
               ctx.translate(pt.x * scale, pt.y * scale)
@@ -122,7 +121,7 @@ function drawCanvas(
   ctx.fillStyle = "magenta"
   ctx.fillRect(0, 0, canvas.width, canvas.height)
   drawImage(doc, ctx, image, palette, scale)
-  const size = image.getPropValue("size")
+  const size = image.size()
   if (grid) {
     ctx.strokeStyle = "black"
     ctx.lineWidth = 0.5
@@ -168,13 +167,13 @@ export function ImageEditorView(props: { image: SImage }) {
   const { image } = props
   const doc = useContext(DocContext)
   const state = useContext(StateContext)
-  const palette = doc.getPropValue("palette")
+  const palette = doc.palette()
   const [grid, setGrid] = useState(false)
   const [zoom, setZoom] = useState(3)
   const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
   const [layer, setLayer] = useState<PropsBase<ImageLayerType> | undefined>(() => {
-    if (image.getPropValue("layers").length > 0) {
-      return image.getPropValue("layers")[0]
+    if (image.layers().length > 0) {
+      return image.layers()[0]
     } else {
       return undefined
     }
@@ -183,7 +182,6 @@ export function ImageEditorView(props: { image: SImage }) {
   const [pixelTool, setPixelTool] = useState<PixelTool>(() => new PencilTool())
   const [objectTool] = useState<ObjectTool>(() => new MoveObjectTool())
   const [count, setCount] = useState(0)
-  const size = image.getPropValue("size")
   const [selectionRect, setSelectionRect] = useState<Bounds | undefined>()
   const [selectedObject, setSelectedObject] = useState<TextObject | undefined>()
 
@@ -214,7 +212,7 @@ export function ImageEditorView(props: { image: SImage }) {
   const sharePNG = async () => {
     const scale = 4
     const canvas = document.createElement("canvas")
-    const size = image.getPropValue("size").scale(scale)
+    const size = image.size().scale(scale)
     canvas.width = size.w
     canvas.height = size.h
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
@@ -259,7 +257,7 @@ export function ImageEditorView(props: { image: SImage }) {
 
   const add_text_object = () => {
     if (layer instanceof ImageObjectLayer) {
-      const font = doc.getPropValue("fonts").find((fnt) => fnt)
+      const font = doc.fonts().find((fnt) => fnt)
       const textobj = new TextObject({
         name: "new text",
         text: "ABC",
@@ -300,7 +298,7 @@ export function ImageEditorView(props: { image: SImage }) {
               state.setSelectionTarget(layer)
             }}
             renderer={LayerItemRenderer}
-            data={props.image.getPropValue("layers")}
+            data={image.layers()}
             direction={ListViewDirection.VerticalFill}
             options={undefined as never}
           />
@@ -394,8 +392,8 @@ export function ImageEditorView(props: { image: SImage }) {
         <div>
           <canvas
             ref={canvasRef}
-            width={size.w * scale}
-            height={size.h * scale}
+            width={image.size().scale(scale).w}
+            height={image.size().scale(scale).h}
             onContextMenu={(e) => {
               e.preventDefault()
               e.stopPropagation()

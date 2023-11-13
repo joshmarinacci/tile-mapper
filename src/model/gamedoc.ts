@@ -105,6 +105,19 @@ export class GameDoc extends PropsBase<DocType> {
     this.image_cache = new Map()
   }
 
+  palette() {
+    return this.getPropValue("palette")
+  }
+  fonts() {
+    return this.getPropValue("fonts")
+  }
+  sheets() {
+    return this.getPropValue("sheets")
+  }
+  tilesSize() {
+    return this.getPropValue("tileSize")
+  }
+
   lookup_sprite(id: string) {
     if (this.sprite_lookup.has(id)) return this.sprite_lookup.get(id)
     for (const sheet of this.getPropValue("sheets") as Sheet[]) {
@@ -139,7 +152,7 @@ export class GameDoc extends PropsBase<DocType> {
     const tile = this.lookup_sprite(id)
     if (tile) {
       if (!this.image_cache.has(tile)) {
-        const can = gen_canvas(tile, this.getPropValue("palette"))
+        const can = gen_canvas(tile, this.palette())
         this.image_cache.set(tile, can)
       }
       return this.image_cache.get(tile)

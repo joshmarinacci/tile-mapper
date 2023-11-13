@@ -66,6 +66,8 @@ interface ImageLayerAPI {
   crop(rect: Bounds): void
 
   resize(size: Size): void
+  opacity(): number
+  visible(): boolean
 }
 
 export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> implements ImageLayerAPI {
@@ -124,6 +126,13 @@ export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> implements I
     })
     this.setPropValue("data", newData)
   }
+
+  opacity(): number {
+    return this.getPropValue("opacity")
+  }
+  visible(): boolean {
+    return this.getPropValue("visible")
+  }
 }
 
 interface ImageObjectLayerType extends ImageLayerType {
@@ -146,6 +155,12 @@ export class ImageObjectLayer extends PropsBase<ImageObjectLayerType> implements
   crop(rect: Bounds): void {}
 
   resize(size: Size): void {}
+  opacity(): number {
+    return this.getPropValue("opacity")
+  }
+  visible(): boolean {
+    return this.getPropValue("visible")
+  }
 }
 
 type SImageType = {
@@ -181,5 +196,11 @@ export class SImage extends PropsBase<SImageType> {
   resize(size: Size) {
     this.getPropValue("layers").forEach((lay) => lay.resize(size))
     this.setPropValue("size", size)
+  }
+  size() {
+    return this.getPropValue("size")
+  }
+  layers() {
+    return this.getPropValue("layers")
   }
 }
