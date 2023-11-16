@@ -5,7 +5,7 @@ import { DialogContext, Spacer } from "josh_react_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import { exportMapToPNG } from "../actions/gamemap"
-import { DropdownButton, IconButton, ToggleButton } from "../common/common-components"
+import { DropdownButton, Icon, IconButton, ToggleButton } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { ICON_CACHE } from "../iconcache"
 import { PropsBase, useWatchAllProps, useWatchProp } from "../model/base"
@@ -15,6 +15,7 @@ import { Tile } from "../model/tile"
 import { PlayTest } from "../preview/PlayTest"
 import { ActorLayerMouseHandler, ActorLayerToolbar, drawActorlayer } from "./ActorEditor"
 import { MouseHandler } from "./editorbase"
+import { ShareMapDialog } from "./ShareMapDialog"
 import { drawTileLayer, TileLayerMouseHandler, TileLayerToolbar } from "./TileEditor"
 
 export function LayerEditor(props: {
@@ -136,6 +137,11 @@ export function LayerEditor(props: {
       })
   }
   if (!layer) return <div>select a map</div>
+
+  async function share_map() {
+    dm.show(<ShareMapDialog doc={doc} />)
+  }
+
   return (
     <div className={"layer-editor"}>
       <div className={"toolbar"}>
@@ -155,6 +161,7 @@ export function LayerEditor(props: {
           text={"run"}
           tooltip={"run game map in simulator"}
         />
+        <IconButton onClick={share_map} icon={Icons.Play} text={"share"} tooltip={"share as url"} />
         <Spacer />
         <DropdownButton icon={Icons.Gear}>
           <IconButton

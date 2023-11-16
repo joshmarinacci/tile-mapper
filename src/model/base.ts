@@ -397,6 +397,6 @@ export class ClassRegistry {
   }
 
   private log(...args: unknown[]) {
-    console.log("ClassRegistry", ...args)
+    // console.log("ClassRegistry", ...args)
   }
 }
