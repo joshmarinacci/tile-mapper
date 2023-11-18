@@ -2,6 +2,7 @@ import { ArrayGrid, Point, Size } from "josh_js_util"
 
 import {
   DefList,
+  FloatSettings,
   PropDef,
   PropDefBuilder,
   PropsBase,
@@ -62,6 +63,12 @@ const TileDataGridDef = new PropDefBuilder<ArrayGrid<MapCell>>({
 })
   .withEditable(false)
   .withHidden(true)
+const scrollSettings: FloatSettings = {
+  type: "float",
+  stepSize: 0.1,
+  min: -3,
+  max: 3,
+}
 export const TileLayerDefs: DefList<TileMapLayerType> = {
   name: NameDef,
   type: StringDef.copy()
@@ -72,7 +79,7 @@ export const TileLayerDefs: DefList<TileMapLayerType> = {
   size: SizeDef,
   data: TileDataGridDef,
   wrapping: BooleanDef,
-  scrollSpeed: FloatDef,
+  scrollSpeed: FloatDef.copy().withSettings(scrollSettings),
 }
 
 export class TileLayer extends PropsBase<TileMapLayerType> {

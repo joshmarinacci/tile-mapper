@@ -1,11 +1,11 @@
 import "./propsheet.css"
 
-import React, { useContext, useEffect, useRef } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 
 import { drawEditableSprite } from "../common/common"
 import { Pane } from "../common/common-components"
 import { ActorType } from "../model/actor"
-import { PropDef, PropsBase, useWatchProp } from "../model/base"
+import { FloatSettings, IntegerSettings, PropDef, PropsBase, useWatchProp } from "../model/base"
 import { DocContext } from "../model/contexts"
 import { ActorTypeEditor } from "./ActorTypeEditor"
 import { BoundsPropEditor } from "./BoundsPropEditor"
@@ -34,6 +34,74 @@ export function TileReferenceView(props: { tileRef: string | undefined }) {
     }
   }, [props.tileRef])
   return <canvas ref={canvasRef} width={32} height={32} />
+}
+
+function IntegerPropEditor(props: { def: PropDef<number>; name: string; target: PropsBase<any> }) {
+  const { target, name, def } = props
+  const new_val = Math.floor(target.getPropValue(name))
+  const [temp_val, set_temp_val] = useState(new_val + "")
+  let step = 0.1
+  let min = undefined
+  let max = undefined
+  if (def.settings && def.settings.type === "integer") {
+    const set = def.settings as IntegerSettings
+    step = set.stepSize
+    min = set.min
+    max = set.max
+  }
+  return (
+    <input
+      type={"number"}
+      value={temp_val}
+      step={step}
+      min={min}
+      max={max}
+      onChange={(e) => {
+        const vv = parseInt(e.target.value, 10)
+        set_temp_val(e.target.value)
+        if (Number.isInteger(vv)) {
+          target.setPropValue(name, vv)
+        }
+      }}
+      onBlur={(e) => {
+        set_temp_val(target.getPropValue(props.name).toFixed(0) + "")
+      }}
+    />
+  )
+}
+
+function FloatPropEditor(props: { def: PropDef<number>; name: string; target: PropsBase<any> }) {
+  const { target, name, def } = props
+  const new_val = (target.getPropValue(name) as number).toFixed(2)
+  const [temp_val, set_temp_val] = useState(new_val + "")
+  let step = 0.1
+  let min = undefined
+  let max = undefined
+  if (def.settings && def.settings.type === "float") {
+    const set = def.settings as FloatSettings
+    step = set.stepSize
+    min = set.min
+    max = set.max
+  }
+  return (
+    <input
+      type={"number"}
+      value={temp_val}
+      step={step}
+      min={min}
+      max={max}
+      onChange={(e) => {
+        const vv = parseFloat(e.target.value)
+        set_temp_val(e.target.value)
+        if (!Number.isNaN(vv)) {
+          target.setPropValue(props.name, vv)
+        }
+      }}
+      onBlur={(e) => {
+        set_temp_val(target.getPropValue(props.name).toFixed(2) + "")
+      }}
+    />
+  )
 }
 
 function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDef<T[keyof T]> }) {
@@ -79,30 +147,11 @@ function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDe
       />
     )
   }
-  if (def.type === "integer") {
-    return (
-      <input
-        key={`editor_${name.toString()}`}
-        type={"number"}
-        value={Math.floor(new_val as number)}
-        onChange={(e) => {
-          props.target.setPropValue(props.name, parseInt(e.target.value) as T[keyof T])
-        }}
-      />
-    )
-  }
+  const key = `editor_${name.toString()}`
+  if (def.type === "integer")
+    return <IntegerPropEditor key={key} target={target} def={def} name={name} />
   if (def.type === "float") {
-    return (
-      <input
-        key={`editor_${name.toString()}`}
-        type={"number"}
-        value={(new_val as number).toFixed(2)}
-        step={0.1}
-        onChange={(e) => {
-          props.target.setPropValue(props.name, parseFloat(e.target.value) as T[keyof T])
-        }}
-      />
-    )
+    return <FloatPropEditor key={key} target={target} def={def} name={name} />
   }
   if (def.type === "boolean") {
     return (

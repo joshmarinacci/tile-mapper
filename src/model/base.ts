@@ -33,6 +33,22 @@ type PropDefCustomType =
   | "actor-type"
   | "palette-color"
 
+export type Settings = {
+  type: "integer" | "float"
+}
+export type FloatSettings = {
+  type: "float"
+  min: number
+  max: number
+  stepSize: number
+} & Settings
+export type IntegerSettings = {
+  type: "integer"
+  min: number
+  max: number
+  stepSize: number
+} & Settings
+
 export type PropDef<T> = {
   type: PropDefBaseTypes
   custom?: PropDefCustomType
@@ -45,6 +61,7 @@ export type PropDef<T> = {
   hidden: boolean
   watchChildren: boolean
   skipPersisting?: boolean
+  settings?: Settings
 }
 type WrapperCallback<Value> = (v: Value) => void
 type WrapperAnyCallback<Type> = (t: PropsBase<Type>) => void
@@ -214,6 +231,7 @@ export class PropDefBuilder<T> implements PropDef<T> {
   toJSON: ToJSONner<T>
   fromJSON: FromJSONner<T>
   format: ToFormatString<T>
+  private settings?: Settings
   constructor(options: PropDefOptions<T>) {
     this.type = options.type
     this.editable = true
@@ -263,6 +281,11 @@ export class PropDefBuilder<T> implements PropDef<T> {
 
   withExpandable(b: boolean) {
     this.expandable = b
+    return this
+  }
+
+  withSettings(param: Settings) {
+    this.settings = param
     return this
   }
 }
