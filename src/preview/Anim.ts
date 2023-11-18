@@ -104,7 +104,10 @@ export class Anim {
     ctx.save()
     const gc: GameContext = {
       ctx: ctx,
-      layers: map.layers,
+      level: {
+        name: map.name,
+        layers: map.layers,
+      },
       physics: this.game_state.getPhysics(),
       players: players,
       camera: this.game_state.getCamera(),
@@ -112,9 +115,10 @@ export class Anim {
       canvas: this.game_state.getCanvas(),
       ic: gs.imageCache,
       keyboard: gs.getKeyboard(),
-      consts: this.physics,
       tc: gs.tileCache,
       tileSize: gs.doc.getPropValue("tileSize"),
+      levels: [map],
+      physicsConstants: this.physics,
     }
     map.layers.forEach((layer) => layer.drawSelf(gc))
     ctx.restore()
