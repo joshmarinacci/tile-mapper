@@ -106,4 +106,8 @@ export class GameState {
   getCanvasSize() {
     return new Size(this.canvas.width, this.canvas.height)
   }
+
+  getCanvas() {
+    return this.canvas
+  }
 }

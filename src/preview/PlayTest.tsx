@@ -1,6 +1,11 @@
 import { DialogContext } from "josh_react_util"
 import React, { useContext, useEffect, useRef, useState } from "react"
-import { PhysicsConstants, ViewportDebugOverlay } from "retrogami-engine"
+import {
+  ActorDebugOverlay,
+  GridDebugOverlay,
+  PhysicsConstants,
+  ViewportDebugOverlay,
+} from "retrogami-engine"
 
 import { ToggleButton } from "../common/common-components"
 import { Icons } from "../common/icons"
@@ -8,10 +13,8 @@ import { useWatchAllProps } from "../model/base"
 import { DocContext } from "../model/contexts"
 import { GameMap } from "../model/gamemap"
 import { PropSheet } from "../propsheet/propsheet"
-import { ActorDebugOverlay } from "./ActorDebugLayer"
 import { Anim } from "./Anim"
 import { generateGamestate } from "./generateGamestate"
-import { GridDebugOverlay } from "./GridDebugOverlay"
 
 export function PlayTest(props: { map: GameMap }) {
   const { map } = props
@@ -32,9 +35,9 @@ export function PlayTest(props: { map: GameMap }) {
   const redraw = () => {
     if (!ref.current) return
     const gameState = generateGamestate(ref.current, doc, map)
-    if (showActors) gameState.addLayer(new ActorDebugOverlay(gameState))
+    if (showActors) gameState.addLayer(new ActorDebugOverlay())
     if (showViewport) gameState.addLayer(new ViewportDebugOverlay())
-    if (showGrid) gameState.addLayer(new GridDebugOverlay(gameState))
+    if (showGrid) gameState.addLayer(new GridDebugOverlay())
     if (showPhysics) gameState.addLayer(gameState.getPhysics())
 
     anim.setGamestate(gameState)

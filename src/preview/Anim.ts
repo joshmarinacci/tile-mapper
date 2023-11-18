@@ -1,5 +1,5 @@
 import { Bounds, Point } from "josh_js_util"
-import { KeyCodes, PhysicsConstants } from "retrogami-engine"
+import { GameContext, KeyCodes, PhysicsConstants } from "retrogami-engine"
 
 import { GameState } from "../engine/gamestate"
 import { GameAction } from "../model/action"
@@ -102,9 +102,21 @@ export class Anim {
     if (players.length > 0) this.game_state.getCamera().trackActor(players[0])
     ctx.fillStyle = "magenta"
     ctx.save()
-    map.layers.forEach((layer) =>
-      layer.drawSelf(ctx, gs.getCamera(), gs.tileCache, gs.imageCache, this.zoom),
-    )
+    const gc: GameContext = {
+      ctx: ctx,
+      layers: map.layers,
+      physics: this.game_state.getPhysics(),
+      players: players,
+      camera: this.game_state.getCamera(),
+      scale: this.zoom,
+      canvas: this.game_state.getCanvas(),
+      ic: gs.imageCache,
+      keyboard: gs.getKeyboard(),
+      consts: this.physics,
+      tc: gs.tileCache,
+      tileSize: gs.doc.getPropValue("tileSize"),
+    }
+    map.layers.forEach((layer) => layer.drawSelf(gc))
     ctx.restore()
     //drow over the boundaries
     const vp = Bounds.fromPointSize(new Point(0, 0), gs.getCamera().viewport.size()).scale(
