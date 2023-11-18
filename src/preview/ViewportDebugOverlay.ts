@@ -22,17 +22,25 @@ export class ViewportDebugOverlay implements Layer {
     _ic: ImageCache,
     scale: number,
   ): void {
-    ctx.strokeStyle = "RED"
-    ctx.lineWidth = 3
+    type tup = [string, number]
+    const layers: tup[] = [
+      ["white", 7],
+      ["red", 3],
+      ["black", 1],
+    ]
 
-    ctx.save()
-    const bd = camera.viewport.scale(scale)
-    ctx.translate(-bd.x, -bd.y)
-    const inset = 5
-    ctx.strokeRect(bd.x + inset, bd.y + inset, bd.w - inset * 3, bd.h - inset * 3)
-    const bd2 = this.state.getCamera().focus.scale(scale)
-    ctx.strokeRect(bd2.x, bd2.y, bd2.w, bd2.h)
-    ctx.restore()
+    for (const layer of layers) {
+      ctx.strokeStyle = layer[0]
+      ctx.lineWidth = layer[1]
+      ctx.save()
+      const bd = camera.viewport.scale(scale)
+      ctx.translate(-bd.x, -bd.y)
+      const inset = 2
+      ctx.strokeRect(bd.x + inset, bd.y + inset, bd.w - inset * 3, bd.h - inset * 3)
+      const bd2 = this.state.getCamera().focus.scale(scale)
+      ctx.strokeRect(bd2.x, bd2.y, bd2.w, bd2.h)
+      ctx.restore()
+    }
 
     //drwa overlay
     ctx.fillStyle = "black"

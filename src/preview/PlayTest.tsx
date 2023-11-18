@@ -85,9 +85,9 @@ export function PlayTest(props: { map: GameMap }) {
       <header>Play test</header>
       <section className={"vbox"}>
         <div className={"toolbar"}>
-          <button onClick={() => setZoom(zoom - 1)}>zoom in</button>
+          <button onClick={() => setZoom(zoom + 1)}>zoom in</button>
           <label>{zoom}</label>
-          <button onClick={() => setZoom(zoom + 1)}>zoom out</button>
+          <button onClick={() => setZoom(zoom - 1)}>zoom out</button>
         </div>
         <div className={"toolbar"}>
           <label>Debug</label>
@@ -131,8 +131,8 @@ export function PlayTest(props: { map: GameMap }) {
           <canvas
             ref={ref}
             tabIndex={0}
-            width={(viewport.w + 5) * tileSize.w * zoom}
-            height={(viewport.h + 5) * tileSize.h * zoom}
+            width={viewport.w * tileSize.w * zoom}
+            height={viewport.h * tileSize.h * zoom}
             style={{
               alignSelf: "start",
             }}
