@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useRef, useState } from "react"
+import { ViewportDebugOverlay } from "retrogami-engine"
 
 import { useWatchAllProps } from "./model/base"
 import { Camera } from "./model/camera"
@@ -6,7 +7,6 @@ import { DocContext } from "./model/contexts"
 import { GameMap } from "./model/gamemap"
 import { Anim } from "./preview/Anim"
 import { generateGamestate } from "./preview/generateGamestate"
-import { ViewportDebugOverlay } from "./preview/ViewportDebugOverlay"
 
 export function CameraEditorView(props: { camera: Camera }) {
   const [anim] = useState(() => new Anim())
@@ -16,7 +16,7 @@ export function CameraEditorView(props: { camera: Camera }) {
     if (!ref.current) return
     const map = new GameMap({ name: "scratch" })
     const gameState = generateGamestate(ref.current, doc, map)
-    gameState.addLayer(new ViewportDebugOverlay(gameState))
+    gameState.addLayer(new ViewportDebugOverlay())
     anim.setGamestate(gameState)
     anim.setZoom(5)
     anim.drawOnce()

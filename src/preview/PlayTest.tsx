@@ -1,6 +1,6 @@
 import { DialogContext } from "josh_react_util"
 import React, { useContext, useEffect, useRef, useState } from "react"
-import { PhysicsConstants } from "retrogami-engine"
+import { PhysicsConstants, ViewportDebugOverlay } from "retrogami-engine"
 
 import { ToggleButton } from "../common/common-components"
 import { Icons } from "../common/icons"
@@ -12,7 +12,6 @@ import { ActorDebugOverlay } from "./ActorDebugLayer"
 import { Anim } from "./Anim"
 import { generateGamestate } from "./generateGamestate"
 import { GridDebugOverlay } from "./GridDebugOverlay"
-import { ViewportDebugOverlay } from "./ViewportDebugOverlay"
 
 export function PlayTest(props: { map: GameMap }) {
   const { map } = props
@@ -34,7 +33,7 @@ export function PlayTest(props: { map: GameMap }) {
     if (!ref.current) return
     const gameState = generateGamestate(ref.current, doc, map)
     if (showActors) gameState.addLayer(new ActorDebugOverlay(gameState))
-    if (showViewport) gameState.addLayer(new ViewportDebugOverlay(gameState))
+    if (showViewport) gameState.addLayer(new ViewportDebugOverlay())
     if (showGrid) gameState.addLayer(new GridDebugOverlay(gameState))
     if (showPhysics) gameState.addLayer(gameState.getPhysics())
 
