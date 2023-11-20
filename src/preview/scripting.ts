@@ -4,6 +4,7 @@ import { Actor, Dir } from "retrogami-engine"
 import { GameState } from "../engine/gamestate"
 import { GameAction, TriggerKind } from "../model/action"
 import { ActorInstance } from "../model/gamemap"
+import { SoundFX } from "../model/soundfx"
 import { SFXPlayer } from "../soundeditor/SoundFXEditorView"
 
 interface SoundProxy {
@@ -82,8 +83,13 @@ class GameSessionStorageImpl implements GameSessionStorage {
 }
 class GameContextImpl implements GameContext {
   private storage: GameSessionStorage
-  constructor() {
+  private sfx: SFXPlayer
+  private gamestate: GameState
+
+  constructor(gamestate: GameState) {
+    this.gamestate = gamestate
     this.storage = new GameSessionStorageImpl()
+    this.sfx = new SFXPlayer()
   }
   getStorage(): GameSessionStorage {
     return this.storage
@@ -91,20 +97,26 @@ class GameContextImpl implements GameContext {
   destroyActor(act: ActorInstance) {}
   spawnActor(name: string, options: ActorOptions) {}
   playSoundAt(name: string, options: SoundFXOptions) {
-    console.log("pretending to the play the sound", name)
+    const sounds: SoundFX[] = this.gamestate.doc
+      .getPropValue("assets")
+      .filter((a) => a instanceof SoundFX) as unknown as SoundFX[]
+    const fx = sounds.find((fx) => fx.getPropValue("name") === name)
+    if (fx) {
+      this.sfx.testSoundEffect(fx)
+    } else {
+      console.log(`sound effect named "${name}" not found`)
+    }
   }
   spawnParticleFXAt(name: string, options: ParticleOptions) {}
 }
 
 export class ScriptManager {
   private gamestate: GameState
-  private sfx: SFXPlayer
   private gc: GameContextImpl
 
   constructor(gamestate: GameState) {
     this.gamestate = gamestate
-    this.sfx = new SFXPlayer()
-    this.gc = new GameContextImpl()
+    this.gc = new GameContextImpl(this.gamestate)
   }
 
   fireEvent(contents: string, trigger: TriggerKind) {
@@ -117,7 +129,7 @@ export class ScriptManager {
   }
 
   start(actors: Actor[]) {
-    this.gc = new GameContextImpl()
+    this.gc = new GameContextImpl(this.gamestate)
     actors.forEach((play) => {
       if (play.actions) {
         const actions: GameAction[] = play.actions as GameAction[]
