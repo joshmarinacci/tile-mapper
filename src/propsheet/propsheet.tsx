@@ -1,9 +1,12 @@
 import "./propsheet.css"
 
+import { toClass } from "josh_react_util"
 import React, { useContext, useEffect, useRef, useState } from "react"
 
 import { drawEditableSprite } from "../common/common"
 import { Pane } from "../common/common-components"
+import { ListSelect } from "../common/ListSelect"
+import { ListViewRenderer } from "../common/ListView"
 import { ActorType } from "../model/actor"
 import { FloatSettings, IntegerSettings, PropDef, PropsBase, useWatchProp } from "../model/base"
 import { DocContext } from "../model/contexts"
@@ -104,6 +107,53 @@ function FloatPropEditor(props: { def: PropDef<number>; name: string; target: Pr
   )
 }
 
+const PossibleStringValuesRenderer: ListViewRenderer<string, never> = (props: {
+  value: string
+  selected: boolean
+  options?: never
+}) => {
+  const { selected, value } = props
+  if (!value) return <div>nothing selected</div>
+  return (
+    <div
+      className={toClass({
+        "std-list-item": true,
+        selected: selected,
+      })}
+      style={{
+        minWidth: "10rem",
+        justifyContent: "space-between",
+        alignItems: "center",
+      }}
+    >
+      <b>{value}</b>
+    </div>
+  )
+}
+
+function PossibleStringValuesEditor<T>(props: {
+  def: PropDef<T[keyof T]>
+  name: keyof T
+  target: PropsBase<T>
+}) {
+  const { def, name, target } = props
+  const selected = target.getPropValue(name)
+  const setSelected = (v: T[keyof T] | undefined): void => {
+    console.log("setting selected to", v)
+    target.setPropValue(name, v)
+  }
+  const data = def.possibleValues()
+  return (
+    <ListSelect
+      selected={selected}
+      setSelected={setSelected}
+      renderer={PossibleStringValuesRenderer}
+      data={data}
+      options={undefined as never}
+    />
+  )
+}
+
 function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDef<T[keyof T]> }) {
   const { target, def, name } = props
   const new_val = target.getPropValue(name)
@@ -115,6 +165,7 @@ function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDe
       </span>
     )
   }
+  const key = `editor_${name.toString()}`
   if (def.type === "string") {
     if (def.custom === "actor-type") {
       return (
@@ -136,6 +187,9 @@ function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDe
         />
       )
     }
+    if (def.possibleValues) {
+      return <PossibleStringValuesEditor key={key} target={target} def={def} name={name} />
+    }
     return (
       <input
         key={`editor_${name.toString()}`}
@@ -147,7 +201,6 @@ function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDe
       />
     )
   }
-  const key = `editor_${name.toString()}`
   if (def.type === "integer")
     return <IntegerPropEditor key={key} target={target} def={def} name={name} />
   if (def.type === "float") {

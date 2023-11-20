@@ -21,11 +21,7 @@ function ActionEditor(props: { actor: Actor; action: GameAction }) {
       <header>action</header>
       <div className={"hbox"}>
         <label>When Player</label>
-        <select value={trigger} onChange={(e) => action.setPropValue("trigger", e.target.value)}>
-          <option>jump</option>
-          <option>intersect</option>
-          <option>press-a</option>
-        </select>
+        <b>{trigger}</b>
       </div>
       <div>
         <textarea value={code} onChange={(e) => action.setPropValue("code", e.target.value)} />

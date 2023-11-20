@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 
 export type UUID = string
 export type Getter<T> = () => T
+export type GetPossibleValues<T> = () => T[]
 export type JSONValue = string | number | object | boolean | object[]
 export type JsonOut<Type> = {
   id: string
@@ -62,6 +63,7 @@ export type PropDef<T> = {
   watchChildren: boolean
   skipPersisting?: boolean
   settings?: Settings
+  possibleValues?: GetPossibleValues<T>
 }
 type WrapperCallback<Value> = (v: Value) => void
 type WrapperAnyCallback<Type> = (t: PropsBase<Type>) => void
@@ -231,6 +233,7 @@ export class PropDefBuilder<T> implements PropDef<T> {
   toJSON: ToJSONner<T>
   fromJSON: FromJSONner<T>
   format: ToFormatString<T>
+  possibleValues?: GetPossibleValues<T>
   private settings?: Settings
   constructor(options: PropDefOptions<T>) {
     this.type = options.type
@@ -264,28 +267,33 @@ export class PropDefBuilder<T> implements PropDef<T> {
     return this
   }
 
-  withEditable(b: boolean) {
-    this.editable = b
+  withEditable(editable: boolean) {
+    this.editable = editable
     return this
   }
 
-  withCustom(actorType: PropDefCustomType) {
-    this.custom = actorType
+  withCustom(customType: PropDefCustomType) {
+    this.custom = customType
     return this
   }
 
-  withWatchChildren(b: boolean) {
-    this.watchChildren = b
+  withWatchChildren(watchesChildren: boolean) {
+    this.watchChildren = watchesChildren
     return this
   }
 
-  withExpandable(b: boolean) {
-    this.expandable = b
+  withExpandable(isExpandable: boolean) {
+    this.expandable = isExpandable
     return this
   }
 
-  withSettings(param: Settings) {
-    this.settings = param
+  withSettings(settings: Settings) {
+    this.settings = settings
+    return this
+  }
+
+  withPossibleValues(getter: GetPossibleValues<T>) {
+    this.possibleValues = getter
     return this
   }
 }

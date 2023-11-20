@@ -4,7 +4,7 @@ import { GameContext, KeyCodes, PhysicsConstants } from "retrogami-engine"
 import { GameState } from "../engine/gamestate"
 import { GameAction } from "../model/action"
 import { fillOutsideBounds } from "../util"
-import { parseBehaviorScript, ScriptContext } from "./scripting"
+import { ScriptManager } from "./scripting"
 
 export class Anim {
   private game_state: GameState | undefined
@@ -15,7 +15,7 @@ export class Anim {
   private target: HTMLCanvasElement | undefined
   private keydown_handler: (e: KeyboardEvent) => void
   private keyup_handler: (e: KeyboardEvent) => void
-  private script_context: ScriptContext
+  private script_context: ScriptManager
 
   constructor() {
     this.playing = false
@@ -50,6 +50,9 @@ export class Anim {
     this.log("playing")
     this.playing = true
     requestAnimationFrame(this.callback)
+    if (this.game_state) {
+      this.script_context.start(this.game_state.getActors())
+    }
   }
 
   private log(...args: unknown[]) {
@@ -58,7 +61,7 @@ export class Anim {
 
   setGamestate(gameState: GameState) {
     this.game_state = gameState
-    this.script_context = new ScriptContext(this.game_state)
+    this.script_context = new ScriptManager(this.game_state)
   }
 
   drawOnce() {
@@ -73,14 +76,13 @@ export class Anim {
       actions.forEach((act) => {
         const trigger = act.getPropValue("trigger")
         if (gs.getKeyboard().isJustPressed(KeyCodes.Space)) {
-          if (trigger === "jump") {
-            const script = parseBehaviorScript(act.getPropValue("code"))
-            script(this.script_context)
+          if (trigger === "jump-action") {
+            this.script_context.fireEvent(act.getPropValue("code"), trigger)
           }
         }
         if (gs.getKeyboard().isJustPressed(KeyCodes.ArrowUp)) {
-          if (trigger === "press-a") {
-            parseBehaviorScript(act.getPropValue("code"))(this.script_context)
+          if (trigger === "primary-action") {
+            this.script_context.fireEvent(act.getPropValue("code"), trigger)
           }
         }
       })
@@ -94,7 +96,9 @@ export class Anim {
         this.game_state.getKeyboard(),
         this.game_state.tileCache,
         this.physics,
-        () => {},
+        (col) => {
+          console.log("collion happened", col)
+        },
       )
     this.game_state
       .getPhysics()

@@ -1,5 +1,9 @@
+import { Point } from "josh_js_util"
+import { Actor, Dir } from "retrogami-engine"
+
 import { GameState } from "../engine/gamestate"
-import { SoundFX } from "../model/soundfx"
+import { GameAction, TriggerKind } from "../model/action"
+import { ActorInstance } from "../model/gamemap"
 import { SFXPlayer } from "../soundeditor/SoundFXEditorView"
 
 interface SoundProxy {
@@ -8,43 +12,123 @@ interface SoundProxy {
 
 interface ActorProxy {}
 
-interface ScriptContextInterface {
-  lookupSound(name: string): SoundProxy | undefined
-
-  lookupActor(name: string): ActorProxy | undefined
+interface ScriptEvent {
+  trigger: TriggerKind
+  source: ActorInstance
+  target: ActorInstance
+}
+type ActorOptions = {
+  position: Point
+  direction: Dir
+  velocity: Point
+}
+type ParticleOptions = {
+  position: Point
+}
+type SoundFXOptions = {
+  duration: number
 }
 
-export class ScriptContext implements ScriptContextInterface {
+interface GameSessionStorage {
+  get(key: string): unknown
+  set(key: string, data: unknown): void
+  has(key: string): boolean
+}
+
+interface GameContext {
+  getStorage(): GameSessionStorage
+  spawnActor(name: string, options: ActorOptions): void
+  spawnParticleFXAt(name: string, options: ParticleOptions): void
+  playSoundAt(name: string, options: SoundFXOptions): void
+  destroyActor(act: ActorInstance): void
+}
+interface ScriptContextInterface {
+  event(): ScriptEvent
+  game(): GameContext
+}
+
+class ScriptContext implements ScriptContextInterface {
+  private evt: ScriptEvent
+  private gc: GameContext
+  constructor(evt: ScriptEvent, gc: GameContext) {
+    this.evt = evt
+    this.gc = gc
+  }
+  event(): ScriptEvent {
+    return this.evt
+  }
+  game(): GameContext {
+    return this.gc
+  }
+}
+
+class GameSessionStorageImpl implements GameSessionStorage {
+  private _map: Map<string, unknown>
+  constructor() {
+    this._map = new Map()
+  }
+
+  get(key: string): unknown {
+    return this._map.get(key)
+  }
+
+  has(key: string): boolean {
+    return this._map.has(key)
+  }
+
+  set(key: string, data: unknown): void {
+    this._map.set(key, data)
+  }
+}
+class GameContextImpl implements GameContext {
+  private storage: GameSessionStorage
+  constructor() {
+    this.storage = new GameSessionStorageImpl()
+  }
+  getStorage(): GameSessionStorage {
+    return this.storage
+  }
+  destroyActor(act: ActorInstance) {}
+  spawnActor(name: string, options: ActorOptions) {}
+  playSoundAt(name: string, options: SoundFXOptions) {
+    console.log("pretending to the play the sound", name)
+  }
+  spawnParticleFXAt(name: string, options: ParticleOptions) {}
+}
+
+export class ScriptManager {
   private gamestate: GameState
   private sfx: SFXPlayer
+  private gc: GameContextImpl
 
   constructor(gamestate: GameState) {
     this.gamestate = gamestate
     this.sfx = new SFXPlayer()
+    this.gc = new GameContextImpl()
   }
 
-  lookupSound(name: string): SoundProxy | undefined {
-    const asset = this.gamestate.doc
-      .getPropValue("assets")
-      .find((ass) => ass.getPropValue("name") === name)
-    if (asset instanceof SoundFX) {
-      const sfx = this.sfx
-      const sound = asset as SoundFX
-      return {
-        play: function () {
-          sfx.testSoundEffect(sound)
-        },
+  fireEvent(contents: string, trigger: TriggerKind) {
+    const act = parseBehaviorScript(contents)
+    const evt: ScriptEvent = {
+      trigger: trigger,
+    }
+    const ctx = new ScriptContext(evt, this.gc)
+    act(ctx)
+  }
+
+  start(actors: Actor[]) {
+    this.gc = new GameContextImpl()
+    actors.forEach((play) => {
+      if (play.actions) {
+        const actions: GameAction[] = play.actions as GameAction[]
+        actions.forEach((act) => {
+          console.log("player action", act.getPropValue("trigger"))
+          if (act.getPropValue("trigger") === "game-start") {
+            this.fireEvent(act.getPropValue("code"), act.getPropValue("trigger"))
+          }
+        })
       }
-    }
-  }
-
-  lookupActor(name: string): ActorProxy | undefined {
-    const asset = this.gamestate.doc
-      .getPropValue("actors")
-      .find((ass) => ass.getPropValue("name") === name)
-    if (asset) {
-      console.log("found an actor")
-    }
+    })
   }
 }
 

@@ -1,5 +1,6 @@
 import { Size } from "josh_js_util"
 import {
+  Actor,
   Camera,
   Enemy,
   ImageCache,
@@ -109,5 +110,9 @@ export class GameState {
 
   getCanvas() {
     return this.canvas
+  }
+
+  getActors(): Actor[] {
+    return [this.players, this.enemies].flat()
   }
 }

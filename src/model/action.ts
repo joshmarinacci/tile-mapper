@@ -1,7 +1,12 @@
 import { DefList, PropDefBuilder, PropsBase, PropValues } from "./base"
 import { NameDef, ObjectListDef, StringDef } from "./datamodel"
 
-export type TriggerKind = "jump" | "intersect" | "press-a"
+export type TriggerKind =
+  | "game-start"
+  | "level-start"
+  | "intersect"
+  | "jump-action"
+  | "primary-action"
 export type GameActionType = {
   name: string
   trigger: TriggerKind
@@ -9,8 +14,12 @@ export type GameActionType = {
 }
 export const GameActionDefs: DefList<GameActionType> = {
   name: NameDef,
-  trigger: StringDef.copy().withDefault(() => "press-a"),
-  code: StringDef.copy().withDefault(() => "some code"),
+  trigger: StringDef.copy()
+    .withDefault(() => "game-start")
+    .withPossibleValues(() => {
+      return ["game-start", "level-start", "intersect", "jump-action", "primary-action"]
+    }),
+  code: StringDef.copy().withDefault(() => "console.log('event happened')"),
 }
 export class GameAction extends PropsBase<GameActionType> {
   constructor(opts?: PropValues<GameActionType>) {
