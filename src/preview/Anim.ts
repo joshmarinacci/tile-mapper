@@ -76,14 +76,12 @@ export class Anim {
       actions.forEach((act) => {
         const trigger = act.getPropValue("trigger")
         if (gs.getKeyboard().isJustPressed(KeyCodes.Space)) {
-          if (trigger === "jump-action") {
-            this.script_context.fireEvent(act.getPropValue("code"), trigger)
-          }
+          if (trigger === "jump-action")
+            this.script_context.fireEvent(act.getPropValue("code"), trigger, play)
         }
         if (gs.getKeyboard().isJustPressed(KeyCodes.ArrowUp)) {
-          if (trigger === "primary-action") {
-            this.script_context.fireEvent(act.getPropValue("code"), trigger)
-          }
+          if (trigger === "primary-action")
+            this.script_context.fireEvent(act.getPropValue("code"), trigger, play)
         }
       })
     })
@@ -103,6 +101,9 @@ export class Anim {
     this.game_state
       .getPhysics()
       .updateEnemies(this.game_state.getEnemies(), map.layers, this.game_state.tileCache)
+    this.game_state.getPhysics().updateItems(this.game_state.getItems(), map.layers, (col) => {
+      console.log("item collision", col)
+    })
     if (players.length > 0) this.game_state.getCamera().trackActor(players[0])
     ctx.fillStyle = "magenta"
     ctx.save()

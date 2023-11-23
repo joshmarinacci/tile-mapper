@@ -1,5 +1,5 @@
-import { Point } from "josh_js_util"
-import { Actor, Dir } from "retrogami-engine"
+import { Bounds, Point } from "josh_js_util"
+import { Actor, ActorLayer, Dir } from "retrogami-engine"
 
 import { GameState } from "../engine/gamestate"
 import { GameAction, TriggerKind } from "../model/action"
@@ -7,16 +7,10 @@ import { ActorInstance } from "../model/gamemap"
 import { SoundFX } from "../model/soundfx"
 import { SFXPlayer } from "../soundeditor/SoundFXEditorView"
 
-interface SoundProxy {
-  play(): void
-}
-
-interface ActorProxy {}
-
 interface ScriptEvent {
   trigger: TriggerKind
-  source: ActorInstance
-  target: ActorInstance
+  source: Actor
+  target: Actor
 }
 type ActorOptions = {
   position: Point
@@ -42,13 +36,14 @@ interface GameContext {
   spawnParticleFXAt(name: string, options: ParticleOptions): void
   playSoundAt(name: string, options: SoundFXOptions): void
   destroyActor(act: ActorInstance): void
+  log(...args: any[]): void
 }
-interface ScriptContextInterface {
+interface ScriptContext {
   event(): ScriptEvent
   game(): GameContext
 }
 
-class ScriptContext implements ScriptContextInterface {
+class ScriptContextImpl implements ScriptContext {
   private evt: ScriptEvent
   private gc: GameContext
   constructor(evt: ScriptEvent, gc: GameContext) {
@@ -95,7 +90,40 @@ class GameContextImpl implements GameContext {
     return this.storage
   }
   destroyActor(act: ActorInstance) {}
-  spawnActor(name: string, options: ActorOptions) {}
+  spawnActor(name: string, options: ActorOptions) {
+    console.log(`spawing actor ${name} with options`, options)
+    const actorModel = this.gamestate.doc
+      .getPropValue("actors")
+      .find((act) => act.getPropValue("name") === name)
+    if (!actorModel) {
+      console.error(`no such actor named: "${name}"`)
+    }
+    if (actorModel) {
+      const player = this.gamestate.getPlayers()[0]
+      console.log("current player is", player)
+      const actor: Actor = {
+        type: actorModel.getPropValue("kind"),
+        name: actorModel.getPropValue("name"),
+        color: "magenta",
+        dir: options.direction,
+        bounds: Bounds.fromPointSize(options.position, actorModel.getPropValue("viewbox").size()),
+        vx: options.velocity.x,
+        vy: options.velocity.y,
+        originalPosition: new Point(20, 20),
+        hidden: false,
+        opacity: 1.0,
+        tile: {
+          uuid: actorModel.getPropValue("sprite"),
+        },
+      }
+      const actor_layer = this.gamestate
+        .getCurrentMap()
+        .layers.find((layer) => layer.type === "actors")
+      if (actor_layer instanceof ActorLayer) {
+        actor_layer.actors.push(actor)
+      }
+    }
+  }
   playSoundAt(name: string, options: SoundFXOptions) {
     const sounds: SoundFX[] = this.gamestate.doc
       .getPropValue("assets")
@@ -108,6 +136,9 @@ class GameContextImpl implements GameContext {
     }
   }
   spawnParticleFXAt(name: string, options: ParticleOptions) {}
+  log(...args: any[]): void {
+    console.log(...args)
+  }
 }
 
 export class ScriptManager {
@@ -119,12 +150,14 @@ export class ScriptManager {
     this.gc = new GameContextImpl(this.gamestate)
   }
 
-  fireEvent(contents: string, trigger: TriggerKind) {
+  fireEvent(contents: string, trigger: TriggerKind, source: Actor) {
     const act = parseBehaviorScript(contents)
     const evt: ScriptEvent = {
       trigger: trigger,
+      source: source,
+      target: source,
     }
-    const ctx = new ScriptContext(evt, this.gc)
+    const ctx = new ScriptContextImpl(evt, this.gc)
     act(ctx)
   }
 
@@ -136,7 +169,7 @@ export class ScriptManager {
         actions.forEach((act) => {
           console.log("player action", act.getPropValue("trigger"))
           if (act.getPropValue("trigger") === "game-start") {
-            this.fireEvent(act.getPropValue("code"), act.getPropValue("trigger"))
+            this.fireEvent(act.getPropValue("code"), act.getPropValue("trigger"), play)
           }
         })
       }

@@ -1,9 +1,11 @@
 import { Size } from "josh_js_util"
 import {
   Actor,
+  ActorLayer,
   Camera,
   Enemy,
   ImageCache,
+  Item,
   KeyboardManager,
   Layer,
   PhysicsManager,
@@ -114,5 +116,13 @@ export class GameState {
 
   getActors(): Actor[] {
     return [this.players, this.enemies].flat()
+  }
+
+  getItems(): Item[] {
+    const actor_layer = this.map.layers.find((layer) => layer.type === "actors")
+    if (actor_layer instanceof ActorLayer) {
+      return actor_layer.actors.filter((act) => act.type === "item")
+    }
+    return []
   }
 }
