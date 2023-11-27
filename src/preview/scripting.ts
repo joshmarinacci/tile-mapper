@@ -3,7 +3,6 @@ import { Actor, ActorLayer, Dir } from "retrogami-engine"
 
 import { GameState } from "../engine/gamestate"
 import { GameAction, TriggerKind } from "../model/action"
-import { ActorInstance } from "../model/gamemap"
 import { SoundFX } from "../model/soundfx"
 import { SFXPlayer } from "../soundeditor/SoundFXEditorView"
 
@@ -43,18 +42,26 @@ interface ScriptContext {
   game(): GameContext
 }
 
+export interface ConsoleInterface {
+  log(...args: any[]): void
+}
 class ScriptContextImpl implements ScriptContext {
   private evt: ScriptEvent
   private gc: GameContext
-  constructor(evt: ScriptEvent, gc: GameContext) {
+  private _console: ConsoleInterface
+  constructor(evt: ScriptEvent, gc: GameContext, consoleInterface: ConsoleInterface) {
     this.evt = evt
     this.gc = gc
+    this._console = consoleInterface
   }
   event(): ScriptEvent {
     return this.evt
   }
   game(): GameContext {
     return this.gc
+  }
+  console() {
+    return this._console
   }
 }
 
@@ -148,10 +155,12 @@ class GameContextImpl implements GameContext {
 export class ScriptManager {
   private gamestate: GameState
   private gc: GameContextImpl
+  private _console: ConsoleInterface
 
-  constructor(gamestate: GameState) {
+  constructor(gamestate: GameState, consoleHandler: ConsoleInterface) {
     this.gamestate = gamestate
     this.gc = new GameContextImpl(this.gamestate)
+    this._console = consoleHandler
   }
 
   fireEvent(contents: string, trigger: TriggerKind, source: Actor, target?: Actor) {
@@ -161,8 +170,8 @@ export class ScriptManager {
       source: source,
       target: target ? target : source,
     }
-    const ctx = new ScriptContextImpl(evt, this.gc)
-    act(ctx)
+    const ctx = new ScriptContextImpl(evt, this.gc, this._console)
+    act({ event: ctx.event(), game: ctx.game(), console: ctx.console() })
   }
 
   start(actors: Actor[]) {
@@ -185,5 +194,5 @@ export function parseBehaviorScript(contents: string) {
   // console.log("contents is", contents)
   return Function(`"use strict";
           const toRadians = (deg) => Math.PI/180*deg; 
-          return((function(context){${contents}}))`)()
+          return((function({event,game,console}){${contents}}))`)()
 }

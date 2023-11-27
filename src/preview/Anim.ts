@@ -4,7 +4,7 @@ import { GameContext, KeyCodes, PhysicsConstants } from "retrogami-engine"
 import { GameState } from "../engine/gamestate"
 import { GameAction } from "../model/action"
 import { fillOutsideBounds } from "../util"
-import { ScriptManager } from "./scripting"
+import { ConsoleInterface, ScriptManager } from "./scripting"
 
 export class Anim {
   private game_state: GameState | undefined
@@ -15,6 +15,7 @@ export class Anim {
   private target: HTMLCanvasElement | undefined
   private keydown_handler: (e: KeyboardEvent) => void
   private keyup_handler: (e: KeyboardEvent) => void
+  // @ts-ignore
   private script_context: ScriptManager
 
   constructor() {
@@ -59,9 +60,9 @@ export class Anim {
     console.log("Anim", ...args)
   }
 
-  setGamestate(gameState: GameState) {
+  setGamestate(gameState: GameState, logger: ConsoleInterface) {
     this.game_state = gameState
-    this.script_context = new ScriptManager(this.game_state)
+    this.script_context = new ScriptManager(this.game_state, logger)
   }
 
   drawOnce() {

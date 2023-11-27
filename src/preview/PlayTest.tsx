@@ -1,3 +1,5 @@
+import "./console-log-view.css"
+
 import { DialogContext } from "josh_react_util"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import {
@@ -9,16 +11,58 @@ import {
 
 import { ToggleButton } from "../common/common-components"
 import { Icons } from "../common/icons"
-import { useWatchAllProps } from "../model/base"
+import { DefList, PropsBase, PropValues, useWatchAllProps, useWatchProp } from "../model/base"
 import { DocContext } from "../model/contexts"
+import { NameDef } from "../model/datamodel"
 import { GameMap } from "../model/gamemap"
 import { PropSheet } from "../propsheet/propsheet"
 import { Anim } from "./Anim"
 import { generateGamestate } from "./generateGamestate"
+import { ConsoleInterface } from "./scripting"
+type LoggerType = {
+  name: string
+}
+const LoggerTypeDefs: DefList<LoggerType> = {
+  name: NameDef,
+}
+class PersistentLogger extends PropsBase<LoggerType> implements ConsoleInterface {
+  private logs: string[]
+  constructor(opts: PropValues<LoggerType>) {
+    super(LoggerTypeDefs, opts)
+    console.log("made a persistent logger")
+    this.logs = []
+  }
+  log(...args: any[]): void {
+    console.log("PERSITENT", ...args)
+    this.logs.push(args.join(","))
+    this.setPropValue("name", this.logs.length + "")
+  }
+
+  getLogs() {
+    return this.logs
+  }
+}
+function ConsoleLogView(props: { logger: PersistentLogger }) {
+  const [items, setItems] = useState<string[]>([])
+  useWatchProp(props.logger, "name", () => {
+    console.log("logger changed")
+    setItems(props.logger.getLogs())
+  })
+  return (
+    <div className={"console-log-view"}>
+      <ul>
+        {items.map((it, i) => (
+          <li key={i}>{it}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
 export function PlayTest(props: { map: GameMap }) {
   const { map } = props
   const doc = useContext(DocContext)
+  const [logger] = useState(() => new PersistentLogger({ name: "logger" }))
   const tileSize = doc.getPropValue("tileSize")
   const camera = doc.getPropValue("camera")
   const physics = doc.getPropValue("physics")
@@ -40,7 +84,7 @@ export function PlayTest(props: { map: GameMap }) {
     if (showGrid) gameState.addLayer(new GridDebugOverlay())
     if (showPhysics) gameState.addLayer(gameState.getPhysics())
 
-    anim.setGamestate(gameState)
+    anim.setGamestate(gameState, logger)
     const phs: PhysicsConstants = {
       gravity: physics.getPropValue("gravity"),
       jump_power: physics.getPropValue("jump_power"),
@@ -149,6 +193,7 @@ export function PlayTest(props: { map: GameMap }) {
             <PropSheet target={physics} collapsable={true} collapsed={true} title={"physics"} />
           </div>
         </div>
+        <ConsoleLogView logger={logger} />
       </section>
       <footer>
         <button onClick={dismiss}>dismiss</button>

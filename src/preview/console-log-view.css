@@ -1,0 +1,20 @@
+.console-log-view {
+  border: 1px solid black;
+  overflow-y: scroll;
+  /*flex: 1.0;*/
+  max-height: 200px;
+}
+.console-log-view li {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.dialog {
+  /*border: 5px solid blue;*/
+  /*display: flex;*/
+  /*flex-direction: column;*/
+  /*justify-content: stretch;*/
+}
+.dialog > section {
+  flex: 1 !important;
+}
