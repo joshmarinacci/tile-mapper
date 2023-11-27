@@ -35,7 +35,7 @@ interface GameContext {
   spawnActor(name: string, options: ActorOptions): void
   spawnParticleFXAt(name: string, options: ParticleOptions): void
   playSoundAt(name: string, options: SoundFXOptions): void
-  destroyActor(act: ActorInstance): void
+  destroyActor(act: Actor): void
   log(...args: any[]): void
 }
 interface ScriptContext {
@@ -89,7 +89,11 @@ class GameContextImpl implements GameContext {
   getStorage(): GameSessionStorage {
     return this.storage
   }
-  destroyActor(act: ActorInstance) {}
+  destroyActor(act: Actor) {
+    if (act.opacity <= 0) return
+    act.opacity = 0
+    console.log("pretending to destroy actor", act)
+  }
   spawnActor(name: string, options: ActorOptions) {
     console.log(`spawing actor ${name} with options`, options)
     const actorModel = this.gamestate.doc
@@ -150,12 +154,12 @@ export class ScriptManager {
     this.gc = new GameContextImpl(this.gamestate)
   }
 
-  fireEvent(contents: string, trigger: TriggerKind, source: Actor) {
+  fireEvent(contents: string, trigger: TriggerKind, source: Actor, target?: Actor) {
     const act = parseBehaviorScript(contents)
     const evt: ScriptEvent = {
       trigger: trigger,
       source: source,
-      target: source,
+      target: target ? target : source,
     }
     const ctx = new ScriptContextImpl(evt, this.gc)
     act(ctx)
@@ -178,7 +182,7 @@ export class ScriptManager {
 }
 
 export function parseBehaviorScript(contents: string) {
-  console.log("contents is", contents)
+  // console.log("contents is", contents)
   return Function(`"use strict";
           const toRadians = (deg) => Math.PI/180*deg; 
           return((function(context){${contents}}))`)()

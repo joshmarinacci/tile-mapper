@@ -1,5 +1,5 @@
 import { ArrayGrid } from "josh_js_util"
-import { ActorLayer as ACL, Player, RIGHT, TilemapLayer, TileReference } from "retrogami-engine"
+import { Actor, ActorLayer as ACL, RIGHT, TilemapLayer, TileReference } from "retrogami-engine"
 
 import { GameState } from "../engine/gamestate"
 import { drawImage } from "../imageeditor/ImageEditorView"
@@ -62,15 +62,15 @@ export function generateGamestate(
         const real_actor = findActorForInstance(inst, doc)
         if (real_actor) {
           const pos = inst.getPropValue("position")
-          const val: Player = {
+          const val: Actor = {
             bounds: real_actor.getPropValue("viewbox").add(pos),
             hidden: false,
-            type: "player",
+            type: real_actor.getPropValue("kind"),
             color: "blue",
             tile: {
               uuid: real_actor.getPropValue("sprite") as string,
             },
-            name: inst.getPropValue("name"),
+            name: real_actor.getPropValue("name"),
             hitable: true,
             vy: 0,
             vx: 0,
@@ -81,9 +81,6 @@ export function generateGamestate(
             actions: real_actor.getPropValue("actions"),
           }
           actors.addActor(val)
-          if (real_actor.getPropValue("kind") === "player") {
-            gamestate.addPlayer(val)
-          }
         }
       })
     }

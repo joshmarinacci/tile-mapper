@@ -95,7 +95,18 @@ export class Anim {
         this.game_state.tileCache,
         this.physics,
         (col) => {
-          console.log("collion happened", col)
+          if (col && col.hit && col.target && col.target.opacity > 0) {
+            col.source.actions.forEach((act: GameAction) => {
+              if (act.getPropValue("trigger") === "intersect") {
+                this.script_context.fireEvent(
+                  act.getPropValue("code"),
+                  act.getPropValue("trigger"),
+                  col.source,
+                  col.target,
+                )
+              }
+            })
+          }
         },
       )
     this.game_state

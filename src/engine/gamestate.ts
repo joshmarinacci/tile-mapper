@@ -26,9 +26,7 @@ export class GameState {
   private canvas: HTMLCanvasElement
   private camera: Camera
   private keyboard: KeyboardManager
-  private players: Player[]
   private physics: PhysicsManager
-  private enemies: Enemy[]
   public tileCache: TileCache
   public imageCache: ImageCache
   public doc: GameDoc
@@ -50,8 +48,6 @@ export class GameState {
     this.doc = doc
     this.canvas.style.border = "1px solid red"
     this.keyboard = new KeyboardManager()
-    this.players = []
-    this.enemies = []
     this.physics = new PhysicsManager()
     this.imageCache = new ImageCache()
     this.tileCache = new TileCache(doc.getPropValue("tileSize"))
@@ -61,10 +57,6 @@ export class GameState {
     this.camera = new Camera()
     this.camera.viewport = cam.getPropValue("viewport").scale(ts.w)
     this.camera.focus = cam.getPropValue("focus").scale(ts.w)
-  }
-
-  addPlayer(player: Player) {
-    this.players.push(player)
   }
 
   getCurrentMap() {
@@ -82,24 +74,12 @@ export class GameState {
     return this.keyboard
   }
 
-  getPlayers() {
-    return this.players
-  }
-
-  getEnemies() {
-    return this.enemies
-  }
-
   getPhysics() {
     return this.physics
   }
 
   addLayer(layer: Layer) {
     this.map.layers.push(layer)
-  }
-
-  addEnemy(badguy: Enemy) {
-    this.enemies.push(badguy)
   }
 
   getCamera() {
@@ -115,14 +95,19 @@ export class GameState {
   }
 
   getActors(): Actor[] {
-    return [this.players, this.enemies].flat()
-  }
-
-  getItems(): Item[] {
     const actor_layer = this.map.layers.find((layer) => layer.type === "actors")
     if (actor_layer instanceof ActorLayer) {
-      return actor_layer.actors.filter((act) => act.type === "item")
+      return actor_layer.actors
     }
     return []
+  }
+  getPlayers() {
+    return this.getActors().filter((act) => act.type === "player") as Player[]
+  }
+  getEnemies() {
+    return this.getActors().filter((act) => act.type === "enemy") as Enemy[]
+  }
+  getItems(): Item[] {
+    return this.getActors().filter((act) => act.type === "item") as Item[]
   }
 }
