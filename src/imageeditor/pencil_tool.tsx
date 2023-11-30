@@ -22,7 +22,7 @@ export class PencilTool extends BasePixelTool<PencilSettingsType> implements Pix
     if (evt.layer) {
       if (final) {
         this.temp.forEach((v, n) => {
-          if (v >= 0) target.set(n, v)
+          if (v >= 0) evt.layer.setPixel(n, v)
         })
       } else {
         this.drawAtCursor(target, this._current, evt.color, evt.selection)

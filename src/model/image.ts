@@ -1,6 +1,6 @@
 import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 
-import { appendToList, DefList, PropsBase, PropValues } from "./base"
+import { appendToList, DefList, PropDefBuilder, PropsBase, PropValues } from "./base"
 import {
   ArrayGridNumberDef,
   BooleanDef,
@@ -64,15 +64,19 @@ export const ImagePixelLayerDefs: DefList<ImagePixelLayerType> = {
 
 interface ImageLayerAPI {
   crop(rect: Bounds): void
-
   resize(size: Size): void
   opacity(): number
   visible(): boolean
+  setImage(image: SImage): void
 }
 
 export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> implements ImageLayerAPI {
+  private image: SImage
   constructor(opts?: PropValues<ImagePixelLayerType>) {
     super(ImagePixelLayerDefs, opts)
+  }
+  setImage(image: SImage) {
+    this.image = image
   }
 
   resizeAndClear(size: Size) {
@@ -89,9 +93,14 @@ export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> implements I
   }
 
   setPixel(pt: Point, color: number) {
+    const old = this.getPropValue("data").get(pt)
     this.getPropValue("data").set(pt, color)
     this._fire("data", this.getPropValue("data"))
     this._fireAll()
+    if (this.image) this.image.pixelChanged(this, pt, old, color)
+  }
+  setPixelRaw(pt: Point, color: number) {
+    this.getPropValue("data").set(pt, color)
   }
 
   getPixel(pt: Point): number {
@@ -148,10 +157,14 @@ export const ImageObjectLayerDefs: DefList<ImageObjectLayerType> = {
 }
 
 export class ImageObjectLayer extends PropsBase<ImageObjectLayerType> implements ImageLayerAPI {
+  private image: SImage
   constructor(opts?: PropValues<ImageObjectLayerType>) {
     super(ImageObjectLayerDefs, opts)
   }
 
+  setImage(image: SImage) {
+    this.image = image
+  }
   crop(rect: Bounds): void {}
 
   resize(size: Size): void {}
@@ -167,6 +180,7 @@ type SImageType = {
   name: string
   layers: PropsBase<ImageLayerType>[]
   size: Size
+  history: number
 }
 const SImageLayerArrayDef = GenericDataArrayDef.copy()
   .withEditable(false)
@@ -177,11 +191,36 @@ export const SImageDefs: DefList<SImageType> = {
   name: NameDef,
   layers: SImageLayerArrayDef,
   size: SizeDef,
+  history: new PropDefBuilder<number>({
+    type: "integer",
+    default: () => 0,
+    format: (v) => v.toString(),
+    fromJSON: (v) => 0,
+    toJSON: (v) => v,
+  }).withSkipPersisting(true),
 }
 
+type HistoryEvent = {
+  layer: string
+  point: Point
+  prev: number
+  curr: number
+}
 export class SImage extends PropsBase<SImageType> {
+  private history: HistoryEvent[]
+  private current_history_index: number
   constructor(opts?: PropValues<SImageType>) {
     super(SImageDefs, opts)
+    this.history = []
+    this.current_history_index = -1
+  }
+
+  setPropValue<K extends keyof SImageType>(name: K, value: SImageType[K]) {
+    if (name === "layers") {
+      const layers = value as unknown as ImageLayerAPI[]
+      layers.forEach((lay) => lay.setImage(this))
+    }
+    super.setPropValue(name, value)
   }
 
   crop(rect: Bounds) {
@@ -202,5 +241,44 @@ export class SImage extends PropsBase<SImageType> {
   }
   layers() {
     return this.getPropValue("layers")
+  }
+  undo() {
+    // console.log("undoing. hist len", this.history.length, 'curr',this.current_history_index)
+    if (this.current_history_index >= 0) {
+      const event = this.history[this.current_history_index]
+      this.current_history_index -= 1
+      // console.log("undoing",event)
+      const layer = this.getPropValue("layers").find((layer) => layer.getUUID() === event.layer)
+      if (layer instanceof ImagePixelLayer) {
+        layer.setPixelRaw(event.point, event.prev)
+        this.setPropValue("history", this.getPropValue("history") + 1)
+      }
+    }
+  }
+  redo() {
+    // console.log("redoing. hist len", this.history.length, 'curr',this.current_history_index)
+    if (this.current_history_index < this.history.length - 1) {
+      this.current_history_index += 1
+      const event = this.history[this.current_history_index]
+      // console.log("redoing",event)
+      const layer = this.getPropValue("layers").find((layer) => layer.getUUID() === event.layer)
+      if (layer instanceof ImagePixelLayer) {
+        layer.setPixelRaw(event.point, event.curr)
+        this.setPropValue("history", this.getPropValue("history") + 1)
+      }
+    }
+  }
+
+  pixelChanged(param: PropsBase<ImagePixelLayerType>, pt: Point, old: number, color: number) {
+    // console.log("layer changed", param.getUUID(), pt,old,color)
+    this.history.push({
+      layer: param.getUUID(),
+      point: pt,
+      prev: old,
+      curr: color,
+    })
+    this.current_history_index += 1
+    this.setPropValue("history", this.getPropValue("history") + 1)
+    // console.log("added to history. hist len", this.history.length, 'curr',this.current_history_index)
   }
 }

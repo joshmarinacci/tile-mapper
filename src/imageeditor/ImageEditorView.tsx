@@ -25,7 +25,13 @@ import { ListView, ListViewDirection } from "../common/ListView"
 import { PaletteColorPickerPane } from "../common/Palette"
 import { ShareImageDialog } from "../common/ShareImageDialog"
 import { drawTextRun } from "../fonteditor/PixelFontPreview"
-import { appendToList, PropsBase, removeFromList, useWatchAllProps } from "../model/base"
+import {
+  appendToList,
+  PropsBase,
+  removeFromList,
+  useWatchAllProps,
+  useWatchProp,
+} from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
 import { GameDoc } from "../model/gamedoc"
 import {
@@ -165,6 +171,9 @@ function drawCanvas(
 
 export function ImageEditorView(props: { image: SImage }) {
   const { image } = props
+  useWatchProp(image, "history", () => {
+    console.log("history changed")
+  })
   const doc = useContext(DocContext)
   const state = useContext(StateContext)
   const palette = doc.palette()
@@ -314,6 +323,8 @@ export function ImageEditorView(props: { image: SImage }) {
             selected={grid}
             selectedIcon={Icons.GridSelected}
           />
+          <IconButton onClick={() => image.undo()} icon={Icons.LeftArrow} tooltip={"undo"} />
+          <IconButton onClick={() => image.redo()} icon={Icons.RightArrow} tooltip={"redo"} />
         </div>
         <div className={"toolbar"}>
           {layer instanceof ImagePixelLayer && (
