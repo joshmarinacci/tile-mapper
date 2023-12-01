@@ -21,9 +21,7 @@ export class PencilTool extends BasePixelTool<PencilSettingsType> implements Pix
   drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, final: boolean) {
     if (evt.layer) {
       if (final) {
-        this.temp.forEach((v, n) => {
-          if (v >= 0) evt.layer.setPixel(n, v)
-        })
+        evt.layer.copyPixelsFrom(this.temp, (v) => v >= 0)
       } else {
         this.drawAtCursor(target, this._current, evt.color, evt.selection)
       }

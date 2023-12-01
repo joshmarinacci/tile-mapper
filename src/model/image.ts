@@ -97,7 +97,19 @@ export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> implements I
     this.getPropValue("data").set(pt, color)
     this._fire("data", this.getPropValue("data"))
     this._fireAll()
-    if (this.image) this.image.pixelChanged(this, pt, old, color)
+    if (this.image) this.image.appendHistory(new LayerPixelChange(this, pt, old, color))
+  }
+  copyPixelsFrom(src: ArrayGrid<number>, filter?: (v: number) => boolean) {
+    const curr = this.getPropValue("data")
+    const prev = new ArrayGrid<number>(curr.w, curr.h)
+    prev.fill((n) => curr.get(n))
+    curr.forEach((v, n) => {
+      const vv = src.get(n)
+      if (filter && filter(vv)) {
+        curr.set(n, vv)
+      }
+    })
+    if (this.image) this.image.appendHistory(new LayerGridChange(this, prev, curr))
   }
   setPixelRaw(pt: Point, color: number) {
     this.getPropValue("data").set(pt, color)
@@ -200,12 +212,47 @@ export const SImageDefs: DefList<SImageType> = {
   }).withSkipPersisting(true),
 }
 
-type HistoryEvent = {
-  layer: string
-  point: Point
-  prev: number
-  curr: number
+interface HistoryEvent {
+  undo(): void
+  redo(): void
 }
+
+class LayerGridChange implements HistoryEvent {
+  private layer: ImagePixelLayer
+  private prev: ArrayGrid<number>
+  private curr: ArrayGrid<number>
+  constructor(layer: ImagePixelLayer, prev: ArrayGrid<number>, curr: ArrayGrid<number>) {
+    this.layer = layer
+    this.prev = prev
+    this.curr = curr
+  }
+  undo() {
+    this.layer.setPropValue("data", this.prev)
+  }
+  redo() {
+    this.layer.setPropValue("data", this.curr)
+  }
+}
+
+class LayerPixelChange implements HistoryEvent {
+  private point: Point
+  private prev: number
+  private curr: number
+  private layer: ImagePixelLayer
+  constructor(layer: ImagePixelLayer, pt: Point, old: number, color: number) {
+    this.layer = layer
+    this.point = pt
+    this.prev = old
+    this.curr = color
+  }
+  undo() {
+    this.layer.setPixelRaw(this.point, this.prev)
+  }
+  redo() {
+    this.layer.setPixelRaw(this.point, this.curr)
+  }
+}
+
 export class SImage extends PropsBase<SImageType> {
   private history: HistoryEvent[]
   private current_history_index: number
@@ -248,11 +295,8 @@ export class SImage extends PropsBase<SImageType> {
       const event = this.history[this.current_history_index]
       this.current_history_index -= 1
       // console.log("undoing",event)
-      const layer = this.getPropValue("layers").find((layer) => layer.getUUID() === event.layer)
-      if (layer instanceof ImagePixelLayer) {
-        layer.setPixelRaw(event.point, event.prev)
-        this.setPropValue("history", this.getPropValue("history") + 1)
-      }
+      event.undo()
+      this.setPropValue("history", this.getPropValue("history") + 1)
     }
   }
   redo() {
@@ -260,25 +304,14 @@ export class SImage extends PropsBase<SImageType> {
     if (this.current_history_index < this.history.length - 1) {
       this.current_history_index += 1
       const event = this.history[this.current_history_index]
-      // console.log("redoing",event)
-      const layer = this.getPropValue("layers").find((layer) => layer.getUUID() === event.layer)
-      if (layer instanceof ImagePixelLayer) {
-        layer.setPixelRaw(event.point, event.curr)
-        this.setPropValue("history", this.getPropValue("history") + 1)
-      }
+      event.redo()
+      this.setPropValue("history", this.getPropValue("history") + 1)
     }
   }
 
-  pixelChanged(param: PropsBase<ImagePixelLayerType>, pt: Point, old: number, color: number) {
-    // console.log("layer changed", param.getUUID(), pt,old,color)
-    this.history.push({
-      layer: param.getUUID(),
-      point: pt,
-      prev: old,
-      curr: color,
-    })
+  appendHistory(evt: HistoryEvent) {
+    this.history.push(evt)
     this.current_history_index += 1
     this.setPropValue("history", this.getPropValue("history") + 1)
-    // console.log("added to history. hist len", this.history.length, 'curr',this.current_history_index)
   }
 }
