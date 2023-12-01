@@ -29,6 +29,7 @@ export function bucketFill(layer: TileLayer, target: string, replace: string, at
 }
 
 export function drawTileLayer(
+  canvas: HTMLCanvasElement,
   ctx: CanvasRenderingContext2D,
   doc: GameDoc,
   layer: TileLayer,
@@ -36,11 +37,16 @@ export function drawTileLayer(
   grid: boolean,
 ) {
   const size = doc.getPropValue("tileSize")
+  const wrapping = layer.getPropValue("wrapping")
   const cells = layer.getPropValue("data") as ArrayGrid<MapCell>
-  cells.forEach((v, n) => {
-    if (v) {
-      const x = n.x * size.w * scale
-      const y = n.y * size.w * scale
+  const maxTileX = Math.floor(canvas.width / size.w / scale)
+  const maxTileY = Math.floor(canvas.height / size.h / scale)
+  for (let j = 0; j < maxTileY; j++) {
+    for (let i = 0; i < maxTileX; i++) {
+      const v = wrapping ? cells.get_at(i % cells.w, j % cells.h) : cells.get_at(i, j)
+      if (!v) continue
+      const x = i * size.w * scale
+      const y = j * size.h * scale
       const can = doc.lookup_canvas(v.tile)
       if (can) {
         ctx.drawImage(
@@ -57,12 +63,8 @@ export function drawTileLayer(
           size.h * scale,
         )
       }
-      if (grid) {
-        ctx.strokeStyle = "gray"
-        ctx.strokeRect(x, y, size.w * scale - 1, size.h * scale - 1)
-      }
     }
-  })
+  }
 }
 
 export function TileLayerToolbar(props: {

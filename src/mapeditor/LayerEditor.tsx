@@ -55,7 +55,7 @@ export function LayerEditor(props: {
       map.getPropValue("layers").forEach((layer: PropsBase<MapLayerType>) => {
         if (!layer.getPropValue("visible")) return
         if (layer instanceof TileLayer) {
-          drawTileLayer(ctx, doc, layer as TileLayer, scale, grid)
+          drawTileLayer(canvas, ctx, doc, layer as TileLayer, scale, grid)
         }
         if (layer instanceof ActorLayer) {
           drawActorlayer(ctx, doc, layer as ActorLayer, scale)
