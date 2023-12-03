@@ -39,8 +39,8 @@ export abstract class BasePixelTool<Type> extends PropsBase<Type> {
       this._down = true
       this._start = evt.pt.floor()
       this._current = evt.pt.floor()
-      const data = evt.layer.getPropValue("data")
-      this.temp = new ArrayGrid<number>(data.w, data.h)
+      const size = evt.image.getPropValue("size")
+      this.temp = ArrayGrid.fromSize<number>(size)
       this.temp.fill(() => -1)
       this.drawPixels(evt, this.temp, false)
       evt.markDirty()
@@ -58,7 +58,7 @@ export abstract class BasePixelTool<Type> extends PropsBase<Type> {
   onMouseUp(evt: PixelToolEvent): void {
     this._down = false
     if (evt.layer) {
-      this.drawPixels(evt, evt.layer.getPropValue("data"), true)
+      this.drawPixels(evt, null, true)
       this.temp.fill(() => -1)
     }
     evt.markDirty()

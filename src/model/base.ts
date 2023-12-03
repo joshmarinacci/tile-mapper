@@ -352,7 +352,7 @@ export function getGlobalClassRegistry(): ClassRegistry {
 }
 
 export function restoreClassFromJSON<Type>(json: JsonOut<Type>): PropsBase<Type> {
-  // console.log("restoring class", json,'with reg',GlobalClassRegistry)
+  // console.log("restoring class", json,'with reg',getGlobalClassRegistry())
   if (CLASS_NAME_MAP[json.class]) json.class = CLASS_NAME_MAP[json.class]
   const Clazz = getGlobalClassRegistry().classByName.get(json.class)
   if (!Clazz) throw new Error(`class missing for ${json.class}`)

@@ -35,6 +35,7 @@ import {
 import { DocContext, StateContext } from "../model/contexts"
 import { GameDoc } from "../model/gamedoc"
 import {
+  FramePixelSurface,
   ImageLayerType,
   ImageObjectLayer,
   ImagePixelLayer,
@@ -61,24 +62,35 @@ function clamp(val: number, min: number, max: number) {
   return val
 }
 
+function drawPixelLayer(
+  ctx: CanvasRenderingContext2D,
+  layer: ImagePixelLayer,
+  surf: FramePixelSurface,
+  palette: ImagePalette,
+  scale: number,
+) {
+  ctx.save()
+  ctx.globalAlpha = clamp(layer.opacity(), 0, 1)
+  surf.forEach((n: number, p: Point) => {
+    ctx.fillStyle = palette.colors[n]
+    if (n === -1) ctx.fillStyle = "transparent"
+    ctx.fillRect(p.x * scale, p.y * scale, 1 * scale, 1 * scale)
+  })
+  ctx.restore()
+}
 export function drawImage(
   doc: GameDoc,
   ctx: CanvasRenderingContext2D,
   image: SImage,
   palette: ImagePalette,
   scale: number,
+  currentFrame: number,
 ) {
   image.layers().forEach((layer) => {
     if (layer instanceof ImagePixelLayer) {
       if (!layer.visible()) return
-      ctx.save()
-      ctx.globalAlpha = clamp(layer.opacity(), 0, 1)
-      layer.getPropValue("data").forEach((n, p) => {
-        ctx.fillStyle = palette.colors[n]
-        if (n === -1) ctx.fillStyle = "transparent"
-        ctx.fillRect(p.x * scale, p.y * scale, 1 * scale, 1 * scale)
-      })
-      ctx.restore()
+      const surf = image.getFramePixelSurface(layer, currentFrame)
+      drawPixelLayer(ctx, layer, surf, palette, scale)
     }
     if (layer instanceof ImageObjectLayer) {
       if (!layer.visible()) return
@@ -122,11 +134,12 @@ function drawCanvas(
   drawColor: number,
   selectionRect: Bounds | undefined,
   selectedObject: TextObject | undefined,
+  currentFrame: number,
 ) {
   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
   ctx.fillStyle = "magenta"
   ctx.fillRect(0, 0, canvas.width, canvas.height)
-  drawImage(doc, ctx, image, palette, scale)
+  drawImage(doc, ctx, image, palette, scale, currentFrame)
   const size = image.size()
   if (grid) {
     ctx.strokeStyle = "black"
@@ -160,7 +173,6 @@ function drawCanvas(
       doc: doc,
     })
   }
-
   if (selectionRect) {
     const bounds = selectionRect.scale(scale)
     ctx.setLineDash([5, 5])
@@ -193,6 +205,16 @@ export function ImageEditorView(props: { image: SImage }) {
   const [count, setCount] = useState(0)
   const [selectionRect, setSelectionRect] = useState<Bounds | undefined>()
   const [selectedObject, setSelectedObject] = useState<TextObject | undefined>()
+  const [currentFrame, setCurrentFrame] = useState(0)
+  const navPrevFrame = () => {
+    if (currentFrame >= 1) setCurrentFrame(currentFrame - 1)
+  }
+  const navNextFrame = () => {
+    if (currentFrame + 1 < image.getPropValue("frameCount")) setCurrentFrame(currentFrame + 1)
+  }
+  const addEmptyFrame = () => {
+    image.addEmptyFrame()
+  }
 
   const scale = Math.pow(2, zoom)
   const redraw = () => {
@@ -210,12 +232,13 @@ export function ImageEditorView(props: { image: SImage }) {
         palette.colors.indexOf(drawColor),
         selectionRect,
         selectedObject,
+        currentFrame,
       )
     }
   }
   const dm = useContext(DialogContext)
 
-  useEffect(() => redraw(), [canvasRef, zoom, grid, count, image])
+  useEffect(() => redraw(), [canvasRef, zoom, grid, count, image, currentFrame])
   useWatchAllProps(image, () => setCount(count + 1))
 
   const sharePNG = async () => {
@@ -225,7 +248,7 @@ export function ImageEditorView(props: { image: SImage }) {
     canvas.width = size.w
     canvas.height = size.h
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
-    drawImage(doc, ctx, image, palette, scale)
+    drawImage(doc, ctx, image, palette, scale, 0)
 
     const blob = await canvas_to_blob(canvas)
     dm.show(<ShareImageDialog blob={blob} />)
@@ -323,8 +346,15 @@ export function ImageEditorView(props: { image: SImage }) {
             selected={grid}
             selectedIcon={Icons.GridSelected}
           />
+          <Spacer />
           <IconButton onClick={() => image.undo()} icon={Icons.LeftArrow} tooltip={"undo"} />
+          <label>history</label>
           <IconButton onClick={() => image.redo()} icon={Icons.RightArrow} tooltip={"redo"} />
+          <Spacer />
+          <IconButton onClick={navPrevFrame} icon={Icons.LeftArrow} tooltip={"prev frame"} />
+          <label>{currentFrame}</label>
+          <IconButton onClick={navNextFrame} icon={Icons.RightArrow} tooltip={"next frame"} />
+          <IconButton onClick={addEmptyFrame} icon={Icons.Plus} tooltip={"add frame"} />
         </div>
         <div className={"toolbar"}>
           {layer instanceof ImagePixelLayer && (
@@ -430,6 +460,8 @@ export function ImageEditorView(props: { image: SImage }) {
               }
               if (layer instanceof ImagePixelLayer) {
                 pixelTool.onMouseDown({
+                  image: image,
+                  surface: image.getFramePixelSurface(layer, currentFrame),
                   color: palette.colors.indexOf(drawColor),
                   pt: canvasToImage(e),
                   e: e,
@@ -458,6 +490,8 @@ export function ImageEditorView(props: { image: SImage }) {
               }
               if (layer instanceof ImagePixelLayer) {
                 pixelTool.onMouseMove({
+                  image: image,
+                  surface: image.getFramePixelSurface(layer, currentFrame),
                   color: palette.colors.indexOf(drawColor),
                   pt: canvasToImage(e),
                   e: e,
@@ -486,6 +520,8 @@ export function ImageEditorView(props: { image: SImage }) {
               }
               if (layer instanceof ImagePixelLayer) {
                 pixelTool.onMouseUp({
+                  image: image,
+                  surface: image.getFramePixelSurface(layer, currentFrame),
                   color: palette.colors.indexOf(drawColor),
                   pt: canvasToImage(e),
                   e: e,

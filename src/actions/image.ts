@@ -15,7 +15,7 @@ export const exportImageToPNG = async (doc: GameDoc, image: SImage, scale: numbe
   canvas.height = size.h
   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
   const palette = doc.getPropValue("palette")
-  drawImage(doc, ctx, image, palette, scale)
+  drawImage(doc, ctx, image, palette, scale, 0)
 
   const blob = await canvas_to_blob(canvas)
   forceDownloadBlob(`${image.getPropValue("name") as string}.${scale}x.png`, blob)
@@ -153,7 +153,7 @@ export const CopyImageToClipboardAction: SimpleMenuAction = {
       canvas.height = size.h
       const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
       const palette = doc.getPropValue("palette")
-      drawImage(doc, ctx, image, palette, scale)
+      drawImage(doc, ctx, image, palette, scale, 0)
       try {
         const blob = await canvas_to_blob(canvas)
         await navigator.clipboard.write([

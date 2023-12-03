@@ -21,7 +21,7 @@ export class PencilTool extends BasePixelTool<PencilSettingsType> implements Pix
   drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, final: boolean) {
     if (evt.layer) {
       if (final) {
-        evt.layer.copyPixelsFrom(this.temp, (v) => v >= 0)
+        evt.surface.copyPixelsFrom(this.temp, (v) => v >= 0)
       } else {
         this.drawAtCursor(target, this._current, evt.color, evt.selection)
       }
@@ -39,7 +39,7 @@ export class PencilTool extends BasePixelTool<PencilSettingsType> implements Pix
   }
 
   private drawAtCursor(
-    layer: ArrayGrid<number>,
+    grid: ArrayGrid<number>,
     pt: Point,
     color: number,
     selection: Bounds | undefined,
@@ -50,10 +50,10 @@ export class PencilTool extends BasePixelTool<PencilSettingsType> implements Pix
       for (let j = pt.y - rad; j <= pt.y + rad; j++) {
         if (selection) {
           if (selection.contains(new Point(i, j))) {
-            layer.set(new Point(i, j), color)
+            grid.set(new Point(i, j), color)
           }
         } else {
-          layer.set(new Point(i, j), color)
+          grid.set(new Point(i, j), color)
         }
       }
     }

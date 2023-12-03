@@ -3,7 +3,13 @@ import React from "react"
 
 import { ImagePalette } from "../common/common"
 import { GameDoc } from "../model/gamedoc"
-import { ImageObjectLayer, ImagePixelLayer, TextObject } from "../model/image"
+import {
+  FramePixelSurface,
+  ImageObjectLayer,
+  ImagePixelLayer,
+  SImage,
+  TextObject,
+} from "../model/image"
 
 export type PixelToolEvent = {
   pt: Point // in image coords
@@ -11,6 +17,8 @@ export type PixelToolEvent = {
   color: number //currently selected color
   palette: ImagePalette
   layer: ImagePixelLayer // currently selected layer
+  image: SImage
+  surface: FramePixelSurface
   markDirty: () => void
   selection: Bounds | undefined
   setSelectionRect: (selection: Bounds | undefined) => void

@@ -33,7 +33,7 @@ export function generateGamestate(
     canvas.width = img.getPropValue("size").w
     canvas.height = img.getPropValue("size").h
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
-    drawImage(doc, ctx, img, doc.getPropValue("palette"), 1)
+    drawImage(doc, ctx, img, doc.getPropValue("palette"), 1, 0)
     gamestate.imageCache.addImage(img.getPropValue("name"), img.getUUID(), canvas)
   })
   // turn each layer of the map into a layer of the engine

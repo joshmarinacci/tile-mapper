@@ -161,7 +161,6 @@ export function AddCanvasToDocButton() {
             visible: true,
           })
           canvas.appendLayer(layer)
-          layer.rebuildFromCanvas(canvas)
           appendToList(doc, "canvases", canvas)
           state.setSelection(canvas)
         }}
