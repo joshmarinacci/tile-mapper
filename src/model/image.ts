@@ -192,6 +192,13 @@ export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> {
   setFrameFromData(data: ArrayGrid<number>) {
     this.frames.push(data)
   }
+
+  cloneAndAddFrame(currentFrame: number) {
+    const orig = this.getFrame(currentFrame)
+    const copy = new ArrayGrid<number>(orig.w, orig.h)
+    copy.fill((n) => orig.get(n))
+    this.frames.push(copy)
+  }
 }
 
 interface ImageObjectLayerType extends ImageLayerType {
@@ -418,6 +425,15 @@ export class SImage extends PropsBase<SImageType> {
 
   getFramePixelSurface(layer: ImagePixelLayer, number: number): FramePixelSurface {
     return new LayerPixelSurface(layer, number)
+  }
+
+  cloneAndAddFrame(currentFrame: number) {
+    this.layers().forEach((layer) => {
+      if (layer instanceof ImagePixelLayer) {
+        layer.cloneAndAddFrame(currentFrame)
+      }
+    })
+    this.setPropValue("frameCount", this.getPropValue("frameCount") + 1)
   }
 }
 

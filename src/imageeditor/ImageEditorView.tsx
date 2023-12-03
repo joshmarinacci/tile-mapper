@@ -215,6 +215,9 @@ export function ImageEditorView(props: { image: SImage }) {
   const addEmptyFrame = () => {
     image.addEmptyFrame()
   }
+  const addCopyFrame = () => {
+    image.cloneAndAddFrame(currentFrame)
+  }
 
   const scale = Math.pow(2, zoom)
   const redraw = () => {
@@ -351,10 +354,13 @@ export function ImageEditorView(props: { image: SImage }) {
           <label>history</label>
           <IconButton onClick={() => image.redo()} icon={Icons.RightArrow} tooltip={"redo"} />
           <Spacer />
+          <label>Frame</label>
           <IconButton onClick={navPrevFrame} icon={Icons.LeftArrow} tooltip={"prev frame"} />
-          <label>{currentFrame}</label>
+          <label>
+            {currentFrame} / {image.getPropValue("frameCount")}
+          </label>
           <IconButton onClick={navNextFrame} icon={Icons.RightArrow} tooltip={"next frame"} />
-          <IconButton onClick={addEmptyFrame} icon={Icons.Plus} tooltip={"add frame"} />
+          <IconButton onClick={addCopyFrame} icon={Icons.Plus} tooltip={"add frame"} />
         </div>
         <div className={"toolbar"}>
           {layer instanceof ImagePixelLayer && (
@@ -432,6 +438,7 @@ export function ImageEditorView(props: { image: SImage }) {
         />
         <div>
           <canvas
+            tabIndex={0}
             ref={canvasRef}
             width={image.size().scale(scale).w}
             height={image.size().scale(scale).h}
@@ -440,7 +447,7 @@ export function ImageEditorView(props: { image: SImage }) {
               e.stopPropagation()
               const pt = canvasToImage(e)
               if (layer instanceof ImagePixelLayer) {
-                const color = layer.getPixel(pt)
+                const color = image.getFramePixelSurface(layer, currentFrame).getPixel(pt)
                 setDrawColor(palette.colors[color])
               }
             }}
@@ -533,6 +540,15 @@ export function ImageEditorView(props: { image: SImage }) {
                     setCount(count + 1)
                   },
                 })
+              }
+            }}
+            onKeyDown={(e) => {
+              // console.log("keyboard code",e.key)
+              if (e.key === "a") {
+                navPrevFrame()
+              }
+              if (e.key === "s") {
+                navNextFrame()
               }
             }}
           />
