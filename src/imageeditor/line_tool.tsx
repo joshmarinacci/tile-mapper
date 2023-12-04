@@ -3,6 +3,7 @@ import React from "react"
 
 import { useWatchAllProps } from "../model/base"
 import { BooleanDef } from "../model/datamodel"
+import { FramePixelSurface } from "../model/image"
 import { BasePixelTool } from "./pixel_tool"
 import { PixelTool, PixelToolEvent } from "./tool"
 
@@ -10,7 +11,7 @@ type LineToolSettingsType = {
   constrain: boolean
 }
 
-export function drawLine(data: ArrayGrid<number>, color: number, start: Point, end: Point) {
+export function drawLine(surf: FramePixelSurface, color: number, start: Point, end: Point) {
   const x1 = end.x
   const x0 = start.x
   const y1 = end.y
@@ -32,7 +33,7 @@ export function drawLine(data: ArrayGrid<number>, color: number, start: Point, e
     let x = 0
     let y = 0
     for (let i = 0; i <= dx; i++) {
-      data.set(new Point(x + x0, y + y0), color)
+      surf.setPixel(new Point(x + x0, y + y0), color)
       // put_pixel(ctx, x + x0, y + y0, "black")
       if (d > 0) {
         d += delta_B
@@ -51,7 +52,7 @@ export function drawLine(data: ArrayGrid<number>, color: number, start: Point, e
     let x = 0
     let y = 0
     for (let i = 0; i <= dy; i++) {
-      data.set(new Point(x + x0, y + y0), color)
+      surf.setPixel(new Point(x + x0, y + y0), color)
       // put_pixel(ctx, x + x0, y + y0, "black")
       if (d > 0) {
         d += delta_B
@@ -73,7 +74,7 @@ export class LineTool extends BasePixelTool<LineToolSettingsType> implements Pix
 
   drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, final: boolean) {
     if (!final) target.fill(() => -1)
-    drawLine(target, evt.color, this._start.floor(), this._current.floor())
+    drawLine(evt.surface, evt.color, this._start.floor(), this._current.floor())
   }
 }
 

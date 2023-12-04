@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest"
 import { ImagePixelLayer, SImage } from "../model/image"
 import { drawEllipse } from "./ellipse_tool"
 import { floodFill } from "./fill_tool"
+import { drawLine } from "./line_tool"
 import { drawRect } from "./rect_tool"
 
 describe("basic drawing", () => {
@@ -18,6 +19,15 @@ describe("basic drawing", () => {
     expect(surf.getPixel(new Point(0, 0))).toBe(0)
     surf.fillAll(12)
     expect(surf.getPixel(new Point(0, 0))).toBe(12)
+  })
+  it("should draw a line", async () => {
+    const canvas = new SImage({ size: new Size(50, 50) })
+    canvas.appendLayer(new ImagePixelLayer({ visible: true, opacity: 1.0 }))
+    const surf = canvas.getFramePixelSurfaces(0)[0]
+    surf.fillAll(0)
+    expect(surf.getPixel(new Point(0, 0))).toBe(0)
+    drawLine(surf, 1, new Point(0, 0), new Point(10, 10))
+    expect(surf.getPixel(new Point(0, 0))).toBe(1)
   })
   it("should draw a rectangle", async () => {
     const canvas = new SImage({ size: new Size(50, 50) })
@@ -68,7 +78,7 @@ describe("basic drawing", () => {
       drawEllipse(surf, 13, new Point(0, 0), new Point(20, 20), undefined)
     }
   })
-  it("should fill the whole layer", async () => {
+  it("should flood fill", async () => {
     const canvas = new SImage({ size: new Size(50, 50) })
     canvas.appendLayer(new ImagePixelLayer({ visible: true, opacity: 1.0 }))
     const surf = canvas.getFramePixelSurfaces(0)[0]
