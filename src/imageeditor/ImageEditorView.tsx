@@ -207,13 +207,14 @@ export function ImageEditorView(props: { image: SImage }) {
   const [selectedObject, setSelectedObject] = useState<TextObject | undefined>()
   const [currentFrame, setCurrentFrame] = useState(0)
   const navPrevFrame = () => {
-    if (currentFrame >= 1) setCurrentFrame(currentFrame - 1)
+    const fc = image.getPropValue("frameCount")
+    let cf = currentFrame - 1
+    if (cf < 0) cf = fc - 1
+    setCurrentFrame(cf)
   }
   const navNextFrame = () => {
-    if (currentFrame + 1 < image.getPropValue("frameCount")) setCurrentFrame(currentFrame + 1)
-  }
-  const addEmptyFrame = () => {
-    image.addEmptyFrame()
+    const fc = image.getPropValue("frameCount")
+    setCurrentFrame((currentFrame + 1) % fc)
   }
   const addCopyFrame = () => {
     image.cloneAndAddFrame(currentFrame)
