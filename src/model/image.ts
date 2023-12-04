@@ -472,6 +472,34 @@ class LayerPixelSurface implements FramePixelSurface {
     return this.layer.getFrame(this.frameNumber).isValidIndex(pt)
   }
 }
+export class ArrayGridPixelSurface implements FramePixelSurface {
+  data: ArrayGrid<number>
+  constructor(data: ArrayGrid<number>) {
+    this.data = data
+  }
+  getPixel(p: Point): number {
+    return this.data.get(p)
+  }
+
+  setPixel(p: Point, value: number): void {
+    this.data.set(p, value)
+  }
+  fillAll(v: number): void {
+    this.data.fill(() => v)
+  }
+
+  copyPixelsFrom(grid: ArrayGrid<number>, filter: PixelFilter) {
+    this.data.forEach((v, n) => {
+      if (filter(v, n)) tgt.set(n, v)
+    })
+  }
+  forEach(cb: PixelForEachCallback) {
+    this.data.forEach(cb)
+  }
+  isValidIndex(pt: Point): boolean {
+    return this.data.isValidIndex(pt)
+  }
+}
 export interface FramePixelSurface {
   setPixel(p: Point, n: number): void
   getPixel(p: Point): number

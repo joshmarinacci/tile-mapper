@@ -1,4 +1,4 @@
-import { ArrayGrid, Bounds, Point } from "josh_js_util"
+import { Bounds, Point } from "josh_js_util"
 import React from "react"
 
 import { useWatchAllProps } from "../model/base"
@@ -18,6 +18,7 @@ export function drawRect(
   end: Point,
   selection: Bounds | undefined,
 ) {
+  console.log("doing draw rect")
   const i1 = Math.min(start.x, end.x)
   const i2 = Math.max(start.x, end.x)
   const j1 = Math.min(start.y, end.y)
@@ -72,12 +73,12 @@ export class RectTool extends BasePixelTool<RectToolSettingsType> implements Pix
     this.name = "rect"
   }
 
-  drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, final: boolean) {
-    if (!final) target.fill(() => -1)
+  drawPixels(evt: PixelToolEvent, target: FramePixelSurface, final: boolean) {
+    if (!final) target.fillAll(-1)
     if (this.getPropValue("filled")) {
-      fillRect(evt.surface, evt.color, this._start.floor(), this._current.floor(), evt.selection)
+      fillRect(target, evt.color, this._start.floor(), this._current.floor(), evt.selection)
     } else {
-      drawRect(evt.surface, evt.color, this._start.floor(), this._current.floor(), evt.selection)
+      drawRect(target, evt.color, this._start.floor(), this._current.floor(), evt.selection)
     }
   }
 }

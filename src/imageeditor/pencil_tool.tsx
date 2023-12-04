@@ -1,8 +1,9 @@
-import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
+import { Bounds, Point, Size } from "josh_js_util"
 import React from "react"
 
 import { useWatchAllProps } from "../model/base"
 import { IntegerDef } from "../model/datamodel"
+import { FramePixelSurface } from "../model/image"
 import { strokeBounds } from "../util"
 import { BasePixelTool } from "./pixel_tool"
 import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
@@ -18,10 +19,11 @@ export class PencilTool extends BasePixelTool<PencilSettingsType> implements Pix
     this._down = false
   }
 
-  drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, final: boolean) {
+  drawPixels(evt: PixelToolEvent, target: FramePixelSurface, final: boolean) {
     if (evt.layer) {
       if (final) {
-        evt.surface.copyPixelsFrom(this.temp, (v) => v >= 0)
+        console.log("doing final copy")
+        evt.surface.copyPixelsFrom(this.temp.data, (v) => v >= 0)
       } else {
         this.drawAtCursor(target, this._current, evt.color, evt.selection)
       }
@@ -39,7 +41,7 @@ export class PencilTool extends BasePixelTool<PencilSettingsType> implements Pix
   }
 
   private drawAtCursor(
-    grid: ArrayGrid<number>,
+    grid: FramePixelSurface,
     pt: Point,
     color: number,
     selection: Bounds | undefined,
@@ -50,10 +52,10 @@ export class PencilTool extends BasePixelTool<PencilSettingsType> implements Pix
       for (let j = pt.y - rad; j <= pt.y + rad; j++) {
         if (selection) {
           if (selection.contains(new Point(i, j))) {
-            grid.set(new Point(i, j), color)
+            grid.setPixel(new Point(i, j), color)
           }
         } else {
-          grid.set(new Point(i, j), color)
+          grid.setPixel(new Point(i, j), color)
         }
       }
     }

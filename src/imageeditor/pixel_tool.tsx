@@ -1,6 +1,7 @@
 import { ArrayGrid, Point } from "josh_js_util"
 
 import { DefList, PropsBase, PropValues } from "../model/base"
+import { ArrayGridPixelSurface, FramePixelSurface } from "../model/image"
 import { PixelToolEvent, ToolOverlayInfo } from "./tool"
 
 export abstract class BasePixelTool<Type> extends PropsBase<Type> {
@@ -8,7 +9,7 @@ export abstract class BasePixelTool<Type> extends PropsBase<Type> {
   protected _down: boolean
   protected _start: Point
   protected _current: Point
-  protected temp: ArrayGrid<number>
+  protected temp: ArrayGridPixelSurface
 
   constructor(defs: DefList<Type>, options?: PropValues<Type>) {
     super(defs, options)
@@ -16,7 +17,7 @@ export abstract class BasePixelTool<Type> extends PropsBase<Type> {
     this._down = false
     this._start = new Point(0, 0)
     this._current = new Point(0, 0)
-    this.temp = new ArrayGrid<number>(1, 1)
+    this.temp = new ArrayGridPixelSurface(new ArrayGrid<number>(1, 1))
   }
 
   drawOverlay(ovr: ToolOverlayInfo): void {
@@ -40,8 +41,8 @@ export abstract class BasePixelTool<Type> extends PropsBase<Type> {
       this._start = evt.pt.floor()
       this._current = evt.pt.floor()
       const size = evt.image.getPropValue("size")
-      this.temp = ArrayGrid.fromSize<number>(size)
-      this.temp.fill(() => -1)
+      this.temp = new ArrayGridPixelSurface(ArrayGrid.fromSize<number>(size))
+      this.temp.fillAll(-1)
       this.drawPixels(evt, this.temp, false)
       evt.markDirty()
     }
@@ -58,11 +59,11 @@ export abstract class BasePixelTool<Type> extends PropsBase<Type> {
   onMouseUp(evt: PixelToolEvent): void {
     this._down = false
     if (evt.layer) {
-      this.drawPixels(evt, null, true)
-      this.temp.fill(() => -1)
+      this.drawPixels(evt, evt.surface, true)
+      this.temp.fillAll(-1)
     }
     evt.markDirty()
   }
 
-  abstract drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, final: boolean): void
+  abstract drawPixels(evt: PixelToolEvent, target: FramePixelSurface, final: boolean): void
 }

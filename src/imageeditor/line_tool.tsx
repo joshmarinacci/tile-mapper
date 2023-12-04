@@ -1,4 +1,4 @@
-import { ArrayGrid, Point } from "josh_js_util"
+import { Point } from "josh_js_util"
 import React from "react"
 
 import { useWatchAllProps } from "../model/base"
@@ -72,9 +72,9 @@ export class LineTool extends BasePixelTool<LineToolSettingsType> implements Pix
     this.name = "line"
   }
 
-  drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, final: boolean) {
-    if (!final) target.fill(() => -1)
-    drawLine(evt.surface, evt.color, this._start.floor(), this._current.floor())
+  drawPixels(evt: PixelToolEvent, target: FramePixelSurface, final: boolean) {
+    if (!final) target.fillAll(-1)
+    drawLine(target, evt.color, this._start.floor(), this._current.floor())
   }
 }
 
