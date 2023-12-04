@@ -2,8 +2,8 @@ import { Point } from "josh_js_util"
 import React from "react"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
-import { ImagePixelLayer } from "../model/image"
-import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
+import { FramePixelSurface } from "../model/image"
+import { PixelTool, PixelToolEvent } from "./tool"
 
 type FillToolSettingsType = object
 
@@ -11,15 +11,15 @@ function calculateDirections() {
   return [new Point(-1, 0), new Point(1, 0), new Point(0, -1), new Point(0, 1)]
 }
 
-export function new_bucketFill(layer: ImagePixelLayer, target: number, replace: number, at: Point) {
+export function floodFill(surf: FramePixelSurface, target: number, replace: number, at: Point) {
   if (target === replace) return
-  const v = layer.getPixel(at)
+  const v = surf.getPixel(at)
   if (v !== target) return
   if (v === target) {
-    layer.setPixel(at, replace)
+    surf.setPixel(at, replace)
     calculateDirections().forEach((dir) => {
       const pt = at.add(dir)
-      if (layer.getPropValue("data").isValidIndex(pt)) new_bucketFill(layer, target, replace, pt)
+      if (surf.isValidIndex(pt)) floodFill(surf, target, replace, pt)
     })
   }
 }
@@ -36,7 +36,7 @@ export class FillTool extends PropsBase<FillToolSettingsType> implements PixelTo
 
   onMouseDown(evt: PixelToolEvent): void {
     if (evt.layer) {
-      new_bucketFill(evt.layer, evt.layer.getPixel(evt.pt), evt.color, evt.pt.floor())
+      floodFill(evt.surface, evt.surface.getPixel(evt.pt), evt.color, evt.pt.floor())
       evt.markDirty()
     }
   }

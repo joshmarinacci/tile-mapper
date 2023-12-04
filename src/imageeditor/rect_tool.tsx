@@ -75,9 +75,9 @@ export class RectTool extends BasePixelTool<RectToolSettingsType> implements Pix
   drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, final: boolean) {
     if (!final) target.fill(() => -1)
     if (this.getPropValue("filled")) {
-      fillRect(target, evt.color, this._start.floor(), this._current.floor(), evt.selection)
+      fillRect(evt.surface, evt.color, this._start.floor(), this._current.floor(), evt.selection)
     } else {
-      drawRect(target, evt.color, this._start.floor(), this._current.floor(), evt.selection)
+      drawRect(evt.surface, evt.color, this._start.floor(), this._current.floor(), evt.selection)
     }
   }
 }

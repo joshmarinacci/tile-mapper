@@ -468,11 +468,15 @@ class LayerPixelSurface implements FramePixelSurface {
     const tgt = this.layer.getFrame(this.frameNumber)
     tgt.forEach(cb)
   }
+  isValidIndex(pt: Point): boolean {
+    return this.layer.getFrame(this.frameNumber).isValidIndex(pt)
+  }
 }
 export interface FramePixelSurface {
   setPixel(p: Point, n: number): void
   getPixel(p: Point): number
-  fillAll(arg0: number): void
+  fillAll(color: number): void
   copyPixelsFrom(grid: ArrayGrid<number>, filter: PixelFilter): void
   forEach(cb: PixelForEachCallback): void
+  isValidIndex(pt: Point): boolean
 }
