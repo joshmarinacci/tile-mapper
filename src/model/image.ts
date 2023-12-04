@@ -448,20 +448,14 @@ class LayerPixelSurface implements FramePixelSurface {
     this.frameNumber = frameNumber
   }
   getPixel(p: Point): number {
-    console.log(
-      "getting pixel ",
-      p,
-      "from layer",
-      this.layer.getUUID(),
-      "on frame",
-      this.frameNumber,
-    )
     return this.layer.getFrame(this.frameNumber).get(p)
   }
 
-  setPixel(p: Point, n: number): void {
-    console.log(`setting ${p} ${n}. layer frames`, this.layer.getUUID())
-    this.layer.getFrame(this.frameNumber).set(p, n)
+  setPixel(p: Point, value: number): void {
+    this.layer.getFrame(this.frameNumber).set(p, value)
+  }
+  fillAll(v: number): void {
+    this.layer.getFrame(this.frameNumber).fill(() => v)
   }
 
   copyPixelsFrom(grid: ArrayGrid<number>, filter: PixelFilter) {
@@ -477,9 +471,8 @@ class LayerPixelSurface implements FramePixelSurface {
 }
 export interface FramePixelSurface {
   setPixel(p: Point, n: number): void
-
   getPixel(p: Point): number
-
+  fillAll(arg0: number): void
   copyPixelsFrom(grid: ArrayGrid<number>, filter: PixelFilter): void
   forEach(cb: PixelForEachCallback): void
 }

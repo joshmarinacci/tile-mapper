@@ -3,6 +3,7 @@ import React from "react"
 
 import { useWatchAllProps } from "../model/base"
 import { BooleanDef } from "../model/datamodel"
+import { FramePixelSurface } from "../model/image"
 import { BasePixelTool } from "./pixel_tool"
 import { PixelTool, PixelToolEvent } from "./tool"
 
@@ -11,7 +12,7 @@ type RectToolSettingsType = {
 }
 
 export function drawRect(
-  layer: ArrayGrid<number>,
+  layer: FramePixelSurface,
   color: number,
   start: Point,
   end: Point,
@@ -34,21 +35,21 @@ export function drawRect(
 
 function setPixel(
   point: Point,
-  layer: ArrayGrid<number>,
+  layer: FramePixelSurface,
   color: number,
   selection: Bounds | undefined,
 ) {
   if (selection) {
     if (selection.contains(point)) {
-      layer.set(point, color)
+      layer.setPixel(point, color)
     }
   } else {
-    layer.set(point, color)
+    layer.setPixel(point, color)
   }
 }
 
 export function fillRect(
-  layer: ArrayGrid<number>,
+  layer: FramePixelSurface,
   color: number,
   start: Point,
   end: Point,
