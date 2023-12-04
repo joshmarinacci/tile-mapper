@@ -61,11 +61,10 @@ describe("basic drawing", () => {
     const canvas = new SImage({ size: new Size(50, 50) })
     const layer = new ImagePixelLayer({ visible: true, opacity: 1.0 })
     canvas.appendLayer(layer)
-    layer.rebuildFromCanvas(canvas)
-
     {
-      layer.fillAll(0)
-      drawEllipse(layer.getPropValue("data"), 13, new Point(0, 0), new Point(20, 20), undefined)
+      const surf = canvas.getFramePixelSurfaces(0)[0]
+      surf.fillAll(0)
+      drawEllipse(surf, 13, new Point(0, 0), new Point(20, 20), undefined)
     }
   })
 })

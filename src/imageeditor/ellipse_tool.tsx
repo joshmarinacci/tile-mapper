@@ -3,6 +3,7 @@ import React from "react"
 
 import { useWatchAllProps } from "../model/base"
 import { BooleanDef } from "../model/datamodel"
+import { FramePixelSurface } from "../model/image"
 import { BasePixelTool } from "./pixel_tool"
 import { PixelTool, PixelToolEvent } from "./tool"
 
@@ -11,21 +12,19 @@ type EllipseToolSettingsType = {
 }
 
 export function drawEllipse(
-  layer: ArrayGrid<number>,
+  surf: FramePixelSurface,
   color: number,
   start: Point,
   end: Point,
   selection: Bounds | undefined,
 ) {
-  console.log("drawing ellispe", layer, color, start, end, selection)
-
   function setPixel(pt: Point) {
     // if (selection) {
     //     if (selection.contains(pt)) {
     //         layer.set(pt, color)
     //     }
     // } else {
-    layer.set(pt, color)
+    surf.setPixel(pt, color)
     // }
   }
 
