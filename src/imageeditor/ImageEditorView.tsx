@@ -8,6 +8,7 @@ import React, { MouseEvent, useContext, useEffect, useRef, useState } from "reac
 import {
   AddNewImageObjectLayerAction,
   AddNewImagePixelLayerAction,
+  ExportImageToGIFAction,
   ExportImageToPNGAction,
   MoveImageLayerDownAction,
   MoveImageLayerUpAction,
@@ -324,6 +325,7 @@ export function ImageEditorView(props: { image: SImage }) {
               />
               <ToolbarActionButton action={ExportImageToPNGAction} />
               <IconButton icon={Icons.Share} onClick={sharePNG} text={"share png"} />
+              <ToolbarActionButton action={ExportImageToGIFAction} />
             </DropdownButton>
           </div>
           <ListView

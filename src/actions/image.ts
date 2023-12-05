@@ -1,4 +1,5 @@
 import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
+import { encode } from "modern-gif"
 
 import { Icons } from "../common/icons"
 import { drawImage } from "../imageeditor/ImageEditorView"
@@ -34,6 +35,50 @@ export const ExportImageToPNGAction: SimpleMenuAction = {
   },
 }
 
+async function exportImageToGIF(doc: GameDoc, image: SImage, scale: number) {
+  const size = image.size().scale(scale)
+  const palette = doc.getPropValue("palette")
+  const drawFrame = (currentFrame: number) => {
+    const canvas = document.createElement("canvas")
+    const size = image.size().scale(scale)
+    canvas.width = size.w
+    canvas.height = size.h
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+    drawImage(doc, ctx, image, palette, scale, currentFrame)
+    return canvas
+  }
+
+  const frames = []
+  for (let i = 0; i < image.getPropValue("frameCount"); i++) {
+    frames.push({
+      imageData: drawFrame(i),
+      delay: 250,
+    })
+  }
+
+  const output = await encode({
+    width: size.w,
+    height: size.h,
+    frames: frames,
+  })
+  const blob = new Blob([output], { type: "image/gif" })
+  // window.open(URL.createObjectURL(blob))
+  forceDownloadBlob(`${image.getPropValue("name")}.gif`, blob)
+}
+
+export const ExportImageToGIFAction: SimpleMenuAction = {
+  type: "simple",
+  title: "export image to GIF 10x",
+  icon: Icons.Download,
+  perform: async (state: GlobalState) => {
+    const doc = state.getPropValue("doc")
+    const image = state.getPropValue("selection")
+    if (image instanceof SImage) {
+      await exportImageToGIF(doc, image, 10)
+    }
+  },
+}
+
 export const AddNewImagePixelLayerAction: SimpleMenuAction = {
   type: "simple",
   icon: Icons.Plus,
@@ -51,7 +96,6 @@ const new_pixel_layer = (image: SImage) => {
     opacity: 1.0,
     visible: true,
   })
-  layer.resizeAndClear(image.getPropValue("size"))
   image.appendLayer(layer)
 }
 export const AddNewImageObjectLayerAction: SimpleMenuAction = {

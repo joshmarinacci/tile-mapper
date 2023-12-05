@@ -17,11 +17,12 @@
     "josh_js_util": "^0.1.25",
     "josh_react_util": "^1.0.23",
     "josh_web_util": "^0.0.5",
+    "modern-gif": "^1.1.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "retrogami-engine": "^0.0.24",
     "typescript": "^4.9.5",
-    "web-vitals": "^2.1.4",
-    "retrogami-engine": "^0.0.24"
+    "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "mkdir -p build && cp public/* build && esbuild src/index.tsx --bundle --outdir=build --watch --serve --servedir=build",
