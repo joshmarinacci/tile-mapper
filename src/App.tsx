@@ -23,7 +23,6 @@ import { PropSheet } from "./propsheet/propsheet"
 import { GlobalState } from "./state"
 
 const reg = get_class_registry()
-console.log("registry is", reg)
 const AR = new ActionRegistry()
 AR.register([ExportToJSONAction, ImportFromJSONAction, NewDocAction, SaveLocalStorageAction])
 

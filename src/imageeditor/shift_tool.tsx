@@ -3,8 +3,8 @@ import React from "react"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
 import { BooleanDef } from "../model/datamodel"
-import { ArrayGridPixelSurface, FramePixelSurface } from "../model/image"
-import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
+import { ArrayGridPixelSurface, FramePixelSurface, ImagePixelLayer, SImage } from "../model/image"
+import { PixelTool, PixelToolEvent, PixelToolKeyEvent, ToolOverlayInfo } from "./tool"
 
 type ShiftToolSettingsType = {
   allLayers: boolean
@@ -28,7 +28,7 @@ function wrap(point: Point, size: Size): Point {
   return pt
 }
 
-function shiftLayer(surf: FramePixelSurface, off: Point) {
+export function shiftLayer(surf: FramePixelSurface, off: Point) {
   const pixels = ArrayGrid.fromSize(surf.size())
   pixels.forEach((v, n) => {
     pixels.set(n, surf.getPixel(n))
@@ -42,6 +42,7 @@ export class ShiftTool extends PropsBase<ShiftToolSettingsType> implements Pixel
   private _pressed: boolean
   private _start: Point
   private temp: ArrayGridPixelSurface
+
   constructor() {
     super({ allLayers: BooleanDef, allFrames: BooleanDef }, { allLayers: false, allFrames: false })
     this._pressed = false
@@ -68,7 +69,6 @@ export class ShiftTool extends PropsBase<ShiftToolSettingsType> implements Pixel
   }
 
   onMouseDown(evt: PixelToolEvent): void {
-    console.log("mouse pressed")
     this._start = evt.pt
     this._pressed = true
     evt.markDirty()
@@ -77,31 +77,40 @@ export class ShiftTool extends PropsBase<ShiftToolSettingsType> implements Pixel
   onMouseMove(evt: PixelToolEvent): void {
     if (this._pressed) {
       const diff = evt.pt.subtract(this._start)
-      if (diff.x !== 0 || diff.y !== 0) {
-        if (!this.getPropValue("allLayers") && !this.getPropValue("allFrames")) {
-          const surf = evt.image.getFramePixelSurface(evt.layer, 0)
-          shiftLayer(surf, diff)
-        }
-        if (this.getPropValue("allLayers") && !this.getPropValue("allFrames")) {
-          evt.image.getFramePixelSurfaces(0).forEach((surf) => shiftLayer(surf, diff))
-        }
-        if (!this.getPropValue("allLayers") && this.getPropValue("allFrames")) {
-          evt.image
-            .getFramePixelSurfacesForLayer(evt.layer)
-            .forEach((surf) => shiftLayer(surf, diff))
-        }
-        if (this.getPropValue("allLayers") && this.getPropValue("allFrames")) {
-          evt.image.getAllFramePixelSurfaces().forEach((surf) => shiftLayer(surf, diff))
-        }
-        evt.markDirty()
-      }
+      this.shiftLayers(evt.image, evt.layer, diff)
       this._start = evt.pt
+      evt.markDirty()
     }
+  }
+
+  onKeyDown(evt: PixelToolKeyEvent) {
+    if (evt.e.key === "ArrowLeft") this.shiftLayers(evt.image, evt.layer, new Point(-1, 0))
+    if (evt.e.key === "ArrowRight") this.shiftLayers(evt.image, evt.layer, new Point(1, 0))
+    if (evt.e.key === "ArrowUp") this.shiftLayers(evt.image, evt.layer, new Point(0, -1))
+    if (evt.e.key === "ArrowDown") this.shiftLayers(evt.image, evt.layer, new Point(0, 1))
+    evt.markDirty()
   }
 
   onMouseUp(evt: PixelToolEvent): void {
     console.log("mouse up")
     this._pressed = false
+  }
+
+  shiftLayers(image: SImage, layer: ImagePixelLayer, diff: Point) {
+    if (diff.x === 0 && diff.y === 0) return
+    if (!this.getPropValue("allLayers") && !this.getPropValue("allFrames")) {
+      const surf = image.getFramePixelSurface(layer, 0)
+      shiftLayer(surf, diff)
+    }
+    if (this.getPropValue("allLayers") && !this.getPropValue("allFrames")) {
+      image.getFramePixelSurfaces(0).forEach((surf) => shiftLayer(surf, diff))
+    }
+    if (!this.getPropValue("allLayers") && this.getPropValue("allFrames")) {
+      image.getFramePixelSurfacesForLayer(layer).forEach((surf) => shiftLayer(surf, diff))
+    }
+    if (this.getPropValue("allLayers") && this.getPropValue("allFrames")) {
+      image.getAllFramePixelSurfaces().forEach((surf) => shiftLayer(surf, diff))
+    }
   }
 }
 

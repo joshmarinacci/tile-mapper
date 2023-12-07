@@ -2,7 +2,7 @@ import { ArrayGrid, Point } from "josh_js_util"
 
 import { DefList, PropsBase, PropValues } from "../model/base"
 import { ArrayGridPixelSurface, FramePixelSurface } from "../model/image"
-import { PixelToolEvent, ToolOverlayInfo } from "./tool"
+import { PixelToolEvent, PixelToolKeyEvent, ToolOverlayInfo } from "./tool"
 
 export abstract class BasePixelTool<Type> extends PropsBase<Type> {
   name: string
@@ -64,6 +64,8 @@ export abstract class BasePixelTool<Type> extends PropsBase<Type> {
     }
     evt.markDirty()
   }
+
+  onKeyDown(evt: PixelToolKeyEvent): void {}
 
   abstract drawPixels(evt: PixelToolEvent, target: FramePixelSurface, final: boolean): void
 }

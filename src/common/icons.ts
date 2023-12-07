@@ -51,4 +51,6 @@ export enum Icons {
   Sort = "sort",
   Save = "save",
   QuestionMark = "question-mark",
+  Undo = "undo",
+  Redo = "redo",
 }

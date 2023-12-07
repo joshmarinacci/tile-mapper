@@ -355,9 +355,9 @@ export function ImageEditorView(props: { image: SImage }) {
             selectedIcon={Icons.GridSelected}
           />
           <Spacer />
-          <IconButton onClick={() => image.undo()} icon={Icons.LeftArrow} tooltip={"undo"} />
+          <IconButton onClick={() => image.undo()} icon={Icons.Undo} tooltip={"undo"} />
           <label>history</label>
-          <IconButton onClick={() => image.redo()} icon={Icons.RightArrow} tooltip={"redo"} />
+          <IconButton onClick={() => image.redo()} icon={Icons.Redo} tooltip={"redo"} />
           <Spacer />
           <label>Frame</label>
           <IconButton onClick={navPrevFrame} icon={Icons.LeftArrow} tooltip={"prev frame"} />
@@ -376,11 +376,11 @@ export function ImageEditorView(props: { image: SImage }) {
                 selected={pixelTool.name === "selection"}
                 onClick={() => setPixelTool(new SelectionTool())}
               />
-              <ToggleButton
-                icon={Icons.Move}
-                selected={pixelTool.name === "move"}
-                onClick={() => setPixelTool(new MoveTool())}
-              />
+              {/*<ToggleButton*/}
+              {/*  icon={Icons.Move}*/}
+              {/*  selected={pixelTool.name === "move"}*/}
+              {/*  onClick={() => setPixelTool(new MoveTool())}*/}
+              {/*/>*/}
               <ToggleButton
                 icon={Icons.Move}
                 selected={pixelTool.name === "shift"}
@@ -554,12 +554,32 @@ export function ImageEditorView(props: { image: SImage }) {
             }}
             onKeyDown={(e) => {
               // console.log("keyboard code",e.key)
+              if (layer instanceof ImagePixelLayer) {
+                pixelTool.onKeyDown({
+                  image: image,
+                  surface: image.getFramePixelSurface(layer, currentFrame),
+                  color: palette.colors.indexOf(drawColor),
+                  e: e,
+                  layer: layer,
+                  palette: palette,
+                  selection: selectionRect,
+                  setSelectionRect: (rect) => setSelectionRect(rect),
+                  markDirty: () => {
+                    setCount(count + 1)
+                  },
+                })
+              }
               if (e.key === "a") {
                 navPrevFrame()
               }
               if (e.key === "s") {
                 navNextFrame()
               }
+              if (e.key === "v") setPixelTool(new ShiftTool())
+              if (e.key === "p") setPixelTool(new PencilTool())
+              if (e.key === "b") setPixelTool(new FillTool())
+              if (e.key === "e") setPixelTool(new EraserTool())
+              if (e.key === "u") setPixelTool(new RectTool())
             }}
           />
         </div>

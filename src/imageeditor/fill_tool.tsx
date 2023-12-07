@@ -3,7 +3,7 @@ import React from "react"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
 import { FramePixelSurface } from "../model/image"
-import { PixelTool, PixelToolEvent } from "./tool"
+import { PixelTool, PixelToolEvent, PixelToolKeyEvent } from "./tool"
 
 type FillToolSettingsType = object
 
@@ -44,6 +44,8 @@ export class FillTool extends PropsBase<FillToolSettingsType> implements PixelTo
   onMouseMove(): void {}
 
   onMouseUp(): void {}
+
+  onKeyDown(evt: PixelToolKeyEvent): void {}
 }
 
 export function FillToolSettings(props: { tool: FillTool }) {

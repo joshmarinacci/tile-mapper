@@ -23,6 +23,17 @@ export type PixelToolEvent = {
   selection: Bounds | undefined
   setSelectionRect: (selection: Bounds | undefined) => void
 }
+export type PixelToolKeyEvent = {
+  e: React.KeyboardEvent<HTMLCanvasElement>
+  palette: ImagePalette
+  layer: ImagePixelLayer // currently selected layer
+  image: SImage
+  surface: FramePixelSurface
+  markDirty: () => void
+  selection: Bounds | undefined
+  setSelectionRect: (selection: Bounds | undefined) => void
+  color: number
+}
 export type ToolOverlayInfo = {
   canvas: HTMLCanvasElement
   ctx: CanvasRenderingContext2D
@@ -41,6 +52,8 @@ export interface PixelTool {
   onMouseUp(evt: PixelToolEvent): void
 
   drawOverlay(ovr: ToolOverlayInfo): void
+
+  onKeyDown(evt: PixelToolKeyEvent): void
 }
 
 export type ObjectToolOverlayInfo = {
