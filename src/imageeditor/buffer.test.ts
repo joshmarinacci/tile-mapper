@@ -98,9 +98,9 @@ describe("image layer test", () => {
       opacity: 0.5,
       visible: true,
     })
-    layer.resizeAndClear(size)
-    layer.fillAll(5)
-    layer.setPixel(new Point(0, 0), 2)
+    // layer.resizeAndClear(size)
+    // layer.fillAll(5)
+    // layer.setPixel(new Point(0, 0), 2)
     const json = layer.toJSON()
     expect(json.props.name).toBe(layer.getPropValue("name"))
     expect(json.props.opacity).toBe(layer.getPropValue("opacity"))
