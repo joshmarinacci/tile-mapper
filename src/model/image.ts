@@ -1,6 +1,4 @@
-import { symlink } from "fs"
 import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
-import { n } from "vitest/dist/reporters-5f784f42"
 
 import {
   appendToList,
@@ -10,11 +8,9 @@ import {
   PropDefBuilder,
   PropsBase,
   PropValues,
-  restoreClassFromJSON,
 } from "./base"
 import {
   ArrayGridNumberDef,
-  ArrayGridNumberJSON,
   BooleanDef,
   FloatDef,
   GenericDataArrayDef,
@@ -85,13 +81,16 @@ export const ImagePixelLayerDefs: DefList<ImagePixelLayerType> = {
 export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> {
   private image: SImage
   private frames: ArrayGrid<number>[]
+
   constructor(opts?: PropValues<ImagePixelLayerType>) {
     super(ImagePixelLayerDefs, opts)
     this.frames = []
   }
+
   setImage(image: SImage) {
     this.image = image
   }
+
   toJSON(): JsonOut<Type> {
     const out = super.toJSON()
     console.log("layer output is", out)
@@ -173,6 +172,7 @@ export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> {
   opacity(): number {
     return this.getPropValue("opacity")
   }
+
   visible(): boolean {
     return this.getPropValue("visible")
   }
@@ -215,6 +215,7 @@ export const ImageObjectLayerDefs: DefList<ImageObjectLayerType> = {
 
 export class ImageObjectLayer extends PropsBase<ImageObjectLayerType> {
   private image: SImage
+
   constructor(opts?: PropValues<ImageObjectLayerType>) {
     super(ImageObjectLayerDefs, opts)
   }
@@ -222,12 +223,15 @@ export class ImageObjectLayer extends PropsBase<ImageObjectLayerType> {
   setImage(image: SImage) {
     this.image = image
   }
+
   crop(rect: Bounds): void {}
 
   resize(size: Size): void {}
+
   opacity(): number {
     return this.getPropValue("opacity")
   }
+
   visible(): boolean {
     return this.getPropValue("visible")
   }
@@ -310,6 +314,7 @@ export const SImageDefs: DefList<SImageType> = {
 
 interface HistoryEvent {
   undo(): void
+
   redo(): void
 }
 
@@ -317,14 +322,17 @@ class LayerGridChange implements HistoryEvent {
   private layer: ImagePixelLayer
   private prev: ArrayGrid<number>
   private curr: ArrayGrid<number>
+
   constructor(layer: ImagePixelLayer, prev: ArrayGrid<number>, curr: ArrayGrid<number>) {
     this.layer = layer
     this.prev = prev
     this.curr = curr
   }
+
   undo() {
     this.layer.setPropValue("data", this.prev)
   }
+
   redo() {
     this.layer.setPropValue("data", this.curr)
   }
@@ -335,15 +343,18 @@ class LayerPixelChange implements HistoryEvent {
   private prev: number
   private curr: number
   private layer: ImagePixelLayer
+
   constructor(layer: ImagePixelLayer, pt: Point, old: number, color: number) {
     this.layer = layer
     this.point = pt
     this.prev = old
     this.curr = color
   }
+
   undo() {
     this.layer.setPixelRaw(this.point, this.prev)
   }
+
   redo() {
     this.layer.setPixelRaw(this.point, this.curr)
   }
@@ -352,6 +363,7 @@ class LayerPixelChange implements HistoryEvent {
 export class SImage extends PropsBase<SImageType> {
   private history: HistoryEvent[]
   private current_history_index: number
+
   constructor(opts?: PropValues<SImageType>) {
     super(SImageDefs, opts)
     this.history = []
@@ -379,12 +391,15 @@ export class SImage extends PropsBase<SImageType> {
     this.getPropValue("layers").forEach((lay) => lay.resize(size))
     this.setPropValue("size", size)
   }
+
   size() {
     return this.getPropValue("size")
   }
+
   layers() {
     return this.getPropValue("layers")
   }
+
   undo() {
     // console.log("undoing. hist len", this.history.length, 'curr',this.current_history_index)
     if (this.current_history_index >= 0) {
@@ -395,6 +410,7 @@ export class SImage extends PropsBase<SImageType> {
       this.setPropValue("history", this.getPropValue("history") + 1)
     }
   }
+
   redo() {
     // console.log("redoing. hist len", this.history.length, 'curr',this.current_history_index)
     if (this.current_history_index < this.history.length - 1) {
@@ -435,6 +451,26 @@ export class SImage extends PropsBase<SImageType> {
     })
     this.setPropValue("frameCount", this.getPropValue("frameCount") + 1)
   }
+
+  getFramePixelSurfacesForLayer(layer: ImagePixelLayer): FramePixelSurface[] {
+    const surfs = []
+    for (let i = 0; i < this.getPropValue("frameCount"); i++) {
+      surfs.push(this.getFramePixelSurface(layer, i))
+    }
+    return surfs
+  }
+
+  getAllFramePixelSurfaces(): FramePixelSurface[] {
+    const surfs: FramePixelSurface[] = []
+    this.layers().forEach((layer) => {
+      if (layer instanceof ImagePixelLayer) {
+        for (let i = 0; i < this.getPropValue("frameCount"); i++) {
+          surfs.push(this.getFramePixelSurface(layer, i))
+        }
+      }
+    })
+    return surfs
+  }
 }
 
 type PixelFilter = (v: number, n: Point) => boolean
@@ -443,10 +479,12 @@ type PixelForEachCallback = (v: number, n: Point) => void
 class LayerPixelSurface implements FramePixelSurface {
   private layer: ImagePixelLayer
   private frameNumber: number
+
   constructor(lay: ImagePixelLayer, frameNumber: number) {
     this.layer = lay
     this.frameNumber = frameNumber
   }
+
   getPixel(p: Point): number {
     return this.layer.getFrame(this.frameNumber).get(p)
   }
@@ -454,6 +492,7 @@ class LayerPixelSurface implements FramePixelSurface {
   setPixel(p: Point, value: number): void {
     this.layer.getFrame(this.frameNumber).set(p, value)
   }
+
   fillAll(v: number): void {
     this.layer.getFrame(this.frameNumber).fill(() => v)
   }
@@ -464,19 +503,29 @@ class LayerPixelSurface implements FramePixelSurface {
       if (filter(v, n)) tgt.set(n, v)
     })
   }
+
   forEach(cb: PixelForEachCallback) {
     const tgt = this.layer.getFrame(this.frameNumber)
     tgt.forEach(cb)
   }
+
   isValidIndex(pt: Point): boolean {
     return this.layer.getFrame(this.frameNumber).isValidIndex(pt)
   }
+
+  size(): Size {
+    const frame = this.layer.getFrame(this.frameNumber)
+    return new Size(frame.w, frame.h)
+  }
 }
+
 export class ArrayGridPixelSurface implements FramePixelSurface {
   data: ArrayGrid<number>
+
   constructor(data: ArrayGrid<number>) {
     this.data = data
   }
+
   getPixel(p: Point): number {
     return this.data.get(p)
   }
@@ -484,6 +533,7 @@ export class ArrayGridPixelSurface implements FramePixelSurface {
   setPixel(p: Point, value: number): void {
     this.data.set(p, value)
   }
+
   fillAll(v: number): void {
     this.data.fill(() => v)
   }
@@ -493,18 +543,32 @@ export class ArrayGridPixelSurface implements FramePixelSurface {
       if (filter(v, n)) tgt.set(n, v)
     })
   }
+
   forEach(cb: PixelForEachCallback) {
     this.data.forEach(cb)
   }
+
   isValidIndex(pt: Point): boolean {
     return this.data.isValidIndex(pt)
   }
+
+  size(): Size {
+    return new Size(this.data.w, this.data.h)
+  }
 }
+
 export interface FramePixelSurface {
   setPixel(p: Point, n: number): void
+
   getPixel(p: Point): number
+
   fillAll(color: number): void
+
   copyPixelsFrom(grid: ArrayGrid<number>, filter: PixelFilter): void
+
   forEach(cb: PixelForEachCallback): void
+
   isValidIndex(pt: Point): boolean
+
+  size(): Size
 }

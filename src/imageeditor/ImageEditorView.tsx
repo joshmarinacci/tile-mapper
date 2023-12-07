@@ -55,6 +55,7 @@ import { PencilTool, PencilToolSettings } from "./pencil_tool"
 import { RectTool, RectToolSettings } from "./rect_tool"
 import { ResizeImageDialog } from "./ResizeImageDialog"
 import { SelectionTool, SelectionToolSettings } from "./selection_tool"
+import { ShiftTool, ShiftToolSettings } from "./shift_tool"
 import { ObjectTool, PixelTool } from "./tool"
 
 function clamp(val: number, min: number, max: number) {
@@ -284,6 +285,7 @@ export function ImageEditorView(props: { image: SImage }) {
   if (pixelTool instanceof FillTool) tool_settings = <FillToolSettings tool={pixelTool} />
   if (pixelTool instanceof SelectionTool) tool_settings = <SelectionToolSettings tool={pixelTool} />
   if (pixelTool instanceof MoveTool) tool_settings = <MoveToolSettings tool={pixelTool} />
+  if (pixelTool instanceof ShiftTool) tool_settings = <ShiftToolSettings tool={pixelTool} />
 
   function deleteSelectedObject() {
     if (layer instanceof ImageObjectLayer && selectedObject !== undefined) {
@@ -378,6 +380,11 @@ export function ImageEditorView(props: { image: SImage }) {
                 icon={Icons.Move}
                 selected={pixelTool.name === "move"}
                 onClick={() => setPixelTool(new MoveTool())}
+              />
+              <ToggleButton
+                icon={Icons.Move}
+                selected={pixelTool.name === "shift"}
+                onClick={() => setPixelTool(new ShiftTool())}
               />
               <ToggleButton
                 icon={Icons.Pencil}
