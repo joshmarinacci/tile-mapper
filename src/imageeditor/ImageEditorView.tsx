@@ -191,6 +191,7 @@ export function ImageEditorView(props: { image: SImage }) {
   const doc = useContext(DocContext)
   const state = useContext(StateContext)
   const palette = doc.palette()
+  const [lastPoint, setLastPoint] = useState(new Point(0, 0))
   const [grid, setGrid] = useState(false)
   const [zoom, setZoom] = useState(3)
   const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
@@ -293,6 +294,39 @@ export function ImageEditorView(props: { image: SImage }) {
       setSelectedObject(undefined)
     }
   }
+  const handle_key_down = (e: React.KeyboardEvent) => {
+    // console.log(e.key, e.code, lastPoint)
+    if (layer instanceof ImagePixelLayer) {
+      pixelTool.onKeyDown({
+        image: image,
+        surface: image.getFramePixelSurface(layer, currentFrame),
+        color: palette.colors.indexOf(drawColor),
+        e: e,
+        layer: layer,
+        palette: palette,
+        selection: selectionRect,
+        setSelectionRect: (rect) => setSelectionRect(rect),
+        markDirty: () => {
+          setCount(count + 1)
+        },
+      })
+    }
+    if (e.key === "a") navPrevFrame()
+    if (e.key === "s") navNextFrame()
+    if (e.key === "=") setZoom(zoom + 1)
+    if (e.key === "-") setZoom(zoom - 1)
+    if (e.key === "v") setPixelTool(new ShiftTool())
+    if (e.key === "p") setPixelTool(new PencilTool())
+    if (e.key === "b") setPixelTool(new FillTool())
+    if (e.key === "e") setPixelTool(new EraserTool())
+    if (e.key === "u") setPixelTool(new RectTool())
+    if (e.key === "x") {
+      if (layer instanceof ImagePixelLayer) {
+        const color = image.getFramePixelSurface(layer, currentFrame).getPixel(lastPoint)
+        setDrawColor(palette.colors[color])
+      }
+    }
+  }
 
   const add_text_object = () => {
     if (layer instanceof ImageObjectLayer) {
@@ -310,7 +344,7 @@ export function ImageEditorView(props: { image: SImage }) {
   }
   return (
     <>
-      <div className={"tool-column"}>
+      <div className={"tool-column"} onKeyDown={handle_key_down}>
         <Pane key={"layer-list"} title={"layers"} collapsable={true}>
           <div className={"toolbar"}>
             <ToolbarActionButton action={AddNewImagePixelLayerAction} />
@@ -344,7 +378,7 @@ export function ImageEditorView(props: { image: SImage }) {
           />
         </Pane>
       </div>
-      <div className={"editor-view"}>
+      <div className={"editor-view"} onKeyDown={handle_key_down}>
         <div className={"toolbar"}>
           <IconButton onClick={() => setZoom(zoom + 1)} icon={Icons.Plus} />
           <IconButton onClick={() => setZoom(zoom - 1)} icon={Icons.Minus} />
@@ -462,6 +496,7 @@ export function ImageEditorView(props: { image: SImage }) {
               }
             }}
             onMouseDown={(e) => {
+              setLastPoint(canvasToImage(e))
               if (e.button == 2) return
               if (layer instanceof ImageObjectLayer) {
                 objectTool.onMouseDown({
@@ -493,6 +528,7 @@ export function ImageEditorView(props: { image: SImage }) {
               }
             }}
             onMouseMove={(e) => {
+              setLastPoint(canvasToImage(e))
               if (layer instanceof ImageObjectLayer) {
                 objectTool.onMouseMove({
                   layer: layer,
@@ -523,6 +559,7 @@ export function ImageEditorView(props: { image: SImage }) {
               }
             }}
             onMouseUp={(e) => {
+              setLastPoint(canvasToImage(e))
               if (layer instanceof ImageObjectLayer) {
                 objectTool.onMouseUp({
                   layer: layer,
@@ -551,35 +588,6 @@ export function ImageEditorView(props: { image: SImage }) {
                   },
                 })
               }
-            }}
-            onKeyDown={(e) => {
-              // console.log("keyboard code",e.key)
-              if (layer instanceof ImagePixelLayer) {
-                pixelTool.onKeyDown({
-                  image: image,
-                  surface: image.getFramePixelSurface(layer, currentFrame),
-                  color: palette.colors.indexOf(drawColor),
-                  e: e,
-                  layer: layer,
-                  palette: palette,
-                  selection: selectionRect,
-                  setSelectionRect: (rect) => setSelectionRect(rect),
-                  markDirty: () => {
-                    setCount(count + 1)
-                  },
-                })
-              }
-              if (e.key === "a") {
-                navPrevFrame()
-              }
-              if (e.key === "s") {
-                navNextFrame()
-              }
-              if (e.key === "v") setPixelTool(new ShiftTool())
-              if (e.key === "p") setPixelTool(new PencilTool())
-              if (e.key === "b") setPixelTool(new FillTool())
-              if (e.key === "e") setPixelTool(new EraserTool())
-              if (e.key === "u") setPixelTool(new RectTool())
             }}
           />
         </div>
