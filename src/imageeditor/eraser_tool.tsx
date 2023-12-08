@@ -3,6 +3,7 @@ import React from "react"
 
 import { useWatchAllProps } from "../model/base"
 import { IntegerDef } from "../model/datamodel"
+import { FramePixelSurface } from "../model/image"
 import { strokeBounds } from "../util"
 import { BasePixelTool } from "./pixel_tool"
 import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
@@ -17,9 +18,10 @@ export class EraserTool extends BasePixelTool<EraserSettingsType> implements Pix
     this.name = "eraser"
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  drawPixels(evt: PixelToolEvent, target: ArrayGrid<number>, _final: boolean) {
-    if (evt.layer) this.drawAtCursor(evt, target, this._current, evt.color, evt.selection)
+  drawPixels(evt: PixelToolEvent, target: FramePixelSurface, final: boolean) {
+    if (evt.layer) {
+      this.drawAtCursor(target, this._current, evt.color, evt.selection)
+    }
   }
 
   drawOverlay(ovr: ToolOverlayInfo): void {
@@ -33,8 +35,7 @@ export class EraserTool extends BasePixelTool<EraserSettingsType> implements Pix
   }
 
   private drawAtCursor(
-    evt: PixelToolEvent,
-    layer: ArrayGrid<number>,
+    grid: FramePixelSurface,
     pt: Point,
     color: number,
     selection: Bounds | undefined,
@@ -46,14 +47,13 @@ export class EraserTool extends BasePixelTool<EraserSettingsType> implements Pix
       for (let j = pt.y - rad; j <= pt.y + rad; j++) {
         if (selection) {
           if (selection.contains(new Point(i, j))) {
-            layer.set(new Point(i, j), color)
+            grid.setPixel(new Point(i, j), color)
           }
         } else {
-          layer.set(new Point(i, j), color)
+          grid.setPixel(new Point(i, j), color)
         }
       }
     }
-    evt.markDirty()
   }
 }
 

@@ -34,6 +34,18 @@ export const ExportImageToPNGAction: SimpleMenuAction = {
     }
   },
 }
+export const ExportImageToPNG4XAction: SimpleMenuAction = {
+  type: "simple",
+  title: "export image to PNG 4x",
+  icon: Icons.Download,
+  perform: async (state: GlobalState) => {
+    const doc = state.getPropValue("doc")
+    const image = state.getPropValue("selection")
+    if (image instanceof SImage) {
+      await exportImageToPNG(doc, image, 4)
+    }
+  },
+}
 
 async function exportImageToGIF(doc: GameDoc, image: SImage, scale: number) {
   const size = image.size().scale(scale)

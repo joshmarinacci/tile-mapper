@@ -25,6 +25,7 @@ import {
   AddNewImagePixelLayerAction,
   CopyImageToClipboardAction,
   DeleteImageLayerAction,
+  ExportImageToPNG4XAction,
   ExportImageToPNGAction,
   MoveImageLayerDownAction,
   MoveImageLayerUpAction,
@@ -215,6 +216,7 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
   if (obj instanceof SImage) {
     actions.push(DeleteImageAction)
     actions.push(ExportImageToPNGAction)
+    actions.push(ExportImageToPNG4XAction)
     actions.push(AddNewImagePixelLayerAction)
     actions.push(AddNewImageObjectLayerAction)
     actions.push(CopyImageToClipboardAction)
