@@ -12,15 +12,16 @@ function calculateDirections() {
 }
 
 export function floodFill(surf: FramePixelSurface, target: number, replace: number, at: Point) {
-  if (target === replace) return
-  const v = surf.getPixel(at)
-  if (v !== target) return
-  if (v === target) {
-    surf.setPixel(at, replace)
-    calculateDirections().forEach((dir) => {
-      const pt = at.add(dir)
-      if (surf.isValidIndex(pt)) floodFill(surf, target, replace, pt)
-    })
+  const stack = [at]
+  while (stack.length > 0) {
+    const pos = stack.pop() as Point
+    if (surf.getPixel(pos) === target) {
+      surf.setPixel(pos, replace)
+      calculateDirections()
+        .map((dir) => pos.add(dir))
+        .filter((pt) => surf.isValidIndex(pt))
+        .forEach((pt) => stack.push(pt))
+    }
   }
 }
 
