@@ -74,7 +74,9 @@ export const SaveLocalStorageAction: SimpleMenuAction = {
     shift: false,
   },
   perform: async (state) => {
+    state.getPropValue("toaster").fireMessage("saving")
     await saveLocalDoc(state)
+    state.getPropValue("toaster").fireMessage("saved")
   },
 }
 
