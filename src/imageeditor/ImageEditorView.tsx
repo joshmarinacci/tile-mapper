@@ -334,7 +334,15 @@ export function ImageEditorView(props: { image: SImage }) {
     }
   }
   const handle_key_down = (e: React.KeyboardEvent) => {
-    // console.log(e.key, e.code, lastPoint)
+    // console.log(e.key, e.code, e.shiftKey)
+    if (e.code === "KeyZ" && !e.shiftKey) {
+      state.getPropValue("toaster").fireMessage("undo")
+      image.undo()
+    }
+    if (e.code === "KeyZ" && e.shiftKey) {
+      state.getPropValue("toaster").fireMessage("redo")
+      image.redo()
+    }
     if (layer instanceof ImagePixelLayer) {
       pixelTool.onKeyDown({
         image: image,
@@ -354,7 +362,10 @@ export function ImageEditorView(props: { image: SImage }) {
     if (e.key === "s") navNextFrame()
     if (e.key === "=") setZoom(zoom + 1)
     if (e.key === "-") setZoom(zoom - 1)
-    if (e.key === "v") setPixelTool(new ShiftTool())
+    if (e.key === "v") {
+      state.getPropValue("toaster").fireMessage("select move tool")
+      setPixelTool(new ShiftTool())
+    }
     if (e.key === "p") setPixelTool(new PencilTool())
     if (e.key === "b") setPixelTool(new FillTool())
     if (e.key === "e") setPixelTool(new EraserTool())
