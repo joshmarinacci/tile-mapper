@@ -3,7 +3,13 @@ import React from "react"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
 import { BooleanDef } from "../model/datamodel"
-import { ArrayGridPixelSurface, FramePixelSurface, ImagePixelLayer, SImage } from "../model/image"
+import {
+  AreaChange,
+  ArrayGridPixelSurface,
+  FramePixelSurface,
+  ImagePixelLayer,
+  SImage,
+} from "../model/image"
 import { PixelTool, PixelToolEvent, PixelToolKeyEvent, ToolOverlayInfo } from "./tool"
 
 type ShiftToolSettingsType = {
@@ -100,7 +106,10 @@ export class ShiftTool extends PropsBase<ShiftToolSettingsType> implements Pixel
     if (diff.x === 0 && diff.y === 0) return
     if (!this.getPropValue("allLayers") && !this.getPropValue("allFrames")) {
       const surf = image.getFramePixelSurface(layer, 0)
+      const prev_data = surf.cloneData()
       shiftLayer(surf, diff)
+      const curr_data = surf.cloneData()
+      image.appendHistory(new AreaChange(surf, prev_data, curr_data))
     }
     if (this.getPropValue("allLayers") && !this.getPropValue("allFrames")) {
       image.getFramePixelSurfaces(0).forEach((surf) => shiftLayer(surf, diff))
