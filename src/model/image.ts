@@ -1,5 +1,6 @@
 import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 
+import { cloneArrayGrid } from "../util"
 import {
   appendToList,
   DefList,
@@ -21,7 +22,6 @@ import {
   StringDef,
 } from "./datamodel"
 import { PixelFontReferenceDef } from "./pixelfont"
-import Type = module
 
 export interface ImageObjectType {
   name: string
@@ -79,7 +79,7 @@ export const ImagePixelLayerDefs: DefList<ImagePixelLayerType> = {
 // }
 
 export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> {
-  private image: SImage
+  image: SImage
   private frames: ArrayGrid<number>[]
 
   constructor(opts?: PropValues<ImagePixelLayerType>) {
@@ -318,27 +318,27 @@ interface HistoryEvent {
   redo(): void
 }
 
-class LayerGridChange implements HistoryEvent {
-  private layer: ImagePixelLayer
+export class AreaChange implements HistoryEvent {
   private prev: ArrayGrid<number>
   private curr: ArrayGrid<number>
+  private surf: FramePixelSurface
 
-  constructor(layer: ImagePixelLayer, prev: ArrayGrid<number>, curr: ArrayGrid<number>) {
-    this.layer = layer
+  constructor(surf: FramePixelSurface, prev: ArrayGrid<number>, curr: ArrayGrid<number>) {
+    this.surf = surf
     this.prev = prev
     this.curr = curr
   }
 
   undo() {
-    this.layer.setPropValue("data", this.prev)
+    this.surf.setAllData(this.prev)
   }
 
   redo() {
-    this.layer.setPropValue("data", this.curr)
+    this.surf.setAllData(this.curr)
   }
 }
 
-class LayerPixelChange implements HistoryEvent {
+class PixelChange implements HistoryEvent {
   private point: Point
   private prev: number
   private curr: number
@@ -517,6 +517,14 @@ class LayerPixelSurface implements FramePixelSurface {
     const frame = this.layer.getFrame(this.frameNumber)
     return new Size(frame.w, frame.h)
   }
+  cloneData(): ArrayGrid<number> {
+    const frame = this.layer.getFrame(this.frameNumber)
+    return cloneArrayGrid(frame)
+  }
+  setAllData(curr: ArrayGrid<number>) {
+    const frame = this.layer.getFrame(this.frameNumber)
+    frame.fill((n) => curr.get(n))
+  }
 }
 
 export class ArrayGridPixelSurface implements FramePixelSurface {
@@ -555,6 +563,12 @@ export class ArrayGridPixelSurface implements FramePixelSurface {
   size(): Size {
     return new Size(this.data.w, this.data.h)
   }
+  cloneData(): ArrayGrid<number> {
+    return cloneArrayGrid(this.data)
+  }
+  setAllData(curr: ArrayGrid<number>) {
+    this.data.fill((n) => curr.get(n))
+  }
 }
 
 export interface FramePixelSurface {
@@ -571,4 +585,8 @@ export interface FramePixelSurface {
   isValidIndex(pt: Point): boolean
 
   size(): Size
+
+  cloneData(): ArrayGrid<number>
+
+  setAllData(curr: ArrayGrid<number>): void
 }

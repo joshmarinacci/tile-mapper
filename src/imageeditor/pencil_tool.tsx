@@ -3,7 +3,7 @@ import React from "react"
 
 import { useWatchAllProps } from "../model/base"
 import { IntegerDef } from "../model/datamodel"
-import { FramePixelSurface } from "../model/image"
+import { AreaChange, FramePixelSurface } from "../model/image"
 import { strokeBounds } from "../util"
 import { BasePixelTool } from "./pixel_tool"
 import { PixelTool, PixelToolEvent, ToolOverlayInfo } from "./tool"
@@ -23,7 +23,10 @@ export class PencilTool extends BasePixelTool<PencilSettingsType> implements Pix
     if (evt.layer) {
       if (final) {
         console.log("doing final copy")
+        const old_data = evt.surface.cloneData()
         evt.surface.copyPixelsFrom(this.temp.data, (v) => v >= 0)
+        const new_data = evt.surface.cloneData()
+        evt.image.appendHistory(new AreaChange(evt.surface, old_data, new_data))
       } else {
         this.drawAtCursor(target, this._current, evt.color, evt.selection)
       }

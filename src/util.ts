@@ -1,4 +1,4 @@
-import { Bounds, Size } from "josh_js_util"
+import { ArrayGrid, Bounds, Size } from "josh_js_util"
 
 export function strokeBounds(
   ctx: CanvasRenderingContext2D,
@@ -27,4 +27,10 @@ export function fillOutsideBounds(
   ctx.fillRect(0, 0, b.left(), s.h)
   ctx.fillRect(b.right(), 0, s.w - b.right(), s.h)
   ctx.fillRect(0, b.bottom(), s.w, s.h - b.bottom())
+}
+
+export function cloneArrayGrid<T>(data: ArrayGrid<T>): ArrayGrid<T> {
+  const d2 = new ArrayGrid<T>(data.w, data.h)
+  d2.fill((n) => data.get(n))
+  return d2
 }
