@@ -2,7 +2,7 @@ import { Point } from "josh_js_util"
 import React from "react"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
-import { FramePixelSurface } from "../model/image"
+import { AreaChange, FramePixelSurface } from "../model/image"
 import { PixelTool, PixelToolEvent, PixelToolKeyEvent } from "./tool"
 
 type FillToolSettingsType = object
@@ -37,7 +37,10 @@ export class FillTool extends PropsBase<FillToolSettingsType> implements PixelTo
 
   onMouseDown(evt: PixelToolEvent): void {
     if (evt.layer) {
+      const old_data = evt.surface.cloneData()
       floodFill(evt.surface, evt.surface.getPixel(evt.pt), evt.color, evt.pt.floor())
+      const new_data = evt.surface.cloneData()
+      evt.image.appendHistory(new AreaChange(evt.surface, old_data, new_data))
       evt.markDirty()
     }
   }
