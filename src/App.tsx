@@ -21,6 +21,7 @@ import { ActionRegistryContext, DocContext, StateContext } from "./model/context
 import { GameDoc } from "./model/gamedoc"
 import { PropSheet } from "./propsheet/propsheet"
 import { GlobalState } from "./state"
+import { ToasterView } from "./ToasterView"
 
 const reg = get_class_registry()
 const AR = new ActionRegistry()
@@ -106,6 +107,7 @@ function App() {
               <Main3 />
               <PopupContainer />
               <DialogContainer />
+              <ToasterView />
             </ActionRegistryContext.Provider>
           </PopupContext.Provider>
         </DialogContext.Provider>

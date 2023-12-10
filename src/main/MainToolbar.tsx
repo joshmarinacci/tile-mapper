@@ -1,5 +1,5 @@
 import { Spacer } from "josh_react_util"
-import React from "react"
+import React, { useContext } from "react"
 
 import {
   ExportToJSONAction,
@@ -10,14 +10,23 @@ import {
 import { LoadLocalStorageAction, NewDocAction, UploadPNGJSONAction } from "../actions/reactactions"
 import { DropdownButton, IconButton, ToolbarActionButton } from "../common/common-components"
 import { Icons } from "../common/icons"
+import { StateContext } from "../model/contexts"
 
 export function MainToolbar() {
+  const state = useContext(StateContext)
   return (
     <div className={"toolbar across"}>
       <button className={"logo"}>RetroGami</button>
       <ToolbarActionButton action={NewDocAction} />
       <ToolbarActionButton action={LoadLocalStorageAction} />
       <ToolbarActionButton action={SaveLocalStorageAction} />
+      <button
+        onClick={() => {
+          state.getPropValue("toaster").fireMessage("a message here")
+        }}
+      >
+        test
+      </button>
       <Spacer />
       <DropdownButton title={"Help"} icon={Icons.QuestionMark}>
         <IconButton

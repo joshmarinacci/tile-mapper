@@ -1,9 +1,10 @@
 import { Size } from "josh_js_util"
 
 import { PICO8 } from "./common/common"
-import { DefList, PropDef, PropsBase, PropValues } from "./model/base"
+import { DefList, PropDef, PropDefBuilder, PropsBase, PropValues } from "./model/base"
 import { BooleanDef } from "./model/datamodel"
 import { GameDoc } from "./model/gamedoc"
+import { ToasterModel } from "./model/toaster"
 
 type GlobalStateType = {
   doc: GameDoc
@@ -12,6 +13,7 @@ type GlobalStateType = {
   localStorage: Storage
   showLeft: boolean
   showRight: boolean
+  toaster: ToasterModel
 }
 
 const DocDef: PropDef<GameDoc> = {
@@ -66,6 +68,13 @@ const StateDef: DefList<GlobalStateType> = {
     editable: false,
     watchChildren: false,
   },
+  toaster: new PropDefBuilder({
+    type: "object",
+    toJSON: () => {},
+    fromJSON: () => {},
+    format: () => {},
+    default: () => new ToasterModel(),
+  }),
 }
 
 export class GlobalState extends PropsBase<GlobalStateType> {
