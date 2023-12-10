@@ -8,3 +8,19 @@
   border: 1px solid var(--border-color);
   overflow: scroll;
 }
+
+.image-editor-preview {
+  border: 1px solid red;
+  background-color: #aaaaaa;
+  width: 320px;
+  height: 320px;
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+}
+
+.image-editor-preview header {
+  background-color: black;
+  display: flex;
+  flex-direction: row;
+}

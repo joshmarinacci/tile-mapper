@@ -183,6 +183,45 @@ function drawCanvas(
   }
 }
 
+function AnimatedImagePreview(props: { image: SImage; count: number }) {
+  const { image, count } = props
+  const ref = useRef(null)
+  const size = image.size()
+  const [scale, setScale] = useState(3)
+  const [frame, setFrame] = useState(0)
+  const doc = useContext(DocContext)
+
+  function redraw() {
+    if (ref.current) {
+      const canvas = ref.current as HTMLCanvasElement
+      const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+      ctx.fillStyle = "white"
+      ctx.fillRect(0, 0, canvas.width, canvas.height)
+      drawImage(doc, ctx, props.image, doc.getPropValue("palette"), scale, frame)
+    }
+  }
+
+  useEffect(() => redraw(), [scale, count, frame])
+  const cycle = () => {
+    const fc = image.getPropValue("frameCount")
+    setFrame((frame + 1) % fc)
+  }
+
+  useWatchAllProps(image, () => redraw())
+  return (
+    <div className={"image-editor-preview"}>
+      <header>
+        <IconButton onClick={() => setScale(scale + 1)} icon={Icons.Plus} />
+        <IconButton onClick={() => setScale(scale - 1)} icon={Icons.Minus} />
+        <IconButton onClick={() => cycle()} icon={Icons.Play} />
+        <Spacer />
+        <label>title bar</label>
+      </header>
+      <canvas ref={ref} width={size.w * scale} height={size.h * scale}></canvas>
+    </div>
+  )
+}
+
 export function ImageEditorView(props: { image: SImage }) {
   const { image } = props
   useWatchProp(image, "history", () => {
@@ -552,9 +591,7 @@ export function ImageEditorView(props: { image: SImage }) {
                   palette: palette,
                   selection: selectionRect,
                   setSelectionRect: (rect) => setSelectionRect(rect),
-                  markDirty: () => {
-                    setCount(count + 1)
-                  },
+                  markDirty: () => setCount(count + 1),
                 })
               }
             }}
@@ -591,6 +628,7 @@ export function ImageEditorView(props: { image: SImage }) {
             }}
           />
         </div>
+        <AnimatedImagePreview image={image} count={count} />
       </div>
     </>
   )
