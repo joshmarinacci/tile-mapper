@@ -162,7 +162,7 @@ export function AddCanvasToDocButton() {
           })
           canvas.appendLayer(layer)
           appendToList(doc, "canvases", canvas)
-          state.setSelection(canvas)
+          state.setSelectionTarget(layer)
         }}
       />,
     )

@@ -78,7 +78,7 @@ export const GameDocDefs: DefList<DocType> = {
   canvases: CanvasesListDef,
   fonts: PixelFontListDef,
   palette: PaletteDef,
-  tileSize: SizeDef,
+  tileSize: SizeDef.copy().withEditable(false),
   camera: CameraPropDef.withHidden(true),
   physics: PhysicsSettingsPropDef.withHidden(true),
   assets: ObjectListDef.copy().withHidden(true).withExpandable(true),
