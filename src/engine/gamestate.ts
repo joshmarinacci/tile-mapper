@@ -110,4 +110,8 @@ export class GameState {
   getItems(): Item[] {
     return this.getActors().filter((act) => act.type === "item") as Item[]
   }
+
+  getActorLayers() {
+    return this.map.layers.filter((layer) => layer.type === "actors") as ActorLayer[]
+  }
 }

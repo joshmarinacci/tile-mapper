@@ -1,11 +1,15 @@
 import "./console-log-view.css"
 
+import { Bounds, Point } from "josh_js_util"
 import { DialogContext } from "josh_react_util"
 import React, { useContext, useEffect, useRef, useState } from "react"
 import {
   ActorDebugOverlay,
+  ActorLayer,
   GridDebugOverlay,
   PhysicsConstants,
+  Player,
+  RIGHT,
   ViewportDebugOverlay,
 } from "retrogami-engine"
 
@@ -19,6 +23,7 @@ import { PropSheet } from "../propsheet/propsheet"
 import { Anim } from "./Anim"
 import { generateGamestate } from "./generateGamestate"
 import { ConsoleInterface } from "./scripting"
+
 type LoggerType = {
   name: string
 }
@@ -79,6 +84,34 @@ export function PlayTest(props: { map: GameMap }) {
   const redraw = () => {
     if (!ref.current) return
     const gameState = generateGamestate(ref.current, doc, map)
+    if (gameState.getActorLayers().length === 0) {
+      const layer = new ActorLayer()
+      const player: Player = {
+        name: "dummy-player",
+        color: "cyan",
+        dir: RIGHT,
+        opacity: 1.0,
+        hidden: false,
+        bounds: new Bounds(20, 20, 16, 16),
+        type: "player",
+        vy: 0,
+        vx: 0,
+        hitable: false,
+        standing: false,
+        originalPosition: new Point(20, 20),
+        actions: [],
+        tile: {
+          uuid: "unknown",
+        },
+      }
+      layer.addActor(player)
+      gameState.addLayer(layer)
+      //create an actor layer
+    }
+    if (gameState.getPlayers().length === 0) {
+      console.log("no player exists!")
+      // create a player
+    }
     if (showActors) gameState.addLayer(new ActorDebugOverlay())
     if (showViewport) gameState.addLayer(new ViewportDebugOverlay())
     if (showGrid) gameState.addLayer(new GridDebugOverlay())
