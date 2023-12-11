@@ -31,7 +31,7 @@ const TileArrayDef: PropDef<Tile[]> = {
 export const TransientBooleanDef = BooleanDef.copy().withSkipPersisting(true).withHidden(true)
 export const SheetDefs: DefList<SheetType> = {
   name: NameDef,
-  tileSize: SizeDef,
+  tileSize: SizeDef.copy().withEditable(false),
   tiles: TileArrayDef,
   selectedTile: {
     type: "object",

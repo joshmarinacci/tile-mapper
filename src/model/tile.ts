@@ -14,12 +14,15 @@ const TileDataDef = ArrayGridNumberDef.copy()
   .withEditable(false)
   .withHidden(true)
   .withWatchChildren(true)
-const GridPointDef = PointDef.copy().withDefault(() => new Point(-1, -1))
+const GridPointDef = PointDef.copy()
+  .withDefault(() => new Point(-1, -1))
+  .withEditable(false)
+  .withHidden(true)
 export const TileDefs: DefList<TileType> = {
   name: NameDef,
   blocking: BlockingDef,
   data: TileDataDef,
-  size: SizeDef,
+  size: SizeDef.copy().withEditable(false).withHidden(true),
   gridPosition: GridPointDef,
 }
 
