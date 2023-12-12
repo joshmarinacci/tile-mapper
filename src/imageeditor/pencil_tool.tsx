@@ -26,7 +26,7 @@ export class PencilTool extends BasePixelTool<PencilSettingsType> implements Pix
         const old_data = evt.surface.cloneData()
         evt.surface.copyPixelsFrom(this.temp.data, (v) => v >= 0)
         const new_data = evt.surface.cloneData()
-        evt.image.appendHistory(new AreaChange(evt.surface, old_data, new_data))
+        evt.image.appendHistory(new AreaChange(evt.surface, old_data, new_data, "pencil"))
       } else {
         this.drawAtCursor(target, this._current, evt.color, evt.selection)
       }

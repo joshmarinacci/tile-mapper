@@ -312,9 +312,9 @@ export const SImageDefs: DefList<SImageType> = {
     .withHidden(true),
 }
 
-interface HistoryEvent {
+export interface HistoryEvent {
+  name(): string
   undo(): void
-
   redo(): void
 }
 
@@ -322,11 +322,22 @@ export class AreaChange implements HistoryEvent {
   private prev: ArrayGrid<number>
   private curr: ArrayGrid<number>
   private surf: FramePixelSurface
+  private _name: string
 
-  constructor(surf: FramePixelSurface, prev: ArrayGrid<number>, curr: ArrayGrid<number>) {
+  constructor(
+    surf: FramePixelSurface,
+    prev: ArrayGrid<number>,
+    curr: ArrayGrid<number>,
+    name: string,
+  ) {
     this.surf = surf
     this.prev = prev
     this.curr = curr
+    this._name = name
+  }
+
+  name(): string {
+    return this._name
   }
 
   undo() {
@@ -357,6 +368,9 @@ class PixelChange implements HistoryEvent {
 
   redo() {
     this.layer.setPixelRaw(this.point, this.curr)
+  }
+  name(): string {
+    return "pixel change"
   }
 }
 
@@ -481,6 +495,10 @@ export class SImage extends PropsBase<SImageType> {
       }
     })
     return surfs
+  }
+
+  getHistory() {
+    return this.history
   }
 }
 

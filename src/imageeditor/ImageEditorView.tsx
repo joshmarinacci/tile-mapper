@@ -223,6 +223,16 @@ function AnimatedImagePreview(props: { image: SImage; count: number }) {
   )
 }
 
+function ImageHistoryView(props: { image: SImage }) {
+  return (
+    <ul className={"history-view"}>
+      {props.image.getHistory().map((h, i) => {
+        return <li key={i}>{h.name()}</li>
+      })}
+    </ul>
+  )
+}
+
 export function ImageEditorView(props: { image: SImage }) {
   const { image } = props
   useWatchProp(image, "history", () => {
@@ -642,6 +652,9 @@ export function ImageEditorView(props: { image: SImage }) {
         </div>
         <DraggablePaletteWindow title={"preview"}>
           <AnimatedImagePreview image={image} count={count} />
+        </DraggablePaletteWindow>
+        <DraggablePaletteWindow title={"history"}>
+          <ImageHistoryView image={image} />
         </DraggablePaletteWindow>
       </div>
     </>

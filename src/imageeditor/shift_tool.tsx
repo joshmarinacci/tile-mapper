@@ -109,7 +109,7 @@ export class ShiftTool extends PropsBase<ShiftToolSettingsType> implements Pixel
       const prev_data = surf.cloneData()
       shiftLayer(surf, diff)
       const curr_data = surf.cloneData()
-      image.appendHistory(new AreaChange(surf, prev_data, curr_data))
+      image.appendHistory(new AreaChange(surf, prev_data, curr_data, "shift"))
     }
     if (this.getPropValue("allLayers") && !this.getPropValue("allFrames")) {
       image.getFramePixelSurfaces(0).forEach((surf) => shiftLayer(surf, diff))

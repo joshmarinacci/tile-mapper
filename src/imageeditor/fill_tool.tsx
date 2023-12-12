@@ -40,7 +40,7 @@ export class FillTool extends PropsBase<FillToolSettingsType> implements PixelTo
       const old_data = evt.surface.cloneData()
       floodFill(evt.surface, evt.surface.getPixel(evt.pt), evt.color, evt.pt.floor())
       const new_data = evt.surface.cloneData()
-      evt.image.appendHistory(new AreaChange(evt.surface, old_data, new_data))
+      evt.image.appendHistory(new AreaChange(evt.surface, old_data, new_data, "bucket fill"))
       evt.markDirty()
     }
   }
