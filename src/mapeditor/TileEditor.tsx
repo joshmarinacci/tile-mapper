@@ -5,7 +5,7 @@ import { ToggleButton } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { MapCell } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
-import { TileLayer } from "../model/gamemap"
+import { ColorMapLayer, TileLayer } from "../model/gamemap"
 import { MouseEventArgs, MouseHandler } from "./editorbase"
 
 function calculateDirections() {
@@ -26,6 +26,17 @@ export function bucketFill(layer: TileLayer, target: string, replace: string, at
       if (cells.isValidIndex(pt)) bucketFill(layer, target, replace, pt)
     })
   }
+}
+
+export function drawColorLayer(
+  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
+  doc: GameDoc,
+  colorMapLayer: ColorMapLayer,
+  scale: number,
+) {
+  ctx.fillStyle = colorMapLayer.getPropValue("color")
+  ctx.fillRect(0, 0, canvas.width, canvas.height)
 }
 
 export function drawTileLayer(
@@ -67,12 +78,15 @@ export function drawTileLayer(
   }
 }
 
+export type TileLayerToolType = "pencil" | "eraser"
 export function TileLayerToolbar(props: {
   layer: TileLayer
   fillOnce: boolean
   setFillOnce: (fw: boolean) => void
+  selectedTool: TileLayerToolType
+  setSelectedTool: (value: TileLayerToolType) => void
 }) {
-  const { fillOnce, setFillOnce } = props
+  const { fillOnce, setFillOnce, setSelectedTool, selectedTool } = props
   return (
     <div className={"toolbar"}>
       <label>tiles</label>
@@ -81,6 +95,18 @@ export function TileLayerToolbar(props: {
         icon={Icons.PaintBucket}
         onClick={() => setFillOnce(true)}
         text="fill"
+      />
+      <ToggleButton
+        onClick={() => setSelectedTool("pencil")}
+        icon={Icons.Pencil}
+        selected={selectedTool == "pencil"}
+        text={"draw"}
+      />
+      <ToggleButton
+        onClick={() => setSelectedTool("eraser")}
+        icon={Icons.Eraser}
+        selected={selectedTool === "eraser"}
+        text={"erase"}
       />
     </div>
   )
@@ -91,6 +117,12 @@ export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
     const { e, layer, tile, doc, setSelectedTile, fillOnce } = args
     const tileSize = doc.getPropValue("tileSize")
     const pt = new Point(args.pt.x / tileSize.w, args.pt.y / tileSize.h).floor()
+    if (args.selectedTool === "eraser") {
+      layer.getPropValue("data").set(pt, { tile: "unknown" })
+      e.stopPropagation()
+      e.preventDefault()
+      return
+    }
     if (e.button === 2) {
       const cell = layer.getPropValue("data").get(pt)
       const tile = doc.lookup_sprite(cell.tile)
@@ -112,6 +144,10 @@ export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
     const { layer, tile, doc } = args
     const tileSize = doc.getPropValue("tileSize")
     const pt = new Point(args.pt.x / tileSize.w, args.pt.y / tileSize.h).floor()
+    if (args.selectedTool === "eraser") {
+      layer.getPropValue("data").set(pt, { tile: "unknown" })
+      return
+    }
     if (tile) layer.getPropValue("data").set(pt, { tile: tile._id })
   }
 

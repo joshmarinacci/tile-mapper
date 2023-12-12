@@ -4,7 +4,7 @@ import { Icons } from "../common/icons"
 import { Actor } from "../model/actor"
 import { PropsBase, removeFromList } from "../model/base"
 import { Camera } from "../model/camera"
-import { ActorLayer, GameMap, TileLayer } from "../model/gamemap"
+import { ActorLayer, ColorMapLayer, GameMap, TileLayer } from "../model/gamemap"
 import { ImageObjectLayer, ImagePixelLayer, SImage } from "../model/image"
 import { ParticleFX } from "../model/particlefx"
 import { PixelFont } from "../model/pixelfont"
@@ -13,6 +13,7 @@ import { SoundFX } from "../model/soundfx"
 import { GlobalState } from "../state"
 import {
   AddActorLayerToMapAction,
+  AddColorLayerToMapAction,
   AddTileLayerToMapAction,
   DeleteMapAction,
   DeleteMapLayerAction,
@@ -195,8 +196,9 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
     actions.push(ExportMapToPNGAction)
     actions.push(AddTileLayerToMapAction)
     actions.push(AddActorLayerToMapAction)
+    actions.push(AddColorLayerToMapAction)
   }
-  if (obj instanceof TileLayer || obj instanceof ActorLayer) {
+  if (obj instanceof TileLayer || obj instanceof ActorLayer || obj instanceof ColorMapLayer) {
     actions.push(DeleteMapLayerAction)
     actions.push(MoveMapLayerUpAction)
     actions.push(MoveMapLayerDownAction)

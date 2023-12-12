@@ -138,6 +138,32 @@ export class ActorLayer extends PropsBase<ActorMapLayerType> {
   }
 }
 
+export type ColorMapLayerType = {
+  type: "color-layer"
+  size: Size
+  wrapping: boolean
+  scrollSpeed: number
+  color: string
+} & MapLayerType
+
+export const ColorMapLayerDefs: DefList<ColorMapLayerType> = {
+  name: NameDef,
+  type: StringDef.copy()
+    .withDefault(() => "color-layer")
+    .withEditable(false),
+  blocking: BlockingDef,
+  visible: BlockingDef,
+  size: SizeDef,
+  wrapping: BooleanDef,
+  scrollSpeed: FloatDef.copy().withSettings(scrollSettings),
+  color: StringDef.copy().withCustom("palette-color"),
+}
+export class ColorMapLayer extends PropsBase<ColorMapLayerType> {
+  constructor(opts?: PropValues<ColorMapLayerType>) {
+    super(ColorMapLayerDefs, opts)
+  }
+}
+
 type GameMapType = {
   name: string
   layers: PropsBase<any>[]

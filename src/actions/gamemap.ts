@@ -4,7 +4,7 @@ import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 import { Icons } from "../common/icons"
 import { appendToList, PropsBase, removeFromList } from "../model/base"
 import { GameDoc } from "../model/gamedoc"
-import { ActorLayer, GameMap, MapLayerType, TileLayer } from "../model/gamemap"
+import { ActorLayer, ColorMapLayer, GameMap, MapLayerType, TileLayer } from "../model/gamemap"
 import { GlobalState } from "../state"
 import { SimpleMenuAction } from "./actions"
 
@@ -64,6 +64,15 @@ const add_actor_layer = (map: GameMap) => {
   })
   appendToList(map, "layers", layer)
 }
+const add_color_layer = (map: GameMap) => {
+  const layer = new ColorMapLayer({
+    name: "new color layer",
+    visible: true,
+    blocking: true,
+    color: "red",
+  })
+  appendToList(map, "layers", layer)
+}
 const delete_map_layer = (layer: PropsBase<MapLayerType> | undefined, map: GameMap) => {
   if (!layer) return
   let layers = map.getPropValue("layers") as PropsBase<MapLayerType>[]
@@ -103,7 +112,11 @@ export const MoveMapLayerUpAction: SimpleMenuAction = {
   icon: Icons.UpArrow,
   perform: async (state) => {
     const path = state.getSelectionPath()
-    if (path.start() instanceof TileLayer || path.start() instanceof ActorLayer) {
+    if (
+      path.start() instanceof TileLayer ||
+      path.start() instanceof ActorLayer ||
+      path.start() instanceof ColorMapLayer
+    ) {
       const map: GameMap = path.parent().start()
       move_layer_up(path.start() as PropsBase<MapLayerType>, map)
     }
@@ -125,7 +138,11 @@ export const MoveMapLayerDownAction: SimpleMenuAction = {
   icon: Icons.DownArrow,
   perform: async (state) => {
     const path = state.getSelectionPath()
-    if (path.start() instanceof TileLayer || path.start() instanceof ActorLayer) {
+    if (
+      path.start() instanceof TileLayer ||
+      path.start() instanceof ActorLayer ||
+      path.start() instanceof ColorMapLayer
+    ) {
       const map: GameMap = path.parent().start()
       move_layer_down(path.start() as PropsBase<MapLayerType>, map)
     }
@@ -182,7 +199,7 @@ export const AddTileLayerToMapAction: SimpleMenuAction = {
 export const AddActorLayerToMapAction: SimpleMenuAction = {
   type: "simple",
   icon: Icons.Plus,
-  title: "add map layer",
+  title: "add actor layer",
   perform: async (state) => {
     const path = state.getSelectionPath()
     if (path.start() instanceof GameMap) {
@@ -196,6 +213,27 @@ export const AddActorLayerToMapAction: SimpleMenuAction = {
     if (path.start() instanceof ActorLayer) {
       const map = path.parent().start() as GameMap
       add_actor_layer(map)
+    }
+  },
+}
+
+export const AddColorLayerToMapAction: SimpleMenuAction = {
+  type: "simple",
+  icon: Icons.Plus,
+  title: "add color layer",
+  perform: async (state) => {
+    const path = state.getSelectionPath()
+    if (path.start() instanceof GameMap) {
+      const map = path.start() as GameMap
+      add_color_layer(map)
+    }
+    if (path.start() instanceof TileLayer) {
+      const map = path.parent().start() as GameMap
+      add_color_layer(map)
+    }
+    if (path.start() instanceof ActorLayer) {
+      const map = path.parent().start() as GameMap
+      add_color_layer(map)
     }
   },
 }

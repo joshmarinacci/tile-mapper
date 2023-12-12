@@ -4,6 +4,7 @@ import React from "react"
 import { GameDoc } from "../model/gamedoc"
 import { ActorInstance } from "../model/gamemap"
 import { Tile } from "../model/tile"
+import { TileLayerToolType } from "./TileEditor"
 
 export type MouseEventArgs<T> = {
   e: React.MouseEvent<HTMLCanvasElement>
@@ -14,6 +15,8 @@ export type MouseEventArgs<T> = {
   setSelectedTile: (tile: Tile) => void
   selectedActor?: ActorInstance
   setSelectedActor: (act: ActorInstance | undefined) => void
+  selectedTool: TileLayerToolType
+  setSelectedTool: (tool: TileLayerToolType) => void
   fillOnce: boolean
   setFillOnce: (fillOnce: boolean) => void
 }

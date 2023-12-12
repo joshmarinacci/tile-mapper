@@ -10,13 +10,26 @@ import { Icons } from "../common/icons"
 import { ICON_CACHE } from "../iconcache"
 import { PropsBase, useWatchAllProps, useWatchProp } from "../model/base"
 import { DocContext } from "../model/contexts"
-import { ActorInstance, ActorLayer, GameMap, MapLayerType, TileLayer } from "../model/gamemap"
+import {
+  ActorInstance,
+  ActorLayer,
+  ColorMapLayer,
+  GameMap,
+  MapLayerType,
+  TileLayer,
+} from "../model/gamemap"
 import { Tile } from "../model/tile"
 import { PlayTest } from "../preview/PlayTest"
 import { ActorLayerMouseHandler, ActorLayerToolbar, drawActorlayer } from "./ActorEditor"
 import { MouseHandler } from "./editorbase"
 import { ShareMapDialog } from "./ShareMapDialog"
-import { drawTileLayer, TileLayerMouseHandler, TileLayerToolbar } from "./TileEditor"
+import {
+  drawColorLayer,
+  drawTileLayer,
+  TileLayerMouseHandler,
+  TileLayerToolbar,
+  TileLayerToolType,
+} from "./TileEditor"
 
 export function LayerEditor(props: {
   map: GameMap
@@ -32,6 +45,7 @@ export function LayerEditor(props: {
   const [down, setDown] = useState<boolean>(false)
   const [handler, setHandler] = useState<MouseHandler<unknown> | undefined>(undefined)
   useEffect(() => redraw(), [grid, layer, selectedActor])
+  const [selectedTool, setSelectedTool] = useState<TileLayerToolType>("pencil")
 
   const [zoom, setZoom] = useState(2)
   const scale = Math.pow(2, zoom)
@@ -60,6 +74,9 @@ export function LayerEditor(props: {
         if (layer instanceof ActorLayer) {
           drawActorlayer(ctx, doc, layer as ActorLayer, scale)
         }
+        if (layer instanceof ColorMapLayer) {
+          drawColorLayer(canvas, ctx, doc, layer as ColorMapLayer, scale)
+        }
       })
       if (handler)
         handler.drawOverlay({
@@ -85,56 +102,36 @@ export function LayerEditor(props: {
   }
 
   useEffect(() => redraw(), [zoom, layer])
+  const make_event = (e: MouseEvent<HTMLCanvasElement>) => {
+    return {
+      e,
+      pt: canvasToLayer(e),
+      doc,
+      layer,
+      tile,
+      setSelectedTile,
+      selectedActor,
+      setSelectedActor,
+      fillOnce,
+      setFillOnce,
+      selectedTool,
+      setSelectedTool,
+    }
+  }
   const onMouseDown = (e: MouseEvent<HTMLCanvasElement>) => {
     setDown(true)
-    if (handler)
-      handler.onMouseDown({
-        e,
-        layer,
-        pt: canvasToLayer(e),
-        doc,
-        tile,
-        setSelectedTile,
-        selectedActor,
-        setSelectedActor,
-        fillOnce,
-        setFillOnce,
-      })
+    if (handler) handler.onMouseDown(make_event(e))
     redraw()
   }
   const onMouseMove = (e: MouseEvent<HTMLCanvasElement>) => {
     if (down) {
-      if (handler)
-        handler.onMouseMove({
-          e,
-          layer,
-          pt: canvasToLayer(e),
-          doc,
-          tile,
-          setSelectedTile,
-          selectedActor,
-          setSelectedActor,
-          fillOnce,
-          setFillOnce,
-        })
+      if (handler) handler.onMouseMove(make_event(e))
       redraw()
     }
   }
   const onMouseUp = (e: MouseEvent<HTMLCanvasElement>) => {
     setDown(false)
-    if (handler)
-      handler.onMouseUp({
-        e,
-        layer,
-        pt: canvasToLayer(e),
-        doc,
-        tile,
-        setSelectedTile,
-        selectedActor,
-        setSelectedActor,
-        fillOnce,
-        setFillOnce,
-      })
+    if (handler) handler.onMouseUp(make_event(e))
   }
   if (!layer) return <div>select a map</div>
 
@@ -185,7 +182,13 @@ export function LayerEditor(props: {
         </DropdownButton>
       </div>
       {layer instanceof TileLayer && (
-        <TileLayerToolbar layer={layer} fillOnce={fillOnce} setFillOnce={setFillOnce} />
+        <TileLayerToolbar
+          layer={layer}
+          fillOnce={fillOnce}
+          setFillOnce={setFillOnce}
+          setSelectedTool={setSelectedTool}
+          selectedTool={selectedTool}
+        />
       )}
       {layer instanceof ActorLayer && (
         <ActorLayerToolbar layer={layer} onSelect={setSelectedActor} />

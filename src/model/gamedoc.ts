@@ -128,7 +128,7 @@ export class GameDoc extends PropsBase<DocType> {
         }
       }
     }
-    console.log("missing", id)
+    // console.log("missing", id)
     return null
   }
 
