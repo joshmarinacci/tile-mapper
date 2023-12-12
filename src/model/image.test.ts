@@ -1,7 +1,14 @@
 import { ArrayGrid, Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
-import { FramePixelSurface, ImagePixelLayer, SImage } from "./image"
+import { floodFill } from "../imageeditor/fill_tool"
+import {
+  AreaChange,
+  ArrayGridPixelSurface,
+  FramePixelSurface,
+  ImagePixelLayer,
+  SImage,
+} from "./image"
 
 function wrap(point: Point, size: Size): Point {
   const pt = point.copy()
@@ -116,6 +123,147 @@ describe("image with frames", () => {
       })
       expect(surf.getPixel(LEFT)).toEqual(1)
       expect(surf.getPixel(RIGHT)).toEqual(1)
+    }
+  })
+})
+
+describe("image with history support", () => {
+  it("should do a simple undo", async () => {
+    // create image
+    const img = new SImage({ size: new Size(20, 20) })
+    {
+      img.appendLayer(new ImagePixelLayer())
+      img.getFramePixelSurfaces(0)[0].fillAll(0)
+      // check history length
+      expect(img.getHistoryLength()).toEqual(0)
+      expect(img.getHistoryPosition()).toEqual(-1)
+    }
+    const PT = new Point(1, 2)
+    {
+      // change the image
+      const surf = img.getFramePixelSurfaces(0)[0]
+      const old_data = surf.cloneData()
+      const temp = new ArrayGridPixelSurface(new ArrayGrid<number>(20, 20))
+      temp.setPixel(PT, 2)
+      surf.copyPixelsFrom(temp.data, (v) => v >= 0)
+      const new_data = surf.cloneData()
+      // submit history
+      img.appendHistory(new AreaChange(surf, old_data, new_data))
+      // check history length
+      expect(img.getHistoryLength()).toEqual(1)
+      // check change happened
+      expect(img.getFramePixelSurfaces(0)[0].getPixel(PT)).toEqual(2)
+    }
+
+    {
+      // undo
+      img.undo()
+      // check history length
+      expect(img.getHistoryLength()).toEqual(1)
+      // check current undo position
+      expect(img.getHistoryPosition()).toEqual(-1)
+      // check that change really undone
+      expect(img.getFramePixelSurfaces(0)[0].getPixel(PT)).toEqual(0)
+    }
+
+    {
+      // redo
+      img.redo()
+      // check history length
+      expect(img.getHistoryLength()).toEqual(1)
+      // check current undo position
+      expect(img.getHistoryPosition()).toEqual(0)
+      // check that change really redone
+    }
+  })
+  it("should do a redo that nukes part of history", async () => {
+    // create image
+    // create image
+    const image = new SImage({ size: new Size(20, 20) })
+    {
+      image.appendLayer(new ImagePixelLayer())
+      image.getFramePixelSurfaces(0)[0].fillAll(0)
+      // check history length
+      expect(image.getHistoryLength()).toEqual(0)
+      expect(image.getHistoryPosition()).toEqual(-1)
+    }
+    // submit flood fill
+    {
+      const surf = image.getFramePixelSurfaces(0)[0]
+      const old_data = surf.cloneData()
+      floodFill(surf, 0, 1, new Point(0, 0))
+      const new_data = surf.cloneData()
+      image.appendHistory(new AreaChange(surf, old_data, new_data))
+    }
+    // submit draw
+    {
+      const PT = new Point(5, 5)
+      const surf = image.getFramePixelSurfaces(0)[0]
+      const old_data = surf.cloneData()
+      {
+        const temp = new ArrayGridPixelSurface(new ArrayGrid<number>(20, 20))
+        temp.setPixel(PT, 2)
+        surf.copyPixelsFrom(temp.data, (v) => v >= 0)
+      }
+      const new_data = surf.cloneData()
+      image.appendHistory(new AreaChange(surf, old_data, new_data))
+    }
+    // verify state
+    {
+      const surf = image.getFramePixelSurfaces(0)[0]
+      expect(surf.getPixel(new Point(0, 0))).toEqual(1)
+      expect(surf.getPixel(new Point(5, 5))).toEqual(2)
+      expect(image.getHistoryLength()).toEqual(2)
+      expect(image.getHistoryPosition()).toEqual(1)
+    }
+    // undo draw
+    {
+      image.undo()
+      const surf = image.getFramePixelSurfaces(0)[0]
+      expect(surf.getPixel(new Point(0, 0))).toEqual(1)
+      expect(surf.getPixel(new Point(5, 5))).toEqual(1)
+      expect(image.getHistoryLength()).toEqual(2)
+      expect(image.getHistoryPosition()).toEqual(0)
+    }
+    // undo flood fill
+    {
+      image.undo()
+      const surf = image.getFramePixelSurfaces(0)[0]
+      expect(surf.getPixel(new Point(0, 0))).toEqual(0)
+      expect(surf.getPixel(new Point(5, 5))).toEqual(0)
+      expect(image.getHistoryLength()).toEqual(2)
+      expect(image.getHistoryPosition()).toEqual(-1)
+    }
+    // redo flood fill
+    {
+      image.redo()
+      const surf = image.getFramePixelSurfaces(0)[0]
+      expect(surf.getPixel(new Point(0, 0))).toEqual(1)
+      expect(surf.getPixel(new Point(5, 5))).toEqual(1)
+      expect(image.getHistoryLength()).toEqual(2)
+      expect(image.getHistoryPosition()).toEqual(0)
+    }
+    // do eraser change
+    {
+      const surf = image.getFramePixelSurfaces(0)[0]
+      const old_data = surf.cloneData()
+      {
+        // const temp = new ArrayGridPixelSurface(new ArrayGrid<number>(20, 20))
+        // temp.setPixel(PT, 2)
+        // surf.copyPixelsFrom(temp.data, (v) => v >= 0)
+        surf.setPixel(new Point(3, 3), -1)
+      }
+      const new_data = surf.cloneData()
+      image.appendHistory(new AreaChange(surf, old_data, new_data))
+    }
+    // verify old draw is gone
+    {
+      const surf = image.getFramePixelSurfaces(0)[0]
+      expect(surf.getPixel(new Point(0, 0))).toEqual(1)
+      expect(surf.getPixel(new Point(3, 3))).toEqual(-1)
+      expect(surf.getPixel(new Point(5, 5))).toEqual(1)
+      expect(image.getHistoryLength()).toEqual(2)
+      expect(image.getHistoryPosition()).toEqual(1)
     }
   })
 })

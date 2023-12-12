@@ -400,6 +400,14 @@ export class SImage extends PropsBase<SImageType> {
     return this.getPropValue("layers")
   }
 
+  getHistoryLength() {
+    return this.history.length
+  }
+
+  getHistoryPosition() {
+    return this.current_history_index
+  }
+
   undo() {
     // console.log("undoing. hist len", this.history.length, 'curr',this.current_history_index)
     if (this.current_history_index >= 0) {
@@ -422,6 +430,9 @@ export class SImage extends PropsBase<SImageType> {
   }
 
   appendHistory(evt: HistoryEvent) {
+    if (this.history.length > this.current_history_index + 1) {
+      this.history = this.history.slice(0, this.current_history_index + 1)
+    }
     this.history.push(evt)
     this.current_history_index += 1
     this.setPropValue("history", this.getPropValue("history") + 1)
