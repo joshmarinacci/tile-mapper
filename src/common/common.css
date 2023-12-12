@@ -40,3 +40,19 @@
 button:hover {
   background-color: #aaaaaa;
 }
+
+/* draggable palette window */
+
+.draggable-palette-window {
+  border: 1px solid black;
+  background-color: white;
+  position: fixed;
+}
+.draggable-palette-window header {
+  background-color: #aaaaaa;
+  font-weight: bold;
+  padding: 0.25em 0.5em;
+}
+.draggable-palette-window {
+  overflow: scroll;
+}

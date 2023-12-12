@@ -15,6 +15,7 @@ import {
 } from "../actions/image"
 import { ImagePalette } from "../common/common"
 import {
+  DraggablePaletteWindow,
   DropdownButton,
   IconButton,
   Pane,
@@ -639,7 +640,9 @@ export function ImageEditorView(props: { image: SImage }) {
             }}
           />
         </div>
-        <AnimatedImagePreview image={image} count={count} />
+        <DraggablePaletteWindow title={"preview"}>
+          <AnimatedImagePreview image={image} count={count} />
+        </DraggablePaletteWindow>
       </div>
     </>
   )

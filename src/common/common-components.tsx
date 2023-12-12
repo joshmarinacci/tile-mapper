@@ -1,5 +1,6 @@
 import "./common.css"
 
+import { Bounds, Point } from "josh_js_util"
 import { toClass } from "josh_react_util"
 import React, { ReactNode, useContext, useState } from "react"
 
@@ -219,5 +220,40 @@ export function CheckToggleButton<T extends PropsBase<any>>(props: {
       <Icon name={selected ? Icons.Checkmark : Icons.Blank} />
       {text}
     </button>
+  )
+}
+
+export function DraggablePaletteWindow(props: { title: string; children: ReactNode }) {
+  const [bounds, setBounds] = useState(new Bounds(50, 50, 200, 200))
+  return (
+    <div
+      className={"draggable-palette-window"}
+      style={{
+        left: `${bounds.x}px`,
+        width: `${bounds.w}px`,
+        height: `${bounds.h}px`,
+        top: `${bounds.y}px`,
+      }}
+    >
+      <header
+        onMouseDown={(e) => {
+          const pt = new Point(e.pageX, e.pageY)
+          const off = pt.subtract(bounds.position())
+          const hand = (e) => {
+            const p2 = new Point(e.pageX, e.pageY).subtract(off)
+            setBounds(Bounds.fromPointSize(p2, bounds.size()))
+          }
+          window.addEventListener("mousemove", hand)
+          const end = () => {
+            window.removeEventListener("mousemove", hand)
+            window.removeEventListener("mouseup", end)
+          }
+          window.addEventListener("mouseup", end)
+        }}
+      >
+        title bar
+      </header>
+      <main>{props.children}</main>
+    </div>
   )
 }

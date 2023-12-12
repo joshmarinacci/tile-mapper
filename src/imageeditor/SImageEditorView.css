@@ -12,11 +12,6 @@
 .image-editor-preview {
   border: 1px solid red;
   background-color: #aaaaaa;
-  width: 320px;
-  height: 320px;
-  position: absolute;
-  bottom: 16px;
-  right: 16px;
 }
 
 .image-editor-preview header {
