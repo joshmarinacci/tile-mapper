@@ -45,9 +45,11 @@ import {
   TextObject,
 } from "../model/image"
 import { strokeBounds } from "../util"
+import { AnimatedImagePreview } from "./AnimatedImagePreview"
 import { EllipseTool, EllipseToolSettings } from "./ellipse_tool"
 import { EraserTool, EraserToolSettings } from "./eraser_tool"
 import { FillTool, FillToolSettings } from "./fill_tool"
+import { ImageHistoryView } from "./ImageHistoryView"
 import { LayerItemRenderer } from "./LayerItemRenderer"
 import { LineTool, LineToolSettings } from "./line_tool"
 import { MoveTool, MoveToolSettings } from "./move_tool"
@@ -182,55 +184,6 @@ function drawCanvas(
     strokeBounds(ctx, bounds, "black", 1)
     ctx.setLineDash([])
   }
-}
-
-function AnimatedImagePreview(props: { image: SImage; count: number }) {
-  const { image, count } = props
-  const ref = useRef(null)
-  const size = image.size()
-  const [scale, setScale] = useState(3)
-  const [frame, setFrame] = useState(0)
-  const doc = useContext(DocContext)
-
-  function redraw() {
-    if (ref.current) {
-      const canvas = ref.current as HTMLCanvasElement
-      const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
-      ctx.fillStyle = "white"
-      ctx.fillRect(0, 0, canvas.width, canvas.height)
-      drawImage(doc, ctx, props.image, doc.getPropValue("palette"), scale, frame)
-    }
-  }
-
-  useEffect(() => redraw(), [scale, count, frame])
-  const cycle = () => {
-    const fc = image.getPropValue("frameCount")
-    setFrame((frame + 1) % fc)
-  }
-
-  useWatchAllProps(image, () => redraw())
-  return (
-    <div className={"image-editor-preview"}>
-      <header>
-        <IconButton onClick={() => setScale(scale + 1)} icon={Icons.Plus} />
-        <IconButton onClick={() => setScale(scale - 1)} icon={Icons.Minus} />
-        <IconButton onClick={() => cycle()} icon={Icons.Play} />
-        <Spacer />
-        <label>title bar</label>
-      </header>
-      <canvas ref={ref} width={size.w * scale} height={size.h * scale}></canvas>
-    </div>
-  )
-}
-
-function ImageHistoryView(props: { image: SImage }) {
-  return (
-    <ul className={"history-view"}>
-      {props.image.getHistory().map((h, i) => {
-        return <li key={i}>{h.name()}</li>
-      })}
-    </ul>
-  )
 }
 
 export function ImageEditorView(props: { image: SImage }) {

@@ -328,12 +328,12 @@ export class AreaChange implements HistoryEvent {
     surf: FramePixelSurface,
     prev: ArrayGrid<number>,
     curr: ArrayGrid<number>,
-    name: string,
+    name?: string,
   ) {
     this.surf = surf
     this.prev = prev
     this.curr = curr
-    this._name = name
+    this._name = name ? name : "area change"
   }
 
   name(): string {
