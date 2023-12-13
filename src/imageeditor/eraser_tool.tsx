@@ -14,7 +14,7 @@ type EraserSettingsType = {
 
 export class EraserTool extends BasePixelTool<EraserSettingsType> implements PixelTool {
   constructor() {
-    super({ tip_size: IntegerDef }, { tip_size: 3 })
+    super({ tip_size: IntegerDef }, { tip_size: 1 })
     this.name = "eraser"
   }
 
