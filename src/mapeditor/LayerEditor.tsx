@@ -1,6 +1,6 @@
 import "./MapEditor.css"
 
-import { Point } from "josh_js_util"
+import { Point, Size } from "josh_js_util"
 import { DialogContext, Spacer } from "josh_react_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
@@ -10,6 +10,7 @@ import { Icons } from "../common/icons"
 import { ICON_CACHE } from "../iconcache"
 import { PropsBase, useWatchAllProps, useWatchProp } from "../model/base"
 import { DocContext } from "../model/contexts"
+import { GameDoc } from "../model/gamedoc"
 import {
   ActorInstance,
   ActorLayer,
@@ -57,6 +58,43 @@ export function LayerEditor(props: {
     if (props.layer instanceof ActorLayer) setHandler(new ActorLayerMouseHandler())
   }, [props.layer])
   const redraw = () => {
+    function drawGridLayer(
+      canvas: HTMLCanvasElement,
+      ctx: CanvasRenderingContext2D,
+      doc: GameDoc,
+      scale: number,
+      grid: boolean,
+    ) {
+      ctx.strokeStyle = "#000000"
+      ctx.lineWidth = 1.0
+      // const size = camera.getPropValue("viewport").size()
+      const size = new Size(canvas.width, canvas.height).scale(1 / scale).scale(tileSize.w)
+      ctx.save()
+      ctx.translate(0.5, 0.5)
+      ctx.beginPath()
+      for (let i = 0; i < size.w; i++) {
+        ctx.moveTo(i * scale * tileSize.w, 0)
+        ctx.lineTo(i * scale * tileSize.w, size.h * scale * tileSize.h)
+      }
+      for (let i = 0; i < size.h; i++) {
+        ctx.moveTo(0, i * scale * tileSize.h)
+        ctx.lineTo(size.w * scale * tileSize.h, i * scale * tileSize.w)
+      }
+      ctx.stroke()
+
+      /*
+      ctx.beginPath()
+      ctx.lineWidth = 3.0
+      const mx = new Point(size.w / 2, size.h / 2).floor()
+      ctx.moveTo(mx.x * scale * tileSize.w, 0)
+      ctx.lineTo(mx.x * scale * tileSize.w, size.h * scale * tileSize.h)
+      ctx.moveTo(0, mx.y * scale * tileSize.h)
+      ctx.lineTo(size.w * scale * tileSize.h, mx.x * scale * tileSize.h)
+      ctx.stroke()
+       */
+      ctx.restore()
+    }
+
     if (ref.current) {
       const canvas = ref.current
       const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
@@ -69,7 +107,7 @@ export function LayerEditor(props: {
       map.getPropValue("layers").forEach((layer: PropsBase<MapLayerType>) => {
         if (!layer.getPropValue("visible")) return
         if (layer instanceof TileLayer) {
-          drawTileLayer(canvas, ctx, doc, layer as TileLayer, scale, grid)
+          drawTileLayer(canvas, ctx, doc, layer as TileLayer, scale)
         }
         if (layer instanceof ActorLayer) {
           drawActorlayer(ctx, doc, layer as ActorLayer, scale)
@@ -78,6 +116,9 @@ export function LayerEditor(props: {
           drawColorLayer(canvas, ctx, doc, layer as ColorMapLayer, scale)
         }
       })
+      if (grid) {
+        drawGridLayer(canvas, ctx, doc, scale, grid)
+      }
       if (handler)
         handler.drawOverlay({
           doc,

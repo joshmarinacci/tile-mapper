@@ -45,7 +45,6 @@ export function drawTileLayer(
   doc: GameDoc,
   layer: TileLayer,
   scale: number,
-  grid: boolean,
 ) {
   const size = doc.getPropValue("tileSize")
   const wrapping = layer.getPropValue("wrapping")
@@ -115,6 +114,10 @@ export function TileLayerToolbar(props: {
 export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
   onMouseDown(args: MouseEventArgs<TileLayer>) {
     const { e, layer, tile, doc, setSelectedTile, fillOnce } = args
+    if (!layer.getPropValue("visible")) {
+      console.log("layer not visible")
+      return
+    }
     const tileSize = doc.getPropValue("tileSize")
     const pt = new Point(args.pt.x / tileSize.w, args.pt.y / tileSize.h).floor()
     if (args.selectedTool === "eraser") {
@@ -142,6 +145,10 @@ export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
 
   onMouseMove(args: MouseEventArgs<TileLayer>) {
     const { layer, tile, doc } = args
+    if (!layer.getPropValue("visible")) {
+      console.log("layer not visible")
+      return
+    }
     const tileSize = doc.getPropValue("tileSize")
     const pt = new Point(args.pt.x / tileSize.w, args.pt.y / tileSize.h).floor()
     if (args.selectedTool === "eraser") {

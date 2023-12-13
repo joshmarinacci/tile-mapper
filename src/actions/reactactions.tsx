@@ -131,7 +131,6 @@ export function AddActorToDocButton() {
       visible: true,
     })
     const bounds = new Bounds(0, 0, size.w, size.h)
-    layer.rebuildFromCanvas(sprite)
     sprite.appendLayer(layer)
     appendToList(doc, "canvases", sprite)
     const actor = new Actor({
