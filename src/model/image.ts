@@ -199,6 +199,14 @@ export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> {
     copy.fill((n) => orig.get(n))
     this.frames.push(copy)
   }
+  resize(size: Size) {
+    const new_frames = this.frames.map((frame) => {
+      const grid = ArrayGrid.fromSize<number>(size)
+      grid.fill(() => -1)
+      return grid
+    })
+    this.frames = new_frames
+  }
 }
 
 interface ImageObjectLayerType extends ImageLayerType {
@@ -402,7 +410,11 @@ export class SImage extends PropsBase<SImageType> {
   }
 
   resize(size: Size) {
-    this.getPropValue("layers").forEach((lay) => lay.resize(size))
+    this.getPropValue("layers").forEach((lay) => {
+      if (lay instanceof ImagePixelLayer) {
+        lay.resize(size)
+      }
+    })
     this.setPropValue("size", size)
   }
 

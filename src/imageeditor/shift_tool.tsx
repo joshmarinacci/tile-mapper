@@ -83,17 +83,21 @@ export class ShiftTool extends PropsBase<ShiftToolSettingsType> implements Pixel
   onMouseMove(evt: PixelToolEvent): void {
     if (this._pressed) {
       const diff = evt.pt.subtract(this._start)
-      this.shiftLayers(evt.image, evt.layer, diff)
+      this.shiftLayers(evt.image, evt.layer, evt.surface, diff)
       this._start = evt.pt
       evt.markDirty()
     }
   }
 
   onKeyDown(evt: PixelToolKeyEvent) {
-    if (evt.e.key === "ArrowLeft") this.shiftLayers(evt.image, evt.layer, new Point(-1, 0))
-    if (evt.e.key === "ArrowRight") this.shiftLayers(evt.image, evt.layer, new Point(1, 0))
-    if (evt.e.key === "ArrowUp") this.shiftLayers(evt.image, evt.layer, new Point(0, -1))
-    if (evt.e.key === "ArrowDown") this.shiftLayers(evt.image, evt.layer, new Point(0, 1))
+    if (evt.e.key === "ArrowLeft")
+      this.shiftLayers(evt.image, evt.layer, evt.surface, new Point(-1, 0))
+    if (evt.e.key === "ArrowRight")
+      this.shiftLayers(evt.image, evt.layer, evt.surface, new Point(1, 0))
+    if (evt.e.key === "ArrowUp")
+      this.shiftLayers(evt.image, evt.layer, evt.surface, new Point(0, -1))
+    if (evt.e.key === "ArrowDown")
+      this.shiftLayers(evt.image, evt.layer, evt.surface, new Point(0, 1))
     evt.markDirty()
   }
 
@@ -102,10 +106,10 @@ export class ShiftTool extends PropsBase<ShiftToolSettingsType> implements Pixel
     this._pressed = false
   }
 
-  shiftLayers(image: SImage, layer: ImagePixelLayer, diff: Point) {
+  shiftLayers(image: SImage, layer: ImagePixelLayer, surf: FramePixelSurface, diff: Point) {
     if (diff.x === 0 && diff.y === 0) return
     if (!this.getPropValue("allLayers") && !this.getPropValue("allFrames")) {
-      const surf = image.getFramePixelSurface(layer, 0)
+      // const surf = image.getFramePixelSurface(layer, 0)
       const prev_data = surf.cloneData()
       shiftLayer(surf, diff)
       const curr_data = surf.cloneData()

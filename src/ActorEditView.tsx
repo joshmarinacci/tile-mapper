@@ -64,6 +64,7 @@ export function ActorEditView(props: { actor: Actor }) {
   const add_action = () => {
     const act = new GameAction({ name: "unknown action" })
     appendToList(props.actor, "actions", act)
+    state.setSelectionTarget(act)
   }
   return (
     <>
