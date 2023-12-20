@@ -5,7 +5,7 @@ import { Actor } from "../model/actor"
 import { PropsBase, removeFromList } from "../model/base"
 import { Camera } from "../model/camera"
 import { ActorLayer, ColorMapLayer, GameMap, TileLayer } from "../model/gamemap"
-import { ImageLayer, SImage } from "../model/image"
+import { ImageFrame, ImageLayer, SImage } from "../model/image"
 import { ParticleFX } from "../model/particlefx"
 import { PixelFont } from "../model/pixelfont"
 import { Sheet } from "../model/sheet"
@@ -22,11 +22,14 @@ import {
   MoveMapLayerUpAction,
 } from "./gamemap"
 import {
-  AddNewImagePixelLayerAction,
+  AddNewImageLayerAction,
   CopyImageToClipboardAction,
+  DeleteImageFrameAction,
   DeleteImageLayerAction,
   ExportImageToPNG4XAction,
   ExportImageToPNGAction,
+  MoveImageFrameDownAction,
+  MoveImageFrameUpAction,
   MoveImageLayerDownAction,
   MoveImageLayerUpAction,
 } from "./image"
@@ -218,13 +221,18 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
     actions.push(DeleteImageAction)
     actions.push(ExportImageToPNGAction)
     actions.push(ExportImageToPNG4XAction)
-    actions.push(AddNewImagePixelLayerAction)
+    actions.push(AddNewImageLayerAction)
     actions.push(CopyImageToClipboardAction)
   }
   if (obj instanceof ImageLayer) {
     actions.push(DeleteImageLayerAction)
     actions.push(MoveImageLayerUpAction)
     actions.push(MoveImageLayerDownAction)
+  }
+  if (obj instanceof ImageFrame) {
+    actions.push(DeleteImageFrameAction)
+    actions.push(MoveImageFrameUpAction)
+    actions.push(MoveImageFrameDownAction)
   }
   return actions
 }

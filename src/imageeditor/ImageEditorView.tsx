@@ -6,7 +6,7 @@ import { canvas_to_blob } from "josh_web_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import {
-  AddNewImagePixelLayerAction,
+  AddNewImageLayerAction,
   ExportImageToGIFAction,
   ExportImageToPNGAction,
   MoveImageLayerDownAction,
@@ -288,7 +288,7 @@ export function ImageEditorView(props: { image: SImage }) {
       <div className={"tool-column"} onKeyDown={handle_key_down}>
         <Pane key={"layer-list"} title={"layers"} collapsable={true}>
           <div className={"toolbar"}>
-            <ToolbarActionButton action={AddNewImagePixelLayerAction} />
+            <ToolbarActionButton action={AddNewImageLayerAction} />
             <Spacer />
             <DropdownButton icon={Icons.Gear}>
               <ToolbarActionButton action={MoveImageLayerUpAction} />

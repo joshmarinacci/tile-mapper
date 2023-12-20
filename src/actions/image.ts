@@ -3,9 +3,9 @@ import { encode } from "modern-gif"
 
 import { Icons } from "../common/icons"
 import { drawImage } from "../imageeditor/ImageEditorView"
-import { PropsBase, removeFromList } from "../model/base"
+import { removeFromList } from "../model/base"
 import { GameDoc } from "../model/gamedoc"
-import { ImageLayer, ImageLayerType, SImage } from "../model/image"
+import { ImageFrame, ImageLayer, ImageLayerType, SImage } from "../model/image"
 import { GlobalState } from "../state"
 import { SimpleMenuAction } from "./actions"
 
@@ -16,7 +16,8 @@ export const exportImageToPNG = async (doc: GameDoc, image: SImage, scale: numbe
   canvas.height = size.h
   const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
   const palette = doc.getPropValue("palette")
-  drawImage(doc, ctx, image, palette, scale, 0)
+  const frame = image.frames()[0]
+  drawImage(doc, ctx, image, palette, scale, frame)
 
   const blob = await canvas_to_blob(canvas)
   forceDownloadBlob(`${image.getPropValue("name") as string}.${scale}x.png`, blob)
@@ -91,18 +92,20 @@ export const ExportImageToGIFAction: SimpleMenuAction = {
   },
 }
 
-export const AddNewImagePixelLayerAction: SimpleMenuAction = {
+export const AddNewImageLayerAction: SimpleMenuAction = {
   type: "simple",
   icon: Icons.Plus,
   title: "pixel layer",
   perform: async (state) => {
     const path = state.getSelectionPath()
-    if (path.start() instanceof SImage) {
-      new_pixel_layer(path.start() as SImage)
-    }
+    const start = path.start()
+    const parent = path.parent().start()
+    if (start instanceof ImageLayer && parent instanceof SImage) new_image_layer(parent)
+    if (start instanceof ImageFrame && parent instanceof SImage) new_image_layer(parent)
+    if (start instanceof SImage) new_image_layer(start)
   },
 }
-const new_pixel_layer = (image: SImage) => {
+const new_image_layer = (image: SImage) => {
   const layer = new ImageLayer({
     name: "new pixel layer",
     opacity: 1.0,
@@ -127,15 +130,45 @@ export const DeleteImageLayerAction: SimpleMenuAction = {
   },
 }
 
+export const DeleteImageFrameAction: SimpleMenuAction = {
+  type: "simple",
+  icon: Icons.Trashcan,
+  title: "delete frame",
+  perform: async (state) => {
+    const path = state.getSelectionPath()
+    const start = path.start()
+    const parent = path.parent().start()
+    if (start instanceof ImageFrame && parent instanceof SImage) {
+      removeFromList(parent, "frames", start)
+      state.clearSelection()
+    }
+  },
+}
+
 export const MoveImageLayerUpAction: SimpleMenuAction = {
   type: "simple",
   title: "move layer up",
   icon: Icons.UpArrow,
   perform: async (state) => {
     const path = state.getSelectionPath()
-    if (path.start() instanceof ImageLayer) {
-      const image = path.parent().start() as SImage
-      move_layer_up(path.start() as PropsBase<ImageLayerType>, image)
+    const start = path.start()
+    const parent = path.parent().start()
+    if (start instanceof ImageLayer && parent instanceof SImage) {
+      move_layer_up(start, parent)
+    }
+  },
+}
+
+export const MoveImageFrameUpAction: SimpleMenuAction = {
+  type: "simple",
+  title: "move frame up",
+  icon: Icons.UpArrow,
+  perform: async (state) => {
+    const path = state.getSelectionPath()
+    const start = path.start()
+    const parent = path.parent().start()
+    if (start instanceof ImageFrame && parent instanceof SImage) {
+      move_frame_up(start, parent)
     }
   },
 }
@@ -146,33 +179,70 @@ export const MoveImageLayerDownAction: SimpleMenuAction = {
   icon: Icons.DownArrow,
   perform: async (state) => {
     const path = state.getSelectionPath()
-    if (path.start() instanceof ImageLayer) {
-      const image = path.parent().start() as SImage
-      move_layer_down(path.start() as PropsBase<ImageLayerType>, image)
+    const start = path.start()
+    const parent = path.parent().start()
+    if (start instanceof ImageLayer && parent instanceof SImage) {
+      move_layer_down(start, parent)
     }
   },
 }
 
-const move_layer_down = (layer: PropsBase<ImageLayerType>, image: SImage) => {
-  if (!layer) return
+export const MoveImageFrameDownAction: SimpleMenuAction = {
+  type: "simple",
+  title: "move frame down",
+  icon: Icons.DownArrow,
+  perform: async (state) => {
+    const path = state.getSelectionPath()
+    const start = path.start()
+    const parent = path.parent().start()
+    if (start instanceof ImageFrame && parent instanceof SImage) {
+      move_frame_down(start, parent)
+    }
+  },
+}
+
+const move_layer_down = (ch: ImageLayer, image: SImage) => {
+  if (!ch) return
   let layers = image.getPropValue("layers")
   layers = layers.slice()
-  const n = layers.indexOf(layer)
+  const n = layers.indexOf(ch)
   if (n >= layers.length) return
   layers.splice(n, 1)
-  layers.splice(n + 1, 0, layer)
+  layers.splice(n + 1, 0, ch)
   image.setPropValue("layers", layers)
 }
 
-const move_layer_up = (layer: PropsBase<ImageLayerType>, image: SImage) => {
-  if (!layer) return
+const move_frame_down = (ch: ImageFrame, image: SImage) => {
+  if (!ch) return
+  let layers = image.getPropValue("frames")
+  layers = layers.slice()
+  const n = layers.indexOf(ch)
+  if (n >= layers.length) return
+  layers.splice(n, 1)
+  layers.splice(n + 1, 0, ch)
+  image.setPropValue("frames", layers)
+}
+
+const move_layer_up = (ch: ImageLayer, image: SImage) => {
+  if (!ch) return
   let layers = image.getPropValue("layers")
   layers = layers.slice()
-  const n = layers.indexOf(layer)
+  const n = layers.indexOf(ch)
   if (n <= 0) return
   layers.splice(n, 1)
-  layers.splice(n - 1, 0, layer)
+  layers.splice(n - 1, 0, ch)
   image.setPropValue("layers", layers)
+}
+
+const move_frame_up = (ch: ImageFrame, image: SImage) => {
+  if (!ch) return
+  let layers = image.getPropValue("frames")
+  layers = layers.slice()
+  const n = layers.indexOf(ch)
+  if (n <= 0) return
+  layers.splice(n, 1)
+  layers.splice(n - 1, 0, ch)
+  image.setPropValue("frames", layers)
 }
 
 export const CopyImageToClipboardAction: SimpleMenuAction = {
