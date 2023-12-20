@@ -1,8 +1,9 @@
 import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 
-import { cloneArrayGrid } from "../util"
-import { appendToList, DefList, PropDefBuilder, PropsBase, PropValues } from "./base"
+import { ArrayGridToJson, cloneArrayGrid } from "../util"
+import { appendToList, ClassRegistry, DefList, PropDefBuilder, PropsBase, PropValues } from "./base"
 import {
+  ArrayGridNumberJSON,
   BooleanDef,
   FloatDef,
   NameDef,
@@ -257,11 +258,12 @@ export class SImage extends PropsBase<SImageType> {
   }
 
   resize(size: Size) {
-    this.getPropValue("layers").forEach((lay) => {
-      if (lay instanceof ImageLayer) {
-        lay.resize(size)
-      }
-    })
+    for (const key of this.buffers.keys()) {
+      // console.log('resizing',key, this.buffers.get(key))
+    }
+    // this.getPropValue("layers").forEach((lay) => {
+    //     lay.resize(size)
+    // })
     this.setPropValue("size", size)
   }
 
@@ -330,6 +332,16 @@ export class SImage extends PropsBase<SImageType> {
 
   getHistory() {
     return this.history
+  }
+
+  toJSON(reg: ClassRegistry) {
+    const json = super.toJSON(reg)
+    const buffers: Record<string, ArrayGridNumberJSON> = {}
+    for (const key of this.buffers.keys()) {
+      buffers[key] = ArrayGridToJson(this.buffers.get(key) as ArrayGrid<number>)
+    }
+    json.props.buffers = buffers
+    return json
   }
 }
 

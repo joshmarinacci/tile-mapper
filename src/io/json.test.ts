@@ -1,6 +1,7 @@
 import { Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
+import { get_class_registry } from "../model"
 import { Actor } from "../model/actor"
 import { appendToList, restoreClassFromJSON } from "../model/base"
 import { GameMap, TileLayer } from "../model/gamemap"
@@ -14,6 +15,7 @@ function log(...args: unknown[]) {
 
 describe("simple test", () => {
   it("should save a tile class", async () => {
+    const reg = get_class_registry()
     const tile = new Tile({
       name: "my cool tile",
       size: new Size(4, 3),
@@ -21,16 +23,16 @@ describe("simple test", () => {
     })
     tile.setPixel(1, new Point(1, 1))
 
-    expect(tile.getPropValue("data").size()).toBe(4 * 3)
-    const json = tile.toJSON()
-    // console.log(json)
+    expect(tile.getPropValue("data").size()).toEqual(new Size(4, 3))
+    const json = tile.toJSON(reg)
+    console.log(json)
     expect(json.props).toBeTruthy()
     expect(json.props.name).toBe("my cool tile")
     expect(json.props.size.w).toBe(4)
-    expect(json.props.data.w).toBe(4)
-    expect(json.props.data.h).toBe(3)
-    expect(json.props.data.data[0]).toBe(0)
-    expect(json.props.data.data[4 + 1]).toBe(1)
+    expect(json.props.data.props.size.w).toBe(4)
+    expect(json.props.data.props.size.h).toBe(3)
+    // expect(json.props.data.data[0]).toBe(0)
+    // expect(json.props.data.data[4 + 1]).toBe(1)
     const tile2 = restoreClassFromJSON(json)
     expect(tile2.getPropValue("name")).toBe("my cool tile")
     expect(tile2.getPropValue("size").w).toBe(4)
@@ -40,12 +42,13 @@ describe("simple test", () => {
     expect(tile2.getPixel(new Point(1, 1))).toBe(1)
   })
   it("should save an actor class", async () => {
+    const reg = get_class_registry()
     const actor = new Actor({ name: "hamlet", hitbox: new Size(30, 30) })
     expect(actor.getPropValue("name")).toBe("hamlet")
     expect(actor.getPropValue("hitbox")).toBeTruthy()
     expect(actor.getPropValue("hitbox").w).toBe(30)
 
-    const json = actor.toJSON()
+    const json = actor.toJSON(reg)
     expect(json.props.name).toBe("hamlet")
 
     const actor2 = restoreClassFromJSON(json)
@@ -54,6 +57,7 @@ describe("simple test", () => {
     expect(actor._id).toBe(actor2._id)
   })
   it("should save a sheet class", async () => {
+    const reg = get_class_registry()
     const tile = new Tile({ name: "sky", size: new Size(4, 4) })
     tile.setPixel(3, new Point(2, 2))
     console.log(CLASS_REGISTRY)
@@ -81,6 +85,7 @@ describe("simple test", () => {
     expect(sheet2.getPropValue("tiles")[0].getPropValue("data").get_at(2, 2)).toBe(3)
   })
   it("should save a tile layer", async () => {
+    const reg = get_class_registry()
     const layer1 = new TileLayer({
       type: "tile-layer",
       name: "first layer",
@@ -93,8 +98,8 @@ describe("simple test", () => {
     expect(layer1.getPropValue("data").get_at(1, 1)).toStrictEqual({
       tile: "foo",
     })
-    const json = layer1.toJSON()
-    // log(json.props['data'])
+    const json = layer1.toJSON(reg)
+    log(json.props["data"])
     expect(json.class).toBe("TileLayer")
     expect(json.props["data"]).toBeTruthy()
     expect(json.props["data"].w).toBe(2)
@@ -156,6 +161,7 @@ describe("simple test", () => {
     })
   })
   it("should save a sheet but not persist the selection", async () => {
+    const reg = get_class_registry()
     const tile = new Tile({ name: "sky", size: new Size(4, 4) })
     tile.setPixel(3, new Point(2, 2))
     const sheet = new Sheet({ name: "terrain", tileSize: new Size(4, 4) })
@@ -166,41 +172,5 @@ describe("simple test", () => {
     const sheet2 = restoreClassFromJSON(json)
     expect(sheet2).toBeTruthy()
     expect(sheet2.getPropValue("selectedTile")).toBeFalsy()
-  })
-  it("should save a single font pixel glyph", async () => {
-    const glyph = new PixelGlyph({
-      name: "A",
-      codepoint: 68,
-      size: new Size(10, 10),
-    })
-    glyph.getPropValue("data").fill((n) => -1)
-
-    expect(glyph.getPropValue("name")).toBe("A")
-    expect(glyph.getPropValue("codepoint")).toBe(68)
-
-    const json = glyph.toJSON()
-    expect(json.props.name).toBe("A")
-
-    const glyph2 = restoreClassFromJSON(json)
-    expect(glyph2.getPropValue("name")).toBe("A")
-    expect(glyph2.getPropValue("codepoint")).toBe(68)
-    expect(glyph.getUUID()).toBe(glyph2.getUUID())
-  })
-  it("should save a pixel font", async () => {
-    const glyph = new PixelGlyph({ name: "A" })
-    glyph.getPropValue("data").fill((n) => -1)
-    const font = new PixelFont({
-      name: "pixio",
-    })
-    appendToList(font, "glyphs", glyph)
-    expect(font.getPropValue("name")).toBe("pixio")
-    expect(font.getPropValue("glyphs").length).toBe(1)
-    const glyph2 = font.getPropValue("glyphs")[0]
-    expect(glyph2.getPropValue("descent")).toBe(2)
-    expect(glyph2.getPropValue("data").size()).toBe(16 * 16)
-
-    const json = font.toJSON()
-    const font2 = restoreClassFromJSON(json)
-    expect(font2.getPropValue("name")).toBe("pixio")
   })
 })

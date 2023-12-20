@@ -12,23 +12,23 @@ import {
 
 export const BooleanDef: PropDefBuilder<boolean> = new PropDefBuilder<boolean>({
   type: "boolean",
-  toJSON: (v) => v,
-  fromJSON: (v) => v as boolean,
-  format: (v) => (v ? "true" : "false"),
   default: () => false,
+  format: (v) => (v ? "true" : "false"),
+  toJSON: (r, v) => v,
+  fromJSON: (v) => v as boolean,
 })
 export const StringDef = new PropDefBuilder<string>({
   type: "string",
-  fromJSON: (v) => v as string,
   default: () => "empty",
-  toJSON: (v: string) => v,
   format: (v) => v,
+  toJSON: (r, v: string) => v,
+  fromJSON: (v) => v as string,
 })
 export const NumberDef = new PropDefBuilder<number>({
   type: "float",
   default: () => 0.0,
   format: (v) => v.toFixed(2),
-  toJSON: (v) => v,
+  toJSON: (r, v) => v,
   fromJSON: (v) => v as number,
 })
 export const FloatDef = NumberDef.copy().withFormat((v) => v.toFixed(2))
@@ -36,13 +36,13 @@ export const IntegerDef = new PropDefBuilder<number>({
   type: "integer",
   default: () => 0,
   format: (v) => v.toFixed(0),
-  toJSON: (v) => v,
+  toJSON: (r, v) => v,
   fromJSON: (v) => v as number,
 })
 export const SizeDef = new PropDefBuilder<Size>({
   type: "Size",
   default: () => new Size(10, 10),
-  toJSON: (v) => v.toJSON(),
+  toJSON: (r, v) => v.toJSON(),
   fromJSON: (v) =>
     Size.fromJSON(
       v as {
@@ -55,7 +55,8 @@ export const SizeDef = new PropDefBuilder<Size>({
 export const PointDef = new PropDefBuilder<Point>({
   type: "Point",
   default: () => new Point(0, 0),
-  toJSON: (v) => v.toJSON(),
+  format: (v) => `${v.x} , ${v.y}`,
+  toJSON: (r, v) => v.toJSON(),
   fromJSON: (v) =>
     Point.fromJSON(
       v as {
@@ -63,12 +64,12 @@ export const PointDef = new PropDefBuilder<Point>({
         y: number
       },
     ),
-  format: (v) => `${v.x} , ${v.y}`,
 })
 export const BoundsDef = new PropDefBuilder<Bounds>({
   type: "Bounds",
   default: () => new Bounds(0, 0, 16, 16),
-  toJSON: (v) => v.toJSON(),
+  format: (v) => `${v.x}, ${v.y} -> ${v.w} x ${v.h}`,
+  toJSON: (r, v) => v.toJSON(),
   fromJSON: (v) =>
     Bounds.fromJSON(
       v as {
@@ -78,13 +79,12 @@ export const BoundsDef = new PropDefBuilder<Bounds>({
         h: number
       },
     ),
-  format: (v) => `${v.x}, ${v.y} -> ${v.w} x ${v.h}`,
 })
 export const ArrayGridNumberDef = new PropDefBuilder<ArrayGrid<number>>({
   type: "array",
   default: () => new ArrayGrid<number>(1, 1),
   format: () => "array number data",
-  toJSON: (v): ArrayGridNumberJSON => ({ w: v.w, h: v.h, data: v.data }),
+  toJSON: (r, v): ArrayGridNumberJSON => ({ w: v.w, h: v.h, data: v.data }),
   fromJSON: (value) => {
     const v = value as ArrayGridNumberJSON
     const arr = new ArrayGrid<number>(v.w, v.h)
@@ -96,8 +96,8 @@ export const NameDef: PropDef<string> = StringDef.copy().withDefault(() => "unna
 export const PaletteDef = new PropDefBuilder<ImagePalette>({
   type: "object",
   default: () => PICO8,
-  toJSON: (v) => v,
   format: (v) => v.name,
+  toJSON: (r, v) => v,
   fromJSON: (v) => {
     if ("name" in v) {
       return v as ImagePalette
@@ -121,7 +121,7 @@ export const GenericDataArrayDef = new PropDefBuilder<object[]>({
   type: "array",
   default: () => [],
   format: () => "unknown",
-  toJSON: (v) =>
+  toJSON: (r, v) =>
     v.map((a) => {
       if ("toJSON" in a) return a.toJSON() as unknown as object
       return a
@@ -148,10 +148,10 @@ export class GameTest extends PropsBase<TestType> {
     super(TestDefs, opts)
   }
 }
-export const ObjectListDef = new PropDefBuilder<object>({
+export const ObjectListDef = new PropDefBuilder<object[]>({
   type: "array",
   default: () => [],
-  toJSON: (v) => v.map((vv) => vv.toJSON()),
+  toJSON: (r, v) => v.map((vv) => vv.toJSON(r)),
   format: (v) => "object list",
   fromJSON: (v) => v.map((vv) => restoreClassFromJSON(vv)),
 })

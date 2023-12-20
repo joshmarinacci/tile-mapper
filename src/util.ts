@@ -1,5 +1,7 @@
 import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 
+import { ArrayGridNumberJSON } from "./model/datamodel"
+
 export function strokeBounds(
   ctx: CanvasRenderingContext2D,
   bounds: Bounds,
@@ -59,4 +61,13 @@ export function wrapPoint(point: Point, size: Size): Point {
     pt.y = (point.y + size.h) % size.h
   }
   return pt
+}
+
+export function clamp(val: number, min: number, max: number) {
+  if (val < min) return min
+  if (val > max) return max
+  return val
+}
+export function ArrayGridToJson(ag: ArrayGrid<number>): ArrayGridNumberJSON {
+  return { w: ag.w, h: ag.h, data: ag.data }
 }

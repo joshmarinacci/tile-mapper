@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest"
 
 import { floodFill } from "../imageeditor/fill_tool"
 import { wrapPoint } from "../util"
+import { JsonOut, JSONValue } from "./base"
+import { ArrayGridNumberJSON } from "./datamodel"
 import {
   AreaChange,
   ArrayGridPixelSurface,
@@ -11,6 +13,7 @@ import {
   ImageLayer,
   SImage,
 } from "./image"
+import { get_class_registry } from "./index"
 
 describe("image with frames", () => {
   it("should create an image with one layer and three frames ", async () => {
@@ -263,6 +266,55 @@ describe("image with history support", () => {
       expect(surf.getPixel(new Point(5, 5))).toEqual(1)
       expect(image.getHistoryLength()).toEqual(2)
       expect(image.getHistoryPosition()).toEqual(1)
+    }
+  })
+})
+
+describe("image JSON support", () => {
+  it("should save to json", async () => {
+    const reg = get_class_registry()
+    const img = new SImage({ size: new Size(10, 10), name: "foo" })
+    img.appendLayer(new ImageLayer({ name: "layer one", opacity: 0.5, visible: true }))
+    img.appendFrame(new ImageFrame({ name: "frame one", group: "group one" }))
+    {
+      const json = img.toJSON(reg)
+      // console.log("Json", JSON.stringify(json.props, null, '   '))
+      expect(json.class).toEqual("SImage")
+      expect(json.props.layers.length).toEqual(1)
+      expect(json.props.frames.length).toEqual(1)
+      expect(json.props.name).toEqual("foo")
+      expect(json.props.size).toEqual(new Size(10, 10))
+
+      const json_layer: JsonOut<ImageLayer> = json.props.layers[0]
+      expect(json_layer.class).toEqual("ImageLayer")
+      expect(json_layer.props.opacity).toEqual(0.5)
+      expect(json_layer.props.visible).toEqual(true)
+
+      const json_frame: JsonOut<ImageFrame> = json.props.frames[0]
+      expect(json_frame.class).toEqual("ImageFrame")
+      expect(json_frame.props.name).toEqual("frame one")
+      expect(json_frame.props.group).toEqual("group one")
+
+      expect(json.props.buffers).toEqual({})
+    }
+
+    // fill with clear
+    const surf = img.getPixelSurface(img.layers()[0], img.frames()[0])
+    surf.fillAll(-1)
+
+    {
+      const json = img.toJSON(reg)
+      // console.log("Json", JSON.stringify(json.props, null, '   '))
+      const layer = img.layers()[0]
+      const frame = img.frames()[0]
+      const buff = img.getBuffer(layer, frame)
+      const key = layer.getUUID() + "_" + frame.getUUID()
+      expect(key in json.props.buffers).toBeTruthy()
+      const json_buff = json.props.buffers[key] as ArrayGridNumberJSON
+      // console.log(json_buff)
+      expect(json_buff.w).toEqual(buff.w)
+      expect(json_buff.h).toEqual(buff.h)
+      expect(json_buff.data[2]).toEqual(-1)
     }
   })
 })

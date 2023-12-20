@@ -10,7 +10,7 @@ export type JsonOut<Type> = {
   class: string
   props: Record<keyof Type, JSONValue>
 }
-export type ToJSONner<T> = (v: T) => JSONValue
+export type ToJSONner<T> = (reg: ClassRegistry, v: T) => JSONValue
 export type FromJSONner<T> = (v: JSONValue) => T
 export type ToFormatString<T> = (v: T) => string
 type PropDefBaseTypes =
@@ -184,8 +184,8 @@ export class PropsBase<Type> {
     this.all_listeners = this.all_listeners.filter((cb) => cb !== hand)
   }
 
-  toJSON() {
-    const clazz = GlobalClassRegistry.lookupNameForObject(this)
+  toJSON(reg: ClassRegistry) {
+    const clazz = reg.lookupNameForObject(this)
     if (!clazz) throw new Error("class not found")
     const obj: JsonOut<Type> = {
       class: clazz,
@@ -196,7 +196,7 @@ export class PropsBase<Type> {
       if (d.skipPersisting) continue
       if (!d.toJSON)
         throw new Error(`prop def for ${k} in class ${clazz} is missing toJSON function`)
-      obj.props[k] = d.toJSON(this.getPropValue(k))
+      obj.props[k] = d.toJSON(reg, this.getPropValue(k))
     }
     return obj
   }

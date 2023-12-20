@@ -28,7 +28,7 @@ import { useWatchAllProps, useWatchProp } from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
 import { GameDoc } from "../model/gamedoc"
 import { FramePixelSurface, ImageFrame, ImageLayer, SImage } from "../model/image"
-import { strokeBounds, wrapNumber } from "../util"
+import { clamp, strokeBounds, wrapNumber } from "../util"
 import { EllipseTool, EllipseToolSettings } from "./ellipse_tool"
 import { EraserTool, EraserToolSettings } from "./eraser_tool"
 import { FillTool, FillToolSettings } from "./fill_tool"
@@ -42,12 +42,6 @@ import { ResizeImageDialog } from "./ResizeImageDialog"
 import { SelectionTool, SelectionToolSettings } from "./selection_tool"
 import { ShiftTool, ShiftToolSettings } from "./shift_tool"
 import { PixelTool } from "./tool"
-
-function clamp(val: number, min: number, max: number) {
-  if (val < min) return min
-  if (val > max) return max
-  return val
-}
 
 function drawPixelLayer(
   ctx: CanvasRenderingContext2D,
