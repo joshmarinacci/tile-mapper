@@ -1,6 +1,14 @@
 import { ArrayGrid, Point, Size } from "josh_js_util"
 
-import { DefList, PropDefBuilder, PropsBase, PropValues } from "./base"
+import {
+  ClassRegistry,
+  DefList,
+  JsonOut,
+  PropDefBuilder,
+  PropsBase,
+  PropValues,
+  restoreClassFromJSON,
+} from "./base"
 import { BlockingDef, NameDef, PointDef, SizeDef } from "./datamodel"
 import { ImageFrame, ImageLayer, SImage } from "./image"
 
@@ -55,8 +63,9 @@ export const TileDefs: DefList<TileType> = {
 export class Tile extends PropsBase<TileType> {
   constructor(opts?: PropValues<TileType>) {
     super(TileDefs, opts)
-    // console.log("tile data is",this.getPropValue('data'))
-    // this.getPropValue('data').resize(this.getPropValue('size'))
+    if (this.getPropValue("data")) {
+      this.getPropValue("data").resize(this.getPropValue("size"))
+    }
   }
 
   setPixel(number: number, point: Point) {
@@ -102,6 +111,14 @@ export class Tile extends PropsBase<TileType> {
 
   private log(...args: unknown[]) {
     console.log(this.constructor.name, ...args)
+  }
+
+  fromJSON(reg: ClassRegistry, json: JsonOut<TileType>) {
+    super.fromJSON(reg, json)
+    console.log("tile loading", this.getPropValue("data"), json)
+    const image = restoreClassFromJSON<SImage>(reg, json.props.data)
+    // console.log("now image is",image)
+    this.setPropValue("data", image)
   }
 
   // private data() {

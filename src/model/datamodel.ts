@@ -15,21 +15,21 @@ export const BooleanDef: PropDefBuilder<boolean> = new PropDefBuilder<boolean>({
   default: () => false,
   format: (v) => (v ? "true" : "false"),
   toJSON: (r, v) => v,
-  fromJSON: (v) => v as boolean,
+  fromJSON: (r, v) => v as boolean,
 })
 export const StringDef = new PropDefBuilder<string>({
   type: "string",
   default: () => "empty",
   format: (v) => v,
   toJSON: (r, v: string) => v,
-  fromJSON: (v) => v as string,
+  fromJSON: (r, v) => v as string,
 })
 export const NumberDef = new PropDefBuilder<number>({
   type: "float",
   default: () => 0.0,
   format: (v) => v.toFixed(2),
   toJSON: (r, v) => v,
-  fromJSON: (v) => v as number,
+  fromJSON: (r, v) => v as number,
 })
 export const FloatDef = NumberDef.copy().withFormat((v) => v.toFixed(2))
 export const IntegerDef = new PropDefBuilder<number>({
@@ -37,13 +37,13 @@ export const IntegerDef = new PropDefBuilder<number>({
   default: () => 0,
   format: (v) => v.toFixed(0),
   toJSON: (r, v) => v,
-  fromJSON: (v) => v as number,
+  fromJSON: (r, v) => v as number,
 })
 export const SizeDef = new PropDefBuilder<Size>({
   type: "Size",
   default: () => new Size(10, 10),
   toJSON: (r, v) => v.toJSON(),
-  fromJSON: (v) =>
+  fromJSON: (r, v) =>
     Size.fromJSON(
       v as {
         w: number
@@ -57,7 +57,7 @@ export const PointDef = new PropDefBuilder<Point>({
   default: () => new Point(0, 0),
   format: (v) => `${v.x} , ${v.y}`,
   toJSON: (r, v) => v.toJSON(),
-  fromJSON: (v) =>
+  fromJSON: (r, v) =>
     Point.fromJSON(
       v as {
         x: number
@@ -70,7 +70,7 @@ export const BoundsDef = new PropDefBuilder<Bounds>({
   default: () => new Bounds(0, 0, 16, 16),
   format: (v) => `${v.x}, ${v.y} -> ${v.w} x ${v.h}`,
   toJSON: (r, v) => v.toJSON(),
-  fromJSON: (v) =>
+  fromJSON: (r, v) =>
     Bounds.fromJSON(
       v as {
         x: number

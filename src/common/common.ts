@@ -1,8 +1,10 @@
 import bmp, { BitsPerPixel, IImage } from "@wokwi/bmp-ts"
 import { Point } from "josh_js_util"
 
+import { FramePixelSurface, ImageLayer, SImage } from "../model/image"
 import { Sheet } from "../model/sheet"
 import { Tile } from "../model/tile"
+import { clamp } from "../util"
 
 export type ImagePalette = {
   name: string
@@ -133,19 +135,36 @@ export const GAMEBOY: ImagePalette = {
   colors: ["#081820", "#346856", "#88c070", "#e0f8d0"],
 }
 
+function drawPixelLayer(
+  ctx: CanvasRenderingContext2D,
+  layer: ImageLayer,
+  surf: FramePixelSurface,
+  palette: ImagePalette,
+  scale: number,
+) {
+  ctx.save()
+  ctx.globalAlpha = clamp(layer.opacity(), 0, 1)
+  surf.forEach((n: number, p: Point) => {
+    ctx.fillStyle = palette.colors[n]
+    if (n === -1) ctx.fillStyle = "transparent"
+    ctx.fillRect(p.x * scale, p.y * scale, 1 * scale, 1 * scale)
+  })
+  ctx.restore()
+}
+
 export function drawEditableSprite(
   ctx: CanvasRenderingContext2D,
   scale: number,
-  image: Tile,
+  tile: Tile,
   palette: ImagePalette,
 ) {
-  for (let i = 0; i < image.width(); i++) {
-    for (let j = 0; j < image.height(); j++) {
-      const v: number = image.getPixel(new Point(i, j))
-      ctx.fillStyle = palette.colors[v]
-      ctx.fillRect(i * scale, j * scale, scale, scale)
-    }
-  }
+  const image: SImage = tile.getPropValue("data")
+  const frame = image.frames()[0]
+  image.layers().forEach((layer) => {
+    if (!layer.visible()) return
+    const surf = image.getPixelSurface(layer, frame)
+    drawPixelLayer(ctx, layer, surf, palette, scale)
+  })
 }
 
 export function sheet_to_canvas(sheet: Sheet, palette: ImagePalette): HTMLCanvasElement {
