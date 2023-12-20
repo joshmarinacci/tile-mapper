@@ -14,7 +14,6 @@ import {
 } from "../actions/image"
 import { ImagePalette } from "../common/common"
 import {
-  DraggablePaletteWindow,
   DropdownButton,
   IconButton,
   Pane,
@@ -29,12 +28,11 @@ import { useWatchAllProps, useWatchProp } from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
 import { GameDoc } from "../model/gamedoc"
 import { FramePixelSurface, ImageFrame, ImageLayer, SImage } from "../model/image"
-import { strokeBounds } from "../util"
-import { AnimatedImagePreview } from "./AnimatedImagePreview"
+import { strokeBounds, wrapNumber } from "../util"
 import { EllipseTool, EllipseToolSettings } from "./ellipse_tool"
 import { EraserTool, EraserToolSettings } from "./eraser_tool"
 import { FillTool, FillToolSettings } from "./fill_tool"
-import { ImageHistoryView } from "./ImageHistoryView"
+import { FrameItemRenderer } from "./FrameItemRenderer"
 import { LayerItemRenderer } from "./LayerItemRenderer"
 import { LineTool, LineToolSettings } from "./line_tool"
 import { MoveTool, MoveToolSettings } from "./move_tool"
@@ -146,36 +144,34 @@ export function ImageEditorView(props: { image: SImage }) {
   const [grid, setGrid] = useState(false)
   const [zoom, setZoom] = useState(3)
   const [drawColor, setDrawColor] = useState<string>(palette.colors[0])
-  const [layer, setLayer] = useState<ImageLayer | undefined>(() => {
-    if (image.layers().length > 0) {
-      return image.layers()[0]
-    } else {
-      return undefined
-    }
-  })
+  const [layer, setLayer] = useState<ImageLayer | undefined>(() => image.layers()[0])
   const canvasRef = useRef(null)
   const [pixelTool, setPixelTool] = useState<PixelTool>(() => new PencilTool())
   const [count, setCount] = useState(0)
   const [selectionRect, setSelectionRect] = useState<Bounds | undefined>()
-  const [frame, setFrame] = useState<ImageFrame | undefined>(() => {
-    if (image.frames().length > 0) {
-      return image.frames()[0]
-    } else {
-      return undefined
-    }
-  })
+  const [frame, setFrame] = useState<ImageFrame | undefined>(() => image.frames()[0])
+
   const navPrevFrame = () => {
-    // const fc = image.getPropValue("frameCount")
-    // let cf = frame - 1
-    // if (cf < 0) cf = fc - 1
-    // setFrame(cf)
+    if (frame) {
+      let index = image.frames().findIndex((f) => f === frame)
+      index = wrapNumber(index - 1, 0, image.frames().length)
+      setFrame(image.frames()[index])
+    }
   }
   const navNextFrame = () => {
-    // const fc = image.getPropValue("frameCount")
-    // setFrame((frame + 1) % fc)
+    if (frame) {
+      let index = image.frames().findIndex((f) => f === frame)
+      index = wrapNumber(index + 1, 0, image.frames().length)
+      setFrame(image.frames()[index])
+    }
+  }
+  const addEmptyFrame = () => {
+    image.addEmptyFrame()
   }
   const addCopyFrame = () => {
-    // image.cloneAndAddFrame(frame)
+    if (frame) {
+      image.cloneAndAddFrame(frame)
+    }
   }
 
   const scale = Math.pow(2, zoom)
@@ -321,6 +317,24 @@ export function ImageEditorView(props: { image: SImage }) {
             options={undefined as never}
           />
         </Pane>
+        <Pane key={"frame-list"} title={"frames"} collapsable={true}>
+          <ListView
+            className={"frames"}
+            selected={frame}
+            setSelected={(frame) => {
+              setFrame(frame)
+              state.setSelectionTarget(frame)
+            }}
+            renderer={FrameItemRenderer}
+            data={image.frames()}
+            direction={ListViewDirection.HorizontalWrap}
+            options={{
+              image: image,
+              palette: palette,
+              doc: doc,
+            }}
+          />
+        </Pane>
       </div>
       <div className={"editor-view"} onKeyDown={handle_key_down}>
         <div className={"toolbar"}>
@@ -338,10 +352,8 @@ export function ImageEditorView(props: { image: SImage }) {
           <IconButton onClick={() => image.redo()} icon={Icons.Redo} tooltip={"redo"} />
           <Spacer />
           <label>Frame</label>
-          <IconButton onClick={navPrevFrame} icon={Icons.LeftArrow} tooltip={"prev frame"} />
-          <label>{`${frame} / ${image.frames().length}`}</label>
-          <IconButton onClick={navNextFrame} icon={Icons.RightArrow} tooltip={"next frame"} />
-          <IconButton onClick={addCopyFrame} icon={Icons.Plus} tooltip={"add frame"} />
+          <IconButton onClick={addEmptyFrame} icon={Icons.Plus} tooltip={"add empty frame"} />
+          <IconButton onClick={addCopyFrame} icon={Icons.Duplicate} tooltip={"add copy frame"} />
         </div>
         <div className={"toolbar"}>
           {layer instanceof ImageLayer && (

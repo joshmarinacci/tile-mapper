@@ -28,3 +28,23 @@
 .history-view li {
   padding: 0.25em 0.5em;
 }
+
+.frames .frame-view-item {
+  border: 1px solid black;
+  display: inline-block;
+  position: relative;
+}
+.frames .frame-view-item b {
+  position: absolute;
+  left: 0;
+  bottom: 1rem;
+}
+.frames .frame-view-item i {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+}
+.frames .frame-view-item canvas {
+  max-width: 128px;
+  max-height: 128px;
+}

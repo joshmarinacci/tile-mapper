@@ -318,11 +318,13 @@ export class SImage extends PropsBase<SImageType> {
     return new LayerPixelSurface(this, layer, frame)
   }
 
-  cloneAndAddFrame(currentFrame: number) {
+  cloneAndAddFrame(oldFrame: ImageFrame) {
+    const newFrame = new ImageFrame()
+    this.appendFrame(newFrame)
     this.layers().forEach((layer) => {
-      if (layer instanceof ImageLayer) {
-        layer.cloneAndAddFrame(currentFrame)
-      }
+      const oldSurf = this.getPixelSurface(layer, oldFrame)
+      const newSurf = this.getPixelSurface(layer, newFrame)
+      newSurf.setAllData(oldSurf.cloneData())
     })
   }
 

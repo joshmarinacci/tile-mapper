@@ -2,6 +2,7 @@ import { ArrayGrid, Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
 import { floodFill } from "../imageeditor/fill_tool"
+import { wrapPoint } from "../util"
 import {
   AreaChange,
   ArrayGridPixelSurface,
@@ -10,23 +11,6 @@ import {
   ImageLayer,
   SImage,
 } from "./image"
-
-function wrap(point: Point, size: Size): Point {
-  const pt = point.copy()
-  if (point.x >= size.w) {
-    pt.x = point.x % size.w
-  }
-  if (point.x < 0) {
-    pt.x = (point.x + size.w) % size.w
-  }
-  if (point.y >= size.h) {
-    pt.y = point.y % size.h
-  }
-  if (point.y < 0) {
-    pt.y = (point.y + size.h) % size.h
-  }
-  return pt
-}
 
 describe("image with frames", () => {
   it("should create an image with one layer and three frames ", async () => {
@@ -83,12 +67,12 @@ describe("image with frames", () => {
   it("should wrap point", () => {
     const point = new Point(4, 4)
     const size = new Size(10, 10)
-    expect(wrap(point.add(new Point(1, 1)), size).x).toEqual(5)
-    expect(wrap(point.add(new Point(6, 1)), size).x).toEqual(0)
-    expect(wrap(point.add(new Point(8, 1)), size).x).toEqual(2)
-    expect(wrap(point.add(new Point(-1, 0)), size).x).toEqual(3)
-    expect(wrap(point.add(new Point(-4, 0)), size).x).toEqual(0)
-    expect(wrap(point.add(new Point(-6, 0)), size).x).toEqual(8)
+    expect(wrapPoint(point.add(new Point(1, 1)), size).x).toEqual(5)
+    expect(wrapPoint(point.add(new Point(6, 1)), size).x).toEqual(0)
+    expect(wrapPoint(point.add(new Point(8, 1)), size).x).toEqual(2)
+    expect(wrapPoint(point.add(new Point(-1, 0)), size).x).toEqual(3)
+    expect(wrapPoint(point.add(new Point(-4, 0)), size).x).toEqual(0)
+    expect(wrapPoint(point.add(new Point(-6, 0)), size).x).toEqual(8)
   })
   it("should move a layer with wrapping", () => {
     // create image with one layer
@@ -122,7 +106,7 @@ describe("image with frames", () => {
     {
       const off = new Point(-1, 0)
       pixels.forEach((v, n) => {
-        surf.setPixel(wrap(n.add(off), size), v)
+        surf.setPixel(wrapPoint(n.add(off), size), v)
       })
       // check
       expect(surf.getPixel(LEFT)).toEqual(2)
@@ -131,7 +115,7 @@ describe("image with frames", () => {
       // move by two pixels right
       const off = new Point(2, 0)
       pixels.forEach((v, n) => {
-        surf.setPixel(wrap(n.add(off), size), v)
+        surf.setPixel(wrapPoint(n.add(off), size), v)
       })
       expect(surf.getPixel(LEFT)).toEqual(1)
       expect(surf.getPixel(RIGHT)).toEqual(1)

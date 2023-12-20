@@ -1,4 +1,4 @@
-import { ArrayGrid, Bounds, Size } from "josh_js_util"
+import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 
 export function strokeBounds(
   ctx: CanvasRenderingContext2D,
@@ -33,4 +33,30 @@ export function cloneArrayGrid<T>(data: ArrayGrid<T>): ArrayGrid<T> {
   const d2 = new ArrayGrid<T>(data.w, data.h)
   d2.fill((n) => data.get(n))
   return d2
+}
+
+export function wrapNumber(value: number, min: number, max: number): number {
+  if (value < min) {
+    return (value + (max - min)) % max
+  }
+  if (value >= max) {
+    return value % max
+  }
+  return value
+}
+export function wrapPoint(point: Point, size: Size): Point {
+  const pt = point.copy()
+  if (point.x >= size.w) {
+    pt.x = point.x % size.w
+  }
+  if (point.x < 0) {
+    pt.x = (point.x + size.w) % size.w
+  }
+  if (point.y >= size.h) {
+    pt.y = point.y % size.h
+  }
+  if (point.y < 0) {
+    pt.y = (point.y + size.h) % size.h
+  }
+  return pt
 }
