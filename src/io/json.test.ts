@@ -23,7 +23,7 @@ describe("simple test", () => {
     const json = actor.toJSON(reg)
     expect(json.props.name).toBe("hamlet")
 
-    const actor2 = restoreClassFromJSON(json)
+    const actor2 = restoreClassFromJSON(reg, json)
     expect(actor2.getPropValue("name")).toBe("hamlet")
     expect(actor2.getPropValue("hitbox").w).toBe(30)
     expect(actor._id).toBe(actor2._id)
@@ -32,16 +32,17 @@ describe("simple test", () => {
     const reg = get_class_registry()
     const tile = new Tile({ name: "sky", size: new Size(4, 4) })
     tile.setPixel(3, new Point(2, 2))
-    console.log(CLASS_REGISTRY)
 
     const sheet = new Sheet({ name: "terrain", tileSize: new Size(4, 4) })
     appendToList(sheet, "tiles", tile)
     expect(sheet.getPropValue("tiles").length).toBe(1)
     expect(sheet.getPropValue("tiles")[0].getPropValue("name")).toBe("sky")
-    expect(sheet.getPropValue("tiles")[0].getPropValue("data").get_at(2, 2)).toBe(3)
+    const img = sheet.getPropValue("tiles")[0].getPropValue("data")
+    const surf = img.getPixelSurface(img.layers()[0], img.frames()[0])
+    expect(surf.getPixel(new Point(2, 2))).toBe(3)
 
-    const json = sheet.toJSON()
-    console.log("sheet JSON", JSON.stringify(json, null, "  "))
+    const json = sheet.toJSON(reg)
+    // console.log("sheet JSON", JSON.stringify(json, null, "  "))
     // console.log('tile',json.props.tiles[0])
 
     expect(json.props.name).toBe("terrain")
@@ -49,12 +50,14 @@ describe("simple test", () => {
     expect(json.props.tiles[0].props.name).toBe("sky")
     expect(json.props.tiles[0]["class"]).toBe("Tile")
 
-    const sheet2 = restoreClassFromJSON(json)
-    console.log("tiles is", sheet2.getPropValue("tiles"))
+    const sheet2 = restoreClassFromJSON(reg, json)
+    // console.log("tiles is", sheet2.getPropValue("tiles"))
     expect(sheet2.getPropValue("name")).toBe("terrain")
     expect(sheet2.getPropValue("tiles").length).toBe(1)
     expect(sheet2.getPropValue("tiles")[0].getPropValue("name")).toBe("sky")
-    expect(sheet2.getPropValue("tiles")[0].getPropValue("data").get_at(2, 2)).toBe(3)
+    const img2 = sheet2.getPropValue("tiles")[0].getPropValue("data")
+    const surf2 = img2.getPixelSurface(img2.layers()[0], img2.frames()[0])
+    expect(surf2.getPixel(new Point(2, 2))).toBe(3)
   })
   it("should save a tile layer", async () => {
     const reg = get_class_registry()
@@ -71,7 +74,7 @@ describe("simple test", () => {
       tile: "foo",
     })
     const json = layer1.toJSON(reg)
-    log(json.props["data"])
+    // log(json.props["data"])
     expect(json.class).toBe("TileLayer")
     expect(json.props["data"]).toBeTruthy()
     expect(json.props["data"].w).toBe(2)
@@ -79,8 +82,8 @@ describe("simple test", () => {
     expect(json.props["data"]["data"][0].tile).toBe("unknown")
     expect(json.props["data"]["data"][3].tile).toBe("foo")
 
-    const layer2 = restoreClassFromJSON(json)
-    log(layer2.getPropValue("data"))
+    const layer2 = restoreClassFromJSON(reg, json)
+    // log(layer2.getPropValue("data"))
     expect(layer2._id).toBe(layer1._id)
     expect(layer2.getPropValue("name")).toBe(layer1.getPropValue("name"))
     expect(layer2.getPropValue("data").w).toBe(2)
@@ -95,6 +98,7 @@ describe("simple test", () => {
     expect(layer2.getPropValue("visible")).toBeTruthy()
   })
   it("should save a map with a tile layer", async () => {
+    const reg = get_class_registry()
     const map1 = new GameMap({ name: "my map" })
     const layer1 = new TileLayer({
       type: "tile-layer",
@@ -109,8 +113,8 @@ describe("simple test", () => {
     expect(map1.getPropValue("name")).toBe("my map")
     expect(map1.getPropValue("layers").length).toBe(1)
 
-    const json = map1.toJSON()
-    log(json)
+    const json = map1.toJSON(reg)
+    // log(json)
     // log(json.props.layers)
     // log(json.props.layers[0].props.data)
 
@@ -119,8 +123,8 @@ describe("simple test", () => {
     expect(json.props.layers[0].props.name).toBe("first layer")
     expect(json.props.layers[0].props.data.w).toBe(2)
 
-    const map2 = restoreClassFromJSON(json)
-    log(map2)
+    const map2 = restoreClassFromJSON(reg, json)
+    // log(map2)
     expect(map2.getPropValue("name")).toBe("my map")
     expect(map2.getPropValue("layers").length).toBe(1)
     expect(map2.getPropValue("layers")[0] instanceof TileLayer).toBeTruthy()
@@ -139,9 +143,9 @@ describe("simple test", () => {
     const sheet = new Sheet({ name: "terrain", tileSize: new Size(4, 4) })
     appendToList(sheet, "tiles", tile)
     expect(sheet.getPropValue("selectedTile")).toBeFalsy()
-    const json = sheet.toJSON()
-    console.log("sheet JSON", JSON.stringify(json, null, "  "))
-    const sheet2 = restoreClassFromJSON(json)
+    const json = sheet.toJSON(reg)
+    // console.log("sheet JSON", JSON.stringify(json, null, "  "))
+    const sheet2 = restoreClassFromJSON(reg, json)
     expect(sheet2).toBeTruthy()
     expect(sheet2.getPropValue("selectedTile")).toBeFalsy()
   })

@@ -46,15 +46,15 @@ type ArrayGridMapCellJSON = {
 }
 const TileDataGridDef = new PropDefBuilder<ArrayGrid<MapCell>>({
   type: "array",
-  toJSON: (v) =>
+  default: () => new ArrayGrid<MapCell>(1, 1),
+  format: (v) => `${v.size()} cells`,
+  toJSON: (r, v) =>
     ({
       w: v.w,
       h: v.h,
       data: v.data,
     }) as ArrayGridMapCellJSON,
-  format: (v) => `${v.size()} cells`,
-  default: () => new ArrayGrid<MapCell>(1, 1),
-  fromJSON: (value) => {
+  fromJSON: (r, value) => {
     const v = value as ArrayGridNumberJSON
     const arr = new ArrayGrid<MapCell>(v.w, v.h)
     arr.data = v.data
@@ -111,8 +111,8 @@ export const ActorInstanceDefs: DefList<ActorInstanceType> = {
     hidden: false,
     editable: false,
     format: (v: string) => v,
-    toJSON: (v) => v,
-    fromJSON: (v) => v,
+    toJSON: (r, v) => v,
+    fromJSON: (r, v) => v,
   },
 }
 
@@ -178,10 +178,10 @@ const LayerListDef: PropDef<PropsBase<any>[]> = {
   watchChildren: true,
   toJSON: (r, v) =>
     v.map((a) => {
-      if ("toJSON" in a) return a.toJSON()
+      if ("toJSON" in a) return a.toJSON(r)
       return a
     }),
-  fromJSON: (r, v) => v.map((a) => restoreClassFromJSON(a)),
+  fromJSON: (r, v) => v.map((a) => restoreClassFromJSON(r, a)),
 }
 export const GameMapDefs: DefList<GameMapType> = {
   name: NameDef,

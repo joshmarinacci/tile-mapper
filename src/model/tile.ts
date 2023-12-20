@@ -10,7 +10,7 @@ import {
   restoreClassFromJSON,
 } from "./base"
 import { BlockingDef, NameDef, PointDef, SizeDef } from "./datamodel"
-import { ImageFrame, ImageLayer, SImage } from "./image"
+import { ImageFrame, ImageLayer, SImage, SImageType } from "./image"
 
 type TileType = {
   name: string
@@ -115,9 +115,7 @@ export class Tile extends PropsBase<TileType> {
 
   fromJSON(reg: ClassRegistry, json: JsonOut<TileType>) {
     super.fromJSON(reg, json)
-    console.log("tile loading", this.getPropValue("data"), json)
-    const image = restoreClassFromJSON<SImage>(reg, json.props.data)
-    // console.log("now image is",image)
+    const image = restoreClassFromJSON<SImageType>(reg, json.props.data) as SImage
     this.setPropValue("data", image)
   }
 

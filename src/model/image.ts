@@ -118,7 +118,7 @@ export class ImageFrame extends PropsBase<ImageFrameType> {
   }
 }
 
-type SImageType = {
+export type SImageType = {
   name: string
   layers: ImageLayer[]
   frames: ImageFrame[]
@@ -370,11 +370,11 @@ export class SImage extends PropsBase<SImageType> {
     return json
   }
   fromJSON(reg: ClassRegistry, json: JsonOut<SImageType>) {
-    console.log("simage loading from json. do buffers", json.props.buffers)
+    // console.log("simage loading from json. do buffers", json.props.buffers)
     for (const key of Object.keys(json.props.buffers)) {
-      console.log("restoring buffer", key)
+      // console.log("restoring buffer", key)
       const json_obj = json.props.buffers[key]
-      console.log("json obj", json_obj)
+      // console.log("json obj", json_obj)
       const buff: ImageBuffer = {
         key: key,
         layer: this.layers().find((layer) => layer.getUUID() === json_obj.layer),
