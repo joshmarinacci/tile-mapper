@@ -42,9 +42,9 @@ const ActorsListDef: PropDef<Actor[]> = {
   editable: false,
   watchChildren: false,
   default: () => [],
-  toJSON: (v) => v.map((actor: Actor) => actor.toJSON()),
   format: (v) => "actors list",
-  fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
+  toJSON: (r, v) => v.map((actor: Actor) => actor.toJSON(r)),
+  fromJSON: (r, v) => v.map((a) => restoreClassFromJSON(r, a)),
   expandable: true,
   hidden: true,
 }
@@ -65,9 +65,9 @@ const CanvasesListDef: PropDef<SImage[]> = {
   hidden: true,
   watchChildren: false,
   default: () => [],
-  toJSON: (v) => v.map((map) => map.toJSON()),
   format: (v) => "canvases list",
-  fromJSON: (v) => v.map((map) => restoreClassFromJSON(map)),
+  toJSON: (r, v) => v.map((map) => map.toJSON(r)),
+  fromJSON: (r, v) => v.map((map) => restoreClassFromJSON(r, map)),
   expandable: true,
 }
 export const GameDocDefs: DefList<DocType> = {

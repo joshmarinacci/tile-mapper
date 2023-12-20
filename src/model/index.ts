@@ -49,14 +49,14 @@ export function get_class_registry() {
   registry.register("GameAction", GameAction, GameActionDefs)
   setGlobalClassRegistry(registry)
 
-  const ICONS_DOC = make_doc_from_json(Icons)
+  const ICONS_DOC = make_doc_from_json(Icons, registry)
   ICONS_DOC.getPropValue("sheets").forEach((sheet) => {
     sheet.getPropValue("tiles").forEach((tile) => {
       ICON_CACHE.register(tile, ICONS_DOC.getPropValue("palette"))
     })
   })
 
-  const DEFAULT_FONT = make_doc_from_json(StdFont)
+  const DEFAULT_FONT = make_doc_from_json(StdFont, registry)
   PixelFontListDef.withDefault(() => [DEFAULT_FONT.getPropValue("fonts")[0]])
 
   return registry

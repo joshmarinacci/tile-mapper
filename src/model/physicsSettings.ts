@@ -42,6 +42,6 @@ export const PhysicsSettingsPropDef = new PropDefBuilder<PhysicsSettings>({
   type: "object",
   format: () => "physics settings",
   default: () => new PhysicsSettings({ name: "standard" }),
-  toJSON: (v) => v.toJSON(),
-  fromJSON: (v) => restoreClassFromJSON(v),
+  toJSON: (r, v) => v.toJSON(r),
+  fromJSON: (r, v) => restoreClassFromJSON(r, v),
 }).withHidden(false)

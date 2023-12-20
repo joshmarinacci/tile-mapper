@@ -25,6 +25,6 @@ export const CameraPropDef = new PropDefBuilder<Camera>({
   type: "object",
   format: () => "camera",
   default: () => new Camera({ name: "camera" }),
-  toJSON: (v) => v.toJSON(),
-  fromJSON: (v) => restoreClassFromJSON(v),
+  toJSON: (r, v) => v.toJSON(r),
+  fromJSON: (r, v) => restoreClassFromJSON(r, v),
 }).withHidden(false)

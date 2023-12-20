@@ -360,6 +360,10 @@ export function restoreClassFromJSON<Type>(
 ): PropsBase<Type> {
   if (CLASS_NAME_MAP[json.class]) json.class = CLASS_NAME_MAP[json.class]
   const Clazz = reg.classByName.get(json.class)
+  if (!json.class) {
+    console.log("json is", json)
+    throw new Error(`cannot load json without a class: ${JSON.stringify(json)}`)
+  }
   if (!Clazz) throw new Error(`class missing for ${json.class}`)
   const defs = reg.defsByName.get(json.class)
   if (!defs) throw new Error(`defs missing for ${json.class}`)

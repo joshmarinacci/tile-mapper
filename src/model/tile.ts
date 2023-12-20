@@ -1,5 +1,6 @@
 import { ArrayGrid, Point, Size } from "josh_js_util"
 
+import { JSONToArrayGrid } from "../util"
 import {
   ClassRegistry,
   DefList,
@@ -9,7 +10,7 @@ import {
   PropValues,
   restoreClassFromJSON,
 } from "./base"
-import { BlockingDef, NameDef, PointDef, SizeDef } from "./datamodel"
+import { ArrayGridNumberJSON, BlockingDef, NameDef, PointDef, SizeDef } from "./datamodel"
 import { ImageFrame, ImageLayer, SImage, SImageType } from "./image"
 
 type TileType = {
@@ -115,8 +116,26 @@ export class Tile extends PropsBase<TileType> {
 
   fromJSON(reg: ClassRegistry, json: JsonOut<TileType>) {
     super.fromJSON(reg, json)
-    const image = restoreClassFromJSON<SImageType>(reg, json.props.data) as SImage
-    this.setPropValue("data", image)
+    // console.log('tile restoring image data',json.props.data)
+    if ("data" in json.props.data) {
+      // console.log("old style")
+      const data = json.props.data as ArrayGridNumberJSON
+      const size = new Size(data.w, data.h)
+      const ag = JSONToArrayGrid(data)
+      const image = new SImage({ size: size })
+      image.appendLayer(new ImageLayer())
+      image.appendFrame(new ImageFrame())
+      const surf = image.getPixelSurface(image.layers()[0], image.frames()[0])
+      surf.setAllData(ag)
+      this.setPropValue("data", image)
+    } else {
+      // console.log("new style")
+      const image = restoreClassFromJSON<SImageType>(
+        reg,
+        json.props.data as JsonOut<SImageType>,
+      ) as SImage
+      this.setPropValue("data", image)
+    }
   }
 
   // private data() {

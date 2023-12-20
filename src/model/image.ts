@@ -370,18 +370,40 @@ export class SImage extends PropsBase<SImageType> {
     return json
   }
   fromJSON(reg: ClassRegistry, json: JsonOut<SImageType>) {
-    // console.log("simage loading from json. do buffers", json.props.buffers)
-    for (const key of Object.keys(json.props.buffers)) {
-      // console.log("restoring buffer", key)
-      const json_obj = json.props.buffers[key]
-      // console.log("json obj", json_obj)
-      const buff: ImageBuffer = {
-        key: key,
-        layer: this.layers().find((layer) => layer.getUUID() === json_obj.layer),
-        frame: this.frames().find((frame) => frame.getUUID() === json_obj.frame),
-        data: JSONToArrayGrid(json_obj.data),
+    if ("buffers" in json.props) {
+      console.log("new style")
+      for (const key of Object.keys(json.props.buffers)) {
+        // console.log("restoring buffer", key)
+        const json_obj = json.props.buffers[key]
+        // console.log("json obj", json_obj)
+        const buff: ImageBuffer = {
+          key: key,
+          layer: this.layers().find((layer) => layer.getUUID() === json_obj.layer),
+          frame: this.frames().find((frame) => frame.getUUID() === json_obj.frame),
+          data: JSONToArrayGrid(json_obj.data),
+        }
+        this.buffers.set(key, buff)
       }
-      this.buffers.set(key, buff)
+    } else {
+      console.log("old style canvas image")
+      console.log("simage loading from json. do buffers", json.props)
+      // console.log('this',this)
+      for (const json_layer of json.props.layers) {
+        console.log("layer", json_layer, json_layer.props.frames)
+        const layer = this.layers().find((l) => l.getUUID() === json_layer.id)
+        if (!layer) {
+          throw new Error("Unable to restore malformed Layer")
+        }
+        // console.log("real layer is",layer)
+        json_layer.props.frames.forEach((json_frame, i) => {
+          console.log("json frame", i, json_frame)
+          const frame = new ImageFrame()
+          this.appendFrame(frame)
+          const data = JSONToArrayGrid(json_frame as ArrayGridNumberJSON)
+          const surf = this.getPixelSurface(layer, this.frames()[i])
+          surf.setAllData(data)
+        })
+      }
     }
   }
 }

@@ -1,6 +1,8 @@
 import { Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
+import { make_doc_from_json } from "../io/json"
+import Icons from "../resources/icons.json"
 import { restoreClassFromJSON } from "./base"
 import { get_class_registry } from "./index"
 import { Tile } from "./tile"
@@ -44,5 +46,9 @@ describe("tile json persistence", () => {
     expect(tile2.getPropValue("data").size()).toEqual(new Size(4, 3))
     expect(tile2.getPixel(new Point(0, 0))).toBe(-1)
     expect(tile2.getPixel(new Point(1, 1))).toBe(1)
+  })
+  it("should restore tile with the old data type", async () => {
+    const reg = get_class_registry()
+    const ICONS_DOC = make_doc_from_json(Icons, reg)
   })
 })
