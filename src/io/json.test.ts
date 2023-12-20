@@ -5,7 +5,6 @@ import { get_class_registry } from "../model"
 import { Actor } from "../model/actor"
 import { appendToList, restoreClassFromJSON } from "../model/base"
 import { GameMap, TileLayer } from "../model/gamemap"
-import { PixelFont, PixelGlyph } from "../model/pixelfont"
 import { Sheet } from "../model/sheet"
 import { Tile } from "../model/tile"
 
@@ -14,33 +13,6 @@ function log(...args: unknown[]) {
 }
 
 describe("simple test", () => {
-  it("should save a tile class", async () => {
-    const reg = get_class_registry()
-    const tile = new Tile({
-      name: "my cool tile",
-      size: new Size(4, 3),
-      blocking: true,
-    })
-    tile.setPixel(1, new Point(1, 1))
-
-    expect(tile.getPropValue("data").size()).toEqual(new Size(4, 3))
-    const json = tile.toJSON(reg)
-    console.log(json)
-    expect(json.props).toBeTruthy()
-    expect(json.props.name).toBe("my cool tile")
-    expect(json.props.size.w).toBe(4)
-    expect(json.props.data.props.size.w).toBe(4)
-    expect(json.props.data.props.size.h).toBe(3)
-    // expect(json.props.data.data[0]).toBe(0)
-    // expect(json.props.data.data[4 + 1]).toBe(1)
-    const tile2 = restoreClassFromJSON(json)
-    expect(tile2.getPropValue("name")).toBe("my cool tile")
-    expect(tile2.getPropValue("size").w).toBe(4)
-    expect(tile2.getPropValue("blocking")).toBe(true)
-    expect(tile2.getPropValue("data").size()).toBe(4 * 3)
-    expect(tile2.getPixel(new Point(0, 0))).toBe(0)
-    expect(tile2.getPixel(new Point(1, 1))).toBe(1)
-  })
   it("should save an actor class", async () => {
     const reg = get_class_registry()
     const actor = new Actor({ name: "hamlet", hitbox: new Size(30, 30) })

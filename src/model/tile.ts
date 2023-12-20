@@ -1,19 +1,45 @@
 import { ArrayGrid, Point, Size } from "josh_js_util"
 
-import { DefList, PropsBase, PropValues } from "./base"
-import { ArrayGridNumberDef, BlockingDef, NameDef, PointDef, SizeDef } from "./datamodel"
+import { DefList, PropDefBuilder, PropsBase, PropValues } from "./base"
+import { BlockingDef, NameDef, PointDef, SizeDef } from "./datamodel"
+import { ImageFrame, ImageLayer, SImage } from "./image"
 
 type TileType = {
   name: string
   blocking: boolean
-  data: ArrayGrid<number>
+  data: SImage
   size: Size
   gridPosition: Point
 }
-const TileDataDef = ArrayGridNumberDef.copy()
-  .withEditable(false)
-  .withHidden(true)
-  .withWatchChildren(true)
+
+const TileDataDef: PropDefBuilder<SImage> = new PropDefBuilder({
+  type: "object",
+  default: () => {
+    const image = new SImage()
+    image.appendLayer(new ImageLayer({ visible: true, opacity: 1 }))
+    image.appendFrame(new ImageFrame())
+    return image
+  },
+  fromJSON: (json) => {
+    // console.log("Loading json data into a tile",json)
+    if (!json) throw new Error("cannot restore SImage from null json")
+    if ("data" in json) {
+      const size = new Size(json.w, json.h)
+      const image = new SImage({ size })
+      image.appendLayer(new ImageLayer({ visible: true, opacity: 1 }))
+      image.appendFrame(new ImageFrame())
+      const surf = image.getPixelSurface(image.layers()[0], image.frames()[0])
+      const grid = ArrayGrid.fromArray<number>(size, json.data)
+      surf.setAllData(grid)
+      return image
+    }
+  },
+  format: () => "not formattable",
+  toJSON: (r, v) => {
+    return v.toJSON(r)
+  },
+})
+
 const GridPointDef = PointDef.copy()
   .withDefault(() => new Point(-1, -1))
   .withEditable(false)
@@ -29,18 +55,14 @@ export const TileDefs: DefList<TileType> = {
 export class Tile extends PropsBase<TileType> {
   constructor(opts?: PropValues<TileType>) {
     super(TileDefs, opts)
-    const size = this.getPropValue("size")
-    const data = this.getPropValue("data")
-    if (data.w !== size.w || data.h !== size.h) {
-      // this.log("we must rebuild the data with a new size")
-      const data = new ArrayGrid<number>(size.w, size.h)
-      data.fill(() => 0)
-      this.setPropValue("data", data)
-    }
+    // console.log("tile data is",this.getPropValue('data'))
+    // this.getPropValue('data').resize(this.getPropValue('size'))
   }
 
   setPixel(number: number, point: Point) {
-    this.getPropValue("data").set(point, number)
+    const image = this.getPropValue("data")
+    const surf = image.getPixelSurface(image.layers()[0], image.frames()[0])
+    surf.setPixel(point, number)
     this._fire("data", this.getPropValue("data"))
     this._fireAll()
   }
@@ -54,33 +76,35 @@ export class Tile extends PropsBase<TileType> {
   }
 
   getPixel(point: Point) {
-    return this.getPropValue("data").get(point)
+    const image = this.getPropValue("data")
+    const surf = image.getPixelSurface(image.layers()[0], image.frames()[0])
+    return surf.getPixel(point)
   }
-
-  isValidIndex(pt: Point) {
-    if (pt.x < 0) return false
-    if (pt.y < 0) return false
-    if (pt.x >= this.data().w) return false
-    if (pt.y >= this.data().h) return false
-    return true
-  }
-
-  clone() {
-    const new_tile = new Tile({
-      size: this.getPropValue("size"),
-      blocking: this.getPropValue("blocking"),
-      name: this.getPropValue("name"),
-      gridPosition: this.getPropValue("gridPosition"),
-    })
-    new_tile.getPropValue("data").data = this.data().data.slice()
-    return new_tile
-  }
+  //
+  // isValidIndex(pt: Point) {
+  //   if (pt.x < 0) return false
+  //   if (pt.y < 0) return false
+  //   if (pt.x >= this.data().w) return false
+  //   if (pt.y >= this.data().h) return false
+  //   return true
+  // }
+  //
+  // clone() {
+  //   const new_tile = new Tile({
+  //     size: this.getPropValue("size"),
+  //     blocking: this.getPropValue("blocking"),
+  //     name: this.getPropValue("name"),
+  //     gridPosition: this.getPropValue("gridPosition"),
+  //   })
+  //   new_tile.getPropValue("data").data = this.data().data.slice()
+  //   return new_tile
+  // }
 
   private log(...args: unknown[]) {
     console.log(this.constructor.name, ...args)
   }
 
-  private data() {
-    return this.getPropValue("data")
-  }
+  // private data() {
+  //   return this.getPropValue("data")
+  // }
 }

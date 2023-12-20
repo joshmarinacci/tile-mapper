@@ -12,10 +12,12 @@ class IconCache {
   }
 
   register(tile: Tile, palette: ImagePalette) {
-    const canvas = gen_canvas(tile, palette)
-    const img_url = canvas.toDataURL("png")
-    this.icons.set(tile.getPropValue("name"), img_url)
-    this.icons_canvas.set(tile.getPropValue("name"), canvas)
+    if (global.document) {
+      const canvas = gen_canvas(tile, palette)
+      const img_url = canvas.toDataURL("png")
+      this.icons.set(tile.getPropValue("name"), img_url)
+      this.icons_canvas.set(tile.getPropValue("name"), canvas)
+    }
   }
 
   getIconUrl(name: string) {

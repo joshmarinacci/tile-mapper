@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest"
 
 import { floodFill } from "../imageeditor/fill_tool"
 import { wrapPoint } from "../util"
-import { JsonOut, JSONValue } from "./base"
+import { JsonOut, JSONValue, restoreClassFromJSON } from "./base"
 import { ArrayGridNumberJSON } from "./datamodel"
 import {
   AreaChange,
@@ -311,10 +311,32 @@ describe("image JSON support", () => {
       const key = layer.getUUID() + "_" + frame.getUUID()
       expect(key in json.props.buffers).toBeTruthy()
       const json_buff = json.props.buffers[key] as ArrayGridNumberJSON
-      // console.log(json_buff)
       expect(json_buff.w).toEqual(buff.w)
       expect(json_buff.h).toEqual(buff.h)
-      expect(json_buff.data[2]).toEqual(-1)
+      expect(json_buff.data.data[2]).toEqual(-1)
+    }
+  })
+  it("should load from json", async () => {
+    const reg = get_class_registry()
+    const img = new SImage({ size: new Size(10, 10), name: "foo" })
+    const PT = new Point(5, 5)
+    const COLOR = 5
+    {
+      img.appendLayer(new ImageLayer({ name: "layer one", opacity: 0.5, visible: true }))
+      img.appendFrame(new ImageFrame({ name: "frame one", group: "group one" }))
+      const surf = img.getPixelSurface(img.layers()[0], img.frames()[0])
+      surf.fillAll(-1)
+      surf.setPixel(PT, COLOR)
+    }
+
+    const json = img.toJSON(reg)
+    {
+      const img2: SImage = restoreClassFromJSON(reg, json)
+      expect(img2 instanceof SImage).toBeTruthy()
+      const buff = img2.getBuffer(img2.layers()[0], img2.frames()[0])
+      const surf = img2.getPixelSurface(img2.layers()[0], img2.frames()[0])
+      expect(surf.size()).toEqual(img.getPropValue("size"))
+      expect(surf.getPixel(PT)).toEqual(COLOR)
     }
   })
 })

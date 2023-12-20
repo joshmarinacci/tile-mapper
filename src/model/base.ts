@@ -11,7 +11,7 @@ export type JsonOut<Type> = {
   props: Record<keyof Type, JSONValue>
 }
 export type ToJSONner<T> = (reg: ClassRegistry, v: T) => JSONValue
-export type FromJSONner<T> = (v: JSONValue) => T
+export type FromJSONner<T> = (reg: ClassRegistry, v: JSONValue) => T
 export type ToFormatString<T> = (v: T) => string
 type PropDefBaseTypes =
   | "string"
@@ -192,13 +192,16 @@ export class PropsBase<Type> {
       props: {} as Record<keyof Type, JSONValue>,
       id: this._id,
     }
-    for (const [k, d] of this.getAllPropDefs()) {
-      if (d.skipPersisting) continue
-      if (!d.toJSON)
-        throw new Error(`prop def for ${k} in class ${clazz} is missing toJSON function`)
-      obj.props[k] = d.toJSON(reg, this.getPropValue(k))
+    for (const [key, def] of this.getAllPropDefs()) {
+      if (def.skipPersisting) continue
+      if (!def.toJSON)
+        throw new Error(`prop def for ${key} in class ${clazz} is missing toJSON function`)
+      obj.props[key] = def.toJSON(reg, this.getPropValue(key))
     }
     return obj
+  }
+  fromJSON(reg: ClassRegistry, json: JsonOut<Type>) {
+    // console.log(`object ${this.constructor.name} skipping json customization`)
   }
 
   _fireAll() {
@@ -351,18 +354,21 @@ export function getGlobalClassRegistry(): ClassRegistry {
   return GlobalClassRegistry
 }
 
-export function restoreClassFromJSON<Type>(json: JsonOut<Type>): PropsBase<Type> {
-  // console.log("restoring class", json,'with reg',getGlobalClassRegistry())
+export function restoreClassFromJSON<Type>(
+  reg: ClassRegistry,
+  json: JsonOut<Type>,
+): PropsBase<Type> {
   if (CLASS_NAME_MAP[json.class]) json.class = CLASS_NAME_MAP[json.class]
-  const Clazz = getGlobalClassRegistry().classByName.get(json.class)
+  const Clazz = reg.classByName.get(json.class)
   if (!Clazz) throw new Error(`class missing for ${json.class}`)
-  const defs = getGlobalClassRegistry().defsByName.get(json.class)
+  const defs = reg.defsByName.get(json.class)
   if (!defs) throw new Error(`defs missing for ${json.class}`)
   const args = {}
   for (const key of Object.keys(defs)) {
     const def = defs[key]
     if (json.props.hasOwnProperty(key)) {
-      const val = def.fromJSON ? def.fromJSON(json.props[key]) : json.props[key]
+      // console.log("prop",key,"def",def)
+      const val = def.fromJSON ? def.fromJSON(reg, json.props[key]) : json.props[key]
       args[key] = val
       // console.log("setting",key,'to',val)
     } else {
@@ -372,6 +378,7 @@ export function restoreClassFromJSON<Type>(json: JsonOut<Type>): PropsBase<Type>
   }
   const obj = new Clazz(args)
   obj._id = json.id
+  obj.fromJSON(reg, json)
   // console.log("created object is",obj)
   return obj
 }

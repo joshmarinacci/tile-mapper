@@ -32,9 +32,9 @@ const SheetsListDef: PropDef<Sheet[]> = {
   hidden: true,
   watchChildren: false,
   default: () => [],
-  toJSON: (v) => v.map((sheet: Sheet) => sheet.toJSON()),
   format: (v) => "sheets list",
-  fromJSON: (v) => v.map((sheet) => restoreClassFromJSON(sheet)),
+  toJSON: (r, v) => v.map((sheet: Sheet) => sheet.toJSON(r)),
+  fromJSON: (r, v) => v.map((sheet) => restoreClassFromJSON(r, sheet)),
   expandable: true,
 }
 const ActorsListDef: PropDef<Actor[]> = {
@@ -54,9 +54,9 @@ const MapsListDef: PropDef<GameMap[]> = {
   hidden: true,
   watchChildren: false,
   default: () => [],
-  toJSON: (v) => v.map((map) => map.toJSON()),
   format: (v) => "maps list",
-  fromJSON: (v) => v.map((map) => restoreClassFromJSON(map)),
+  toJSON: (r, v) => v.map((map) => map.toJSON(r)),
+  fromJSON: (r, v) => v.map((map) => restoreClassFromJSON(r, map)),
   expandable: true,
 }
 const CanvasesListDef: PropDef<SImage[]> = {

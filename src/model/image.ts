@@ -1,7 +1,15 @@
 import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 
-import { ArrayGridToJson, cloneArrayGrid } from "../util"
-import { appendToList, ClassRegistry, DefList, PropDefBuilder, PropsBase, PropValues } from "./base"
+import { ArrayGridToJson, cloneArrayGrid, JSONToArrayGrid } from "../util"
+import {
+  appendToList,
+  ClassRegistry,
+  DefList,
+  JsonOut,
+  PropDefBuilder,
+  PropsBase,
+  PropValues,
+} from "./base"
 import {
   ArrayGridNumberJSON,
   BooleanDef,
@@ -204,10 +212,16 @@ class PixelChange implements HistoryEvent {
   }
 }
 
+export type ImageBuffer = {
+  data: ArrayGrid<number>
+  layer: ImageLayer
+  frame: ImageFrame
+  key: string
+}
 export class SImage extends PropsBase<SImageType> {
   private history: HistoryEvent[]
   private current_history_index: number
-  private buffers: Map<string, ArrayGrid<number>>
+  private buffers: Map<string, ImageBuffer>
 
   constructor(opts?: PropValues<SImageType>) {
     super(SImageDefs, opts)
@@ -229,7 +243,7 @@ export class SImage extends PropsBase<SImageType> {
   appendFrame(frame: ImageFrame) {
     appendToList(this, "frames", frame)
   }
-  getBuffer(layer: ImageLayer, frame: ImageFrame): ArrayGrid<number> {
+  getBuffer(layer: ImageLayer, frame: ImageFrame): ImageBuffer {
     if (!layer) throw new Error("cannot get buffer from an null layer")
     if (!frame) throw new Error("cannot get buffer from an null frame")
     const key = layer.getUUID() + "_" + frame.getUUID()
@@ -237,7 +251,13 @@ export class SImage extends PropsBase<SImageType> {
       const size = this.size()
       const data = new ArrayGrid<number>(size.w, size.h)
       data.fill(() => -1)
-      this.buffers.set(key, data)
+      const buf: ImageBuffer = {
+        key: key,
+        layer: layer,
+        frame: frame,
+        data: data,
+      }
+      this.buffers.set(key, buf)
     }
     if (!this.buffers.has(key))
       throw new Error(`unknown buffer for layer ${layer.getUUID()} - frame ${frame.getUUID()}`)
@@ -338,10 +358,31 @@ export class SImage extends PropsBase<SImageType> {
     const json = super.toJSON(reg)
     const buffers: Record<string, ArrayGridNumberJSON> = {}
     for (const key of this.buffers.keys()) {
-      buffers[key] = ArrayGridToJson(this.buffers.get(key) as ArrayGrid<number>)
+      const buff = this.buffers.get(key) as ImageBuffer
+      buffers[key] = {
+        key: key,
+        layer: buff.layer.getUUID(),
+        frame: buff.frame.getUUID(),
+        data: ArrayGridToJson(buff.data),
+      }
     }
     json.props.buffers = buffers
     return json
+  }
+  fromJSON(reg: ClassRegistry, json: JsonOut<SImageType>) {
+    console.log("simage loading from json. do buffers", json.props.buffers)
+    for (const key of Object.keys(json.props.buffers)) {
+      console.log("restoring buffer", key)
+      const json_obj = json.props.buffers[key]
+      console.log("json obj", json_obj)
+      const buff: ImageBuffer = {
+        key: key,
+        layer: this.layers().find((layer) => layer.getUUID() === json_obj.layer),
+        frame: this.frames().find((frame) => frame.getUUID() === json_obj.frame),
+        data: JSONToArrayGrid(json_obj.data),
+      }
+      this.buffers.set(key, buff)
+    }
   }
 }
 
@@ -400,7 +441,7 @@ class LayerPixelSurface implements FramePixelSurface {
   }
 
   private buffer() {
-    return this.image.getBuffer(this.layer, this.frame)
+    return this.image.getBuffer(this.layer, this.frame).data
   }
 }
 

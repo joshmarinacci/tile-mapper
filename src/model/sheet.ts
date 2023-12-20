@@ -21,11 +21,11 @@ const TileArrayDef: PropDef<Tile[]> = {
   expandable: false,
   watchChildren: true,
   default: () => [],
-  toJSON: (v) => v.map((t) => t.toJSON()),
   format: (v) => "list of tiles",
-  fromJSON: (value) => {
+  toJSON: (r, v) => v.map((t) => t.toJSON(r)),
+  fromJSON: (r, value) => {
     const v = value as []
-    return v.map((d) => restoreClassFromJSON(d)) as Tile[]
+    return v.map((d) => restoreClassFromJSON(r, d)) as Tile[]
   },
 }
 export const TransientBooleanDef = BooleanDef.copy().withSkipPersisting(true).withHidden(true)

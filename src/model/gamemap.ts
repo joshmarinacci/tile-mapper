@@ -176,12 +176,12 @@ const LayerListDef: PropDef<PropsBase<any>[]> = {
   hidden: true,
   format: (v) => "layers",
   watchChildren: true,
-  toJSON: (v) =>
+  toJSON: (r, v) =>
     v.map((a) => {
       if ("toJSON" in a) return a.toJSON()
       return a
     }),
-  fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
+  fromJSON: (r, v) => v.map((a) => restoreClassFromJSON(a)),
 }
 export const GameMapDefs: DefList<GameMapType> = {
   name: NameDef,

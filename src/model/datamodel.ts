@@ -126,7 +126,7 @@ export const GenericDataArrayDef = new PropDefBuilder<object[]>({
       if ("toJSON" in a) return a.toJSON() as unknown as object
       return a
     }),
-  fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
+  fromJSON: (r, v) => v.map((a) => restoreClassFromJSON(a)),
 })
   .withEditable(false)
   .withHidden(true)
@@ -151,7 +151,7 @@ export class GameTest extends PropsBase<TestType> {
 export const ObjectListDef = new PropDefBuilder<object[]>({
   type: "array",
   default: () => [],
-  toJSON: (r, v) => v.map((vv) => vv.toJSON(r)),
   format: (v) => "object list",
-  fromJSON: (v) => v.map((vv) => restoreClassFromJSON(vv)),
+  toJSON: (r, v) => v.map((vv) => vv.toJSON(r)),
+  fromJSON: (r, v) => v.map((vv) => restoreClassFromJSON(r, vv)),
 })

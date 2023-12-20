@@ -3,7 +3,7 @@ import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 
 import { map_to_canvas } from "../actions/gamemap"
 import { PICO8 } from "../common/common"
-import { appendToList, restoreClassFromJSON } from "../model/base"
+import { appendToList, ClassRegistry, restoreClassFromJSON } from "../model/base"
 import { MapCell } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
 import { GameMap, TileLayer } from "../model/gamemap"
@@ -125,11 +125,11 @@ function load_v4json(json_doc: JSONDocV4): GameDoc {
   return doc
 }
 
-function load_v5json(jsonDoc: JSONDocV5): GameDoc {
-  return restoreClassFromJSON(jsonDoc.doc) as GameDoc
+function load_v5json(jsonDoc: JSONDocV5, reg: ClassRegistry): GameDoc {
+  return restoreClassFromJSON(reg, jsonDoc.doc) as GameDoc
 }
 
-export function make_doc_from_json(raw_data: object): GameDoc {
+export function make_doc_from_json(raw_data: object, reg: ClassRegistry): GameDoc {
   if (!("version" in raw_data)) throw new Error("we cannot load this document")
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
@@ -146,7 +146,7 @@ export function make_doc_from_json(raw_data: object): GameDoc {
   }
   const json_doc = raw_data as JSONDocV4
   if (json_doc.version === 5) {
-    return load_v5json(json_doc as JSONDocV5)
+    return load_v5json(json_doc as JSONDocV5, reg)
   }
   console.log("json doc", json_doc)
   if (json_doc.color_palette.length === 0) {

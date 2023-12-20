@@ -71,3 +71,8 @@ export function clamp(val: number, min: number, max: number) {
 export function ArrayGridToJson(ag: ArrayGrid<number>): ArrayGridNumberJSON {
   return { w: ag.w, h: ag.h, data: ag.data }
 }
+export function JSONToArrayGrid(json: ArrayGridNumberJSON): ArrayGrid<number> {
+  const arr = new ArrayGrid<number>(json.w, json.h)
+  arr.data = json.data
+  return arr
+}
