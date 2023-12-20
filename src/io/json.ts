@@ -63,12 +63,12 @@ export type JSONDocV5 = {
   doc: object
 }
 
-export function docToJSON(doc: GameDoc): JSONDocV5 {
+export function docToJSON(reg: ClassRegistry, doc: GameDoc): JSONDocV5 {
   return {
     version: 5,
     name: doc.getPropValue("name"),
     kind: TILE_MAPPER_DOCUMENT,
-    doc: doc.toJSON(),
+    doc: doc.toJSON(reg),
   }
 }
 

@@ -1,6 +1,7 @@
 import { IndexedDBImpl, JDObject } from "dbobject_api_ts"
 import { Size } from "josh_js_util"
 
+import { get_class_registry } from "../model"
 import { restoreClassFromJSON } from "../model/base"
 import { GameDoc } from "../model/gamedoc"
 import { GlobalState } from "../state"
@@ -125,7 +126,7 @@ export async function loadLocalDoc(state: GlobalState, uuid: string): Promise<Ga
   const res = await db.get_object(uuid)
   if (res.success) {
     const doc_json = res.data[0].props
-    const doc2 = restoreClassFromJSON(doc_json) as GameDoc
+    const doc2 = restoreClassFromJSON(get_class_registry(), doc_json) as GameDoc
     return doc2
   } else {
     throw new Error(`no such document with uuid: ${uuid}`)

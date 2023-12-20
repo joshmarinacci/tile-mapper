@@ -29,8 +29,8 @@ export interface ImageLayerType {
 
 export const ImageLayerDefs: DefList<ImageLayerType> = {
   name: NameDef,
-  visible: BooleanDef,
-  opacity: FloatDef,
+  visible: BooleanDef.copy().withDefault(() => true),
+  opacity: FloatDef.copy().withDefault(() => 1.0),
 }
 
 export class ImageLayer extends PropsBase<ImageLayerType> {
@@ -389,20 +389,24 @@ export class SImage extends PropsBase<SImageType> {
       console.log("simage loading from json. do buffers", json.props)
       // console.log('this',this)
       for (const json_layer of json.props.layers) {
-        console.log("layer", json_layer, json_layer.props.frames)
         const layer = this.layers().find((l) => l.getUUID() === json_layer.id)
         if (!layer) {
           throw new Error("Unable to restore malformed Layer")
         }
-        // console.log("real layer is",layer)
-        json_layer.props.frames.forEach((json_frame, i) => {
-          console.log("json frame", i, json_frame)
-          const frame = new ImageFrame()
-          this.appendFrame(frame)
-          const data = JSONToArrayGrid(json_frame as ArrayGridNumberJSON)
-          const surf = this.getPixelSurface(layer, this.frames()[i])
+        if (json_layer.props.frames) {
+          json_layer.props.frames.forEach((json_frame, i) => {
+            const frame = new ImageFrame()
+            this.appendFrame(frame)
+            const data = JSONToArrayGrid(json_frame as ArrayGridNumberJSON)
+            const surf = this.getPixelSurface(layer, this.frames()[i])
+            surf.setAllData(data)
+          })
+        } else {
+          this.appendFrame(new ImageFrame())
+          const data = JSONToArrayGrid(json_layer.props.data)
+          const surf = this.getPixelSurface(layer, this.frames()[0])
           surf.setAllData(data)
-        })
+        }
       }
     }
   }

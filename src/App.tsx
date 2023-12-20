@@ -28,7 +28,7 @@ const AR = new ActionRegistry()
 AR.register([ExportToJSONAction, ImportFromJSONAction, NewDocAction, SaveLocalStorageAction])
 
 const gstate = new GlobalState()
-gstate.setPropValue("doc", make_doc_from_json(Example))
+gstate.setPropValue("doc", make_doc_from_json(Example, reg))
 
 function Main3() {
   const state = useContext(StateContext)

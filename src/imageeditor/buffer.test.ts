@@ -1,6 +1,7 @@
 import { ArrayGrid, Bounds, Point } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
+import { get_class_registry } from "../model"
 import { ImageLayer } from "../model/image"
 import { copyContentsFrom } from "./move_tool"
 
@@ -91,6 +92,7 @@ describe("array grid test", () => {
 
 describe("image layer test", () => {
   it("should create a image pixel layer", async () => {
+    const reg = get_class_registry()
     const layer = new ImageLayer({
       name: "first pixel layer",
       opacity: 0.5,
@@ -99,7 +101,7 @@ describe("image layer test", () => {
     // layer.resizeAndClear(size)
     // layer.fillAll(5)
     // layer.setPixel(new Point(0, 0), 2)
-    const json = layer.toJSON()
+    const json = layer.toJSON(reg)
     expect(json.props.name).toBe(layer.getPropValue("name"))
     expect(json.props.opacity).toBe(layer.getPropValue("opacity"))
     expect(json.props.visible).toBe(layer.getPropValue("visible"))

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest"
 
+import { get_class_registry } from "../model"
 import { appendToList } from "../model/base"
 import { Sheet } from "../model/sheet"
 import { Tile } from "../model/tile"
@@ -69,6 +70,7 @@ describe("json", () => {
   })
 
   it("should save and update using local storage", async () => {
+    const reg = get_class_registry()
     const state = new GlobalState({
       localStorage: new FakeLocalStorage(),
     })
@@ -82,7 +84,7 @@ describe("json", () => {
       appendToList(sheet, "tiles", tile)
     }
     {
-      const json_doc = docToJSON(state.getPropValue("doc"))
+      const json_doc = docToJSON(reg, state.getPropValue("doc"))
       console.log(json_doc)
       expect(json_doc.doc.id).toEqual(uuid)
     }

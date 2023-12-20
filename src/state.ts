@@ -21,10 +21,10 @@ const DocDef: PropDef<GameDoc> = {
   hidden: false,
   expandable: false,
   format: () => "global state",
-  toJSON: (o) => {
+  toJSON: (r, o) => {
     return o.toString()
   },
-  fromJSON: (v) => v as GameDoc,
+  fromJSON: (r, v) => v as GameDoc,
   watchChildren: false,
   editable: false,
   default: () => {
@@ -35,20 +35,20 @@ const DocDef: PropDef<GameDoc> = {
 const ModeDef: PropDef<string> = {
   type: "string",
   default: () => "tiles",
-  toJSON: (o) => o,
+  toJSON: (r, o) => o,
   editable: false,
   format: (o) => o,
   hidden: true,
   expandable: false,
   watchChildren: false,
-  fromJSON: (v) => v as string,
+  fromJSON: (r, v) => v as string,
 }
 const SelectedDef: PropDef<unknown> = {
   type: "object",
   expandable: false,
   hidden: true,
   watchChildren: false,
-  fromJSON: (v) => v,
+  fromJSON: (r, v) => v,
   default: () => undefined,
   toJSON: () => "unknown",
   editable: false,

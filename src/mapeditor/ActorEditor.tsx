@@ -36,7 +36,7 @@ export function drawActorlayer(
         if (img) {
           ctx.save()
           ctx.translate(box.x, box.y)
-          drawImage(doc, ctx, img, doc.getPropValue("palette"), scale, 0)
+          drawImage(doc, ctx, img, doc.getPropValue("palette"), scale, img.frames()[0])
           ctx.restore()
           return
         }

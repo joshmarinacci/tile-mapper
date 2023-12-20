@@ -13,6 +13,7 @@ import {
 } from "../io/json"
 import { saveLocalDoc } from "../io/local"
 import { readMetadata } from "../io/vendor"
+import { get_class_registry } from "../model"
 import { GameDoc } from "../model/gamedoc"
 import { GlobalState } from "../state"
 import { SimpleMenuAction } from "./actions"
@@ -51,7 +52,9 @@ export const ImportFromJSONAction: SimpleMenuAction = {
         const files = input_element.files
         if (!files || files.length <= 0) return
         const file = files[0]
-        fileToJson(file).then((data) => res(make_doc_from_json(data as object)))
+        fileToJson(file).then((data) =>
+          res(make_doc_from_json(data as object, get_class_registry())),
+        )
       })
       input_element.click()
     })
@@ -89,7 +92,7 @@ export async function loadPNGJSON(state: GlobalState, file: File): Promise<GameD
       console.log("metadata is", metadata)
       if (metadata && metadata.tEXt && metadata.tEXt.SOURCE) {
         const json = JSON.parse(metadata.tEXt.SOURCE)
-        const obj = make_doc_from_json(json as JSONDocV5)
+        const obj = make_doc_from_json(json as JSONDocV5, get_class_registry())
         res(obj)
       }
     })

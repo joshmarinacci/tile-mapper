@@ -98,7 +98,7 @@ export const PaletteDef = new PropDefBuilder<ImagePalette>({
   default: () => PICO8,
   format: (v) => v.name,
   toJSON: (r, v) => v,
-  fromJSON: (v) => {
+  fromJSON: (r, v) => {
     if ("name" in v) {
       return v as ImagePalette
     } else {
@@ -123,10 +123,10 @@ export const GenericDataArrayDef = new PropDefBuilder<object[]>({
   format: () => "unknown",
   toJSON: (r, v) =>
     v.map((a) => {
-      if ("toJSON" in a) return a.toJSON() as unknown as object
+      if ("toJSON" in a) return a.toJSON(r) as unknown as object
       return a
     }),
-  fromJSON: (r, v) => v.map((a) => restoreClassFromJSON(a)),
+  fromJSON: (r, v) => v.map((a) => restoreClassFromJSON(r, a)),
 })
   .withEditable(false)
   .withHidden(true)

@@ -21,7 +21,7 @@ describe("pixel font persistence", () => {
     const json = glyph.toJSON(reg)
     expect(json.props.name).toBe("A")
 
-    const glyph2 = restoreClassFromJSON(json)
+    const glyph2 = restoreClassFromJSON(reg, json)
     expect(glyph2.getPropValue("name")).toBe("A")
     expect(glyph2.getPropValue("codepoint")).toBe(68)
     expect(glyph.getUUID()).toBe(glyph2.getUUID())
@@ -41,7 +41,7 @@ describe("pixel font persistence", () => {
     expect(glyph2.getPropValue("data").size()).toBe(16 * 16)
 
     const json = font.toJSON(reg)
-    const font2 = restoreClassFromJSON(json)
+    const font2 = restoreClassFromJSON(reg, json)
     expect(font2.getPropValue("name")).toBe("pixio")
   })
 })

@@ -5,7 +5,9 @@ import { IndexedDBImpl } from "dbobject_api_ts"
 import { make_logger, Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
+import { get_class_registry } from "../model"
 import { appendToList, restoreClassFromJSON } from "../model/base"
+import { GameDoc } from "../model/gamedoc"
 import { Sheet } from "../model/sheet"
 import { Tile } from "../model/tile"
 // indexedDB = new IDBFactory();
@@ -16,15 +18,16 @@ import { Tile } from "../model/tile"
 const logger = make_logger("DB")
 describe("database tests", () => {
   it("should save and reload  standalone a tile class", async () => {
+    const reg = get_class_registry()
     const tile = new Tile({
       name: "my cool tile",
       size: new Size(4, 3),
       blocking: true,
     })
     tile.setPixel(1, new Point(1, 1))
-    expect(tile.getPropValue("data").size()).toBe(4 * 3)
+    expect(tile.getPropValue("data").size()).toEqual(new Size(4, 3))
 
-    const json = tile.toJSON()
+    const json = tile.toJSON(reg)
     console.log("tile json is", json)
     const db = new IndexedDBImpl()
     await db.open()
@@ -35,18 +38,19 @@ describe("database tests", () => {
     const doc1_result2 = await db.get_object(doc1_result.data[0].uuid)
     logger.info("doc 1 result is", doc1_result2.data[0])
 
-    const tile2 = restoreClassFromJSON(doc1_result2.data[0].props) as Tile
+    const tile2 = restoreClassFromJSON(reg, doc1_result2.data[0].props) as Tile
     // logger.info('tile2 is',tile2)
 
     expect(tile2.getPropValue("name")).toBe("my cool tile")
     expect(tile2.getPropValue("size").w).toBe(4)
     expect(tile2.getPropValue("blocking")).toBe(true)
-    expect(tile2.getPropValue("data").size()).toBe(4 * 3)
+    expect(tile2.getPropValue("data").size()).toEqual(new Size(4, 3))
     // expect(tile2.getPixel(new Point(0, 0))).toBe(0)
     // expect(tile2.getPixel(new Point(1, 1))).toBe(1)
     await db.destroy()
   })
   it("should save and reload an entire game doc", async () => {
+    const reg = get_class_registry()
     const doc = new GameDoc()
     const sheet = new Sheet()
     appendToList(doc, "sheets", sheet)
@@ -54,13 +58,14 @@ describe("database tests", () => {
 
     const db = new IndexedDBImpl()
     await db.open()
-    const res = await db.new_object(doc.toJSON())
+    const res = await db.new_object(doc.toJSON(reg))
     const stored_obj = await db.get_object(res.data[0].uuid)
-    const doc2 = restoreClassFromJSON(stored_obj.data[0].props)
+    const doc2 = restoreClassFromJSON(reg, stored_obj.data[0].props)
     console.log("doc 2 is", doc2)
     await db.destroy()
   })
   it("it should be able to query a list of docs", async () => {
+    const reg = get_class_registry()
     const db = new IndexedDBImpl()
     await db.open()
 
@@ -69,7 +74,7 @@ describe("database tests", () => {
       const doc = new GameDoc()
       const sheet = new Sheet()
       appendToList(doc, "sheets", sheet)
-      const res = await db.new_object(doc.toJSON())
+      const res = await db.new_object(doc.toJSON(reg))
       console.log("res is", res, res.data[0])
     }
 
@@ -87,7 +92,7 @@ describe("database tests", () => {
       const doc_json = res.data[0].props
       console.log("got back the result", res, doc_json)
       console.log("the doc name is ", doc_json.props.name)
-      const doc2 = restoreClassFromJSON(doc_json)
+      const doc2 = restoreClassFromJSON(reg, doc_json)
       console.log("doc2 is", doc2)
     }
     // const doc2 = restoreClassFromJSON(stored_obj.data[0].props)
@@ -95,6 +100,7 @@ describe("database tests", () => {
     await db.destroy()
   })
   it("should be able to delete a document", async () => {
+    const reg = get_class_registry()
     const doc = new GameDoc()
     const sheet = new Sheet()
     appendToList(doc, "sheets", sheet)
@@ -108,7 +114,7 @@ describe("database tests", () => {
       expect(objs.data.length).toBe(0)
     }
 
-    const new_result = await db.new_object(doc.toJSON())
+    const new_result = await db.new_object(doc.toJSON(reg))
     expect(new_result.success).toBeTruthy()
     expect(new_result.data.length).toBe(1)
 
