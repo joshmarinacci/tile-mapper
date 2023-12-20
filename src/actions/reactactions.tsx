@@ -10,7 +10,7 @@ import { Actor } from "../model/actor"
 import { appendToList } from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
 import { GameMap } from "../model/gamemap"
-import { ImagePixelLayer, SImage } from "../model/image"
+import { ImageFrame, ImageLayer, SImage } from "../model/image"
 import { ParticleFX } from "../model/particlefx"
 import { PixelFont, PixelGlyph } from "../model/pixelfont"
 import { Sheet } from "../model/sheet"
@@ -125,13 +125,15 @@ export function AddActorToDocButton() {
   const perform = () => {
     const size = new Size(16, 16)
     const sprite = new SImage({ name: "new actor sprite", size: size })
-    const layer = new ImagePixelLayer({
+    const layer = new ImageLayer({
       name: "layer",
       opacity: 1.0,
       visible: true,
     })
     const bounds = new Bounds(0, 0, size.w, size.h)
     sprite.appendLayer(layer)
+    const frame = new ImageFrame()
+    sprite.appendFrame(frame)
     appendToList(doc, "canvases", sprite)
     const actor = new Actor({
       name: "new actor",
@@ -154,12 +156,14 @@ export function AddCanvasToDocButton() {
       <AddImageDialog
         onComplete={(size) => {
           const canvas = new SImage({ name: "blank canvas", size: size })
-          const layer = new ImagePixelLayer({
+          const layer = new ImageLayer({
             name: "new pixel layer",
             opacity: 1.0,
             visible: true,
           })
           canvas.appendLayer(layer)
+          const frame = new ImageFrame()
+          canvas.appendFrame(frame)
           appendToList(doc, "canvases", canvas)
           state.setSelectionTarget(layer)
         }}

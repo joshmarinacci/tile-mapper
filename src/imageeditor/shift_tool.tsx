@@ -7,7 +7,7 @@ import {
   AreaChange,
   ArrayGridPixelSurface,
   FramePixelSurface,
-  ImagePixelLayer,
+  ImageLayer,
   SImage,
 } from "../model/image"
 import { PixelTool, PixelToolEvent, PixelToolKeyEvent, ToolOverlayInfo } from "./tool"
@@ -106,7 +106,7 @@ export class ShiftTool extends PropsBase<ShiftToolSettingsType> implements Pixel
     this._pressed = false
   }
 
-  shiftLayers(image: SImage, layer: ImagePixelLayer, surf: FramePixelSurface, diff: Point) {
+  shiftLayers(image: SImage, layer: ImageLayer, surf: FramePixelSurface, diff: Point) {
     if (diff.x === 0 && diff.y === 0) return
     if (!this.getPropValue("allLayers") && !this.getPropValue("allFrames")) {
       // const surf = image.getFramePixelSurface(layer, 0)

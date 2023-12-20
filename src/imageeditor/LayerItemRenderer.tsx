@@ -4,7 +4,7 @@ import { Icon } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { ListViewRenderer } from "../common/ListView"
 import { PropsBase, useWatchProp } from "../model/base"
-import { ImageLayerType, ImageObjectLayer, ImagePixelLayer } from "../model/image"
+import { ImageLayer, ImageLayerType } from "../model/image"
 
 export const LayerItemRenderer: ListViewRenderer<PropsBase<ImageLayerType>, never> = (props: {
   value: PropsBase<ImageLayerType> | undefined
@@ -25,8 +25,7 @@ export const LayerItemRenderer: ListViewRenderer<PropsBase<ImageLayerType>, neve
   }
   return (
     <div className={"std-list-item"} style={{ justifyContent: "space-between" }}>
-      {value instanceof ImagePixelLayer && <Icon name={Icons.PixelLayer} />}
-      {value instanceof ImageObjectLayer && <Icon name={Icons.ObjectLayer} />}
+      {value instanceof ImageLayer && <Icon name={Icons.PixelLayer} />}
       <b>{name}</b>
       <i>{opacity.toFixed(2)}</i>
       <Icon onClick={toggle} name={visible ? Icons.EyeOpen : Icons.EyeClosed} />

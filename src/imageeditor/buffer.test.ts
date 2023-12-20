@@ -1,8 +1,7 @@
-import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
+import { ArrayGrid, Bounds, Point } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
-import { appendToList } from "../model/base"
-import { ImageObjectLayer, ImagePixelLayer, TextObject } from "../model/image"
+import { ImageLayer } from "../model/image"
 import { copyContentsFrom } from "./move_tool"
 
 describe("array grid test", () => {
@@ -92,8 +91,7 @@ describe("array grid test", () => {
 
 describe("image layer test", () => {
   it("should create a image pixel layer", async () => {
-    const size = new Size(10, 10)
-    const layer = new ImagePixelLayer({
+    const layer = new ImageLayer({
       name: "first pixel layer",
       opacity: 0.5,
       visible: true,
@@ -105,22 +103,7 @@ describe("image layer test", () => {
     expect(json.props.name).toBe(layer.getPropValue("name"))
     expect(json.props.opacity).toBe(layer.getPropValue("opacity"))
     expect(json.props.visible).toBe(layer.getPropValue("visible"))
-    expect(json.props.data.data[0]).toBe(2)
-    expect(json.props.data.data[1]).toBe(5)
-  })
-  it("should create an image object layer", async () => {
-    const size = new Size(10, 10)
-    const layer = new ImageObjectLayer({
-      name: "first pixel layer",
-      opacity: 0.5,
-      visible: true,
-    })
-    const obj = new TextObject({})
-    appendToList(layer, "data", obj)
-    const json = layer.toJSON()
-    expect(json.props.name).toBe(layer.getPropValue("name"))
-    expect(json.props.opacity).toBe(layer.getPropValue("opacity"))
-    expect(json.props.visible).toBe(layer.getPropValue("visible"))
-    console.log(json.props.data)
+    // expect(json.props.data.data[0]).toBe(2)
+    // expect(json.props.data.data[1]).toBe(5)
   })
 })

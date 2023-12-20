@@ -1,58 +1,16 @@
 import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 
 import { cloneArrayGrid } from "../util"
+import { appendToList, DefList, PropDefBuilder, PropsBase, PropValues } from "./base"
 import {
-  appendToList,
-  DefList,
-  JsonOut,
-  JSONValue,
-  PropDefBuilder,
-  PropsBase,
-  PropValues,
-} from "./base"
-import {
-  ArrayGridNumberDef,
   BooleanDef,
   FloatDef,
-  GenericDataArrayDef,
-  IntegerDef,
   NameDef,
-  PointDef,
+  NumberDef,
+  ObjectListDef,
   SizeDef,
   StringDef,
 } from "./datamodel"
-import { PixelFontReferenceDef } from "./pixelfont"
-
-export interface ImageObjectType {
-  name: string
-  position: Point
-}
-
-export interface TextObjectType extends ImageObjectType {
-  text: string
-  color: string
-  font: string
-}
-
-export const TextObjectDefs: DefList<TextObjectType> = {
-  name: NameDef,
-  position: PointDef.copy().withEditable(true),
-  text: StringDef.copy().withDefault(() => "Greetings Earthling"),
-  color: StringDef.copy()
-    .withDefault(() => "black")
-    .withCustom("palette-color"),
-  font: PixelFontReferenceDef,
-}
-
-export class TextObject extends PropsBase<TextObjectType> {
-  constructor(opts?: PropValues<TextObjectType>) {
-    super(TextObjectDefs, opts)
-  }
-
-  contains(pt: Point) {
-    return this.getPropValue("position").distance(pt) < 10
-  }
-}
 
 export interface ImageLayerType {
   name: string
@@ -60,92 +18,16 @@ export interface ImageLayerType {
   opacity: number
 }
 
-interface ImagePixelLayerType extends ImageLayerType {}
-
-const ImagePixelLayerData = ArrayGridNumberDef.copy().withEditable(false).withHidden(true)
-export const ImagePixelLayerDefs: DefList<ImagePixelLayerType> = {
+export const ImageLayerDefs: DefList<ImageLayerType> = {
   name: NameDef,
   visible: BooleanDef,
   opacity: FloatDef,
-  // data: ImagePixelLayerData,
 }
 
-// interface ImageLayerAPI {
-//   crop(rect: Bounds): void
-//   resize(size: Size): void
-//   opacity(): number
-//   visible(): boolean
-//   setImage(image: SImage): void
-// }
-
-export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> {
-  image: SImage
-  private frames: ArrayGrid<number>[]
-
-  constructor(opts?: PropValues<ImagePixelLayerType>) {
-    super(ImagePixelLayerDefs, opts)
-    this.frames = []
+export class ImageLayer extends PropsBase<ImageLayerType> {
+  constructor(opts?: PropValues<ImageLayerType>) {
+    super(ImageLayerDefs, opts)
   }
-
-  setImage(image: SImage) {
-    this.image = image
-  }
-
-  toJSON(): JsonOut<Type> {
-    const out = super.toJSON()
-    console.log("layer output is", out)
-    out.props["frames"] = this.frames.map((frame) => {
-      return ArrayGridNumberDef.toJSON(frame)
-    })
-    return out
-  }
-
-  // resizeAndClear(size: Size) {
-  //   const data = new ArrayGrid<number>(size.w, size.h)
-  //   data.fill(() => -1)
-  //   this.setPropValue("data", data)
-  // }
-  //
-  // rebuildFromCanvas(canvas: SImage) {
-  //   const size = canvas.getPropValue("size")
-  //   const data = new ArrayGrid<number>(size.w, size.h)
-  //   data.fill(() => -1)
-  //   this.setPropValue("data", data)
-  // }
-  //
-  // setPixel(pt: Point, color: number) {
-  //   const old = this.getPropValue("data").get(pt)
-  //   this.getPropValue("data").set(pt, color)
-  //   this._fire("data", this.getPropValue("data"))
-  //   this._fireAll()
-  //   if (this.image) this.image.appendHistory(new LayerPixelChange(this, pt, old, color))
-  // }
-  // copyPixelsFrom(src: ArrayGrid<number>, filter?: (v: number) => boolean) {
-  //   const curr = this.getPropValue("data")
-  //   const prev = new ArrayGrid<number>(curr.w, curr.h)
-  //   prev.fill((n) => curr.get(n))
-  //   curr.forEach((v, n) => {
-  //     const vv = src.get(n)
-  //     if (filter && filter(vv)) {
-  //       curr.set(n, vv)
-  //     }
-  //   })
-  //   if (this.image) this.image.appendHistory(new LayerGridChange(this, prev, curr))
-  // }
-  // setPixelRaw(pt: Point, color: number) {
-  //   this.getPropValue("data").set(pt, color)
-  // }
-  //
-  // getPixel(pt: Point): number {
-  //   return this.getPropValue("data").get(pt)
-  // }
-  //
-  // fillAll(number: number) {
-  //   this.getPropValue("data").fill(() => number)
-  //   this._fire("data", this.getPropValue("data"))
-  //   this._fireAll()
-  // }
-  //
   // crop(rect: Bounds) {
   //   const data = this.getPropValue("data")
   //   console.log("cropping", data.w, data.h, "to", rect)
@@ -177,134 +59,76 @@ export class ImagePixelLayer extends PropsBase<ImagePixelLayerType> {
     return this.getPropValue("visible")
   }
 
-  getFrame(frameNumber: number) {
-    // console.log('get frame',this.frames.length,'vs',frameNumber)
-    if (this.frames.length <= frameNumber) {
-      // console.log("appending")
-      const grid = ArrayGrid.fromSize<number>(this.image.getPropValue("size"))
-      grid.fill(() => -1)
-      this.frames.push(grid)
-      // console.log("now frames",this.frames)
-    }
-    return this.frames[frameNumber]
-  }
+  // getFrame(frameNumber: number) {
+  //   // console.log('get frame',this.frames.length,'vs',frameNumber)
+  //   if (this.frames.length <= frameNumber) {
+  //     // console.log("appending")
+  //     const grid = ArrayGrid.fromSize<number>(this.image.getPropValue("size"))
+  //     grid.fill(() => -1)
+  //     this.frames.push(grid)
+  //     // console.log("now frames",this.frames)
+  //   }
+  //   return this.frames[frameNumber]
+  // }
+  //
+  // setFrameFromData(data: ArrayGrid<number>) {
+  //   this.frames.push(data)
+  // }
 
-  setFrameFromData(data: ArrayGrid<number>) {
-    this.frames.push(data)
-  }
-
-  cloneAndAddFrame(currentFrame: number) {
-    const orig = this.getFrame(currentFrame)
-    const copy = new ArrayGrid<number>(orig.w, orig.h)
-    copy.fill((n) => orig.get(n))
-    this.frames.push(copy)
-  }
-  resize(size: Size) {
-    const new_frames = this.frames.map((frame) => {
-      const grid = ArrayGrid.fromSize<number>(size)
-      grid.fill(() => -1)
-      return grid
-    })
-    this.frames = new_frames
-  }
+  // cloneAndAddFrame(currentFrame: number) {
+  //   const orig = this.getFrame(currentFrame)
+  //   const copy = new ArrayGrid<number>(orig.w, orig.h)
+  //   copy.fill((n) => orig.get(n))
+  //   this.frames.push(copy)
+  // }
+  // resize(size: Size) {
+  //   const new_frames = this.frames.map((frame) => {
+  //     const grid = ArrayGrid.fromSize<number>(size)
+  //     grid.fill(() => -1)
+  //     return grid
+  //   })
+  //   this.frames = new_frames
+  // }
 }
 
-interface ImageObjectLayerType extends ImageLayerType {
-  data: TextObject[]
+export interface ImageFrameType {
+  name: string
+  group: string
+  duration: number
 }
 
-const ImageObjectLayerData = GenericDataArrayDef.copy().withWatchChildren(true)
-export const ImageObjectLayerDefs: DefList<ImageObjectLayerType> = {
+export const ImageFrameDefs: DefList<ImageFrameType> = {
   name: NameDef,
-  visible: BooleanDef,
-  opacity: FloatDef,
-  data: ImageObjectLayerData,
+  duration: NumberDef.copy(),
+  group: StringDef.copy().withDefault(() => "none"),
 }
 
-export class ImageObjectLayer extends PropsBase<ImageObjectLayerType> {
-  private image: SImage
-
-  constructor(opts?: PropValues<ImageObjectLayerType>) {
-    super(ImageObjectLayerDefs, opts)
-  }
-
-  setImage(image: SImage) {
-    this.image = image
-  }
-
-  crop(rect: Bounds): void {}
-
-  resize(size: Size): void {}
-
-  opacity(): number {
-    return this.getPropValue("opacity")
-  }
-
-  visible(): boolean {
-    return this.getPropValue("visible")
+export class ImageFrame extends PropsBase<ImageFrameType> {
+  constructor(opts?: PropValues<ImageFrameType>) {
+    super(ImageFrameDefs, opts)
   }
 }
 
 type SImageType = {
   name: string
-  layers: PropsBase<ImageLayerType>[]
+  layers: ImageLayer[]
+  frames: ImageFrame[]
   size: Size
   history: number
-  frameCount: number
 }
-//   toJSON: (v) =>
-//       v.map((a) => {
-//         if ("toJSON" in a) return a.toJSON() as unknown as object
-//         return a
-//       }),
-//   fromJSON: (v) => v.map((a) => restoreClassFromJSON(a)),
-// })
-//     .withEditable(false)
-//     .withHidden(true)
 
-const SImageLayerArrayDef = new PropDefBuilder<object[]>({
-  type: "array",
-  default: () => [],
-  format: () => "unknown",
-  fromJSON: (json: JSONValue[]) => {
-    return json.map((json) => {
-      console.log("loading layer info", json)
-      if (json["class"] === "ImageLayer") {
-        const layer = new ImagePixelLayer({
-          name: json.props.name,
-          opacity: json.props.opacity,
-          visible: json.props.visible,
-        })
-        if (json.props["data"]) {
-          const grid = ArrayGridNumberDef.fromJSON(json.props.data)
-          layer.setFrameFromData(grid)
-        }
-        if (json.props["frames"]) {
-          console.log("loading up frames", json.props["frames"])
-          json.props.frames.forEach((frame) => {
-            console.log("loading in a frame", frame)
-            layer.setFrameFromData(ArrayGridNumberDef.fromJSON(frame))
-          })
-        }
-        return layer
-      }
-      return new ImagePixelLayer()
-    })
-  },
-  toJSON: (v) => {
-    return v.map((a) => {
-      if ("toJSON" in a) return a.toJSON() as unknown as object
-      return a
-    })
-  },
-})
-  .withEditable(false)
-  .withHidden(true)
-  .withWatchChildren(true)
-  .withExpandable(true)
 export const SImageDefs: DefList<SImageType> = {
   name: NameDef,
-  layers: SImageLayerArrayDef,
+  layers: ObjectListDef.copy()
+    .withEditable(false)
+    .withHidden(true)
+    .withWatchChildren(true)
+    .withExpandable(true),
+  frames: ObjectListDef.copy()
+    .withEditable(false)
+    .withHidden(true)
+    .withWatchChildren(true)
+    .withExpandable(true),
   size: SizeDef,
   history: new PropDefBuilder<number>({
     type: "integer",
@@ -314,9 +138,6 @@ export const SImageDefs: DefList<SImageType> = {
     toJSON: (v) => v,
   })
     .withSkipPersisting(true)
-    .withHidden(true),
-  frameCount: IntegerDef.copy()
-    .withDefault(() => 1)
     .withHidden(true),
 }
 
@@ -361,9 +182,9 @@ class PixelChange implements HistoryEvent {
   private point: Point
   private prev: number
   private curr: number
-  private layer: ImagePixelLayer
+  private layer: ImageLayer
 
-  constructor(layer: ImagePixelLayer, pt: Point, old: number, color: number) {
+  constructor(layer: ImageLayer, pt: Point, old: number, color: number) {
     this.layer = layer
     this.point = pt
     this.prev = old
@@ -385,19 +206,49 @@ class PixelChange implements HistoryEvent {
 export class SImage extends PropsBase<SImageType> {
   private history: HistoryEvent[]
   private current_history_index: number
+  private buffers: Map<string, ArrayGrid<number>>
 
   constructor(opts?: PropValues<SImageType>) {
     super(SImageDefs, opts)
     this.history = []
     this.current_history_index = -1
+    this.buffers = new Map()
   }
 
   setPropValue<K extends keyof SImageType>(name: K, value: SImageType[K]) {
     if (name === "layers") {
-      const layers = value as unknown as ImageLayerAPI[]
-      layers.forEach((lay) => lay.setImage(this))
+      // const layers = value as unknown as ImageLayerAPI[]
+      // layers.forEach((lay) => lay.setImage(this))
     }
     super.setPropValue(name, value)
+  }
+  appendLayer(layer: ImageLayer) {
+    appendToList(this, "layers", layer)
+  }
+  appendFrame(frame: ImageFrame) {
+    appendToList(this, "frames", frame)
+  }
+  getBuffer(layer: ImageLayer, frame: ImageFrame): ArrayGrid<number> {
+    if (!layer) throw new Error("cannot get buffer from an null layer")
+    if (!frame) throw new Error("cannot get buffer from an null frame")
+    const key = layer.getUUID() + "_" + frame.getUUID()
+    if (!this.buffers.has(key)) {
+      const size = this.size()
+      const data = new ArrayGrid<number>(size.w, size.h)
+      data.fill(() => -1)
+      this.buffers.set(key, data)
+    }
+    if (!this.buffers.has(key))
+      throw new Error(`unknown buffer for layer ${layer.getUUID()} - frame ${frame.getUUID()}`)
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return this.buffers.get(key)
+  }
+  layers() {
+    return this.getPropValue("layers")
+  }
+  frames() {
+    return this.getPropValue("frames")
   }
 
   crop(rect: Bounds) {
@@ -405,13 +256,9 @@ export class SImage extends PropsBase<SImageType> {
     this.setPropValue("size", rect.size())
   }
 
-  appendLayer(layer: ImagePixelLayer | ImageObjectLayer) {
-    appendToList(this, "layers", layer as unknown as PropsBase<ImageLayerType>)
-  }
-
   resize(size: Size) {
     this.getPropValue("layers").forEach((lay) => {
-      if (lay instanceof ImagePixelLayer) {
+      if (lay instanceof ImageLayer) {
         lay.resize(size)
       }
     })
@@ -420,10 +267,6 @@ export class SImage extends PropsBase<SImageType> {
 
   size() {
     return this.getPropValue("size")
-  }
-
-  layers() {
-    return this.getPropValue("layers")
   }
 
   getHistoryLength() {
@@ -464,49 +307,23 @@ export class SImage extends PropsBase<SImageType> {
     this.setPropValue("history", this.getPropValue("history") + 1)
   }
 
-  getFramePixelSurfaces(frameNumber: number): FramePixelSurface[] {
-    const layers = this.layers()
-      .filter((lay) => lay instanceof ImagePixelLayer)
-      .map((lay) => lay as ImagePixelLayer)
-      .map((lay) => new LayerPixelSurface(lay, frameNumber))
-    return layers
-  }
-
   addEmptyFrame() {
-    this.setPropValue("frameCount", this.getPropValue("frameCount") + 1)
+    const frame = new ImageFrame()
+    this.appendFrame(frame)
   }
 
-  getFramePixelSurface(layer: ImagePixelLayer, number: number): FramePixelSurface {
-    return new LayerPixelSurface(layer, number)
+  getPixelSurface(layer: ImageLayer, frame: ImageFrame) {
+    if (!layer) throw new Error("cannot get buffer from an null layer")
+    if (!frame) throw new Error("cannot get buffer from an null frame")
+    return new LayerPixelSurface(this, layer, frame)
   }
 
   cloneAndAddFrame(currentFrame: number) {
     this.layers().forEach((layer) => {
-      if (layer instanceof ImagePixelLayer) {
+      if (layer instanceof ImageLayer) {
         layer.cloneAndAddFrame(currentFrame)
       }
     })
-    this.setPropValue("frameCount", this.getPropValue("frameCount") + 1)
-  }
-
-  getFramePixelSurfacesForLayer(layer: ImagePixelLayer): FramePixelSurface[] {
-    const surfs = []
-    for (let i = 0; i < this.getPropValue("frameCount"); i++) {
-      surfs.push(this.getFramePixelSurface(layer, i))
-    }
-    return surfs
-  }
-
-  getAllFramePixelSurfaces(): FramePixelSurface[] {
-    const surfs: FramePixelSurface[] = []
-    this.layers().forEach((layer) => {
-      if (layer instanceof ImagePixelLayer) {
-        for (let i = 0; i < this.getPropValue("frameCount"); i++) {
-          surfs.push(this.getFramePixelSurface(layer, i))
-        }
-      }
-    })
-    return surfs
   }
 
   getHistory() {
@@ -518,53 +335,58 @@ type PixelFilter = (v: number, n: Point) => boolean
 type PixelForEachCallback = (v: number, n: Point) => void
 
 class LayerPixelSurface implements FramePixelSurface {
-  private layer: ImagePixelLayer
-  private frameNumber: number
+  private layer: ImageLayer
+  private frame: ImageFrame
+  private image: SImage
 
-  constructor(lay: ImagePixelLayer, frameNumber: number) {
+  constructor(image: SImage, lay: ImageLayer, frame: ImageFrame) {
+    this.image = image
     this.layer = lay
-    this.frameNumber = frameNumber
+    this.frame = frame
   }
 
   getPixel(p: Point): number {
-    return this.layer.getFrame(this.frameNumber).get(p)
+    return this.buffer().get(p)
   }
 
   setPixel(p: Point, value: number): void {
-    this.layer.getFrame(this.frameNumber).set(p, value)
+    this.buffer().set(p, value)
   }
 
   fillAll(v: number): void {
-    this.layer.getFrame(this.frameNumber).fill(() => v)
+    this.buffer().fill(() => v)
   }
 
   copyPixelsFrom(grid: ArrayGrid<number>, filter: PixelFilter) {
-    const tgt = this.layer.getFrame(this.frameNumber)
+    const tgt = this.buffer()
     grid.forEach((v, n) => {
       if (filter(v, n)) tgt.set(n, v)
     })
   }
 
   forEach(cb: PixelForEachCallback) {
-    const tgt = this.layer.getFrame(this.frameNumber)
-    tgt.forEach(cb)
+    this.buffer().forEach(cb)
   }
 
   isValidIndex(pt: Point): boolean {
-    return this.layer.getFrame(this.frameNumber).isValidIndex(pt)
+    return this.buffer().isValidIndex(pt)
   }
 
   size(): Size {
-    const frame = this.layer.getFrame(this.frameNumber)
-    return new Size(frame.w, frame.h)
+    const buffer = this.buffer()
+    return new Size(buffer.w, buffer.h)
   }
   cloneData(): ArrayGrid<number> {
-    const frame = this.layer.getFrame(this.frameNumber)
+    const frame = this.buffer()
     return cloneArrayGrid(frame)
   }
   setAllData(curr: ArrayGrid<number>) {
-    const frame = this.layer.getFrame(this.frameNumber)
+    const frame = this.buffer()
     frame.fill((n) => curr.get(n))
+  }
+
+  private buffer() {
+    return this.image.getBuffer(this.layer, this.frame)
   }
 }
 

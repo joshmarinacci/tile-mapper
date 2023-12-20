@@ -22,14 +22,15 @@ export function AnimatedImagePreview(props: { image: SImage; count: number }) {
       const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
       ctx.fillStyle = "white"
       ctx.fillRect(0, 0, canvas.width, canvas.height)
+      const frame = props.image.frames()[0]
       drawImage(doc, ctx, props.image, doc.getPropValue("palette"), scale, frame)
     }
   }
 
   useEffect(() => redraw(), [scale, count, frame])
   const cycle = () => {
-    const fc = image.getPropValue("frameCount")
-    setFrame((frame + 1) % fc)
+    // const fc = image.getPropValue("frameCount")
+    // setFrame((frame + 1) % fc)
   }
 
   useWatchAllProps(image, () => redraw())

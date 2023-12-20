@@ -5,7 +5,7 @@ import { Actor } from "../model/actor"
 import { PropsBase, removeFromList } from "../model/base"
 import { Camera } from "../model/camera"
 import { ActorLayer, ColorMapLayer, GameMap, TileLayer } from "../model/gamemap"
-import { ImageObjectLayer, ImagePixelLayer, SImage } from "../model/image"
+import { ImageLayer, SImage } from "../model/image"
 import { ParticleFX } from "../model/particlefx"
 import { PixelFont } from "../model/pixelfont"
 import { Sheet } from "../model/sheet"
@@ -22,7 +22,6 @@ import {
   MoveMapLayerUpAction,
 } from "./gamemap"
 import {
-  AddNewImageObjectLayerAction,
   AddNewImagePixelLayerAction,
   CopyImageToClipboardAction,
   DeleteImageLayerAction,
@@ -220,10 +219,9 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
     actions.push(ExportImageToPNGAction)
     actions.push(ExportImageToPNG4XAction)
     actions.push(AddNewImagePixelLayerAction)
-    actions.push(AddNewImageObjectLayerAction)
     actions.push(CopyImageToClipboardAction)
   }
-  if (obj instanceof ImagePixelLayer || obj instanceof ImageObjectLayer) {
+  if (obj instanceof ImageLayer) {
     actions.push(DeleteImageLayerAction)
     actions.push(MoveImageLayerUpAction)
     actions.push(MoveImageLayerDownAction)

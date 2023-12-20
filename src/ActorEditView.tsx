@@ -50,7 +50,10 @@ export function ActorEditView(props: { actor: Actor }) {
       ctx.fillStyle = "white"
       ctx.fillRect(0, 0, ref.current.width, ref.current.height)
       const img = doc.getPropValue("canvases").find((img) => img.getUUID() === spriteId)
-      if (img) drawImage(doc, ctx, img, doc.getPropValue("palette"), scale, 0)
+      if (img && img.frames().length >= 1) {
+        const frame = img.frames()[0]
+        drawImage(doc, ctx, img, doc.getPropValue("palette"), scale, frame)
+      }
       const view_bounds = props.actor.getPropValue("viewbox").scale(scale)
       strokeBounds(ctx, view_bounds, "red", 3)
       const hit_bounds = props.actor.getPropValue("hitbox").scale(scale)

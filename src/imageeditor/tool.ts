@@ -3,20 +3,14 @@ import React from "react"
 
 import { ImagePalette } from "../common/common"
 import { GameDoc } from "../model/gamedoc"
-import {
-  FramePixelSurface,
-  ImageObjectLayer,
-  ImagePixelLayer,
-  SImage,
-  TextObject,
-} from "../model/image"
+import { FramePixelSurface, ImageLayer, ImageObjectLayer, SImage, TextObject } from "../model/image"
 
 export type PixelToolEvent = {
   pt: Point // in image coords
   e: React.MouseEvent<HTMLCanvasElement> // in screen coords
   color: number //currently selected color
   palette: ImagePalette
-  layer: ImagePixelLayer // currently selected layer
+  layer: ImageLayer // currently selected layer
   image: SImage
   surface: FramePixelSurface
   markDirty: () => void
@@ -26,7 +20,7 @@ export type PixelToolEvent = {
 export type PixelToolKeyEvent = {
   e: React.KeyboardEvent<HTMLCanvasElement>
   palette: ImagePalette
-  layer: ImagePixelLayer // currently selected layer
+  layer: ImageLayer // currently selected layer
   image: SImage
   surface: FramePixelSurface
   markDirty: () => void

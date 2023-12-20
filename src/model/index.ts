@@ -18,16 +18,7 @@ import {
   TileLayer,
   TileLayerDefs,
 } from "./gamemap"
-import {
-  ImageObjectLayer,
-  ImageObjectLayerDefs,
-  ImagePixelLayer,
-  ImagePixelLayerDefs,
-  SImage,
-  SImageDefs,
-  TextObject,
-  TextObjectDefs,
-} from "./image"
+import { ImageFrame, ImageFrameDefs, ImageLayer, ImageLayerDefs, SImage, SImageDefs } from "./image"
 import { ParticleFX, ParticleFXDefs } from "./particlefx"
 import { PhysicsSettings, PhysicsSettingsDefs } from "./physicsSettings"
 import { PixelFont, PixelFontDefs, PixelFontListDef, PixelGlyph, PixelGlyphDefs } from "./pixelfont"
@@ -46,9 +37,8 @@ export function get_class_registry() {
   registry.register("ActorInstance", ActorInstance, ActorInstanceDefs)
   registry.register("ActorLayer", ActorLayer, ActorLayerDefs)
   registry.register("Map", GameMap, GameMapDefs)
-  registry.register("TextObject", TextObject, TextObjectDefs)
-  registry.register("ImageLayer", ImagePixelLayer, ImagePixelLayerDefs)
-  registry.register("ImageObjectLayer", ImageObjectLayer, ImageObjectLayerDefs)
+  registry.register("ImageLayer", ImageLayer, ImageLayerDefs)
+  registry.register("ImageFrame", ImageFrame, ImageFrameDefs)
   registry.register("SImage", SImage, SImageDefs)
   registry.register("ParticleFX", ParticleFX, ParticleFXDefs)
   registry.register("PhysicsSettings", PhysicsSettings, PhysicsSettingsDefs)

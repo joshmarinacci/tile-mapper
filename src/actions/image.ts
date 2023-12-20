@@ -5,7 +5,7 @@ import { Icons } from "../common/icons"
 import { drawImage } from "../imageeditor/ImageEditorView"
 import { PropsBase, removeFromList } from "../model/base"
 import { GameDoc } from "../model/gamedoc"
-import { ImageLayerType, ImageObjectLayer, ImagePixelLayer, SImage } from "../model/image"
+import { ImageLayer, ImageLayerType, SImage } from "../model/image"
 import { GlobalState } from "../state"
 import { SimpleMenuAction } from "./actions"
 
@@ -103,27 +103,8 @@ export const AddNewImagePixelLayerAction: SimpleMenuAction = {
   },
 }
 const new_pixel_layer = (image: SImage) => {
-  const layer = new ImagePixelLayer({
+  const layer = new ImageLayer({
     name: "new pixel layer",
-    opacity: 1.0,
-    visible: true,
-  })
-  image.appendLayer(layer)
-}
-export const AddNewImageObjectLayerAction: SimpleMenuAction = {
-  type: "simple",
-  icon: Icons.Plus,
-  title: "object layer",
-  perform: async (state) => {
-    const path = state.getSelectionPath()
-    if (path.start() instanceof SImage) {
-      new_object_layer(path.start() as SImage)
-    }
-  },
-}
-const new_object_layer = (image: SImage) => {
-  const layer = new ImageObjectLayer({
-    name: "new object layer",
     opacity: 1.0,
     visible: true,
   })
@@ -136,7 +117,7 @@ export const DeleteImageLayerAction: SimpleMenuAction = {
   title: "delete layer",
   perform: async (state) => {
     const sel = state.getSelectionPath().start()
-    if (sel instanceof ImagePixelLayer || sel instanceof ImageObjectLayer) {
+    if (sel instanceof ImageLayer) {
       const image = state.getSelectionPath().parent().start()
       if (image instanceof SImage) {
         removeFromList(image, "layers", sel)
@@ -152,7 +133,7 @@ export const MoveImageLayerUpAction: SimpleMenuAction = {
   icon: Icons.UpArrow,
   perform: async (state) => {
     const path = state.getSelectionPath()
-    if (path.start() instanceof ImagePixelLayer || path.start() instanceof ImageObjectLayer) {
+    if (path.start() instanceof ImageLayer) {
       const image = path.parent().start() as SImage
       move_layer_up(path.start() as PropsBase<ImageLayerType>, image)
     }
@@ -165,7 +146,7 @@ export const MoveImageLayerDownAction: SimpleMenuAction = {
   icon: Icons.DownArrow,
   perform: async (state) => {
     const path = state.getSelectionPath()
-    if (path.start() instanceof ImagePixelLayer || path.start() instanceof ImageObjectLayer) {
+    if (path.start() instanceof ImageLayer) {
       const image = path.parent().start() as SImage
       move_layer_down(path.start() as PropsBase<ImageLayerType>, image)
     }

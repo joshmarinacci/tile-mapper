@@ -2,7 +2,7 @@ import { Bounds } from "josh_js_util"
 import React from "react"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
-import { PixelTool, PixelToolEvent } from "./tool"
+import { PixelTool, PixelToolEvent, PixelToolKeyEvent } from "./tool"
 
 type SelectionToolSettingsType = object
 
@@ -14,6 +14,10 @@ export class SelectionTool extends PropsBase<SelectionToolSettingsType> implemen
     super({}, {})
     this.name = "selection"
     this.down = false
+  }
+
+  onKeyDown(evt: PixelToolKeyEvent): void {
+    throw new Error("Method not implemented.")
   }
 
   drawOverlay(): void {}
