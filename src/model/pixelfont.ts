@@ -56,8 +56,8 @@ export const PixelFontReferenceDef = new PropDefBuilder<string>({
   type: "reference",
   format: (v) => "font",
   default: () => "unknown",
-  toJSON: (v) => v,
-  fromJSON: (v) => v.toString(),
+  toJSON: (r, v) => v,
+  fromJSON: (r, v) => v.toString(),
 }).withCustom("font-reference")
 
 export const PixelFontListDef: PropDefBuilder<PixelFont[]> = ObjectListDef.copy()

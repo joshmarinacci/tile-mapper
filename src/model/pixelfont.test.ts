@@ -1,4 +1,4 @@
-import { Size } from "josh_js_util"
+import { Point, Size } from "josh_js_util"
 import { describe, expect, it } from "vitest"
 
 import { appendToList, restoreClassFromJSON } from "./base"
@@ -13,7 +13,9 @@ describe("pixel font persistence", () => {
       codepoint: 68,
       size: new Size(10, 10),
     })
+    const PT = new Point(3, 3)
     glyph.getPropValue("data").fill((n) => -1)
+    glyph.getPropValue("data").set(PT, 1)
 
     expect(glyph.getPropValue("name")).toBe("A")
     expect(glyph.getPropValue("codepoint")).toBe(68)
@@ -25,6 +27,7 @@ describe("pixel font persistence", () => {
     expect(glyph2.getPropValue("name")).toBe("A")
     expect(glyph2.getPropValue("codepoint")).toBe(68)
     expect(glyph.getUUID()).toBe(glyph2.getUUID())
+    expect(glyph2.getPropValue("data").get(PT)).toBe(1)
   })
   it("should save a pixel font", async () => {
     const reg = get_class_registry()

@@ -1,5 +1,12 @@
 import { ArrayGrid } from "josh_js_util"
-import { Actor, ActorLayer as ACL, RIGHT, TilemapLayer, TileReference } from "retrogami-engine"
+import {
+  Actor,
+  ActorLayer as ACL,
+  Canvas,
+  RIGHT,
+  TilemapLayer,
+  TileReference,
+} from "retrogami-engine"
 
 import { GameState } from "../engine/gamestate"
 import { drawImage } from "../imageeditor/ImageEditorView"
@@ -23,7 +30,7 @@ export function generateGamestate(
           name: tile.getPropValue("name"),
           id: tile.getUUID(),
           blocking: tile.getPropValue("blocking"),
-          canvas: can,
+          canvas: can as Canvas,
         })
       }
     })
@@ -33,8 +40,8 @@ export function generateGamestate(
     canvas.width = img.getPropValue("size").w
     canvas.height = img.getPropValue("size").h
     const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
-    drawImage(doc, ctx, img, doc.getPropValue("palette"), 1, 0)
-    gamestate.imageCache.addImage(img.getPropValue("name"), img.getUUID(), canvas)
+    drawImage(doc, ctx, img, doc.getPropValue("palette"), 1, img.frames()[0])
+    gamestate.imageCache.addImage(img.getPropValue("name"), img.getUUID(), canvas as Canvas)
   })
   // turn each layer of the map into a layer of the engine
   map.getPropValue("layers").forEach((layer) => {
