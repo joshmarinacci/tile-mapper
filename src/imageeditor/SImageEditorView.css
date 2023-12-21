@@ -1,18 +1,18 @@
-.image-editor-view {
-  border: 0px solid red;
-  display: grid;
-  width: 100%;
-}
+/*.image-editor-view {*/
+/*  border: 0px solid red;*/
+/*  display: grid;*/
+/*  width: 100%;*/
+/*}*/
 
-.image-editor-canvas-wrapper {
-  border: 1px solid var(--border-color);
-  overflow: scroll;
-}
+/*.image-editor-canvas-wrapper {*/
+/*  border: 1px solid var(--border-color);*/
+/*  overflow: scroll;*/
+/*}*/
 
-.image-editor-preview {
-  border: 1px solid red;
-  background-color: #aaaaaa;
-}
+/*.image-editor-preview {*/
+/*  border: 1px solid red;*/
+/*  background-color: #aaaaaa;*/
+/*}*/
 
 .image-editor-preview header {
   background-color: black;

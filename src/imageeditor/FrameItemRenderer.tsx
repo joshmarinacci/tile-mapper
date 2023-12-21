@@ -5,7 +5,7 @@ import { ListViewRenderer } from "../common/ListView"
 import { useWatchProp } from "../model/base"
 import { GameDoc } from "../model/gamedoc"
 import { ImageFrame, SImage } from "../model/image"
-import { drawImage } from "./ImageEditorView"
+import { drawImage } from "./drawing"
 
 type FrameItemRendererOptions = {
   image: SImage

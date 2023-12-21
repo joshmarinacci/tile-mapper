@@ -2,10 +2,10 @@ import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 import { encode } from "modern-gif"
 
 import { Icons } from "../common/icons"
-import { drawImage } from "../imageeditor/ImageEditorView"
+import { drawImage } from "../imageeditor/drawing"
 import { removeFromList } from "../model/base"
 import { GameDoc } from "../model/gamedoc"
-import { ImageFrame, ImageLayer, ImageLayerType, SImage } from "../model/image"
+import { ImageFrame, ImageLayer, SImage } from "../model/image"
 import { GlobalState } from "../state"
 import { SimpleMenuAction } from "./actions"
 

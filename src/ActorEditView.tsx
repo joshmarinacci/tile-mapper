@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 
 import { IconButton } from "./common/common-components"
 import { Icons } from "./common/icons"
-import { drawImage } from "./imageeditor/ImageEditorView"
+import { drawImage } from "./imageeditor/drawing"
 import { GameAction } from "./model/action"
 import { Actor } from "./model/actor"
 import { appendToList, useWatchAllProps } from "./model/base"

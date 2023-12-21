@@ -6,7 +6,7 @@ import { Icons } from "../common/icons"
 import { useWatchAllProps } from "../model/base"
 import { DocContext } from "../model/contexts"
 import { SImage } from "../model/image"
-import { drawImage } from "./ImageEditorView"
+import { drawImage } from "./drawing"
 
 export function AnimatedImagePreview(props: { image: SImage; count: number }) {
   const { image, count } = props

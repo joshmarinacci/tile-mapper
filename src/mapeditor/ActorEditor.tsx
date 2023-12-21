@@ -4,7 +4,7 @@ import React, { useContext, useState } from "react"
 
 import { ListSelect } from "../common/ListSelect"
 import { ListViewOptions, ListViewRenderer } from "../common/ListView"
-import { drawImage } from "../imageeditor/ImageEditorView"
+import { drawImage } from "../imageeditor/drawing"
 import { Actor } from "../model/actor"
 import { appendToList } from "../model/base"
 import { DocContext } from "../model/contexts"

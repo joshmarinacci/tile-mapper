@@ -9,7 +9,7 @@ import {
 } from "retrogami-engine"
 
 import { GameState } from "../engine/gamestate"
-import { drawImage } from "../imageeditor/ImageEditorView"
+import { drawImage } from "../imageeditor/drawing"
 import { findActorForInstance } from "../mapeditor/ActorEditor"
 import { MapCell } from "../model/datamodel"
 import { GameDoc } from "../model/gamedoc"
