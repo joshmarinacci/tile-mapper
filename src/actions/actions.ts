@@ -26,6 +26,7 @@ import {
   CopyImageToClipboardAction,
   DeleteImageFrameAction,
   DeleteImageLayerAction,
+  ExportImageToGIFAction,
   ExportImageToPNG4XAction,
   ExportImageToPNGAction,
   MoveImageFrameDownAction,
@@ -221,6 +222,7 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
     actions.push(DeleteImageAction)
     actions.push(ExportImageToPNGAction)
     actions.push(ExportImageToPNG4XAction)
+    actions.push(ExportImageToGIFAction)
     actions.push(AddNewImageLayerAction)
     actions.push(CopyImageToClipboardAction)
   }

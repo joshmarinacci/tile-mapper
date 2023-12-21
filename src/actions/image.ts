@@ -51,7 +51,7 @@ export const ExportImageToPNG4XAction: SimpleMenuAction = {
 async function exportImageToGIF(doc: GameDoc, image: SImage, scale: number) {
   const size = image.size().scale(scale)
   const palette = doc.getPropValue("palette")
-  const drawFrame = (currentFrame: number) => {
+  const drawFrame = (currentFrame: ImageFrame) => {
     const canvas = document.createElement("canvas")
     const size = image.size().scale(scale)
     canvas.width = size.w
@@ -62,9 +62,9 @@ async function exportImageToGIF(doc: GameDoc, image: SImage, scale: number) {
   }
 
   const frames = []
-  for (let i = 0; i < image.getPropValue("frameCount"); i++) {
+  for (const frame of image.frames()) {
     frames.push({
-      imageData: drawFrame(i),
+      imageData: drawFrame(frame),
       delay: 250,
     })
   }
