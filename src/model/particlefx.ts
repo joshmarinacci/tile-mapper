@@ -1,4 +1,4 @@
-import { DefList, PropsBase, PropValues } from "./base"
+import { DefList, IntegerSettings, PropsBase, PropValues } from "./base"
 import { BooleanDef, FloatDef, IntegerDef, NameDef, StringDef } from "./datamodel"
 
 type ParticleFXType = {
@@ -8,7 +8,7 @@ type ParticleFXType = {
   size: number
   maxAge: number
   maxParticles: number
-  duration: number
+  duration: number // msec currently
   angle: number
   angleSpread: number
   velocity: number
@@ -23,11 +23,39 @@ export const ParticleFXDefs: DefList<ParticleFXType> = {
     .withCustom("palette-color"),
   rate: IntegerDef.copy().withDefault(() => 1),
   size: FloatDef.copy().withDefault(() => 3),
-  maxAge: IntegerDef.copy().withDefault(() => 40),
-  maxParticles: IntegerDef.copy().withDefault(() => 100),
-  duration: IntegerDef.copy().withDefault(() => 2000),
-  angle: IntegerDef.copy().withDefault(() => 180),
-  angleSpread: IntegerDef.copy().withDefault(() => 5),
+  maxAge: IntegerDef.copy()
+    .withDefault(() => 40)
+    .withSettings({
+      type: "integer",
+      min: 10,
+      max: 1000,
+      stepSize: 10,
+    } as IntegerSettings),
+  maxParticles: IntegerDef.copy()
+    .withDefault(() => 100)
+    .withSettings({
+      type: "integer",
+      min: 0,
+      max: 1000,
+      stepSize: 10,
+    } as IntegerSettings),
+  duration: FloatDef.copy().withDefault(() => 1),
+  angle: IntegerDef.copy()
+    .withDefault(() => 180)
+    .withSettings({
+      type: "integer",
+      min: -360,
+      max: 360,
+      stepSize: 10,
+    } as IntegerSettings),
+  angleSpread: IntegerDef.copy()
+    .withDefault(() => 5)
+    .withSettings({
+      type: "integer",
+      min: 0,
+      max: 180,
+      stepSize: 10,
+    } as IntegerSettings),
   velocity: FloatDef.copy().withDefault(() => 1.0),
   velocitySpread: FloatDef.copy(),
   infinite: BooleanDef.copy().withDefault(() => true),

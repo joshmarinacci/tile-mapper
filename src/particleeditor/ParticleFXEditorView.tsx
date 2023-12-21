@@ -1,6 +1,12 @@
 import { Point, toRadians } from "josh_js_util"
 import React, { useEffect, useRef, useState } from "react"
-import { AnimationLayer, AnimationManager, Camera, ParticleAnim } from "retrogami-engine"
+import {
+  AnimationLayer,
+  AnimationManager,
+  Camera,
+  GameContext,
+  ParticleAnim,
+} from "retrogami-engine"
 
 import { IconButton, ToggleButton } from "../common/common-components"
 import { Icons } from "../common/icons"
@@ -51,7 +57,12 @@ class AnimationProxy {
     // particleAnim.update(props.step)
     // particleAnim.draw(ctx,camera,5)
     this.anims.update(this.t)
-    this.layer.drawSelf(ctx, this.camera, null, null, 3)
+    const gc: GameContext = {
+      scale: 3,
+      ctx: ctx,
+      camera: this.camera,
+    }
+    this.layer.drawSelf(gc)
     // console.log("anim count", this.anims.runningAnimationCount())
     if (this.particleAnim) {
       console.log(this.particleAnim.isRunning(), this.particleAnim.currentParticleCount())
