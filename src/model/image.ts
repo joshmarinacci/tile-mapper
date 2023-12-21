@@ -143,8 +143,8 @@ export const SImageDefs: DefList<SImageType> = {
     type: "integer",
     default: () => 0,
     format: (v) => v.toString(),
-    fromJSON: (v) => 0,
-    toJSON: (v) => v,
+    fromJSON: (r, v) => 0,
+    toJSON: (r, v) => v,
   })
     .withSkipPersisting(true)
     .withHidden(true),
@@ -356,9 +356,19 @@ export class SImage extends PropsBase<SImageType> {
 
   toJSON(reg: ClassRegistry) {
     const json = super.toJSON(reg)
+    // console.log("saving out simage",this.getPropValue('name'))
     const buffers: Record<string, ArrayGridNumberJSON> = {}
     for (const key of this.buffers.keys()) {
       const buff = this.buffers.get(key) as ImageBuffer
+      // console.log("exporting buffer",key,buff)
+      if (!buff.layer) {
+        console.log("cannot export buffer missing a layer")
+        continue
+      }
+      if (!buff.frame) {
+        console.log("cannot export buffer missing a frame")
+        continue
+      }
       buffers[key] = {
         key: key,
         layer: buff.layer.getUUID(),
