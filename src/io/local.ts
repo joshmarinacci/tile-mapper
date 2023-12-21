@@ -66,12 +66,13 @@ export async function saveLocalDoc(state: GlobalState) {
   console.log("res is", res)
   if (res.success && res.data.length >= 1) {
     console.log("there is an existing doc, need to update it", res.data)
-    const res2 = await db.update_object_props(res.data[0].uuid, doc.toJSON())
+    const json = doc.toJSON(get_class_registry())
+    const res2 = await db.update_object_props(res.data[0].uuid, json)
     console.log("res is", res2)
     console.log("saved")
   } else {
     console.log("no existing doc, make a enw one")
-    const res2 = await db.new_object(doc.toJSON())
+    const res2 = await db.new_object(doc.toJSON(get_class_registry()))
     console.log("res is", res2)
     console.log("saved")
   }

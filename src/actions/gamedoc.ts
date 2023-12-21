@@ -35,7 +35,7 @@ export const ExportToJSONAction: SimpleMenuAction = {
   title: "Export to JSON",
   async perform(state): Promise<void> {
     const doc = state.getPropValue("doc") as GameDoc
-    const blob = jsonObjToBlob(docToJSON(doc))
+    const blob = jsonObjToBlob(docToJSON(get_class_registry(), doc))
     forceDownloadBlob(`${doc.getPropValue("name")}.json`, blob)
   },
 }

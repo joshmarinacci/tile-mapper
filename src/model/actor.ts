@@ -25,8 +25,8 @@ export const ActorDefs: DefList<ActorType> = {
     expandable: false,
     default: () => undefined,
     format: (v) => (v ? `uuid ${v}` : "unknown"),
-    toJSON: (v: string) => v,
-    fromJson: (v: string) => v,
+    toJSON: (r, v: string) => v,
+    fromJSON: (r, v: string) => v,
   },
   actions: GameActionListDef,
   kind: StringDef.copy()
