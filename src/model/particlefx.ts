@@ -1,4 +1,4 @@
-import { DefList, IntegerSettings, PropsBase, PropValues } from "./base"
+import { DefList, FloatSettings, IntegerSettings, PropsBase, PropValues } from "./base"
 import { BooleanDef, FloatDef, IntegerDef, NameDef, StringDef } from "./datamodel"
 
 type ParticleFXType = {
@@ -39,7 +39,14 @@ export const ParticleFXDefs: DefList<ParticleFXType> = {
       max: 1000,
       stepSize: 10,
     } as IntegerSettings),
-  duration: FloatDef.copy().withDefault(() => 1),
+  duration: FloatDef.copy()
+    .withDefault(() => 500)
+    .withSettings({
+      type: "float",
+      min: 0,
+      max: 5,
+      stepSize: 0.1,
+    } as FloatSettings),
   angle: IntegerDef.copy()
     .withDefault(() => 180)
     .withSettings({
