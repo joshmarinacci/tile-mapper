@@ -76,3 +76,42 @@ export function JSONToArrayGrid(json: ArrayGridNumberJSON): ArrayGrid<number> {
   arr.data = json.data
   return arr
 }
+
+export type Callback = () => void
+
+export class Observable {
+  listeners: Map<string, Callback[]>
+  values: Record<string, any>
+
+  constructor() {
+    this.listeners = new Map()
+    this.values = {}
+  }
+
+  on(name: string, cb: Callback) {
+    if (!this.listeners.has(name)) {
+      this.listeners.set(name, [])
+    }
+    this.listeners.get(name)?.push(cb)
+  }
+
+  off(name: string, cb: Callback) {
+    const listeners = this.listeners.get(name) as Callback[]
+    this.listeners.set(
+      name,
+      listeners.filter((c) => c !== cb),
+    )
+  }
+  fire(name: string) {
+    this.listeners.get(name)?.forEach((cb) => cb())
+  }
+
+  getProperty(property: string) {
+    return this.values[property]
+  }
+
+  setProperty(property: string, b: boolean) {
+    this.values[property] = b
+    this.fire(property)
+  }
+}
