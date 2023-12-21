@@ -37,13 +37,14 @@ export function ListView<T, O extends ListViewOptions>(props: {
   return (
     <div className={`list-view ${props.className} ${props.direction}`} style={props.style}>
       {props.data.map((v, i) => {
+        const key = v.getUUID ? v.getUUID() : i + ""
         return (
           <div
             className={toClass({
               "list-item": true,
               selected: props.selected === v,
             })}
-            key={i}
+            key={key}
             onClick={() => props.setSelected(v)}
           >
             <Cell value={v} selected={props.selected === v} options={props.options} />
