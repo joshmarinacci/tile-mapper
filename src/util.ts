@@ -110,7 +110,7 @@ export class Observable {
     return this.values[property]
   }
 
-  setProperty(property: string, b: boolean) {
+  setProperty(property: string, b: unknown) {
     this.values[property] = b
     this.fire(property)
   }

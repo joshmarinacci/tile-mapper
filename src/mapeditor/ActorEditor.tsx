@@ -6,8 +6,8 @@ import { ListSelect } from "../common/ListSelect"
 import { ListViewOptions, ListViewRenderer } from "../common/ListView"
 import { drawImage } from "../imageeditor/drawing"
 import { Actor } from "../model/actor"
-import { appendToList } from "../model/base"
-import { DocContext } from "../model/contexts"
+import { appendToList, removeFromList } from "../model/base"
+import { DocContext, StateContext } from "../model/contexts"
 import { GameDoc } from "../model/gamedoc"
 import { ActorInstance, ActorLayer } from "../model/gamemap"
 import { TileReferenceView } from "../propsheet/propsheet"
@@ -75,10 +75,12 @@ const ActorPreviewRenderer: ListViewRenderer<Actor, never> = (props: {
 export function ActorLayerToolbar(props: {
   layer: ActorLayer
   onSelect: (act: ActorInstance) => void
+  selected: ActorInstance | undefined
 }) {
   const { layer, onSelect } = props
   const doc = useContext(DocContext)
   const [selected, setSelected] = useState<Actor | undefined>(undefined)
+  const state = useContext(StateContext)
   const add_actor = () => {
     if (!selected) return
     const player = new ActorInstance({
@@ -88,6 +90,9 @@ export function ActorLayerToolbar(props: {
     })
     appendToList(layer, "actors", player)
     onSelect(player)
+  }
+  const delete_actor = () => {
+    if (props.selected) removeFromList(layer, "actors", props.selected)
   }
   return (
     <div className={"toolbar"}>
@@ -102,6 +107,7 @@ export function ActorLayerToolbar(props: {
       <button disabled={!selected} onClick={add_actor}>
         add actor
       </button>
+      <button onClick={delete_actor}>delete selected actor</button>
     </div>
   )
 }

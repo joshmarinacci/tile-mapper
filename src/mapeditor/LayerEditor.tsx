@@ -5,11 +5,11 @@ import { DialogContext, Spacer } from "josh_react_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
 import { exportMapToPNG } from "../actions/gamemap"
-import { DropdownButton, Icon, IconButton, ToggleButton } from "../common/common-components"
+import { DropdownButton, IconButton, ToggleButton } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { ICON_CACHE } from "../iconcache"
 import { PropsBase, useWatchAllProps, useWatchProp } from "../model/base"
-import { DocContext } from "../model/contexts"
+import { DocContext, StateContext } from "../model/contexts"
 import { GameDoc } from "../model/gamedoc"
 import {
   ActorInstance,
@@ -142,6 +142,7 @@ export function LayerEditor(props: {
   }
 
   useEffect(() => redraw(), [zoom, layer])
+  const state = useContext(StateContext)
   const make_event = (e: MouseEvent<HTMLCanvasElement>) => {
     return {
       e,
@@ -151,7 +152,10 @@ export function LayerEditor(props: {
       tile,
       setSelectedTile,
       selectedActor,
-      setSelectedActor,
+      setSelectedActor: (act: ActorInstance | undefined) => {
+        setSelectedActor(act)
+        // state.setSelectionTarget(act)
+      },
       selectedTool,
       setSelectedTool,
     }
@@ -227,7 +231,7 @@ export function LayerEditor(props: {
         />
       )}
       {layer instanceof ActorLayer && (
-        <ActorLayerToolbar layer={layer} onSelect={setSelectedActor} />
+        <ActorLayerToolbar layer={layer} onSelect={setSelectedActor} selected={selectedActor} />
       )}
       <div className={"map-editor-canvas-wrapper"}>
         <canvas

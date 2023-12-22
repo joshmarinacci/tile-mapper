@@ -31,14 +31,16 @@ export class GamePlayer extends Observable {
     this.values.actor = true
 
     this.running = false
+
+    this.values.scale = 2
   }
-  setProperty(property: string, value: boolean) {
+  setProperty(property: string, value: unknown) {
     super.setProperty(property, value)
     console.log("set property", property, "to", value)
-    if (this.layers[property]) this.layers[property].visible = value
+    if (this.layers[property]) this.layers[property].visible = value as boolean
   }
 
-  start(canvas: HTMLCanvasElement, json: any) {
+  start(canvas: HTMLCanvasElement, json: unknown) {
     // log("loading game",json,canvas)
     const data: GameData = loadGameData(json as unknown as JSONGameDoc, new HTMLCanvasSource())
     canvas.addEventListener("keydown", (e) => {
@@ -51,9 +53,11 @@ export class GamePlayer extends Observable {
     const gs = setup_gamestate(data, canvas)
     Object.values(this.layers).forEach((layer) => gs.layers.push(layer))
     // gs.layers.push(new HealthOverlay())
-    // gs.scale = 3
+    gs.scale = 3
     startLevel(gs, data.maps[0])
-    startLoop(gs)
+    startLoop(gs, (gs) => {
+      gs.scale = this.values.scale
+    })
   }
 
   stop() {

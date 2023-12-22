@@ -55,8 +55,8 @@ import { GamePlayer } from "./GamePlayer"
 function PropToggleButton(props: {
   observerable: Observable
   property: string
-  selectedIcon?: Icons.GridSelected
-  icon?: Icons.Grid
+  selectedIcon?: Icons
+  icon?: Icons
   text: string
 }) {
   const { observerable, property } = props
@@ -97,6 +97,9 @@ export function PlayTest(props: { map: GameMap }) {
   const ref = useRef<HTMLCanvasElement>(null)
   const [player] = useState(() => new GamePlayer())
   const [zoom, setZoom] = useState(3)
+  useEffect(() => {
+    player.setProperty("scale", zoom)
+  }, [zoom])
   const startPlaying = () => {
     if (ref.current) {
       const json = doc.toJSON(get_class_registry())
