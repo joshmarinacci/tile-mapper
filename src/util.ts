@@ -17,6 +17,25 @@ export function fillBounds(ctx: CanvasRenderingContext2D, bounds: Bounds, color:
   ctx.fillStyle = color
   ctx.fillRect(bounds.x, bounds.y, bounds.w, bounds.h)
 }
+export function drawTextWithBackground(
+  ctx: CanvasRenderingContext2D,
+  text: string,
+  pos: Point,
+  textColor: string,
+  backgroundColor: string,
+) {
+  ctx.font = "bold 10px sans-serif"
+  const metrics = ctx.measureText(text)
+  const size = new Size(
+    metrics.width,
+    metrics.fontBoundingBoxAscent + metrics.fontBoundingBoxDescent,
+  )
+  const bds = Bounds.fromPointSize(pos.subtract(new Point(0, size.h)), size)
+  fillBounds(ctx, bds.grow(5), backgroundColor)
+  ctx.fillStyle = textColor
+  ctx.fillText(text, bds.x, bds.y + metrics.fontBoundingBoxAscent)
+}
+
 export function fillOutsideBounds(
   ctx: CanvasRenderingContext2D,
   bounds: Bounds,
