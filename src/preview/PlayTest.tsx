@@ -52,11 +52,11 @@ import { GamePlayer } from "./GamePlayer"
 //   )
 // }
 
-function ObserverBooleanPropertyToggleButton(props: {
+function PropToggleButton(props: {
   observerable: Observable
   property: string
-  selectedIcon: Icons.GridSelected
-  icon: Icons.Grid
+  selectedIcon?: Icons.GridSelected
+  icon?: Icons.Grid
   text: string
 }) {
   const { observerable, property } = props
@@ -89,7 +89,6 @@ function ObserverBooleanPropertyToggleButton(props: {
 }
 
 export function PlayTest(props: { map: GameMap }) {
-  const { map } = props
   const doc = useContext(DocContext)
   // const [logger] = useState(() => new PersistentLogger({ name: "logger" }))
   const tileSize = doc.getPropValue("tileSize")
@@ -97,14 +96,7 @@ export function PlayTest(props: { map: GameMap }) {
   const physics = doc.getPropValue("physics")
   const ref = useRef<HTMLCanvasElement>(null)
   const [player] = useState(() => new GamePlayer())
-  // const [playing, setPlaying] = useState(true)
-  // const [showGrid, setShowGrid] = useState(true)
-  // const [showViewport, setShowViewport] = useState(true)
-  // const [showActors, setShowActors] = useState(true)
-  // const [showHidden, setShowHidden] = useState(true)
-  // const [showPhysics, setShowPhysics] = useState(true)
   const [zoom, setZoom] = useState(3)
-
   const startPlaying = () => {
     if (ref.current) {
       const json = doc.toJSON(get_class_registry())
@@ -112,73 +104,9 @@ export function PlayTest(props: { map: GameMap }) {
       player.start(ref.current, json)
     }
   }
-  const redraw = () => {
-    if (!ref.current) return
-    //   const gameState = generateGamestate(ref.current, doc, map)
-    //   if (gameState.getActorLayers().length === 0) {
-    //     const layer = new ActorLayer()
-    //     const player: Player = {
-    //       name: "dummy-player",
-    //       color: "cyan",
-    //       dir: RIGHT,
-    //       opacity: 1.0,
-    //       hidden: false,
-    //       bounds: new Bounds(20, 20, 16, 16),
-    //       type: "player",
-    //       vy: 0,
-    //       vx: 0,
-    //       hitable: false,
-    //       standing: false,
-    //       originalPosition: new Point(20, 20),
-    //       actions: [],
-    //       tile: {
-    //         uuid: "unknown",
-    //       },
-    //     }
-    //     layer.addActor(player)
-    //     gameState.addLayer(layer)
-    //     //create an actor layer
-    //   }
-    //   if (gameState.getPlayers().length === 0) {
-    //     console.log("no player exists!")
-    //     // create a player
-    //   }
-    //   if (showActors) gameState.addLayer(new ActorDebugOverlay())
-    //   if (showViewport) gameState.addLayer(new ViewportDebugOverlay())
-    //   if (showGrid) gameState.addLayer(new GridDebugOverlay())
-    //   if (showPhysics) gameState.addLayer(gameState.getPhysics())
-    //
-    //   anim.setGamestate(gameState, logger)
-    //   const phs: PhysicsConstants = {
-    //     gravity: physics.getPropValue("gravity"),
-    //     jump_power: physics.getPropValue("jump_power"),
-    //     move_speed: physics.getPropValue("move_speed"),
-    //     move_speed_max: physics.getPropValue("move_speed_max"),
-    //     friction: physics.getPropValue("friction"),
-    //   }
-    //   anim.setPhysicsConstants(phs)
-    //   anim.setKeyboardTarget(ref.current)
-    //   anim.setZoom(zoom)
-    //   anim.drawOnce()
-  }
-  // // useWatchAllProps(test, () => redraw())
-  // useEffect(
-  //   () => redraw(),
-  //   [doc, zoom, showGrid, showViewport, showHidden, showActors, ref, showPhysics],
-  // )
-  // useWatchAllProps(camera, () => redraw())
-  // useWatchAllProps(physics, () => redraw())
-  // useEffect(() => {
-  //   if (playing) {
-  //     anim.stop()
-  //     anim.play()
-  //   } else {
-  //     anim.stop()
-  //   }
-  // }, [playing])
   const dm = useContext(DialogContext)
   const dismiss = () => {
-    // setPlaying(false)
+    player.stop()
     dm.hide()
   }
   const viewport = camera.getPropValue("viewport")
@@ -202,41 +130,10 @@ export function PlayTest(props: { map: GameMap }) {
         </div>
         <div className={"toolbar"}>
           <label>Debug</label>
-          <ObserverBooleanPropertyToggleButton
-            icon={Icons.Grid}
-            selectedIcon={Icons.GridSelected}
-            text={"grid"}
-            property={"grid"}
-            observerable={player}
-          />
-          {/*  <ToggleButton*/}
-          {/*    onClick={() => setShowPhysics(!showPhysics)}*/}
-          {/*    selected={showPhysics}*/}
-          {/*    icon={Icons.Grid}*/}
-          {/*    selectedIcon={Icons.GridSelected}*/}
-          {/*    text={"physics"}*/}
-          {/*  />*/}
-          {/*  <ToggleButton*/}
-          {/*    onClick={() => setShowViewport(!showViewport)}*/}
-          {/*    selected={showViewport}*/}
-          {/*    icon={Icons.Grid}*/}
-          {/*    selectedIcon={Icons.GridSelected}*/}
-          {/*    text={"viewport"}*/}
-          {/*  />*/}
-          {/*  <ToggleButton*/}
-          {/*    onClick={() => setShowActors(!showActors)}*/}
-          {/*    selected={showActors}*/}
-          {/*    icon={Icons.Grid}*/}
-          {/*    selectedIcon={Icons.GridSelected}*/}
-          {/*    text={"actors"}*/}
-          {/*  />*/}
-          {/*  <ToggleButton*/}
-          {/*    onClick={() => setShowHidden(!showHidden)}*/}
-          {/*    selected={showHidden}*/}
-          {/*    icon={Icons.Grid}*/}
-          {/*    selectedIcon={Icons.GridSelected}*/}
-          {/*    text={"hidden"}*/}
-          {/*  />*/}
+          <PropToggleButton text={"grid"} property={"grid"} observerable={player} />
+          <PropToggleButton text={"physics"} property={"physics"} observerable={player} />
+          <PropToggleButton text={"viewport"} property={"viewport"} observerable={player} />
+          <PropToggleButton text={"actors"} property={"actor"} observerable={player} />
         </div>
         <div className={"hbox"}>
           <canvas

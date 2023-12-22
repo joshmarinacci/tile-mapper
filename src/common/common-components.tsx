@@ -168,7 +168,7 @@ export function Icon(props: { name: Icons; onClick?: () => void }) {
 
 export function ToggleButton(props: {
   onClick: () => void
-  icon: Icons
+  icon?: Icons
   selected: boolean
   selectedIcon?: Icons
   text?: string
@@ -184,7 +184,7 @@ export function ToggleButton(props: {
         selected: props.selected,
       })}
     >
-      <Icon name={icon} />
+      {icon && <Icon name={icon} />}
       {props.text ? " " + props.text : ""}
     </button>
   )
