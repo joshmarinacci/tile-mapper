@@ -17,8 +17,6 @@ export type MouseEventArgs<T> = {
   setSelectedActor: (act: ActorInstance | undefined) => void
   selectedTool: TileLayerToolType
   setSelectedTool: (tool: TileLayerToolType) => void
-  fillOnce: boolean
-  setFillOnce: (fillOnce: boolean) => void
 }
 export type DrawArgs<T> = {
   layer: T

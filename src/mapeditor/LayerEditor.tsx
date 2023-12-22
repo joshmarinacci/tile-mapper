@@ -136,7 +136,6 @@ export function LayerEditor(props: {
     const rect = (e.target as HTMLCanvasElement).getBoundingClientRect()
     return new Point(e.clientX, e.clientY).subtract(new Point(rect.left, rect.top)).scale(1 / scale)
   }
-  const [fillOnce, setFillOnce] = useState<boolean>(false)
   const dm = useContext(DialogContext)
   const start_playing = () => {
     dm.show(<PlayTest map={map} />)
@@ -153,8 +152,6 @@ export function LayerEditor(props: {
       setSelectedTile,
       selectedActor,
       setSelectedActor,
-      fillOnce,
-      setFillOnce,
       selectedTool,
       setSelectedTool,
     }
@@ -225,8 +222,6 @@ export function LayerEditor(props: {
       {layer instanceof TileLayer && (
         <TileLayerToolbar
           layer={layer}
-          fillOnce={fillOnce}
-          setFillOnce={setFillOnce}
           setSelectedTool={setSelectedTool}
           selectedTool={selectedTool}
         />

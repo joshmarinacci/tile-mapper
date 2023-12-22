@@ -77,23 +77,27 @@ export function drawTileLayer(
   }
 }
 
-export type TileLayerToolType = "pencil" | "eraser"
+export type TileLayerToolType = "pencil" | "eraser" | "fill" | "filleraser"
 export function TileLayerToolbar(props: {
   layer: TileLayer
-  fillOnce: boolean
-  setFillOnce: (fw: boolean) => void
   selectedTool: TileLayerToolType
   setSelectedTool: (value: TileLayerToolType) => void
 }) {
-  const { fillOnce, setFillOnce, setSelectedTool, selectedTool } = props
+  const { setSelectedTool, selectedTool } = props
   return (
     <div className={"toolbar"}>
       <label>tiles</label>
       <ToggleButton
-        selected={fillOnce}
+        selected={selectedTool == "fill"}
         icon={Icons.PaintBucket}
-        onClick={() => setFillOnce(true)}
+        onClick={() => setSelectedTool("fill")}
         text="fill"
+      />
+      <ToggleButton
+        selected={selectedTool == "filleraser"}
+        icon={Icons.PaintBucket}
+        onClick={() => setSelectedTool("filleraser")}
+        text="fill erase"
       />
       <ToggleButton
         onClick={() => setSelectedTool("pencil")}
@@ -113,19 +117,13 @@ export function TileLayerToolbar(props: {
 
 export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
   onMouseDown(args: MouseEventArgs<TileLayer>) {
-    const { e, layer, tile, doc, setSelectedTile, fillOnce } = args
+    const { e, layer, tile, doc, setSelectedTile } = args
     if (!layer.getPropValue("visible")) {
       console.log("layer not visible")
       return
     }
     const tileSize = doc.getPropValue("tileSize")
     const pt = new Point(args.pt.x / tileSize.w, args.pt.y / tileSize.h).floor()
-    if (args.selectedTool === "eraser") {
-      layer.getPropValue("data").set(pt, { tile: "unknown" })
-      e.stopPropagation()
-      e.preventDefault()
-      return
-    }
     if (e.button === 2) {
       const cell = layer.getPropValue("data").get(pt)
       const tile = doc.lookup_sprite(cell.tile)
@@ -134,10 +132,20 @@ export class TileLayerMouseHandler implements MouseHandler<TileLayer> {
       e.preventDefault()
       return
     }
-    if (fillOnce && tile) {
+    if (args.selectedTool === "eraser") {
+      layer.getPropValue("data").set(pt, { tile: "unknown" })
+      e.stopPropagation()
+      e.preventDefault()
+      return
+    }
+    if (args.selectedTool === "filleraser" && tile) {
+      const cell = layer.getPropValue("data").get(pt)
+      bucketFill(layer, cell.tile, "unknown", pt)
+      return
+    }
+    if (args.selectedTool === "fill" && tile) {
       const cell = layer.getPropValue("data").get(pt)
       bucketFill(layer, cell.tile, tile._id, pt)
-      args.setFillOnce(false)
       return
     }
     if (tile) layer.getPropValue("data").set(pt, { tile: tile._id })
