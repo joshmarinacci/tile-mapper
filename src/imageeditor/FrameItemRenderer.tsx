@@ -1,7 +1,10 @@
-import React, { useEffect, useRef } from "react"
+import React, { useContext, useEffect, useRef } from "react"
 
+import { calculate_context_actions } from "../actions/actions"
 import { ImagePalette } from "../common/common"
+import { MenuList, ToolbarActionButton } from "../common/common-components"
 import { ListViewRenderer } from "../common/ListView"
+import { PopupContext } from "../common/popup"
 import { useWatchProp } from "../model/base"
 import { GameDoc } from "../model/gamedoc"
 import { ImageFrame, SImage } from "../model/image"
@@ -23,6 +26,15 @@ function FrameView(props: {
   const { image, scale, frame, doc, palette } = props
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const size = image.getPropValue("size").scale(scale)
+  const pm = useContext(PopupContext)
+  const showContextMenu = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault()
+    // select(e)
+    const actions = calculate_context_actions(frame)
+    const items = actions.map((act) => <ToolbarActionButton action={act} />)
+    pm.show_at(<MenuList>{items}</MenuList>, e.target, "right")
+  }
+
   const redraw = () => {
     if (canvasRef.current && frame && image) {
       const ctx = canvasRef.current.getContext("2d") as CanvasRenderingContext2D
@@ -31,7 +43,9 @@ function FrameView(props: {
   }
   useWatchProp(image, "history", () => redraw())
   useEffect(() => redraw(), [])
-  return <canvas ref={canvasRef} width={size.w} height={size.h}></canvas>
+  return (
+    <canvas ref={canvasRef} width={size.w} height={size.h} onContextMenu={showContextMenu}></canvas>
+  )
 }
 
 export const FrameItemRenderer: ListViewRenderer<ImageFrame, FrameItemRendererOptions> = (props: {
