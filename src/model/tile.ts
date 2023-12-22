@@ -56,7 +56,7 @@ const GridPointDef = PointDef.copy()
 export const TileDefs: DefList<TileType> = {
   name: NameDef,
   blocking: BlockingDef,
-  data: TileDataDef,
+  data: TileDataDef.withHidden(true),
   size: SizeDef.copy().withEditable(false).withHidden(true),
   gridPosition: GridPointDef,
 }
