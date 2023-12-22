@@ -8,6 +8,7 @@ import { PaletteColorPickerPane } from "../common/Palette"
 import { useWatchAllProps, useWatchProp } from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
 import { ImageFrame, ImageLayer, SImage } from "../model/image"
+import { wrapNumber } from "../util"
 import { drawCanvas } from "./drawing"
 import { EllipseTool, EllipseToolSettings } from "./ellipse_tool"
 import { EraserTool, EraserToolSettings } from "./eraser_tool"
@@ -88,7 +89,12 @@ function ImageLayerToolbar(props: {
   )
 }
 
-export function ImageEditorCanvas(props: { image: SImage; layer: ImageLayer; frame: ImageFrame }) {
+export function ImageEditorCanvas(props: {
+  image: SImage
+  layer: ImageLayer
+  frame: ImageFrame
+  setFrame?: (frame: ImageFrame) => void
+}) {
   const { image, layer, frame } = props
   const canvasRef = useRef(null)
   const doc = useContext(DocContext)
@@ -108,20 +114,20 @@ export function ImageEditorCanvas(props: { image: SImage; layer: ImageLayer; fra
   useWatchAllProps(image, () => setCount(count + 1))
   const scale = Math.pow(2, zoom)
 
-  // const navPrevFrame = () => {
-  //   if (frame) {
-  //     let index = image.frames().findIndex((f) => f === frame)
-  //     index = wrapNumber(index - 1, 0, image.frames().length)
-  //     setFrame(image.frames()[index])
-  //   }
-  // }
-  // const navNextFrame = () => {
-  //   if (frame) {
-  //     let index = image.frames().findIndex((f) => f === frame)
-  //     index = wrapNumber(index + 1, 0, image.frames().length)
-  //     setFrame(image.frames()[index])
-  //   }
-  // }
+  const navPrevFrame = () => {
+    if (frame) {
+      let index = image.frames().findIndex((f) => f === frame)
+      index = wrapNumber(index - 1, 0, image.frames().length)
+      if (props.setFrame) props.setFrame(image.frames()[index])
+    }
+  }
+  const navNextFrame = () => {
+    if (frame) {
+      let index = image.frames().findIndex((f) => f === frame)
+      index = wrapNumber(index + 1, 0, image.frames().length)
+      if (props.setFrame) props.setFrame(image.frames()[index])
+    }
+  }
 
   const tool_settings = <ToolSettings tool={pixelTool} />
 
@@ -150,8 +156,8 @@ export function ImageEditorCanvas(props: { image: SImage; layer: ImageLayer; fra
         },
       })
     }
-    // if (e.key === "a") navPrevFrame()
-    // if (e.key === "s") navNextFrame()
+    if (e.key === "a") navPrevFrame()
+    if (e.key === "s") navNextFrame()
     if (e.key === "=") setZoom(zoom + 1)
     if (e.key === "-") setZoom(zoom - 1)
     if (e.key === "v") {

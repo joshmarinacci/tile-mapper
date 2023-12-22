@@ -119,7 +119,9 @@ export function ImageEditorView(props: { image: SImage }) {
           />
         </Pane>
       </div>
-      {layer && frame && <ImageEditorCanvas image={image} layer={layer} frame={frame} />}
+      {layer && frame && (
+        <ImageEditorCanvas image={image} layer={layer} frame={frame} setFrame={setFrame} />
+      )}
     </>
   )
 }
