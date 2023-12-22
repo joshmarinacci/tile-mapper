@@ -124,6 +124,51 @@ describe("image with frames", () => {
       expect(surf.getPixel(RIGHT)).toEqual(1)
     }
   })
+  it("should clone an image with two layers and three frames", async () => {
+    const PT = new Point(3, 3)
+    const COLOR = 5
+    const img: SImage = new SImage({
+      size: new Size(10, 10),
+    })
+    {
+      img.appendLayer(new ImageLayer({ name: "layer 1", opacity: 0.5, visible: true }))
+      img.appendLayer(new ImageLayer({ name: "layer 2", opacity: 1.0, visible: false }))
+      img.appendFrame(new ImageFrame({ name: "frame 1", group: "foo", duration: 0.1 }))
+      img.appendFrame(new ImageFrame({ name: "frame 2", group: "bar", duration: 0.2 }))
+      // img.appendFrame(new ImageFrame({name: 'frame 3', group: "baz", duration: 1.0}))
+      const surf = img.getPixelSurface(img.layers()[0], img.frames()[1])
+      surf.setPixel(PT, COLOR)
+      expect(img.layers().length).toEqual(2)
+      // expect(img.frames().length).toEqual(3)
+      const l1 = img.layers()[0]
+      // const l2 = img.layers()[2]
+      const f1 = img.frames()[0]
+      const f2 = img.frames()[1]
+      expect(l1.getPropValue("name")).toEqual("layer 1")
+      expect(l1.getPropValue("opacity")).toEqual(0.5)
+      expect(f2.getPropValue("name")).toEqual("frame 2")
+      expect(img.getPixelSurface(l1, f1).getPixel(PT)).toEqual(-1)
+      expect(img.getPixelSurface(l1, f2).getPixel(PT)).toEqual(COLOR)
+      expect(img.getBuffer(l1, f1).key).toEqual(l1.getUUID() + "_" + f1.getUUID())
+      expect(img.getBuffer(l1, f2).key).toEqual(l1.getUUID() + "_" + f2.getUUID())
+    }
+
+    {
+      const img2 = img.clone()
+      expect(img2.layers().length).toEqual(2)
+      // expect(img2.frames().length).toEqual(3)
+      const l1 = img2.layers()[0]
+      // const l2 = img2.layers()[2]
+      const f1 = img2.frames()[0]
+      const f2 = img2.frames()[1]
+      expect(l1.getPropValue("name")).toEqual("layer 1")
+      expect(f2.getPropValue("name")).toEqual("frame 2")
+      console.log("buf is", img2.getBuffer(l1, f1).key)
+      console.log("buf is", img2.getBuffer(l1, f2).key)
+      expect(img2.getPixelSurface(l1, f1).getPixel(PT)).toEqual(-1)
+      expect(img2.getPixelSurface(l1, f2).getPixel(PT)).toEqual(COLOR)
+    }
+  })
 })
 
 describe("image with history support", () => {

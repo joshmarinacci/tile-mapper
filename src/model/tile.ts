@@ -109,6 +109,17 @@ export class Tile extends PropsBase<TileType> {
   //   new_tile.getPropValue("data").data = this.data().data.slice()
   //   return new_tile
   // }
+  clone() {
+    this.log("cloning ", this.getPropValue("name"))
+    const new_tile = new Tile({
+      size: this.getPropValue("size"),
+      blocking: this.getPropValue("blocking"),
+      name: this.getPropValue("name"),
+      gridPosition: this.getPropValue("gridPosition"),
+      data: this.getPropValue("data").clone(),
+    })
+    return new_tile
+  }
 
   private log(...args: unknown[]) {
     console.log(this.constructor.name, ...args)
@@ -137,8 +148,4 @@ export class Tile extends PropsBase<TileType> {
       this.setPropValue("data", image)
     }
   }
-
-  // private data() {
-  //   return this.getPropValue("data")
-  // }
 }

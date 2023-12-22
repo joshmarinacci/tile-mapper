@@ -98,6 +98,13 @@ export class ImageLayer extends PropsBase<ImageLayerType> {
   //   })
   //   this.frames = new_frames
   // }
+  clone() {
+    return new ImageLayer({
+      visible: this.getPropValue("visible"),
+      opacity: this.getPropValue("opacity"),
+      name: this.getPropValue("name"),
+    })
+  }
 }
 
 export interface ImageFrameType {
@@ -115,6 +122,14 @@ export const ImageFrameDefs: DefList<ImageFrameType> = {
 export class ImageFrame extends PropsBase<ImageFrameType> {
   constructor(opts?: PropValues<ImageFrameType>) {
     super(ImageFrameDefs, opts)
+  }
+
+  clone() {
+    return new ImageFrame({
+      name: this.getPropValue("name"),
+      group: this.getPropValue("group"),
+      duration: this.getPropValue("duration"),
+    })
   }
 }
 
@@ -379,6 +394,61 @@ export class SImage extends PropsBase<SImageType> {
     json.props.buffers = buffers
     return json
   }
+  clone() {
+    const new_image = new SImage({
+      size: this.getPropValue("size"),
+      name: this.getPropValue("name"),
+    })
+    const old_new_frames = new Map<string, ImageFrame>()
+    const old_new_layers = new Map<string, ImageLayer>()
+    for (const frame of this.frames()) {
+      const new_frame: ImageFrame = frame.clone()
+      old_new_frames.set(frame.getUUID(), new_frame)
+      new_image.appendFrame(new_frame)
+    }
+    for (const layer of this.layers()) {
+      const new_layer: ImageLayer = layer.clone()
+      old_new_layers.set(layer.getUUID(), new_layer)
+      new_image.appendLayer(new_layer)
+    }
+    for (const buff of this.buffers.values()) {
+      console.log("adding buff", buff.key)
+      const new_layer = old_new_layers.get(buff.layer.getUUID()) as ImageLayer
+      const new_frame = old_new_frames.get(buff.frame.getUUID()) as ImageFrame
+      const new_key = new_layer.getUUID() + "_" + new_frame.getUUID()
+      console.log("new key", new_key)
+      const new_buff: ImageBuffer = {
+        data: cloneArrayGrid(buff.data),
+        layer: old_new_layers.get(buff.layer.getUUID()) as ImageLayer,
+        frame: old_new_frames.get(buff.frame.getUUID()) as ImageFrame,
+        key: new_key,
+      }
+      console.log("cloning", new_buff.key, new_buff.data)
+      new_image.buffers.set(new_buff.key, new_buff)
+    }
+    console.log("old image", this.getUUID())
+    console.log("new image", new_image.getUUID())
+    console.log(
+      "old image layers",
+      this.layers().map((f) => f.getUUID() + " " + f.getPropValue("name")),
+    )
+
+    console.log(
+      "new image layers",
+      new_image.layers().map((f) => f.getUUID() + " " + f.getPropValue("name")),
+    )
+
+    console.log(
+      "old image frames",
+      this.frames().map((f) => f.getUUID() + " " + f.getPropValue("name")),
+    )
+    console.log(
+      "new image frames",
+      new_image.frames().map((f) => f.getUUID() + " " + f.getPropValue("name")),
+    )
+    return new_image
+  }
+
   fromJSON(reg: ClassRegistry, json: JsonOut<SImageType>) {
     if ("buffers" in json.props) {
       console.log("new style")
