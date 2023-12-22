@@ -1,30 +1,28 @@
 import React, { useContext, useEffect, useRef, useState } from "react"
-import { ViewportDebugOverlay } from "retrogami-engine"
 
+import { get_class_registry } from "./model"
 import { useWatchAllProps } from "./model/base"
 import { Camera } from "./model/camera"
 import { DocContext } from "./model/contexts"
-import { GameMap } from "./model/gamemap"
-import { generateGamestate } from "./preview/generateGamestate"
+import { GamePlayer } from "./preview/GamePlayer"
 
 export function CameraEditorView(props: { camera: Camera }) {
-  // const [anim] = useState(() => new Anim())
   const doc = useContext(DocContext)
   const ref = useRef<HTMLCanvasElement>(null)
-  function redraw() {
-    if (!ref.current) return
-    // const map = new GameMap({ name: "scratch" })
-    // const gameState = generateGamestate(ref.current, doc, map)
-    // gameState.addLayer(new ViewportDebugOverlay())
-    // anim.setGamestate(gameState)
-    // anim.setZoom(5)
-    // anim.drawOnce()
+  const [player] = useState(() => new GamePlayer())
+  const rebuild = () => {
+    if (ref.current) {
+      const json = doc.toJSON(get_class_registry())
+      console.log("json is", json)
+      player.stop()
+      player.start(ref.current, json)
+    }
   }
-  useWatchAllProps(props.camera, () => redraw())
-  useEffect(() => redraw(), [props.camera])
+  useWatchAllProps(props.camera, () => rebuild())
+  useEffect(() => rebuild(), [props.camera])
   return (
     <>
-      <div className={"vbox tool-column"}>camer tools</div>
+      <div className={"vbox tool-column"}>camera tools</div>
       <div className={"editor-view"}>
         <canvas
           ref={ref}
