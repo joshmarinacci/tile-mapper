@@ -1,4 +1,4 @@
-import { IndexedDBImpl, JDObject } from "dbobject_api_ts"
+import { IndexedDBImpl, JDObject, JDStore } from "dbobject_api_ts"
 import { Size } from "josh_js_util"
 
 import { get_class_registry } from "../model"
@@ -134,10 +134,21 @@ export async function loadLocalDoc(state: GlobalState, uuid: string): Promise<Ga
   }
 }
 
-export async function deleteLocalDoc(state: GlobalState, uuid: string): Promise<void> {
-  const index: JSONDocIndex = loadIndex(state)
-  const docref = index.docs.find((dr) => dr.uuid === uuid)
-  if (!docref) return
-  index.docs = index.docs.filter((doc) => doc.uuid !== uuid)
-  state.localStorage.setItem("index", JSON.stringify(index, null, "    "))
+export async function deleteLocalDoc(
+  state: GlobalState,
+  uuid: string,
+): Promise<JSONDocReference[]> {
+  console.log("deleting", uuid)
+  const db = new IndexedDBImpl()
+  await db.open()
+  const res = await db.get_object(uuid)
+  console.log("res is", res)
+  const rest2 = await db.delete_object(res.data[0].uuid)
+  console.log("res2", rest2)
+  return listLocalDocs(state)
+  // const index: JSONDocIndex = loadIndex(state)
+  // const docref = index.docs.find((dr) => dr.uuid === uuid)
+  // if (!docref) return
+  // index.docs = index.docs.filter((doc) => doc.uuid !== uuid)
+  // state.localStorage.setItem("index", JSON.stringify(index, null, "    "))
 }

@@ -1,14 +1,41 @@
 import { DialogContext, Spacer } from "josh_react_util"
 import React, { useContext, useEffect, useState } from "react"
 
-import { ListView, ListViewDirection } from "../common/ListView"
+import { ImagePalette } from "../common/common"
+import { IconButton } from "../common/common-components"
+import { Icons } from "../common/icons"
+import { ListView, ListViewDirection, ListViewOptions, ListViewRenderer } from "../common/ListView"
+import { Sheet } from "../model/sheet"
+import { Tile } from "../model/tile"
 import { GlobalState } from "../state"
-import { JSONDocReference, listLocalDocs, loadLocalDoc } from "./local"
+import { deleteLocalDoc, JSONDocReference, listLocalDocs, loadLocalDoc } from "./local"
 
-function FileItemRenderer(props: { value: JSONDocReference | undefined }) {
+type FileItemOptions = {
+  deleteFile: (file: JSONDocReference) => Promise<void>
+  // sheet: Sheet
+  // showNames: boolean
+  // showGrid: boolean
+  // scale: number
+  // palette: ImagePalette
+} & ListViewOptions
+
+export const FileItemRenderer: ListViewRenderer<JSONDocReference, FileItemOptions> = (props: {
+  value: JSONDocReference | undefined
+  selected: boolean
+  options: FileItemOptions
+}) => {
   return (
     <div className={"std-list-item"}>
       <b>{props.value?.name}</b>
+      <Spacer />
+      <IconButton
+        onClick={async () => {
+          if (props.value) {
+            await props.options.deleteFile(props.value)
+          }
+        }}
+        icon={Icons.Trashcan}
+      />
     </div>
   )
 }
@@ -31,6 +58,12 @@ export function ListFilesDialog(props: { state: GlobalState }) {
     state.setSelectionTarget(doc)
     dm.hide()
   }
+  const opts: FileItemOptions = {
+    deleteFile: async (file): Promise<void> => {
+      const new_list = await deleteLocalDoc(state, file.uuid)
+      setFiles(new_list)
+    },
+  }
 
   return (
     <div className={"dialog"}>
@@ -41,7 +74,7 @@ export function ListFilesDialog(props: { state: GlobalState }) {
           data={files}
           className={""}
           style={{}}
-          options={{}}
+          options={opts}
           selected={selected}
           setSelected={setSelected}
           direction={ListViewDirection.VerticalFill}
