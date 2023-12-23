@@ -17,8 +17,14 @@ import { MainStatusBar } from "./main/MainStatusBar"
 import { MainToolbar } from "./main/MainToolbar"
 import { get_class_registry } from "./model"
 import { PropsBase, useWatchAllProps, useWatchProp } from "./model/base"
-import { ActionRegistryContext, DocContext, StateContext } from "./model/contexts"
+import {
+  ActionRegistryContext,
+  DocContext,
+  ImageSnapshotContext,
+  StateContext,
+} from "./model/contexts"
 import { GameDoc } from "./model/gamedoc"
+import { ImageSnapshotCache } from "./model/ImageSnapshotCache"
 import { PropSheet } from "./propsheet/propsheet"
 import { GlobalState } from "./state"
 import { ToasterView } from "./ToasterView"
@@ -27,6 +33,7 @@ const reg = get_class_registry()
 const AR = new ActionRegistry()
 AR.register([ExportToJSONAction, ImportFromJSONAction, NewDocAction, SaveLocalStorageAction])
 
+const ISC = new ImageSnapshotCache()
 const gstate = new GlobalState()
 gstate.setPropValue("doc", make_doc_from_json(Example, reg))
 
@@ -100,18 +107,20 @@ function App() {
   useWatchProp(gstate, "doc", () => setDoc(gstate.getPropValue("doc")))
   return (
     <StateContext.Provider value={gstate}>
-      <DocContext.Provider value={doc}>
-        <DialogContext.Provider value={new DialogContextImpl()}>
-          <PopupContext.Provider value={new PopupContextImpl()}>
-            <ActionRegistryContext.Provider value={AR}>
-              <Main3 />
-              <PopupContainer />
-              <DialogContainer />
-              <ToasterView />
-            </ActionRegistryContext.Provider>
-          </PopupContext.Provider>
-        </DialogContext.Provider>
-      </DocContext.Provider>
+      <ImageSnapshotContext.Provider value={ISC}>
+        <DocContext.Provider value={doc}>
+          <DialogContext.Provider value={new DialogContextImpl()}>
+            <PopupContext.Provider value={new PopupContextImpl()}>
+              <ActionRegistryContext.Provider value={AR}>
+                <Main3 />
+                <PopupContainer />
+                <DialogContainer />
+                <ToasterView />
+              </ActionRegistryContext.Provider>
+            </PopupContext.Provider>
+          </DialogContext.Provider>
+        </DocContext.Provider>
+      </ImageSnapshotContext.Provider>
     </StateContext.Provider>
   )
 }

@@ -4,13 +4,13 @@ import React, { useContext, useState } from "react"
 
 import { ListSelect } from "../common/ListSelect"
 import { ListViewOptions, ListViewRenderer } from "../common/ListView"
-import { drawImage } from "../imageeditor/drawing"
+import { ImageSnapshotView } from "../imageeditor/ImageSnapshotView"
 import { Actor } from "../model/actor"
 import { appendToList, removeFromList } from "../model/base"
 import { DocContext, StateContext } from "../model/contexts"
 import { GameDoc } from "../model/gamedoc"
 import { ActorInstance, ActorLayer } from "../model/gamemap"
-import { TileReferenceView } from "../propsheet/propsheet"
+import { ImageSnapshotCache } from "../model/ImageSnapshotCache"
 import { fillBounds, strokeBounds } from "../util"
 import { DrawArgs, MouseEventArgs, MouseHandler } from "./editorbase"
 
@@ -24,25 +24,21 @@ export function drawActorlayer(
   doc: GameDoc,
   layer: ActorLayer,
   scale: number,
+  isc: ImageSnapshotCache,
 ) {
   layer.getPropValue("actors").forEach((inst) => {
     const position = inst.getPropValue("position")
-    const source = findActorForInstance(inst, doc)
-    if (source) {
-      const box = source.getPropValue("viewbox").add(position).scale(scale)
-      const imageRef = source.getPropValue("sprite")
+    const actor = findActorForInstance(inst, doc)
+    if (actor) {
+      const box = actor.getPropValue("viewbox").add(position).scale(scale)
+      const imageRef = actor.getPropValue("sprite")
       if (imageRef) {
-        const img = doc.getPropValue("canvases").find((can) => can.getUUID() === imageRef)
-        if (img) {
-          ctx.save()
-          ctx.translate(box.x, box.y)
-          drawImage(doc, ctx, img, doc.getPropValue("palette"), scale, img.frames()[0])
-          ctx.restore()
-          return
-        }
+        const snap = isc.getSnapshotCanvas(imageRef)
+        ctx.drawImage(snap, box.x, box.y, snap.width * scale, snap.height * scale)
+      } else {
+        // if we get here then normal drawing failed, so just do a box
+        fillBounds(ctx, box, "orange")
       }
-      // if we get here then normal drawing failed, so just do a box
-      fillBounds(ctx, box, "orange")
     }
   })
 }
@@ -53,6 +49,11 @@ const ActorPreviewRenderer: ListViewRenderer<Actor, never> = (props: {
   options?: ListViewOptions
 }) => {
   const { selected, value } = props
+  const doc = useContext(DocContext)
+  let img = undefined
+  if (value) {
+    img = doc.getPropValue("canvases").find((img) => img.getUUID() === value.getPropValue("sprite"))
+  }
   if (!value) return <div>nothing selected</div>
   return (
     <div
@@ -67,7 +68,7 @@ const ActorPreviewRenderer: ListViewRenderer<Actor, never> = (props: {
       }}
     >
       <b>{value.getPropValue("name")}</b>
-      <TileReferenceView tileRef={value.getPropValue("sprite")} />
+      <ImageSnapshotView image={img} scale={3} />
     </div>
   )
 }

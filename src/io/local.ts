@@ -4,6 +4,7 @@ import { Size } from "josh_js_util"
 import { get_class_registry } from "../model"
 import { restoreClassFromJSON } from "../model/base"
 import { GameDoc } from "../model/gamedoc"
+import { ImageSnapshotCache } from "../model/ImageSnapshotCache"
 import { GlobalState } from "../state"
 
 export type JSONDocReference = {
@@ -121,13 +122,20 @@ export async function listLocalDocs(state: GlobalState): Promise<JSONDocReferenc
   return doc_list
 }
 
-export async function loadLocalDoc(state: GlobalState, uuid: string): Promise<GameDoc> {
+export async function loadLocalDoc(
+  state: GlobalState,
+  uuid: string,
+  isc: ImageSnapshotCache,
+): Promise<GameDoc> {
   const db = new IndexedDBImpl()
   await db.open()
   const res = await db.get_object(uuid)
   if (res.success) {
     const doc_json = res.data[0].props
     const doc2 = restoreClassFromJSON(get_class_registry(), doc_json) as GameDoc
+    doc2
+      .getPropValue("canvases")
+      .forEach((img) => isc.setImageSnapshot(img.getUUID(), img.toSimpleCanvas(doc2)))
     return doc2
   } else {
     throw new Error(`no such document with uuid: ${uuid}`)

@@ -7,8 +7,8 @@ import { Icons } from "./common/icons"
 import { drawImage } from "./imageeditor/drawing"
 import { GameAction } from "./model/action"
 import { Actor } from "./model/actor"
-import { appendToList, useWatchAllProps } from "./model/base"
-import { DocContext, StateContext } from "./model/contexts"
+import { appendToList, useWatchAllProps, UUID } from "./model/base"
+import { DocContext, ImageSnapshotContext, StateContext } from "./model/contexts"
 import { strokeBounds } from "./util"
 
 function ActionEditor(props: { actor: Actor; action: GameAction }) {
@@ -44,16 +44,15 @@ export function ActorEditView(props: { actor: Actor }) {
     }
   }
 
+  const isc = useContext(ImageSnapshotContext)
   function redraw() {
     if (ref.current) {
       const ctx = ref.current.getContext("2d") as CanvasRenderingContext2D
       ctx.fillStyle = "white"
       ctx.fillRect(0, 0, ref.current.width, ref.current.height)
-      const img = doc.getPropValue("canvases").find((img) => img.getUUID() === spriteId)
-      if (img && img.frames().length >= 1) {
-        const frame = img.frames()[0]
-        drawImage(doc, ctx, img, doc.getPropValue("palette"), scale, frame)
-      }
+      const snap = isc.getSnapshotCanvas(spriteId as UUID)
+      ctx.imageSmoothingEnabled = false
+      ctx.drawImage(snap, 0, 0, snap.width * scale, snap.height * scale)
       const view_bounds = props.actor.getPropValue("viewbox").scale(scale)
       strokeBounds(ctx, view_bounds, "red", 3)
       const hit_bounds = props.actor.getPropValue("hitbox").scale(scale)

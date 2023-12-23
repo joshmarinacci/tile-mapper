@@ -96,7 +96,7 @@ describe("json", () => {
       expect(found.length).toBe(1)
     }
     {
-      const new_doc = await loadLocalDoc(state, uuid)
+      const new_doc = await loadLocalDoc(state, uuid, isc)
       // console.log("new doc is",new_doc)
       expect(new_doc.getUUID()).toEqual(uuid)
       const sheet = new_doc.getPropValue("sheets")[0]

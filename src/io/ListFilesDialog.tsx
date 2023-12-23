@@ -1,10 +1,10 @@
 import { DialogContext, Spacer } from "josh_react_util"
 import React, { useContext, useEffect, useState } from "react"
 
-import { ImagePalette } from "../common/common"
 import { IconButton } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { ListView, ListViewDirection, ListViewOptions, ListViewRenderer } from "../common/ListView"
+import { ImageSnapshotContext } from "../model/contexts"
 import { Sheet } from "../model/sheet"
 import { Tile } from "../model/tile"
 import { GlobalState } from "../state"
@@ -12,11 +12,6 @@ import { deleteLocalDoc, JSONDocReference, listLocalDocs, loadLocalDoc } from ".
 
 type FileItemOptions = {
   deleteFile: (file: JSONDocReference) => Promise<void>
-  // sheet: Sheet
-  // showNames: boolean
-  // showGrid: boolean
-  // scale: number
-  // palette: ImagePalette
 } & ListViewOptions
 
 export const FileItemRenderer: ListViewRenderer<JSONDocReference, FileItemOptions> = (props: {
@@ -51,8 +46,9 @@ export function ListFilesDialog(props: { state: GlobalState }) {
     })
   }, [state])
   const cancel = () => dm.hide()
+  const isc = useContext(ImageSnapshotContext)
   const load = async (file: JSONDocReference) => {
-    const doc = await loadLocalDoc(state, file.uuid)
+    const doc = await loadLocalDoc(state, file.uuid, isc)
     state.setPropValue("doc", doc)
     state.setSelection(doc)
     state.setSelectionTarget(doc)

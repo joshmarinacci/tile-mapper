@@ -1,5 +1,6 @@
 import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
 
+import { drawImage } from "../imageeditor/drawing"
 import { ArrayGridToJson, cloneArrayGrid, JSONToArrayGrid } from "../util"
 import {
   appendToList,
@@ -20,6 +21,7 @@ import {
   SizeDef,
   StringDef,
 } from "./datamodel"
+import { GameDoc } from "./gamedoc"
 
 export interface ImageLayerType {
   name: string
@@ -489,6 +491,17 @@ export class SImage extends PropsBase<SImageType> {
         }
       }
     }
+  }
+
+  toSimpleCanvas(doc: GameDoc): HTMLCanvasElement {
+    const canvas = document.createElement("canvas")
+    const size = this.getPropValue("size")
+    canvas.width = size.w
+    canvas.height = size.h
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D
+    const frame = this.frames()[0]
+    drawImage(doc, ctx, this, doc.palette(), 1, frame)
+    return canvas
   }
 }
 
