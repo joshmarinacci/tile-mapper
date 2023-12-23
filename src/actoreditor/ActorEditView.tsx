@@ -2,33 +2,14 @@ import "./ActorEditView.css"
 
 import React, { useContext, useEffect, useRef, useState } from "react"
 
-import { IconButton } from "./common/common-components"
-import { Icons } from "./common/icons"
-import { drawImage } from "./imageeditor/drawing"
-import { GameAction } from "./model/action"
-import { Actor } from "./model/actor"
-import { appendToList, useWatchAllProps, UUID } from "./model/base"
-import { DocContext, ImageSnapshotContext, StateContext } from "./model/contexts"
-import { strokeBounds } from "./util"
-
-function ActionEditor(props: { actor: Actor; action: GameAction }) {
-  const { actor, action } = props
-  const trigger = action.getPropValue("trigger")
-  const code = action.getPropValue("code")
-  useWatchAllProps(action)
-  return (
-    <div className={"action-card"}>
-      <header>action</header>
-      <div className={"hbox"}>
-        <label>When Player</label>
-        <b>{trigger}</b>
-      </div>
-      <div>
-        <textarea value={code} onChange={(e) => action.setPropValue("code", e.target.value)} />
-      </div>
-    </div>
-  )
-}
+import { IconButton } from "../common/common-components"
+import { Icons } from "../common/icons"
+import { GameAction } from "../model/action"
+import { Actor } from "../model/actor"
+import { appendToList, useWatchAllProps, UUID } from "../model/base"
+import { DocContext, ImageSnapshotContext, StateContext } from "../model/contexts"
+import { strokeBounds } from "../util"
+import { ActionEditor } from "./ActionEditor"
 
 export function ActorEditView(props: { actor: Actor }) {
   const [zoom, setZoom] = useState(4)

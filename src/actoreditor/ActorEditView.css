@@ -1,0 +1,13 @@
+.action-card {
+  border: 1px solid black;
+  padding: 1rem;
+  background-color: aliceblue;
+  border-radius: 1rem;
+  margin: 0.5rem 0.25rem;
+}
+/*.action-card textarea {*/
+/*  border: 1px solid green;*/
+/*  width: 100%;*/
+/*  box-sizing: border-box;*/
+/*  min-height: 100px;*/
+/*}*/

@@ -2,55 +2,53 @@ import "./console-log-view.css"
 
 import { DialogContext, Spacer } from "josh_react_util"
 import { useContext, useEffect, useRef, useState } from "react"
+import { ConsoleInterface } from "retrogami-engine/dist/scripting"
 
 import { ToggleButton } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { get_class_registry } from "../model"
+import { DefList, PropsBase, PropValues, useWatchProp } from "../model/base"
 import { DocContext } from "../model/contexts"
+import { NameDef } from "../model/datamodel"
 import { GameMap } from "../model/gamemap"
 import { Observable } from "../util"
 import { GamePlayer } from "./GamePlayer"
 
-//
-// type LoggerType = {
-//   name: string
-// }
-// const LoggerTypeDefs: DefList<LoggerType> = {
-//   name: NameDef,
-// }
-// class PersistentLogger extends PropsBase<LoggerType> implements ConsoleInterface {
-//   private logs: string[]
-//   constructor(opts: PropValues<LoggerType>) {
-//     super(LoggerTypeDefs, opts)
-//     console.log("made a persistent logger")
-//     this.logs = []
-//   }
-//   log(...args: any[]): void {
-//     console.log("PERSITENT", ...args)
-//     this.logs.push(args.join(","))
-//     this.setPropValue("name", this.logs.length + "")
-//   }
-//
-//   getLogs() {
-//     return this.logs
-//   }
-// }
-// function ConsoleLogView(props: { logger: PersistentLogger }) {
-//   const [items, setItems] = useState<string[]>([])
-//   useWatchProp(props.logger, "name", () => {
-//     console.log("logger changed")
-//     setItems(props.logger.getLogs())
-//   })
-//   return (
-//     <div className={"console-log-view"}>
-//       <ul>
-//         {items.map((it, i) => (
-//           <li key={i}>{it}</li>
-//         ))}
-//       </ul>
-//     </div>
-//   )
-// }
+type LoggerType = {
+  name: string
+}
+const LoggerTypeDefs: DefList<LoggerType> = {
+  name: NameDef,
+}
+class PersistentLogger extends PropsBase<LoggerType> implements ConsoleInterface {
+  private logs: string[]
+  constructor(opts: PropValues<LoggerType>) {
+    super(LoggerTypeDefs, opts)
+    this.logs = []
+  }
+  log(...args: any[]): void {
+    console.log("PERSITENT", ...args)
+    this.logs.push(args.join(","))
+    this.setPropValue("name", this.logs.length + "")
+  }
+
+  getLogs() {
+    return this.logs
+  }
+}
+function ConsoleLogView(props: { logger: PersistentLogger }) {
+  const [items, setItems] = useState<string[]>([])
+  useWatchProp(props.logger, "name", () => setItems(props.logger.getLogs()))
+  return (
+    <div className={"console-log-view"}>
+      <ul>
+        {items.map((it, i) => (
+          <li key={i}>{it}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
 function PropToggleButton(props: {
   observerable: Observable
@@ -90,21 +88,18 @@ function PropToggleButton(props: {
 
 export function PlayTest(props: { map: GameMap }) {
   const doc = useContext(DocContext)
-  // const [logger] = useState(() => new PersistentLogger({ name: "logger" }))
+  const [logger] = useState(() => new PersistentLogger({ name: "logger" }))
   const tileSize = doc.getPropValue("tileSize")
   const camera = doc.getPropValue("camera")
   const physics = doc.getPropValue("physics")
   const ref = useRef<HTMLCanvasElement>(null)
   const [player] = useState(() => new GamePlayer())
   const [zoom, setZoom] = useState(3)
-  useEffect(() => {
-    player.setProperty("scale", zoom)
-  }, [zoom])
+  useEffect(() => player.setProperty("scale", zoom), [zoom])
   const startPlaying = () => {
     if (ref.current) {
-      const json = doc.toJSON(get_class_registry())
-      console.log("json is", json)
-      player.start(ref.current, json)
+      // player.setLogger(logger)
+      player.start(ref.current, doc.toJSON(get_class_registry()))
     }
   }
   const dm = useContext(DialogContext)
@@ -158,7 +153,7 @@ export function PlayTest(props: { map: GameMap }) {
           {/*    <PropSheet target={physics} collapsable={true} collapsed={true} title={"physics"} />*/}
           {/*  </div>*/}
         </div>
-        {/*<ConsoleLogView logger={logger} />*/}
+        <ConsoleLogView logger={logger} />
       </section>
       <footer>
         <Spacer />

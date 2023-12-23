@@ -1,6 +1,6 @@
 import React from "react"
 
-import { ActorEditView } from "../ActorEditView"
+import { ActorEditView } from "../actoreditor/ActorEditView"
 import { CameraEditorView } from "../CameraEditorView"
 import { PixelFontEditorView } from "../fonteditor/PixelFontEditorView"
 import { ImageEditorView } from "../imageeditor/ImageEditorView"

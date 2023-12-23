@@ -376,7 +376,7 @@ export function restoreClassFromJSON<Type>(
       args[key] = val
       // console.log("setting",key,'to',val)
     } else {
-      console.log(`prop missing in json: ${key}. using default: ${def.default()}`)
+      // console.log(`prop missing in json: ${key}. using default: ${def.default()}`)
       args[key] = def.default()
     }
   }
