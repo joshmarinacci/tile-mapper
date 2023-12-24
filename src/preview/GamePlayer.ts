@@ -1,5 +1,6 @@
 import {
   ActorDebugOverlay,
+  GameContext,
   GameData,
   GridDebugOverlay,
   HTMLCanvasSource,
@@ -15,6 +16,27 @@ import {
 import { ConsoleInterface } from "retrogami-engine/dist/scripting"
 
 import { Observable } from "../util"
+
+class HealthOverlay implements Layer {
+  name: string
+  type: "tilemap" | "actors" | "overlay"
+  blocking: boolean
+  visible: boolean = true
+  constructor() {
+    this.name = "health"
+    this.type = "overlay"
+    this.blocking = false
+  }
+  drawSelf(gc: GameContext): void {
+    gc.ctx.fillStyle = "red"
+    gc.ctx.fillRect(10, 10, 150, 60)
+    gc.ctx.fillStyle = "black"
+    gc.ctx.font = "12pt sans-serif"
+    const ply = gc.players[0]
+    gc.ctx.fillText(`health ${ply.data.health}`, 20, 30)
+    gc.ctx.fillText(`health ${ply.data.candy}`, 20, 50)
+  }
+}
 
 export class GamePlayer extends Observable {
   private layers: Record<string, Layer>
@@ -53,7 +75,7 @@ export class GamePlayer extends Observable {
 
     const gs = setup_gamestate(data, canvas, logger)
     Object.values(this.layers).forEach((layer) => gs.layers.push(layer))
-    // gs.layers.push(new HealthOverlay())
+    gs.layers.push(new HealthOverlay())
     gs.scale = 3
     startLevel(gs, data.maps[0])
     startLoop(gs, (gs) => {
