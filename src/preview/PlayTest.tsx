@@ -99,7 +99,7 @@ export function PlayTest(props: { map: GameMap }) {
   const startPlaying = () => {
     if (ref.current) {
       // player.setLogger(logger)
-      player.start(ref.current, doc.toJSON(get_class_registry()))
+      player.start(ref.current, doc.toJSON(get_class_registry()), logger)
     }
   }
   const dm = useContext(DialogContext)

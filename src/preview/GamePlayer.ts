@@ -12,6 +12,7 @@ import {
   startLoop,
   ViewportDebugOverlay,
 } from "retrogami-engine"
+import { ConsoleInterface } from "retrogami-engine/dist/scripting"
 
 import { Observable } from "../util"
 
@@ -40,7 +41,7 @@ export class GamePlayer extends Observable {
     if (this.layers[property]) this.layers[property].visible = value as boolean
   }
 
-  start(canvas: HTMLCanvasElement, json: unknown) {
+  start(canvas: HTMLCanvasElement, json: unknown, logger: ConsoleInterface) {
     // log("loading game",json,canvas)
     const data: GameData = loadGameData(json as unknown as JSONGameDoc, new HTMLCanvasSource())
     canvas.addEventListener("keydown", (e) => {
@@ -50,7 +51,7 @@ export class GamePlayer extends Observable {
       if (!e.repeat) data.keyboard.keyup(e.code)
     })
 
-    const gs = setup_gamestate(data, canvas)
+    const gs = setup_gamestate(data, canvas, logger)
     Object.values(this.layers).forEach((layer) => gs.layers.push(layer))
     // gs.layers.push(new HealthOverlay())
     gs.scale = 3
