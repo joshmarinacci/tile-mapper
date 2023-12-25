@@ -38,6 +38,7 @@ type TileMapLayerType = {
 export type ActorMapLayerType = {
   type: "actor-layer"
   actors: ActorInstance[]
+  scrollSpeed: number
 } & MapLayerType
 type ArrayGridMapCellJSON = {
   w: number
@@ -79,7 +80,9 @@ export const TileLayerDefs: DefList<TileMapLayerType> = {
   size: SizeDef,
   data: TileDataGridDef,
   wrapping: BooleanDef,
-  scrollSpeed: FloatDef.copy().withSettings(scrollSettings),
+  scrollSpeed: FloatDef.copy()
+    .withDefault(() => 1.0)
+    .withSettings(scrollSettings),
 }
 
 export class TileLayer extends PropsBase<TileMapLayerType> {
@@ -130,6 +133,9 @@ export const ActorLayerDefs: DefList<ActorMapLayerType> = {
   blocking: BlockingDef,
   visible: BlockingDef,
   actors: GenericDataArrayDef,
+  scrollSpeed: FloatDef.copy()
+    .withDefault(() => 1.0)
+    .withSettings(scrollSettings),
 }
 
 export class ActorLayer extends PropsBase<ActorMapLayerType> {

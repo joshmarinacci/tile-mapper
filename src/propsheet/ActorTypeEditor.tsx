@@ -26,7 +26,7 @@ export function ActorTypeEditor<T extends ActorType>(props: {
         if (kind) props.target.setPropValue("kind", kind)
       }}
       renderer={ActorTypeRenderer}
-      data={["item", "player", "enemy"]}
+      data={["item", "player", "enemy", "text", "other"]}
       options={{}}
     />
   )

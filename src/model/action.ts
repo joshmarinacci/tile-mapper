@@ -7,6 +7,7 @@ export type TriggerKind =
   | "intersect"
   | "jump-action"
   | "primary-action"
+  | "frame"
 export type GameActionType = {
   name: string
   trigger: TriggerKind
@@ -17,7 +18,7 @@ export const GameActionDefs: DefList<GameActionType> = {
   trigger: StringDef.copy()
     .withDefault(() => "game-start")
     .withPossibleValues(() => {
-      return ["game-start", "level-start", "intersect", "jump-action", "primary-action"]
+      return ["game-start", "level-start", "intersect", "jump-action", "primary-action", "frame"]
     }),
   code: StringDef.copy().withDefault(() => "console.log('event happened')"),
 }

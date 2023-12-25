@@ -4,7 +4,7 @@ import { GameAction, GameActionListDef } from "./action"
 import { DefList, PropsBase, PropValues } from "./base"
 import { BoundsDef, NameDef, StringDef } from "./datamodel"
 
-export type ActorKind = "player" | "enemy" | "item" | "other"
+export type ActorKind = "player" | "enemy" | "item" | "other" | "text"
 export type ActorType = {
   name: string
   hitbox: Bounds
