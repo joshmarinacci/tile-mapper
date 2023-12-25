@@ -31,13 +31,21 @@ export function drawActorlayer(
     const actor = findActorForInstance(inst, doc)
     if (actor) {
       const box = actor.getPropValue("viewbox").add(position).scale(scale)
-      const imageRef = actor.getPropValue("sprite")
-      if (imageRef) {
-        const snap = isc.getSnapshotCanvas(imageRef)
-        ctx.drawImage(snap, box.x, box.y, snap.width * scale, snap.height * scale)
+      if (actor.getPropValue("kind") === "text") {
+        console.log("rendering text", box)
+        fillBounds(ctx, box, "red")
+        ctx.font = "bold 12pt sans-serif"
+        ctx.fillStyle = "black"
+        ctx.fillText("text goes here", box.x, box.y + 20)
       } else {
-        // if we get here then normal drawing failed, so just do a box
-        fillBounds(ctx, box, "orange")
+        const imageRef = actor.getPropValue("sprite")
+        if (imageRef) {
+          const snap = isc.getSnapshotCanvas(imageRef)
+          ctx.drawImage(snap, box.x, box.y, snap.width * scale, snap.height * scale)
+        } else {
+          // if we get here then normal drawing failed, so just do a box
+          fillBounds(ctx, box, "orange")
+        }
       }
     }
   })
