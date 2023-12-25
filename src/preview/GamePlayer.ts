@@ -54,7 +54,6 @@ export class GamePlayer extends Observable {
 
     const gs = setup_gamestate(data, canvas, logger)
     Object.values(this.layers).forEach((layer) => gs.layers.push(layer))
-    gs.layers.push(new HealthOverlay())
     gs.scale = 3
     startLevel(gs, data.maps[0])
     startLoop(gs, (gs) => {
