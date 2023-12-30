@@ -165,6 +165,40 @@ function TreeObjectView<T>(props: { obj: PropsBase<T> }) {
     </li>
   )
 }
+function TreeItemView<T>(props: { obj: PropsBase<T> }) {
+  const { obj } = props
+  const state = useContext(StateContext)
+  const pm = useContext(PopupContext)
+  const selected = state.getSelectionPath().contains(obj)
+  const style = {
+    "tree-object": true,
+    selected: selected,
+  }
+  const select = (e: MouseEvent<HTMLElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+    state.setSelectionTarget(obj)
+  }
+  const showContextMenu = (e: React.MouseEvent<HTMLElement>) => {
+    e.preventDefault()
+    select(e)
+    const actions = calculate_context_actions(obj)
+    const items = actions.map((act) => <ToolbarActionButton action={act} />)
+    items.push(<AddActorToDocButton />)
+    items.push(<AddSheetToDocButton />)
+    items.push(<AddMapToDocButton />)
+    pm.show_at(<MenuList>{items}</MenuList>, e.target, "right")
+  }
+  useWatchProp(obj, "name" as keyof T)
+  return (
+    <li className={toClass(style)}>
+      <header onClick={select} onContextMenu={showContextMenu}>
+        <TreeObjectIcon obj={obj} />
+        {obj.getPropValue("name" as keyof T) as string}
+      </header>
+    </li>
+  )
+}
 
 function TreeSection<K extends keyof DocType>(props: { name: K; doc: GameDoc }) {
   const { name, doc } = props
@@ -192,31 +226,18 @@ function TreeSection<K extends keyof DocType>(props: { name: K; doc: GameDoc }) 
 }
 
 export function TreeView() {
-  const state = useContext(StateContext)
   const doc = useContext(DocContext)
-  const selected = state.getSelectionPath().contains(doc)
   return (
     <ul className={"tree-root"} key={doc.getUUID()}>
+      <TreeItemView obj={doc} />
       <TreeObjectView obj={doc.getPropValue("camera")} />
       <TreeObjectView obj={doc.getPropValue("physics")} />
       <TreeSection name={"sheets"} doc={doc} />
       <TreeSection name={"maps"} doc={doc} />
+      <TreeSection name={"actors"} doc={doc} />
       <TreeSection name={"canvases"} doc={doc} />
       <TreeSection name={"fonts"} doc={doc} />
       <TreeSection name={"assets"} doc={doc} />
-      {/*<TreeObjectView key={doc.getUUID() + "_description"} obj={obj} />*/}
-      {/*{obj instanceof GameDoc && <DocTreeView obj={obj.getPropValue("camera")} />}*/}
-      {/*{obj instanceof GameDoc && <DocTreeView obj={obj.getPropValue("physics")} />}*/}
-      {/*{expandable.map(([key]) => {*/}
-      {/*  return (*/}
-      {/*    <PropertyList*/}
-      {/*      key={key.toString()}*/}
-      {/*      target={obj}*/}
-      {/*      value={obj.getPropValue(key)}*/}
-      {/*      name={key}*/}
-      {/*    />*/}
-      {/*  )*/}
-      {/*})}*/}
     </ul>
   )
 }

@@ -7,7 +7,7 @@ import { BooleanDef, BoundsDef, NameDef, StringDef } from "./datamodel"
 const RefDef = new PropDefBuilder({
   type: "reference",
   default: () => null,
-  toJSON: (r, v) => v.toJson(r),
+  toJSON: (r, v: PropsBase<T> | undefined) => (v ? v.toJson(r) : null),
   fromJSON: (r, v) => restoreClassFromJSON(r, v),
 })
 
@@ -17,7 +17,7 @@ type ViewSettingsType = {
   bounds: Bounds
   visible: boolean
 }
-const ViewSettingsDef: DefList<ViewSettingsType> = {
+export const ViewSettingsDef: DefList<ViewSettingsType> = {
   kind: StringDef.copy()
     .withDefault(() => "sprite")
     .withPossibleValues(() => ["sprite", "text"]),
@@ -25,7 +25,7 @@ const ViewSettingsDef: DefList<ViewSettingsType> = {
   bounds: BoundsDef,
   visible: BooleanDef.withDefault(() => true),
 }
-class ViewSettings extends PropsBase<ViewSettingsType> {
+export class ViewSettings extends PropsBase<ViewSettingsType> {
   constructor(opts?: PropValues<ViewSettingsType>) {
     super(ViewSettingsDef, opts)
   }
@@ -37,13 +37,13 @@ type ActorPhysicsSettingsType = {
   actors: boolean
   bounds: Bounds
 }
-const ActorPhysicsSettingsDefs: DefList<ActorPhysicsSettingsType> = {
+export const ActorPhysicsSettingsDefs: DefList<ActorPhysicsSettingsType> = {
   gravity: BooleanDef.copy().withDefault(() => true),
   tiles: BooleanDef.copy().withDefault(() => true),
   actors: BooleanDef.copy().withDefault(() => true),
   bounds: BoundsDef.copy(),
 }
-class ActorPhysicsSettings extends PropsBase<ActorPhysicsSettingsType> {
+export class ActorPhysicsSettings extends PropsBase<ActorPhysicsSettingsType> {
   constructor(opts?: PropValues<ActorPhysicsSettingsType>) {
     super(ActorPhysicsSettingsDefs, opts)
   }

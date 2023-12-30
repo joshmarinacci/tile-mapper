@@ -3,7 +3,14 @@ import { make_doc_from_json } from "../io/json"
 import Icons from "../resources/icons.json"
 import StdFont from "../resources/std_font.json"
 import { GameAction, GameActionDefs } from "./action"
-import { Actor, ActorDefs } from "./actor"
+import {
+  Actor,
+  ActorDefs,
+  ActorPhysicsSettings,
+  ActorPhysicsSettingsDefs,
+  ViewSettings,
+  ViewSettingsDef,
+} from "./actor"
 import { ClassRegistry, setGlobalClassRegistry } from "./base"
 import { Camera, CameraDefs } from "./camera"
 import { GameTest, TestDefs } from "./datamodel"
@@ -47,6 +54,8 @@ export function get_class_registry() {
   registry.register("Sheet", Sheet, SheetDefs)
   registry.register("SoundFX", SoundFX, SoundFXDefs)
   registry.register("GameAction", GameAction, GameActionDefs)
+  registry.register("ViewSettings", ViewSettings, ViewSettingsDef)
+  registry.register("ActorPhysicsSettings", ActorPhysicsSettings, ActorPhysicsSettingsDefs)
   setGlobalClassRegistry(registry)
 
   const ICONS_DOC = make_doc_from_json(Icons, registry)

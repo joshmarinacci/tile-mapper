@@ -190,6 +190,9 @@ function RecordPropEditor<T>(props: {
   const { def, name, target } = props
   const [recName, setRecName] = useState("name")
   const [recValue, setRecValue] = useState("value")
+  if (!target.getPropValue(name)) {
+    target.setPropValue(name, {})
+  }
   const record = target.getPropValue(name) as Rec
   return (
     <div>

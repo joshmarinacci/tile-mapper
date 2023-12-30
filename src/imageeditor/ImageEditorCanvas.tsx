@@ -300,7 +300,7 @@ export function ImageEditorCanvas(props: {
             })
           }}
         />
-        <ImageSnapshotView image={image} scale={5} />
+        {/*<ImageSnapshotView image={image} scale={5} />*/}
       </div>
     </div>
   )

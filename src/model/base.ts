@@ -366,6 +366,7 @@ export function restoreClassFromJSON<Type>(
   reg: ClassRegistry,
   json: JsonOut<Type>,
 ): PropsBase<Type> {
+  if (!json) return null
   if (CLASS_NAME_MAP[json.class]) json.class = CLASS_NAME_MAP[json.class]
   const Clazz = reg.classByName.get(json.class)
   if (!json.class) {
@@ -443,7 +444,7 @@ export class ClassRegistry {
       this.log("found class for target", clazz, this.namesByClass.get(clazz))
       return this.namesByClass.get(clazz)
     }
-    throw new Error("cannot serialize class")
+    throw new Error(`cannot serialize class: ${clazz.name}`)
   }
 
   private log(...args: unknown[]) {
