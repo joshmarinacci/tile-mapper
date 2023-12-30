@@ -18,7 +18,7 @@ const TileArrayDef: PropDef<Tile[]> = {
   type: "array",
   editable: false,
   hidden: true,
-  expandable: false,
+  expandable: true,
   watchChildren: true,
   default: () => [],
   format: (v) => "list of tiles",

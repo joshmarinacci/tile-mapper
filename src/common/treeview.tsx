@@ -1,5 +1,7 @@
 import "./treeview.css"
 
+import exp from "node:constants"
+
 import { toClass } from "josh_react_util"
 import React, { MouseEvent, useContext, useState } from "react"
 
@@ -16,8 +18,8 @@ import {
 import { Actor } from "../model/actor"
 import { PropsBase, useWatchProp } from "../model/base"
 import { Camera } from "../model/camera"
-import { StateContext } from "../model/contexts"
-import { GameDoc } from "../model/gamedoc"
+import { DocContext, StateContext } from "../model/contexts"
+import { DocType, GameDoc } from "../model/gamedoc"
 import { ActorLayer, GameMap, TileLayer } from "../model/gamemap"
 import { SImage } from "../model/image"
 import { ParticleFX } from "../model/particlefx"
@@ -61,7 +63,7 @@ function PropertyList<T, K extends keyof T>(props: {
         <ul key={"children"} className={"tree-list"}>
           {Array.isArray(value) &&
             (value as []).map((val) => {
-              return <ObjectTreeView key={val.getUUID()} obj={val} />
+              return <TreeView key={val.getUUID()} obj={val} />
             })}
         </ul>
       )}
@@ -86,10 +88,46 @@ function TreeObjectIcon<T>(props: { obj: PropsBase<T> }) {
   return <Icon name={Icons.Object} />
 }
 
-function TreeObjectView(props: { obj: PropsBase<T> }) {
+function ListPropView<T, K extends keyof T>(props: { name: K; doc: PropsBase<T> }) {
+  const { name, doc } = props
+  const value = doc.getPropValue(name)
+  const [open, setOpen] = useState(true)
+  const toggle = () => setOpen(!open)
+  return (
+    <li className={"tree-object"}>
+      <header>
+        <button onClick={() => toggle()}>
+          {open ? down_arrow_triangle : right_arrow_triangle}
+        </button>
+        <b>{name.toString()}</b>
+      </header>
+      {open && (
+        <ul key={"children"} className={"tree-object"}>
+          {Array.isArray(value) &&
+            (value as PropsBase<any>[]).map((val) => {
+              return <TreeObjectView key={val.getUUID()} obj={val} depth={0} />
+            })}
+        </ul>
+      )}
+    </li>
+  )
+}
+function TreeObjectView<T>(props: { obj: PropsBase<T> }) {
   const { obj } = props
   const state = useContext(StateContext)
   const pm = useContext(PopupContext)
+  const selected = state.getSelectionPath().contains(obj)
+
+  const style = {
+    "tree-object": true,
+    selected: selected,
+  }
+  const [open, setOpen] = useState(false)
+  const toggle = (e) => {
+    e.preventDefault()
+    e.stopPropagation()
+    setOpen(!open)
+  }
   const select = (e: MouseEvent<HTMLElement>) => {
     e.preventDefault()
     e.stopPropagation()
@@ -102,44 +140,83 @@ function TreeObjectView(props: { obj: PropsBase<T> }) {
     const items = actions.map((act) => <ToolbarActionButton action={act} />)
     pm.show_at(<MenuList>{items}</MenuList>, e.target, "right")
   }
+  const expandable = Array.from(obj.getAllPropDefs().filter(([, b]) => b.expandable))
+  const children = (
+    <ul>
+      {expandable.map((v) => (
+        <ListPropView key={v[0].toString()} name={v[0]} doc={obj} />
+      ))}
+    </ul>
+  )
+  const should_expand = expandable.length > 0
+
   return (
-    <p className={"description"} onClick={select} onContextMenu={showContextMenu}>
-      <TreeObjectIcon obj={obj} />
-      &nbsp;
-      {obj.getPropValue("name" as keyof T) as string}
-    </p>
+    <li className={toClass(style)}>
+      <header onClick={select} onContextMenu={showContextMenu}>
+        {should_expand && (
+          <button onClick={(e) => toggle(e)}>
+            {open ? down_arrow_triangle : right_arrow_triangle}
+          </button>
+        )}
+        <TreeObjectIcon obj={obj} />
+        {obj.getPropValue("name" as keyof T) as string}
+      </header>
+      {open && should_expand && children}
+    </li>
   )
 }
 
-export function ObjectTreeView<T>(props: { obj: PropsBase<T> }) {
-  const { obj } = props
-  const state = useContext(StateContext)
-  if (!obj.getAllPropDefs) {
-    console.log(obj)
-    throw new Error(`trying to render an invalid object ${obj.constructor.name}`)
-  }
-  const expandable = obj.getAllPropDefs().filter(([, b]) => b.expandable)
-  const selected = state.getSelectionPath().contains(obj)
-  const style = {
-    "tree-object": true,
-    selected: selected,
-  }
-  useWatchProp(obj, "name" as keyof T)
+function TreeSection<K extends keyof DocType>(props: { name: K; doc: GameDoc }) {
+  const { name, doc } = props
+  const value = doc.getPropValue(name)
+  const [open, setOpen] = useState(false)
+  const toggle = () => setOpen(!open)
   return (
-    <ul key={obj._id} className={toClass(style)}>
-      <TreeObjectView key={obj._id + "description"} obj={obj} />
-      {obj instanceof GameDoc && <ObjectTreeView obj={obj.getPropValue("camera")} />}
-      {obj instanceof GameDoc && <ObjectTreeView obj={obj.getPropValue("physics")} />}
-      {expandable.map(([key]) => {
-        return (
-          <PropertyList
-            key={key.toString()}
-            target={obj}
-            value={obj.getPropValue(key)}
-            name={key}
-          />
-        )
-      })}
+    <li className={"tree-item"}>
+      <header>
+        <button onClick={() => toggle()}>
+          {open ? down_arrow_triangle : right_arrow_triangle}
+        </button>
+        <b>{name.toString()}</b>
+      </header>
+      {open && (
+        <ul key={"children"} className={"tree-list"}>
+          {Array.isArray(value) &&
+            (value as PropsBase<any>[]).map((val) => {
+              return <TreeObjectView key={val.getUUID()} obj={val} depth={0} />
+            })}
+        </ul>
+      )}
+    </li>
+  )
+}
+
+export function TreeView() {
+  const state = useContext(StateContext)
+  const doc = useContext(DocContext)
+  const selected = state.getSelectionPath().contains(doc)
+  return (
+    <ul className={"tree-root"} key={doc.getUUID()}>
+      <TreeObjectView obj={doc.getPropValue("camera")} />
+      <TreeObjectView obj={doc.getPropValue("physics")} />
+      <TreeSection name={"sheets"} doc={doc} />
+      <TreeSection name={"maps"} doc={doc} />
+      <TreeSection name={"canvases"} doc={doc} />
+      <TreeSection name={"fonts"} doc={doc} />
+      <TreeSection name={"assets"} doc={doc} />
+      {/*<TreeObjectView key={doc.getUUID() + "_description"} obj={obj} />*/}
+      {/*{obj instanceof GameDoc && <DocTreeView obj={obj.getPropValue("camera")} />}*/}
+      {/*{obj instanceof GameDoc && <DocTreeView obj={obj.getPropValue("physics")} />}*/}
+      {/*{expandable.map(([key]) => {*/}
+      {/*  return (*/}
+      {/*    <PropertyList*/}
+      {/*      key={key.toString()}*/}
+      {/*      target={obj}*/}
+      {/*      value={obj.getPropValue(key)}*/}
+      {/*      name={key}*/}
+      {/*    />*/}
+      {/*  )*/}
+      {/*})}*/}
     </ul>
   )
 }

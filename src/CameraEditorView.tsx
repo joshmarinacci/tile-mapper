@@ -12,10 +12,18 @@ export function CameraEditorView(props: { camera: Camera }) {
   const [player] = useState(() => new GamePlayer())
   const rebuild = () => {
     if (ref.current) {
-      const json = doc.toJSON(get_class_registry())
-      console.log("json is", json)
-      player.stop()
-      player.start(ref.current, json)
+      if (doc.getPropValue("sheets").length < 1) {
+        console.log("no sheets")
+        return
+      }
+      if (doc.getPropValue("maps").length < 1) {
+        console.log("no maps")
+        return
+      }
+      // const json = doc.toJSON(get_class_registry())
+      // console.log("json is", json)
+      // player.stop()
+      // player.start(ref.current, json)
     }
   }
   useWatchAllProps(props.camera, () => rebuild())

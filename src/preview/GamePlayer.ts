@@ -15,6 +15,8 @@ import {
 } from "retrogami-engine"
 import { ConsoleInterface } from "retrogami-engine/dist/scripting"
 
+import { JsonOut } from "../model/base"
+import { DocType } from "../model/gamedoc"
 import { Observable } from "../util"
 
 export class GamePlayer extends Observable {
@@ -42,9 +44,12 @@ export class GamePlayer extends Observable {
     if (this.layers[property]) this.layers[property].visible = value as boolean
   }
 
-  start(canvas: HTMLCanvasElement, json: unknown, logger: ConsoleInterface) {
+  start(canvas: HTMLCanvasElement, json: JsonOut<DocType>, logger: ConsoleInterface) {
     // log("loading game",json,canvas)
     const data: GameData = loadGameData(json as unknown as JSONGameDoc, new HTMLCanvasSource())
+    if (data.maps.length < 1) {
+      throw new Error("no default map")
+    }
     canvas.addEventListener("keydown", (e) => {
       if (!e.repeat) data.keyboard.keydown(e.code)
     })
