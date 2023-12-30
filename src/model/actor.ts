@@ -12,15 +12,15 @@ const RefDef = new PropDefBuilder({
 })
 
 type ViewSettingsType = {
-  kind: "sprite" | "text"
+  kind: "sprite" | "text" | "none"
   reference: unknown
   bounds: Bounds
   visible: boolean
 }
 export const ViewSettingsDef: DefList<ViewSettingsType> = {
   kind: StringDef.copy()
-    .withDefault(() => "sprite")
-    .withPossibleValues(() => ["sprite", "text"]),
+    .withDefault(() => "none")
+    .withPossibleValues(() => ["sprite", "text", "none"]),
   reference: RefDef.copy().withCustom("image-reference"),
   bounds: BoundsDef,
   visible: BooleanDef.withDefault(() => true),
@@ -61,8 +61,8 @@ export type ActorType = {
 const StatePropDef = new PropDefBuilder({
   type: "record",
   default: () => ({}),
-  fromJSON: (r, v) => {},
-  toJSON: (r, v) => {},
+  fromJSON: (r, v) => v,
+  toJSON: (r, v) => v,
   format: (v) => "cannot draw",
 })
 
