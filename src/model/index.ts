@@ -20,6 +20,8 @@ import {
   ActorInstanceDefs,
   ActorLayer,
   ActorLayerDefs,
+  ColorMapLayer,
+  ColorMapLayerDefs,
   GameMap,
   GameMapDefs,
   TileLayer,
@@ -41,6 +43,7 @@ export function get_class_registry() {
   registry.register("Camera", Camera, CameraDefs)
   registry.register("GameTest", GameTest, TestDefs)
   registry.register("TileLayer", TileLayer, TileLayerDefs)
+  registry.register("ColorMapLayer", ColorMapLayer, ColorMapLayerDefs)
   registry.register("ActorInstance", ActorInstance, ActorInstanceDefs)
   registry.register("ActorLayer", ActorLayer, ActorLayerDefs)
   registry.register("Map", GameMap, GameMapDefs)
