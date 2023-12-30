@@ -79,6 +79,12 @@ export type PropValues<Type> = Partial<Record<keyof Type, Type[keyof Type]>>
 // type ArrayElementType<ArrayType extends Array> = ArrayType[number];
 type Flatten<Type> = Type extends Array<infer Item> ? Item : never
 
+function isPropBase(val: unknown) {
+  if (!val) return false
+  if (val instanceof PropsBase) return true
+  return false
+}
+
 export class PropsBase<Type> {
   _id: UUID
   private listeners: Map<keyof Type, WrapperCallback<Type[keyof Type]>[]>
@@ -148,6 +154,7 @@ export class PropsBase<Type> {
           v.offAny(this.child_watcher)
         })
       }
+      if (def.watchChildren && isPropBase(val)) val.offAny(this.child_watcher)
     }
     this.values.set(name, value)
     {
@@ -157,6 +164,7 @@ export class PropsBase<Type> {
           v.onAny(this.child_watcher)
         })
       }
+      if (def.watchChildren && isPropBase(val)) val.onAny(this.child_watcher)
     }
     this._fire(name, value)
   }

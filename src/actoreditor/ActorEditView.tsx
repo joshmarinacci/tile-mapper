@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useRef, useState } from "react"
 
 import { IconButton } from "../common/common-components"
 import { Icons } from "../common/icons"
+import { drawTextRun } from "../fonteditor/PixelFontPreview"
 import { GameAction } from "../model/action"
 import { Actor } from "../model/actor"
 import { appendToList, useWatchAllProps, UUID } from "../model/base"
@@ -37,6 +38,13 @@ export function ActorEditView(props: { actor: Actor }) {
         const snap = isc.getSnapshotCanvas(spriteId as UUID)
         ctx.imageSmoothingEnabled = false
         ctx.drawImage(snap, 0, 0, snap.width * scale, snap.height * scale)
+      }
+      if (view.getPropValue("kind") === "text") {
+        const fontid = view.getPropValue("reference")
+        const font = doc.fonts().find((fnt) => fnt.getUUID() === fontid)
+        if (font) {
+          drawTextRun(ctx, "sometext", font, 3, "black")
+        }
       }
 
       const view_bounds = props.actor.getPropValue("view").getPropValue("bounds").scale(scale)

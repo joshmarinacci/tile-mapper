@@ -1,14 +1,14 @@
 import { Bounds } from "josh_js_util"
 
 import { GameAction, GameActionListDef } from "./action"
-import { DefList, PropDefBuilder, PropsBase, PropValues, restoreClassFromJSON } from "./base"
+import { DefList, PropDefBuilder, PropsBase, PropValues, restoreClassFromJSON, UUID } from "./base"
 import { BooleanDef, BoundsDef, NameDef, StringDef } from "./datamodel"
 
 const RefDef = new PropDefBuilder({
   type: "reference",
   default: () => null,
-  toJSON: (r, v: PropsBase<T> | undefined) => (v ? v.toJson(r) : null),
-  fromJSON: (r, v) => restoreClassFromJSON(r, v),
+  toJSON: (r, v: UUID | undefined) => v,
+  fromJSON: (r, v) => v,
 })
 
 type ViewSettingsType = {
@@ -28,6 +28,18 @@ export const ViewSettingsDef: DefList<ViewSettingsType> = {
 export class ViewSettings extends PropsBase<ViewSettingsType> {
   constructor(opts?: PropValues<ViewSettingsType>) {
     super(ViewSettingsDef, opts)
+  }
+
+  setPropValue<K extends keyof ViewSettingsType>(name: K, value: ViewSettingsType[K]) {
+    super.setPropValue(name, value)
+    if (name === "kind") {
+      if (value === "text") {
+        this.getPropDef("reference").custom = "font-reference"
+      }
+      if (value === "sprite") {
+        this.getPropDef("reference").custom = "image-reference"
+      }
+    }
   }
 }
 

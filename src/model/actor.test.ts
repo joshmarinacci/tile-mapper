@@ -45,4 +45,34 @@ describe("actor persistence", () => {
     expect(actor2.getPropValue("name")).toEqual("mister player")
     expect(actor2.getPropValue("state")).toEqual({ foo: "bar" })
   })
+  it("should save view settings", async () => {
+    const actor = new Actor({
+      name: "mister player",
+    })
+    const view = actor.getPropValue("view")
+    view.setPropValue("kind", "sprite")
+    view.setPropValue("visible", true)
+    view.setPropValue("reference", "fooid")
+
+    const json = actor.toJSON(get_class_registry())
+    const actor2 = restoreClassFromJSON(get_class_registry(), json)
+    expect(actor2.getPropValue("name")).toEqual("mister player")
+    expect(actor2.getPropValue("view").getPropValue("visible")).toEqual(true)
+    expect(actor2.getPropValue("view").getPropValue("kind")).toEqual("sprite")
+    expect(actor2.getPropValue("view").getPropValue("reference")).toEqual("fooid")
+  })
+  it("should have events for sub objects", async () => {
+    const actor = new Actor({})
+    let changed = false
+    actor.onAny(() => {
+      console.log("changed")
+      changed = true
+    })
+    actor.setPropValue("name", "foo")
+
+    changed = false
+    expect(actor.getPropValue("view").getPropValue("visible")).toBe(true)
+    actor.getPropValue("view").setPropValue("visible", false)
+    expect(changed).toBeTruthy()
+  })
 })
