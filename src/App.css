@@ -33,7 +33,7 @@ html body {
 .master-wrapper {
   border: 0px solid red;
   display: grid;
-  grid-template-columns: [start] 0px [left-sidebar] 300px [tool-column] 300px [editor-view] 1fr [right-sidebar] 300px [end];
+  grid-template-columns: [start] 0px [left-sidebar] 300px [tool-column] 300px [editor-view] 1fr [right-sidebar] 400px [end];
   grid-template-rows: [top-statusbar] auto [middle] 1fr [bottom-statusbar] 3rem [end];
   height: 99vh;
   max-height: 99vh;

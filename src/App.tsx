@@ -37,6 +37,8 @@ const ISC = new ImageSnapshotCache()
 const gstate = new GlobalState()
 gstate.setPropValue("doc", make_doc_from_json(Example, reg))
 
+const LEFT_WIDTH = 250
+const RIGHT_WIDTH = 400
 function Main3() {
   const state = useContext(StateContext)
   const doc = useContext(DocContext)
@@ -67,9 +69,13 @@ function Main3() {
     <div
       className={"master-wrapper"}
       style={{
-        gridTemplateColumns: `[start] 0px ${showLeft ? "[left-sidebar] 300px" : ""} [tool-column] ${
-          toolWidth - (showLeft ? 300 : 0) - 10
-        }px [divider] 1px [editor-view] 1fr ${showRight ? "[right-sidebar] 300px" : ""} [end]`,
+        gridTemplateColumns: `[start] 0px ${
+          showLeft ? `[left-sidebar] ${LEFT_WIDTH}px` : ""
+        } [tool-column] ${
+          toolWidth - (showLeft ? LEFT_WIDTH : 0) - 10
+        }px [divider] 1px [editor-view] 1fr ${
+          showRight ? `[right-sidebar] ${RIGHT_WIDTH}px` : ""
+        } [end]`,
       }}
     >
       <div className={"top-toolbar"}>

@@ -154,6 +154,81 @@ function PossibleStringValuesEditor<T>(props: {
   )
 }
 
+function SubObjectPropEditor<T>(props: {
+  def: PropDef<T[keyof T]>
+  name: keyof T
+  target: T[keyof T]
+}) {
+  const propnames = Array.from(props.target.getAllPropDefs()).filter(([, b]) => !b.hidden)
+  return (
+    <div className={"prop-sheet-contents sub-object"}>
+      {propnames.map(([pname, def]) => {
+        return (
+          <>
+            <label key={`label_${props.name.toString()}_${pname.toString()}`}>
+              {pname.toString()}
+            </label>
+            <PropEditor
+              key={`editor_${props.name.toString()}_${pname.toString()}`}
+              target={props.target}
+              name={pname}
+              def={def}
+            />
+          </>
+        )
+      })}
+    </div>
+  )
+}
+
+type Rec = Record<string, any>
+function RecordPropEditor<T>(props: {
+  def: PropDef<T[keyof T]>
+  name: keyof T
+  target: PropsBase<T>
+}) {
+  const { def, name, target } = props
+  const [recName, setRecName] = useState("name")
+  const [recValue, setRecValue] = useState("value")
+  const record = target.getPropValue(name) as Rec
+  return (
+    <div>
+      <table>
+        <thead>
+          <tr>
+            <th>name</th>
+            <th>default value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(record).map((ent) => {
+            return (
+              <tr>
+                <td>{ent[0]}</td>
+                <td>{ent[1]}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+      <label>name</label>
+      <input value={recName} onChange={(e) => setRecName(e.target.value)} />
+      <label>value</label>
+      <input value={recValue} onChange={(e) => setRecValue(e.target.value)} />
+      <button
+        onClick={() => {
+          const rec: Record<string, any> = props.target.getPropValue(props.name)
+          const rec2: Record<string, any> = { ...rec }
+          rec2[recName] = recValue
+          props.target.setPropValue(props.name, rec2)
+        }}
+      >
+        add entry
+      </button>
+    </div>
+  )
+}
+
 function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDef<T[keyof T]> }) {
   const { target, def, name } = props
   const new_val = target.getPropValue(name)
@@ -253,6 +328,12 @@ function PropEditor<T>(props: { target: PropsBase<T>; name: keyof T; def: PropDe
     return (
       <MapReferenceEditor key={`editor_${name.toString()}`} target={target} def={def} name={name} />
     )
+  }
+  if (def.type === "object" && def.custom === "sub-object") {
+    return <SubObjectPropEditor key={key} target={new_val} def={def} name={name} />
+  }
+  if (def.type === "record") {
+    return <RecordPropEditor key={key} target={target} def={def} name={name} />
   }
   return <label key={"nothing"}>no editor for it</label>
 }

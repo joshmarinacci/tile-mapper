@@ -24,6 +24,7 @@ type PropDefBaseTypes =
   | "array"
   | "object"
   | "reference"
+  | "record"
 
 type PropDefCustomType =
   | "tile-reference"
@@ -33,6 +34,7 @@ type PropDefCustomType =
   | "font-reference"
   | "actor-type"
   | "palette-color"
+  | "sub-object"
 
 export type Settings = {
   type: "integer" | "float"
@@ -107,6 +109,10 @@ export class PropsBase<Type> {
 
   setProps(props: PropValues<Type>) {
     for (const [k, d] of Object.entries(props)) {
+      if (!this.defs.has(k)) {
+        console.warn(`object does not have property ${k}`)
+        continue
+      }
       this.setPropValue(k as keyof Type, d as Type[keyof Type])
     }
   }
@@ -222,6 +228,7 @@ type PropDefOptions<T> = {
   toJSON: ToJSONner<T>
   fromJSON: FromJSONner<T>
   format: ToFormatString<T>
+  custom?: PropDefCustomType
 }
 
 export class PropDefBuilder<T> implements PropDef<T> {
@@ -249,6 +256,7 @@ export class PropDefBuilder<T> implements PropDef<T> {
     this.toJSON = options.toJSON
     this.fromJSON = options.fromJSON
     this.format = options.format
+    this.custom = options.custom
   }
   copy() {
     return new PropDefBuilder<T>(this)

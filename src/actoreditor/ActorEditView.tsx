@@ -34,10 +34,10 @@ export function ActorEditView(props: { actor: Actor }) {
       const snap = isc.getSnapshotCanvas(spriteId as UUID)
       ctx.imageSmoothingEnabled = false
       ctx.drawImage(snap, 0, 0, snap.width * scale, snap.height * scale)
-      const view_bounds = props.actor.getPropValue("viewbox").scale(scale)
+      const view_bounds = props.actor.getPropValue("view").getPropValue("bounds").scale(scale)
       strokeBounds(ctx, view_bounds, "red", 3)
-      const hit_bounds = props.actor.getPropValue("hitbox").scale(scale)
-      strokeBounds(ctx, hit_bounds, "magenta", 3)
+      const hit_bounds = props.actor.getPropValue("physics").getPropValue("bounds").scale(scale)
+      strokeBounds(ctx, hit_bounds, "blue", 3)
     }
   }
 
