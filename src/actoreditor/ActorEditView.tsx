@@ -13,7 +13,8 @@ import { ActionEditor } from "./ActionEditor"
 
 export function ActorEditView(props: { actor: Actor }) {
   const [zoom, setZoom] = useState(4)
-  const spriteId = props.actor.getPropValue("sprite")
+  const view = props.actor.getPropValue("view")
+  const spriteId = view.getPropValue("reference")
   const scale = Math.pow(2, zoom)
   const state = useContext(StateContext)
   const doc = useContext(DocContext)
@@ -31,9 +32,13 @@ export function ActorEditView(props: { actor: Actor }) {
       const ctx = ref.current.getContext("2d") as CanvasRenderingContext2D
       ctx.fillStyle = "white"
       ctx.fillRect(0, 0, ref.current.width, ref.current.height)
-      const snap = isc.getSnapshotCanvas(spriteId as UUID)
-      ctx.imageSmoothingEnabled = false
-      ctx.drawImage(snap, 0, 0, snap.width * scale, snap.height * scale)
+      if (view.getPropValue("kind") === "sprite") {
+        const spriteId = view.getPropValue("reference")
+        const snap = isc.getSnapshotCanvas(spriteId as UUID)
+        ctx.imageSmoothingEnabled = false
+        ctx.drawImage(snap, 0, 0, snap.width * scale, snap.height * scale)
+      }
+
       const view_bounds = props.actor.getPropValue("view").getPropValue("bounds").scale(scale)
       strokeBounds(ctx, view_bounds, "red", 3)
       const hit_bounds = props.actor.getPropValue("physics").getPropValue("bounds").scale(scale)
