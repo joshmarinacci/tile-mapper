@@ -1,5 +1,6 @@
 import { Point } from "josh_js_util"
 import React from "react"
+import * as repl from "repl"
 
 import { PropsBase, useWatchAllProps } from "../model/base"
 import { AreaChange, FramePixelSurface } from "../model/image"
@@ -15,6 +16,7 @@ export function floodFill(surf: FramePixelSurface, target: number, replace: numb
   const stack = [at]
   while (stack.length > 0) {
     const pos = stack.pop() as Point
+    if (surf.getPixel(pos) === replace) continue
     if (surf.getPixel(pos) === target) {
       surf.setPixel(pos, replace)
       calculateDirections()
