@@ -29,6 +29,9 @@ export function drawGlyph(
       }
     }
   }
+  // ctx.strokeStyle = 'black'
+  // ctx.lineWidth = 1
+  // ctx.strokeRect(point.x*sc, point.y*sc,size.w*sc,size.h*sc)
 }
 
 export function PixelFontEditorView(props: { font: PixelFont }) {
