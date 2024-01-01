@@ -5,6 +5,7 @@ import { useWatchAllProps } from "./model/base"
 import { Camera } from "./model/camera"
 import { DocContext } from "./model/contexts"
 import { GamePlayer } from "./preview/GamePlayer"
+import { ConsoleLogger } from "./util"
 
 export function CameraEditorView(props: { camera: Camera }) {
   const doc = useContext(DocContext)
@@ -20,10 +21,10 @@ export function CameraEditorView(props: { camera: Camera }) {
         console.log("no maps")
         return
       }
-      // const json = doc.toJSON(get_class_registry())
-      // console.log("json is", json)
-      // player.stop()
-      // player.start(ref.current, json)
+      const json = doc.toJSON(get_class_registry())
+      console.log("json is", json)
+      player.stop()
+      player.start(ref.current, json, new ConsoleLogger())
     }
   }
   useWatchAllProps(props.camera, () => rebuild())
