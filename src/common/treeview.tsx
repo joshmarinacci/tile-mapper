@@ -1,19 +1,13 @@
 import "./treeview.css"
 
-import exp from "node:constants"
-
 import { toClass } from "josh_react_util"
 import React, { MouseEvent, useContext, useState } from "react"
 
 import { calculate_context_actions } from "../actions/actions"
 import {
   AddActorToDocButton,
-  AddCanvasToDocButton,
-  AddFontToDocButton,
   AddMapToDocButton,
-  AddParticleFXToDocButton,
   AddSheetToDocButton,
-  AddSoundFXToDocButton,
 } from "../actions/reactactions"
 import { Actor } from "../model/actor"
 import { PropsBase, useWatchProp } from "../model/base"
@@ -28,48 +22,9 @@ import { PixelFont } from "../model/pixelfont"
 import { Sheet } from "../model/sheet"
 import { SoundFX } from "../model/soundfx"
 import { down_arrow_triangle, right_arrow_triangle } from "./common"
-import { DropdownButton, Icon, MenuList, ToolbarActionButton } from "./common-components"
+import { Icon, MenuList, ToolbarActionButton } from "./common-components"
 import { Icons } from "./icons"
 import { PopupContext } from "./popup"
-
-function PropertyList<T, K extends keyof T>(props: {
-  target: PropsBase<T>
-  value: T[K]
-  name: keyof T
-}) {
-  const { value, name, target } = props
-  // const values = value as []
-  const [open, setOpen] = useState(true)
-  const toggle = () => setOpen(!open)
-  useWatchProp(target, name)
-  return (
-    <li className={"tree-item"}>
-      <p key={"section-description"} className={"section"}>
-        <button onClick={() => toggle()}>
-          {open ? down_arrow_triangle : right_arrow_triangle}
-        </button>
-        <b>{name.toString()}</b>
-        <DropdownButton title={"..."}>
-          {name === "sheets" && <AddSheetToDocButton />}
-          {name === "maps" && <AddMapToDocButton />}
-          {name === "actors" && <AddActorToDocButton />}
-          {name === "canvases" && <AddCanvasToDocButton />}
-          {name === "fonts" && <AddFontToDocButton />}
-          {name === "assets" && <AddSoundFXToDocButton />}
-          {name === "assets" && <AddParticleFXToDocButton />}
-        </DropdownButton>
-      </p>
-      {open && (
-        <ul key={"children"} className={"tree-list"}>
-          {Array.isArray(value) &&
-            (value as []).map((val) => {
-              return <TreeView key={val.getUUID()} obj={val} />
-            })}
-        </ul>
-      )}
-    </li>
-  )
-}
 
 function TreeObjectIcon<T>(props: { obj: PropsBase<T> }) {
   const { obj } = props
@@ -95,7 +50,7 @@ function ListPropView<T, K extends keyof T>(props: { name: K; doc: PropsBase<T> 
   const toggle = () => setOpen(!open)
   return (
     <li className={"tree-object"}>
-      <header>
+      <header onClick={() => toggle()}>
         <button onClick={() => toggle()}>
           {open ? down_arrow_triangle : right_arrow_triangle}
         </button>
@@ -152,7 +107,13 @@ function TreeObjectView<T>(props: { obj: PropsBase<T> }) {
 
   return (
     <li className={toClass(style)}>
-      <header onClick={select} onContextMenu={showContextMenu}>
+      <header
+        onClick={(e) => {
+          select(e)
+          if (should_expand) toggle(e)
+        }}
+        onContextMenu={showContextMenu}
+      >
         {should_expand && (
           <button onClick={(e) => toggle(e)}>
             {open ? down_arrow_triangle : right_arrow_triangle}
@@ -207,7 +168,7 @@ function TreeSection<K extends keyof DocType>(props: { name: K; doc: GameDoc }) 
   const toggle = () => setOpen(!open)
   return (
     <li className={"tree-item"}>
-      <header>
+      <header onClick={() => toggle()}>
         <button onClick={() => toggle()}>
           {open ? down_arrow_triangle : right_arrow_triangle}
         </button>
