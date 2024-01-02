@@ -110,10 +110,14 @@ const SheetPreviewRenderer: ListViewRenderer<Sheet, never> = (props: {
   )
 }
 
-export function TileListView(props: { sheet: Sheet; editable: boolean }) {
+export function TileListView(props: {
+  sheet: Sheet
+  tile: Tile | undefined
+  setSelectedTile: (tile: Tile | undefined) => void
+  editable: boolean
+}) {
   const doc = useContext(DocContext)
-  const state = useContext(StateContext)
-  const { sheet, editable } = props
+  const { sheet, editable, tile, setSelectedTile } = props
   const showNames = sheet.getPropValue("showNames")
   const showGrid = sheet.getPropValue("showGrid")
   const showBlocking = sheet.getPropValue("showBlocking")
@@ -130,14 +134,6 @@ export function TileListView(props: { sheet: Sheet; editable: boolean }) {
   useWatchProp(sheet, "locked")
   useEffect(() => setTiles(sheet.getPropValue("tiles")), [sheet])
   useWatchProp(sheet, "tiles", () => setTiles(sheet.getPropValue("tiles")))
-  const setTile = (tile: Tile | undefined) => {
-    if (tile) state.setSelectionTarget(tile)
-  }
-  const maybe_tile = state.getSelectionPath().start()
-  let tile: Tile | undefined = undefined
-  if (maybe_tile instanceof Tile) {
-    tile = maybe_tile
-  }
   return (
     <div className={"tile-list-view"}>
       <div className={"toolbar"}>
@@ -202,7 +198,7 @@ export function TileListView(props: { sheet: Sheet; editable: boolean }) {
         <ListView
           className={"tile-list"}
           selected={tile}
-          setSelected={setTile}
+          setSelected={setSelectedTile}
           renderer={TilePreviewRenderer}
           data={tiles}
           options={{ showNames, scale, sheet, showGrid, showBlocking, palette: doc.palette() }}
@@ -212,7 +208,7 @@ export function TileListView(props: { sheet: Sheet; editable: boolean }) {
       {view === "grid" && (
         <TileGridView
           selected={tile}
-          setSelected={setTile}
+          setSelected={setSelectedTile}
           data={tiles}
           sheet={sheet}
           options={{
@@ -259,7 +255,7 @@ export function CompactSheetAndTileSelector(props: {
           sheet={selectedSheet}
           tile={selectedTile}
           editable={false}
-          setTile={(t) => setSelectedTile(t)}
+          setSelectedTile={(t) => setSelectedTile(t)}
         />
       )}
     </Pane>
