@@ -74,4 +74,12 @@ export class Sheet extends PropsBase<SheetType> {
     this.addTile(tile)
     return tile
   }
+
+  hasTiles() {
+    return this.getPropValue("tiles").length > 0
+  }
+
+  firstTile() {
+    return this.getPropValue("tiles")[0]
+  }
 }

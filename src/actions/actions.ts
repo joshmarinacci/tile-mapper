@@ -10,6 +10,7 @@ import { ParticleFX } from "../model/particlefx"
 import { PixelFont } from "../model/pixelfont"
 import { Sheet } from "../model/sheet"
 import { SoundFX } from "../model/soundfx"
+import { Tile } from "../model/tile"
 import { GlobalState } from "../state"
 import {
   AddActorLayerToMapAction,
@@ -34,7 +35,13 @@ import {
   MoveImageLayerDownAction,
   MoveImageLayerUpAction,
 } from "./image"
-import { DeleteSheetAction, ExportSheetToPNG } from "./sheets"
+import {
+  AddTileToSheetAction,
+  DeleteSelectedTileAction,
+  DeleteSheetAction,
+  DuplicateSelectedTileAction,
+  ExportSheetToPNG,
+} from "./sheets"
 
 export type Shortcut = {
   key: string
@@ -191,8 +198,13 @@ export function drawGrid(
 export function calculate_context_actions<T>(obj: PropsBase<T>) {
   const actions = []
   if (obj instanceof Sheet) {
+    actions.push(AddTileToSheetAction)
     actions.push(DeleteSheetAction)
     actions.push(ExportSheetToPNG)
+  }
+  if (obj instanceof Tile) {
+    actions.push(DuplicateSelectedTileAction)
+    actions.push(DeleteSelectedTileAction)
   }
   if (obj instanceof GameMap) {
     actions.push(DeleteMapAction)

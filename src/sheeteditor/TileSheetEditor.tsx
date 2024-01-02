@@ -16,49 +16,33 @@ import { TileListView } from "./TileListView"
 export function TileSheetEditor(props: { sheet: Sheet }) {
   const { sheet } = props
   const state = useContext(StateContext)
-  const tile = sheet.getPropValue("selectedTile")
+  const path = state.getSelectionPath()
+  const selection = path.start()
   const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20))
-
-  useEffect(() => {
-    const tiles = sheet.getPropValue("tiles")
-    sheet.setPropValue("selectedTile", tiles.length > 0 ? tiles[0] : undefined)
-  }, [sheet])
-  useWatchProp(sheet, "selectedTile")
-
   return (
     <>
       <div className={"tool-column"}>
         {sheet && (
           <Pane collapsable={true} title={"Tile Sheet"}>
-            <TileListView
-              editable={true}
-              sheet={sheet}
-              tile={tile}
-              setTile={(tile) => {
-                if (tile) {
-                  sheet.setPropValue("selectedTile", tile)
-                  state.setSelectionTarget(tile as unknown as PropsBase<unknown>)
-                }
-              }}
-            />
+            <TileListView editable={true} sheet={sheet} />
           </Pane>
         )}
-        {tile && (
+        {selection instanceof Tile && (
           <Pane collapsable={true} title={"Scratch"}>
-            <TestMap tile={tile} mapArray={maparray} />
+            <TestMap tile={selection as Tile} mapArray={maparray} />
           </Pane>
         )}
       </div>
       <div className={"editor-view"}>
         <VBox>
-          {tile && (
+          {selection instanceof Tile && (
             <ImageEditorCanvas
-              image={tile.getPropValue("data")}
-              layer={tile.getPropValue("data").layers()[0]}
-              frame={tile.getPropValue("data").frames()[0]}
+              image={(selection as Tile).getPropValue("data")}
+              layer={(selection as Tile).getPropValue("data").layers()[0]}
+              frame={(selection as Tile).getPropValue("data").frames()[0]}
             />
           )}
-          {!tile && <div>no tile selected</div>}
+          {!(selection as Tile) && <div>no tile selected</div>}
         </VBox>
       </div>
     </>

@@ -3,7 +3,12 @@ import "./TileSheetView.css"
 import { Spacer, toClass } from "josh_react_util"
 import React, { useContext, useEffect, useRef, useState } from "react"
 
-import { deleteTile, duplicate_tile, export_bmp } from "../actions/sheets"
+import {
+  AddTileToSheetAction,
+  DeleteSelectedTileAction,
+  DuplicateSelectedTileAction,
+  export_bmp,
+} from "../actions/sheets"
 import { drawEditableSprite, ImagePalette } from "../common/common"
 import {
   CheckToggleButton,
@@ -11,6 +16,7 @@ import {
   IconButton,
   Pane,
   ToggleButton,
+  ToolbarActionButton,
 } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { ListSelect } from "../common/ListSelect"
@@ -18,7 +24,7 @@ import { ListView, ListViewDirection, ListViewOptions, ListViewRenderer } from "
 import { PopupContext } from "../common/popup"
 import { ICON_CACHE } from "../iconcache"
 import { useWatchProp } from "../model/base"
-import { DocContext } from "../model/contexts"
+import { DocContext, StateContext } from "../model/contexts"
 import { Sheet } from "../model/sheet"
 import { Tile } from "../model/tile"
 import { TileGridView } from "./TileGridView"
@@ -99,35 +105,16 @@ const SheetPreviewRenderer: ListViewRenderer<Sheet, never> = (props: {
   )
 }
 
-export function TileListView(props: {
-  sheet: Sheet
-  tile: Tile | undefined
-  setTile: (tile: Tile | undefined) => void
-  editable: boolean
-}) {
+export function TileListView(props: { sheet: Sheet; editable: boolean }) {
   const doc = useContext(DocContext)
-  const { sheet, tile, setTile, editable } = props
+  const state = useContext(StateContext)
+  const { sheet, editable } = props
   const showNames = sheet.getPropValue("showNames")
   const showGrid = sheet.getPropValue("showGrid")
   const locked = sheet.getPropValue("locked")
   const view = sheet.getPropValue("viewMode")
   const [scale, setScale] = useState(4)
   const [tiles, setTiles] = useState(sheet.getPropValue("tiles"))
-  const add_tile = () => {
-    setTile(sheet.addNewTile())
-    setTiles(sheet.getPropValue("tiles"))
-  }
-  const dup_tile = () => {
-    if (tile) setTile(duplicate_tile(sheet, tile))
-  }
-  const delete_tile = () => {
-    if (tile) deleteTile(sheet, tile)
-    if (sheet.getPropValue("tiles").length > 0) {
-      setTile(sheet.getPropValue("tiles")[0])
-    } else {
-      setTile(undefined)
-    }
-  }
   const use_grid_view = () => sheet.setPropValue("viewMode", "grid")
   const use_list_view = () => sheet.setPropValue("viewMode", "list")
   useWatchProp(sheet, "showGrid")
@@ -135,22 +122,23 @@ export function TileListView(props: {
   useWatchProp(sheet, "viewMode")
   useWatchProp(sheet, "locked")
   useEffect(() => setTiles(sheet.getPropValue("tiles")), [sheet])
+  useWatchProp(sheet, "tiles", () => setTiles(sheet.getPropValue("tiles")))
+  const setTile = (tile: Tile | undefined) => {
+    if (tile) state.setSelectionTarget(tile)
+  }
+  const maybe_tile = state.getSelectionPath().start()
+  let tile: Tile | undefined = undefined
+  if (maybe_tile instanceof Tile) {
+    tile = maybe_tile
+  }
   return (
     <div className={"tile-list-view"}>
       <div className={"toolbar"}>
         {editable && (
           <>
-            <IconButton onClick={add_tile} icon={Icons.Tile} tooltip={"create new tile"} />
-            <IconButton
-              onClick={dup_tile}
-              icon={Icons.Duplicate}
-              tooltip={"duplicate selected tile"}
-            />
-            <IconButton
-              onClick={delete_tile}
-              icon={Icons.Trashcan}
-              tooltip={"delete selected tile"}
-            />
+            <ToolbarActionButton action={AddTileToSheetAction} />
+            <ToolbarActionButton action={DuplicateSelectedTileAction} />
+            <ToolbarActionButton action={DeleteSelectedTileAction} />
           </>
         )}
         <IconButton onClick={use_grid_view} icon={Icons.Grid} tooltip={"organize by position"} />

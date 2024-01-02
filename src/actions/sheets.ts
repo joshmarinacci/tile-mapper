@@ -2,7 +2,8 @@ import { ArrayGrid, Point } from "josh_js_util"
 import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 
 import { canvas_to_bmp, ImagePalette, sheet_to_canvas } from "../common/common"
-import { removeFromList } from "../model/base"
+import { Icons } from "../common/icons"
+import { PropsBase, removeFromList } from "../model/base"
 import { Sheet } from "../model/sheet"
 import { Tile } from "../model/tile"
 import { SimpleMenuAction } from "./actions"
@@ -37,7 +38,7 @@ export const export_bmp = (sheet: Sheet, palette: ImagePalette) => {
 }
 
 export function deleteTile(sheet: Sheet, tile: Tile) {
-  if (tile) sheet.removeTile(tile)
+  sheet.removeTile(tile)
 }
 
 export function duplicate_tile(sheet: Sheet, tile: Tile): Tile {
@@ -90,4 +91,46 @@ export function rotateTile90CounterClock(value: Tile) {
       data.get_at(data.h - 1 - n.y, n.x),
     ),
   )
+}
+
+export const AddTileToSheetAction: SimpleMenuAction = {
+  type: "simple",
+  title: "add tile to sheet",
+  perform: async (state) => {
+    const sel = state.getSelectionPath()
+    if (sel.start() instanceof Sheet) {
+      const sheet = sel.start() as unknown as Sheet
+      const tile = sheet.addNewTile()
+      state.setSelectionTarget(tile)
+    }
+  },
+}
+export const DuplicateSelectedTileAction: SimpleMenuAction = {
+  type: "simple",
+  title: "duplicate tile",
+  perform: async (state) => {
+    const sel = state.getSelectionPath()
+    if (sel.start() instanceof Tile && sel.parent().start() instanceof Sheet) {
+      const tile = sel.start() as unknown as Tile
+      const sheet = sel.parent().start() as unknown as Sheet
+      const new_tile = duplicate_tile(sheet, tile)
+      state.setSelectionTarget(new_tile)
+    }
+  },
+}
+export const DeleteSelectedTileAction: SimpleMenuAction = {
+  type: "simple",
+  title: "delete tile",
+  icon: Icons.Trashcan,
+  description: "delete selected tile from sheet",
+  perform: async (state) => {
+    const sel = state.getSelectionPath()
+    if (sel.start() instanceof Tile && sel.parent().start() instanceof Sheet) {
+      const tile = sel.start() as unknown as Tile
+      const sheet = sel.parent().start() as unknown as Sheet
+      sheet.removeTile(tile)
+      const target = sheet.hasTiles() ? sheet.firstTile() : sheet
+      state.setSelectionTarget(target as unknown as PropsBase<unknown>)
+    }
+  },
 }
