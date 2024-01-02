@@ -43,6 +43,8 @@ import {
   ExportSheetToPNG,
   FlipTileAroundHorizontalAction,
   FlipTileAroundVerticalAction,
+  RotateTile90ClockAction,
+  RotateTile90CounterClockAction,
 } from "./sheets"
 
 export type Shortcut = {
@@ -208,6 +210,8 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
     actions.push(DuplicateSelectedTileAction)
     actions.push(FlipTileAroundVerticalAction)
     actions.push(FlipTileAroundHorizontalAction)
+    actions.push(RotateTile90ClockAction)
+    actions.push(RotateTile90CounterClockAction)
     actions.push(DeleteSelectedTileAction)
   }
   if (obj instanceof GameMap) {

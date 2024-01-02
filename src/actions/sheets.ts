@@ -68,6 +68,16 @@ function flipTileAroundVertical(value: Tile) {
   surf.setAllData(new_data)
   image.appendHistory(new AreaChange(surf, old_data, new_data, "v-flip"))
 }
+export const FlipTileAroundVerticalAction: SimpleMenuAction = {
+  type: "simple",
+  title: "flip left / right",
+  perform: async (state) => {
+    const sel = state.getSelectionPath().start()
+    if (sel instanceof Tile) {
+      flipTileAroundVertical(sel as Tile)
+    }
+  },
+}
 
 function flipTileAroundHorizontal(value: Tile) {
   const image = value.getPropValue("data")
@@ -80,34 +90,6 @@ function flipTileAroundHorizontal(value: Tile) {
   image.appendHistory(new AreaChange(surf, old_data, new_data, "h-flip"))
 }
 
-export function rotateTile90Clock(value: Tile) {
-  value.setPropValue(
-    "data",
-    cloneAndRemap(value.getPropValue("data"), (n: Point, data: ArrayGrid<number>) =>
-      data.get_at(n.y, data.w - 1 - n.x),
-    ),
-  )
-}
-
-export function rotateTile90CounterClock(value: Tile) {
-  value.setPropValue(
-    "data",
-    cloneAndRemap(value.getPropValue("data"), (n: Point, data: ArrayGrid<number>) =>
-      data.get_at(data.h - 1 - n.y, n.x),
-    ),
-  )
-}
-
-export const FlipTileAroundVerticalAction: SimpleMenuAction = {
-  type: "simple",
-  title: "flip left / right",
-  perform: async (state) => {
-    const sel = state.getSelectionPath().start()
-    if (sel instanceof Tile) {
-      flipTileAroundVertical(sel as Tile)
-    }
-  },
-}
 export const FlipTileAroundHorizontalAction: SimpleMenuAction = {
   type: "simple",
   title: "flip top / bottom",
@@ -115,6 +97,51 @@ export const FlipTileAroundHorizontalAction: SimpleMenuAction = {
     const sel = state.getSelectionPath().start()
     if (sel instanceof Tile) {
       flipTileAroundHorizontal(sel as Tile)
+    }
+  },
+}
+
+export function rotateTile90Clock(value: Tile) {
+  const image = value.getPropValue("data")
+  const surf = image.getPixelSurface(image.layers()[0], image.frames()[0])
+  const old_data = surf.cloneData()
+  const new_data = cloneAndRemap(old_data, (n, data) => {
+    return data.get_at(n.y, data.w - 1 - n.x)
+  })
+  surf.setAllData(new_data)
+  image.appendHistory(new AreaChange(surf, old_data, new_data, "rot-90-cw"))
+}
+
+export const RotateTile90ClockAction: SimpleMenuAction = {
+  type: "simple",
+  title: "rotate 90 clock",
+  icon: Icons.Checkerboard,
+  perform: async (state) => {
+    const sel = state.getSelectionPath().start()
+    if (sel instanceof Tile) {
+      rotateTile90Clock(sel as Tile)
+    }
+  },
+}
+
+export function rotateTile90CounterClock(value: Tile) {
+  const image = value.getPropValue("data")
+  const surf = image.getPixelSurface(image.layers()[0], image.frames()[0])
+  const old_data = surf.cloneData()
+  const new_data = cloneAndRemap(old_data, (n, data) => {
+    return data.get_at(data.h - 1 - n.y, n.x)
+  })
+  surf.setAllData(new_data)
+  image.appendHistory(new AreaChange(surf, old_data, new_data, "rot-90-ccw"))
+}
+export const RotateTile90CounterClockAction: SimpleMenuAction = {
+  type: "simple",
+  title: "rotate 90 counter clock",
+  icon: Icons.Checkerboard,
+  perform: async (state) => {
+    const sel = state.getSelectionPath().start()
+    if (sel instanceof Tile) {
+      rotateTile90CounterClock(sel as Tile)
     }
   },
 }
@@ -134,6 +161,7 @@ export const AddTileToSheetAction: SimpleMenuAction = {
 export const DuplicateSelectedTileAction: SimpleMenuAction = {
   type: "simple",
   title: "duplicate tile",
+  icon: Icons.Duplicate,
   perform: async (state) => {
     const sel = state.getSelectionPath()
     if (sel.start() instanceof Tile && sel.parent().start() instanceof Sheet) {
