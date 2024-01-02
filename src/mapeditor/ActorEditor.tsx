@@ -1,13 +1,13 @@
 import { Point } from "josh_js_util"
 import { toClass } from "josh_react_util"
-import React, { useContext, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 
 import { ListSelect } from "../common/ListSelect"
 import { ListViewOptions, ListViewRenderer } from "../common/ListView"
-import { ImageSnapshotView } from "../imageeditor/ImageSnapshotView"
-import { Actor } from "../model/actor"
-import { appendToList, removeFromList } from "../model/base"
-import { DocContext, StateContext } from "../model/contexts"
+import { drawTextRun } from "../fonteditor/PixelFontPreview"
+import { Actor, ViewSettings } from "../model/actor"
+import { appendToList, removeFromList, UUID } from "../model/base"
+import { DocContext, ImageSnapshotContext } from "../model/contexts"
 import { GameDoc } from "../model/gamedoc"
 import { ActorInstance, ActorLayer } from "../model/gamemap"
 import { ImageSnapshotCache } from "../model/ImageSnapshotCache"
@@ -30,25 +30,88 @@ export function drawActorlayer(
     const position = inst.getPropValue("position")
     const actor = findActorForInstance(inst, doc)
     if (actor) {
-      const box = actor.getPropValue("viewbox").add(position).scale(scale)
-      if (actor.getPropValue("kind") === "text") {
-        console.log("rendering text", box)
-        fillBounds(ctx, box, "red")
-        ctx.font = "bold 12pt sans-serif"
-        ctx.fillStyle = "black"
-        ctx.fillText("text goes here", box.x, box.y + 20)
-      } else {
-        const imageRef = actor.getPropValue("sprite")
+      const view = actor.getPropValue("view")
+      const box = view.getPropValue("bounds").add(position).scale(scale)
+      const kind = view.getPropValue("kind")
+      if (kind === "sprite") {
+        const imageRef = view.getPropValue("reference")
         if (imageRef) {
-          const snap = isc.getSnapshotCanvas(imageRef)
+          const snap = isc.getSnapshotCanvas(imageRef as UUID)
+          ctx.imageSmoothingEnabled = false
           ctx.drawImage(snap, box.x, box.y, snap.width * scale, snap.height * scale)
         } else {
           // if we get here then normal drawing failed, so just do a box
           fillBounds(ctx, box, "orange")
         }
       }
+      if (kind === "text") {
+        const fontid = view.getPropValue("reference")
+        const font = doc.fonts().find((fnt) => fnt.getUUID() === fontid)
+        if (font) {
+          ctx.save()
+          ctx.translate(box.x, box.y)
+          drawTextRun(ctx, "sometext", font, 3, "black")
+          ctx.restore()
+        }
+      }
     }
   })
+}
+
+function ImageActorView(props: { actor: Actor; scale: number }) {
+  const { actor, scale } = props
+  const ref = useRef<HTMLCanvasElement>(null)
+  const isc = useContext(ImageSnapshotContext)
+  const view = actor.getPropValue("view") as ViewSettings
+  const bounds = view.getPropValue("bounds")
+  useEffect(() => {
+    if (ref.current) {
+      if (view.getPropValue("kind") === "sprite") {
+        const ctx = ref.current.getContext("2d") as CanvasRenderingContext2D
+        ctx.fillStyle = "white"
+        ctx.fillRect(0, 0, ref.current.width, ref.current.height)
+        const spriteId = view.getPropValue("reference")
+        const snap = isc.getSnapshotCanvas(spriteId as UUID)
+        ctx.imageSmoothingEnabled = false
+        ctx.drawImage(snap, 0, 0, snap.width * scale, snap.height * scale)
+      }
+    }
+  }, [ref])
+  return <canvas ref={ref} width={bounds.w * scale} height={bounds.h * scale} />
+}
+
+function TextActorView(props: { actor: Actor; scale: number }) {
+  const { actor, scale } = props
+  const ref = useRef<HTMLCanvasElement>(null)
+  const doc = useContext(DocContext)
+  const view = actor.getPropValue("view") as ViewSettings
+  const bounds = view.getPropValue("bounds")
+  useEffect(() => {
+    if (ref.current) {
+      if (view.getPropValue("kind") === "text") {
+        const ctx = ref.current.getContext("2d") as CanvasRenderingContext2D
+        ctx.fillStyle = "magenta"
+        ctx.fillRect(0, 0, ref.current.width, ref.current.height)
+        const fontid = view.getPropValue("reference")
+        const font = doc.fonts().find((fnt) => fnt.getUUID() === fontid)
+        console.log("the font is", font)
+        if (font) {
+          console.log("drawing text", "sometext")
+          drawTextRun(ctx, "sometext", font, 3, "black")
+        }
+      }
+    }
+  }, [ref])
+  return <canvas ref={ref} width={bounds.w * scale} height={bounds.h * scale} />
+}
+
+function ActorSnapshotView(props: { actor: Actor; scale: number }) {
+  const { actor, scale } = props
+  const view = actor.getPropValue("view") as ViewSettings
+  const kind = view.getPropValue("kind")
+  if (kind === "sprite") return <ImageActorView actor={actor} scale={scale} />
+  if (kind === "text") return <TextActorView actor={actor} scale={scale} />
+  return <div>no view</div>
 }
 
 const ActorPreviewRenderer: ListViewRenderer<Actor, never> = (props: {
@@ -57,11 +120,6 @@ const ActorPreviewRenderer: ListViewRenderer<Actor, never> = (props: {
   options?: ListViewOptions
 }) => {
   const { selected, value } = props
-  const doc = useContext(DocContext)
-  let img = undefined
-  if (value) {
-    img = doc.getPropValue("canvases").find((img) => img.getUUID() === value.getPropValue("sprite"))
-  }
   if (!value) return <div>nothing selected</div>
   return (
     <div
@@ -76,7 +134,7 @@ const ActorPreviewRenderer: ListViewRenderer<Actor, never> = (props: {
       }}
     >
       <b>{value.getPropValue("name")}</b>
-      <ImageSnapshotView image={img} scale={3} />
+      <ActorSnapshotView actor={value} scale={3} />
     </div>
   )
 }
@@ -89,7 +147,6 @@ export function ActorLayerToolbar(props: {
   const { layer, onSelect } = props
   const doc = useContext(DocContext)
   const [selected, setSelected] = useState<Actor | undefined>(undefined)
-  const state = useContext(StateContext)
   const add_actor = () => {
     if (!selected) return
     const player = new ActorInstance({
@@ -130,7 +187,7 @@ export function drawSelectedActor(
   const position = inst.getPropValue("position")
   const source = findActorForInstance(inst, doc)
   if (source) {
-    const box = source.getPropValue("viewbox")
+    const box = source.getPropValue("view").getPropValue("bounds")
     strokeBounds(ctx, box.add(position).scale(scale), "orange", 3)
   }
 }
@@ -139,7 +196,10 @@ export function findActorAtPosition(doc: GameDoc, layer: ActorLayer, point: Poin
   return layer.getPropValue("actors").find((inst) => {
     const actt = findActorForInstance(inst, doc)
     if (actt) {
-      const box = actt.getPropValue("viewbox").add(inst.getPropValue("position"))
+      const box = actt
+        .getPropValue("view")
+        .getPropValue("bounds")
+        .add(inst.getPropValue("position"))
       console.log("box is", box)
       if (box.contains(point)) {
         return true

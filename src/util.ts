@@ -1,4 +1,5 @@
 import { ArrayGrid, Bounds, Point, Size } from "josh_js_util"
+import { ConsoleInterface } from "retrogami-engine/dist/scripting"
 
 import { ArrayGridNumberJSON } from "./model/datamodel"
 
@@ -132,5 +133,11 @@ export class Observable {
   setProperty(property: string, b: unknown) {
     this.values[property] = b
     this.fire(property)
+  }
+}
+
+export class ConsoleLogger implements ConsoleInterface {
+  log(...args: unknown[]): void {
+    console.log("OUTPUT", ...args)
   }
 }

@@ -69,8 +69,8 @@ export const FrameItemRenderer: ListViewRenderer<ImageFrame, FrameItemRendererOp
         doc={props.options.doc}
         palette={props.options.palette}
       />
-      {/*<b>{name}</b>*/}
-      {/*<i>{group}</i>*/}
+      <b>{name}</b>
+      <i>{group}</i>
     </div>
   )
 }

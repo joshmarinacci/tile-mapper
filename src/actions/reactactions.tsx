@@ -137,9 +137,6 @@ export function AddActorToDocButton() {
     appendToList(doc, "canvases", sprite)
     const actor = new Actor({
       name: "new actor",
-      viewbox: bounds,
-      hitbox: bounds,
-      sprite: sprite.getUUID(),
     })
     appendToList(doc, "actors", actor)
     state.setSelection(actor)

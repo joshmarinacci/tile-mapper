@@ -12,7 +12,6 @@ export class ImageSnapshotCache {
   }
 
   setImageSnapshot(uuid: UUID, canvas: HTMLCanvasElement) {
-    console.log(`snapshot updated ${uuid}`)
     const snap = this.get_snapshot(uuid)
     snap.canvas = canvas
     for (const value of snap.listeners.values()) {

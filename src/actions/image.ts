@@ -140,7 +140,7 @@ export const DeleteImageFrameAction: SimpleMenuAction = {
     const parent = path.parent().start()
     if (start instanceof ImageFrame && parent instanceof SImage) {
       removeFromList(parent, "frames", start)
-      state.clearSelection()
+      state.setSelectionTarget(parent)
     }
   },
 }
@@ -236,13 +236,13 @@ const move_layer_up = (ch: ImageLayer, image: SImage) => {
 
 const move_frame_up = (ch: ImageFrame, image: SImage) => {
   if (!ch) return
-  let layers = image.getPropValue("frames")
-  layers = layers.slice()
-  const n = layers.indexOf(ch)
+  let frames = image.getPropValue("frames")
+  frames = frames.slice()
+  const n = frames.indexOf(ch)
   if (n <= 0) return
-  layers.splice(n, 1)
-  layers.splice(n - 1, 0, ch)
-  image.setPropValue("frames", layers)
+  frames.splice(n, 1)
+  frames.splice(n - 1, 0, ch)
+  image.setPropValue("frames", frames)
 }
 
 export const CopyImageToClipboardAction: SimpleMenuAction = {

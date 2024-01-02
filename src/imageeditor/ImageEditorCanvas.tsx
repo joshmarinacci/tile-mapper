@@ -13,7 +13,6 @@ import { drawCanvas, drawImage } from "./drawing"
 import { EllipseTool, EllipseToolSettings } from "./ellipse_tool"
 import { EraserTool, EraserToolSettings } from "./eraser_tool"
 import { FillTool, FillToolSettings } from "./fill_tool"
-import { ImageSnapshotView } from "./ImageSnapshotView"
 import { LineTool, LineToolSettings } from "./line_tool"
 import { MoveTool, MoveToolSettings } from "./move_tool"
 import { PencilTool, PencilToolSettings } from "./pencil_tool"
@@ -300,7 +299,7 @@ export function ImageEditorCanvas(props: {
             })
           }}
         />
-        <ImageSnapshotView image={image} scale={5} />
+        {/*<ImageSnapshotView image={image} scale={5} />*/}
       </div>
     </div>
   )

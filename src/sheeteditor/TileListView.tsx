@@ -3,7 +3,12 @@ import "./TileSheetView.css"
 import { Spacer, toClass } from "josh_react_util"
 import React, { useContext, useEffect, useRef, useState } from "react"
 
-import { deleteTile, duplicate_tile, export_bmp } from "../actions/sheets"
+import {
+  AddTileToSheetAction,
+  DeleteSelectedTileAction,
+  DuplicateSelectedTileAction,
+  export_bmp,
+} from "../actions/sheets"
 import { drawEditableSprite, ImagePalette } from "../common/common"
 import {
   CheckToggleButton,
@@ -11,6 +16,7 @@ import {
   IconButton,
   Pane,
   ToggleButton,
+  ToolbarActionButton,
 } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { ListSelect } from "../common/ListSelect"
@@ -18,7 +24,7 @@ import { ListView, ListViewDirection, ListViewOptions, ListViewRenderer } from "
 import { PopupContext } from "../common/popup"
 import { ICON_CACHE } from "../iconcache"
 import { useWatchProp } from "../model/base"
-import { DocContext } from "../model/contexts"
+import { DocContext, StateContext } from "../model/contexts"
 import { Sheet } from "../model/sheet"
 import { Tile } from "../model/tile"
 import { TileGridView } from "./TileGridView"
@@ -28,6 +34,7 @@ type TilePreviewOptions = {
   sheet: Sheet
   showNames: boolean
   showGrid: boolean
+  showBlocking: boolean
   scale: number
   palette: ImagePalette
 } & ListViewOptions
@@ -50,9 +57,13 @@ export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (
       ) as CanvasPattern
       ctx.fillRect(0, 0, canvas.width, canvas.height)
       drawEditableSprite(ctx, 1, value, options.palette)
+      if (options.showBlocking && value.getPropValue("blocking")) {
+        ctx.fillStyle = "rgba(255,0,0,0.5)"
+        ctx.fillRect(0, 0, value.width() * options.scale, value.height() * options.scale)
+      }
     }
   }
-  useEffect(() => redraw(), [value])
+  useEffect(() => redraw(), [value, options])
   useWatchProp(value, "data", () => redraw())
   useWatchProp(value, "name")
   const pm = useContext(PopupContext)
@@ -65,7 +76,7 @@ export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (
     <div className={"tile-preview-wrapper"} onContextMenu={showPopup}>
       <canvas
         ref={ref}
-        className={toClass({ "tile-preview": true, selected })}
+        className={toClass({ "tile-preview": true, selected, blocking: options.showBlocking })}
         style={{
           width: `${value.width() * options.scale}px`,
           height: `${value.height() * options.scale}px`,
@@ -102,55 +113,35 @@ const SheetPreviewRenderer: ListViewRenderer<Sheet, never> = (props: {
 export function TileListView(props: {
   sheet: Sheet
   tile: Tile | undefined
-  setTile: (tile: Tile | undefined) => void
+  setSelectedTile: (tile: Tile | undefined) => void
   editable: boolean
 }) {
   const doc = useContext(DocContext)
-  const { sheet, tile, setTile, editable } = props
+  const { sheet, editable, tile, setSelectedTile } = props
   const showNames = sheet.getPropValue("showNames")
   const showGrid = sheet.getPropValue("showGrid")
+  const showBlocking = sheet.getPropValue("showBlocking")
   const locked = sheet.getPropValue("locked")
   const view = sheet.getPropValue("viewMode")
   const [scale, setScale] = useState(4)
   const [tiles, setTiles] = useState(sheet.getPropValue("tiles"))
-  const add_tile = () => {
-    setTile(sheet.addNewTile())
-    setTiles(sheet.getPropValue("tiles"))
-  }
-  const dup_tile = () => {
-    if (tile) setTile(duplicate_tile(sheet, tile))
-  }
-  const delete_tile = () => {
-    if (tile) deleteTile(sheet, tile)
-    if (sheet.getPropValue("tiles").length > 0) {
-      setTile(sheet.getPropValue("tiles")[0])
-    } else {
-      setTile(undefined)
-    }
-  }
   const use_grid_view = () => sheet.setPropValue("viewMode", "grid")
   const use_list_view = () => sheet.setPropValue("viewMode", "list")
   useWatchProp(sheet, "showGrid")
+  useWatchProp(sheet, "showBlocking")
   useWatchProp(sheet, "showNames")
   useWatchProp(sheet, "viewMode")
   useWatchProp(sheet, "locked")
   useEffect(() => setTiles(sheet.getPropValue("tiles")), [sheet])
+  useWatchProp(sheet, "tiles", () => setTiles(sheet.getPropValue("tiles")))
   return (
     <div className={"tile-list-view"}>
       <div className={"toolbar"}>
         {editable && (
           <>
-            <IconButton onClick={add_tile} icon={Icons.Tile} tooltip={"create new tile"} />
-            <IconButton
-              onClick={dup_tile}
-              icon={Icons.Duplicate}
-              tooltip={"duplicate selected tile"}
-            />
-            <IconButton
-              onClick={delete_tile}
-              icon={Icons.Trashcan}
-              tooltip={"delete selected tile"}
-            />
+            <ToolbarActionButton action={AddTileToSheetAction} />
+            <ToolbarActionButton action={DuplicateSelectedTileAction} />
+            <ToolbarActionButton action={DeleteSelectedTileAction} />
           </>
         )}
         <IconButton onClick={use_grid_view} icon={Icons.Grid} tooltip={"organize by position"} />
@@ -159,6 +150,7 @@ export function TileListView(props: {
         <DropdownButton icon={Icons.Gear}>
           <CheckToggleButton target={sheet} prop={"showNames"} text={"show names"} />
           <CheckToggleButton target={sheet} prop={"showGrid"} text={"show grid"} />
+          <CheckToggleButton target={sheet} prop={"showBlocking"} text={"show blocking"} />
           <ToggleButton
             onClick={() => setScale(1)}
             icon={Icons.Blank}
@@ -206,20 +198,28 @@ export function TileListView(props: {
         <ListView
           className={"tile-list"}
           selected={tile}
-          setSelected={setTile}
+          setSelected={setSelectedTile}
           renderer={TilePreviewRenderer}
           data={tiles}
-          options={{ showNames, scale, sheet, showGrid, palette: doc.palette() }}
+          options={{ showNames, scale, sheet, showGrid, showBlocking, palette: doc.palette() }}
           direction={ListViewDirection.HorizontalWrap}
         />
       )}
       {view === "grid" && (
         <TileGridView
           selected={tile}
-          setSelected={setTile}
+          setSelected={setSelectedTile}
           data={tiles}
           sheet={sheet}
-          options={{ showNames, scale, sheet, showGrid, palette: doc.palette(), locked }}
+          options={{
+            showNames,
+            scale,
+            sheet,
+            showGrid,
+            showBlocking,
+            palette: doc.palette(),
+            locked,
+          }}
         />
       )}
     </div>
@@ -255,7 +255,7 @@ export function CompactSheetAndTileSelector(props: {
           sheet={selectedSheet}
           tile={selectedTile}
           editable={false}
-          setTile={(t) => setSelectedTile(t)}
+          setSelectedTile={(t) => setSelectedTile(t)}
         />
       )}
     </Pane>

@@ -24,6 +24,7 @@ type PropDefBaseTypes =
   | "array"
   | "object"
   | "reference"
+  | "record"
 
 type PropDefCustomType =
   | "tile-reference"
@@ -33,6 +34,7 @@ type PropDefCustomType =
   | "font-reference"
   | "actor-type"
   | "palette-color"
+  | "sub-object"
 
 export type Settings = {
   type: "integer" | "float"
@@ -77,6 +79,12 @@ export type PropValues<Type> = Partial<Record<keyof Type, Type[keyof Type]>>
 // type ArrayElementType<ArrayType extends Array> = ArrayType[number];
 type Flatten<Type> = Type extends Array<infer Item> ? Item : never
 
+function isPropBase(val: unknown) {
+  if (!val) return false
+  if (val instanceof PropsBase) return true
+  return false
+}
+
 export class PropsBase<Type> {
   _id: UUID
   private listeners: Map<keyof Type, WrapperCallback<Type[keyof Type]>[]>
@@ -107,6 +115,10 @@ export class PropsBase<Type> {
 
   setProps(props: PropValues<Type>) {
     for (const [k, d] of Object.entries(props)) {
+      if (!this.defs.has(k)) {
+        console.warn(`object does not have property ${k}`)
+        continue
+      }
       this.setPropValue(k as keyof Type, d as Type[keyof Type])
     }
   }
@@ -142,6 +154,7 @@ export class PropsBase<Type> {
           v.offAny(this.child_watcher)
         })
       }
+      if (def.watchChildren && isPropBase(val)) val.offAny(this.child_watcher)
     }
     this.values.set(name, value)
     {
@@ -151,6 +164,7 @@ export class PropsBase<Type> {
           v.onAny(this.child_watcher)
         })
       }
+      if (def.watchChildren && isPropBase(val)) val.onAny(this.child_watcher)
     }
     this._fire(name, value)
   }
@@ -222,6 +236,7 @@ type PropDefOptions<T> = {
   toJSON: ToJSONner<T>
   fromJSON: FromJSONner<T>
   format: ToFormatString<T>
+  custom?: PropDefCustomType
 }
 
 export class PropDefBuilder<T> implements PropDef<T> {
@@ -249,6 +264,7 @@ export class PropDefBuilder<T> implements PropDef<T> {
     this.toJSON = options.toJSON
     this.fromJSON = options.fromJSON
     this.format = options.format
+    this.custom = options.custom
   }
   copy() {
     return new PropDefBuilder<T>(this)
@@ -358,6 +374,7 @@ export function restoreClassFromJSON<Type>(
   reg: ClassRegistry,
   json: JsonOut<Type>,
 ): PropsBase<Type> {
+  if (!json) return null
   if (CLASS_NAME_MAP[json.class]) json.class = CLASS_NAME_MAP[json.class]
   const Clazz = reg.classByName.get(json.class)
   if (!json.class) {
@@ -435,7 +452,7 @@ export class ClassRegistry {
       this.log("found class for target", clazz, this.namesByClass.get(clazz))
       return this.namesByClass.get(clazz)
     }
-    throw new Error("cannot serialize class")
+    throw new Error(`cannot serialize class: ${clazz.name}`)
   }
 
   private log(...args: unknown[]) {

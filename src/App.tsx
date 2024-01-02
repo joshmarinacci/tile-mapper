@@ -8,7 +8,7 @@ import { ActionRegistry, SimpleMenuAction } from "./actions/actions"
 import { ExportToJSONAction, ImportFromJSONAction, SaveLocalStorageAction } from "./actions/gamedoc"
 import { NewDocAction } from "./actions/reactactions"
 import { PopupContainer, PopupContext, PopupContextImpl } from "./common/popup"
-import { ObjectTreeView } from "./common/treeview"
+import { TreeView } from "./common/treeview"
 import Example from "./example.json"
 import { make_doc_from_json } from "./io/json"
 import { Divider } from "./main/Divider"
@@ -37,6 +37,8 @@ const ISC = new ImageSnapshotCache()
 const gstate = new GlobalState()
 gstate.setPropValue("doc", make_doc_from_json(Example, reg))
 
+const LEFT_WIDTH = 250
+const RIGHT_WIDTH = 400
 function Main3() {
   const state = useContext(StateContext)
   const doc = useContext(DocContext)
@@ -67,9 +69,13 @@ function Main3() {
     <div
       className={"master-wrapper"}
       style={{
-        gridTemplateColumns: `[start] 0px ${showLeft ? "[left-sidebar] 300px" : ""} [tool-column] ${
-          toolWidth - (showLeft ? 300 : 0) - 10
-        }px [divider] 1px [editor-view] 1fr ${showRight ? "[right-sidebar] 300px" : ""} [end]`,
+        gridTemplateColumns: `[start] 0px ${
+          showLeft ? `[left-sidebar] ${LEFT_WIDTH}px` : ""
+        } [tool-column] ${
+          toolWidth - (showLeft ? LEFT_WIDTH : 0) - 10
+        }px [divider] 1px [editor-view] 1fr ${
+          showRight ? `[right-sidebar] ${RIGHT_WIDTH}px` : ""
+        } [end]`,
       }}
     >
       <div className={"top-toolbar"}>
@@ -86,7 +92,7 @@ function Main3() {
             }}
           >
             <header>Document</header>
-            <ObjectTreeView obj={doc} />
+            <TreeView />
           </div>
         </div>
       )}

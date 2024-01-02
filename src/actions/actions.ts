@@ -10,7 +10,9 @@ import { ParticleFX } from "../model/particlefx"
 import { PixelFont } from "../model/pixelfont"
 import { Sheet } from "../model/sheet"
 import { SoundFX } from "../model/soundfx"
+import { Tile } from "../model/tile"
 import { GlobalState } from "../state"
+import { DeleteActorAction, DeleteImageAction } from "./actor-actions"
 import {
   AddActorLayerToMapAction,
   AddColorLayerToMapAction,
@@ -34,7 +36,17 @@ import {
   MoveImageLayerDownAction,
   MoveImageLayerUpAction,
 } from "./image"
-import { DeleteSheetAction, ExportSheetToPNG } from "./sheets"
+import {
+  AddTileToSheetAction,
+  DeleteSelectedTileAction,
+  DeleteSheetAction,
+  DuplicateSelectedTileAction,
+  ExportSheetToPNG,
+  FlipTileAroundHorizontalAction,
+  FlipTileAroundVerticalAction,
+  RotateTile90ClockAction,
+  RotateTile90CounterClockAction,
+} from "./sheets"
 
 export type Shortcut = {
   key: string
@@ -95,29 +107,6 @@ export class ActionRegistry {
   }
 }
 
-export const DeleteActorAction: SimpleMenuAction = {
-  type: "simple",
-  title: "delete actor",
-  perform: async (state) => {
-    const sel = state.getPropValue("selection")
-    if (sel instanceof Actor) {
-      removeFromList(state.getPropValue("doc"), "actors", sel as Actor)
-      state.clearSelection()
-    }
-  },
-}
-export const DeleteImageAction: SimpleMenuAction = {
-  type: "simple",
-  title: "delete image",
-  icon: Icons.Trashcan,
-  perform: async (state) => {
-    const sel = state.getPropValue("selection")
-    if (sel instanceof SImage) {
-      removeFromList(state.getPropValue("doc"), "canvases", sel as SImage)
-      state.clearSelection()
-    }
-  },
-}
 export const DeletePixelFontAction: SimpleMenuAction = {
   type: "simple",
   title: "delete font",
@@ -133,7 +122,7 @@ export const DeletePixelFontAction: SimpleMenuAction = {
 export const DeleteParticleFXAction: SimpleMenuAction = {
   type: "simple",
   title: "delete particle effect",
-  icon: Icons.Actor,
+  icon: Icons.Trashcan,
   perform: async (state) => {
     const sel = state.getPropValue("selection")
     if (sel instanceof ParticleFX) {
@@ -145,7 +134,7 @@ export const DeleteParticleFXAction: SimpleMenuAction = {
 export const DeleteSoundFXAction: SimpleMenuAction = {
   type: "simple",
   title: "delete sound effect",
-  icon: Icons.Actor,
+  icon: Icons.Trashcan,
   perform: async (state) => {
     const sel = state.getPropValue("selection")
     if (sel instanceof SoundFX) {
@@ -191,8 +180,17 @@ export function drawGrid(
 export function calculate_context_actions<T>(obj: PropsBase<T>) {
   const actions = []
   if (obj instanceof Sheet) {
+    actions.push(AddTileToSheetAction)
     actions.push(DeleteSheetAction)
     actions.push(ExportSheetToPNG)
+  }
+  if (obj instanceof Tile) {
+    actions.push(DuplicateSelectedTileAction)
+    actions.push(FlipTileAroundVerticalAction)
+    actions.push(FlipTileAroundHorizontalAction)
+    actions.push(RotateTile90ClockAction)
+    actions.push(RotateTile90CounterClockAction)
+    actions.push(DeleteSelectedTileAction)
   }
   if (obj instanceof GameMap) {
     actions.push(DeleteMapAction)

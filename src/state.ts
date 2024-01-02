@@ -101,7 +101,7 @@ export class GlobalState extends PropsBase<GlobalStateType> {
   }
 
   setSelectionTarget<T>(target: PropsBase<T>) {
-    this.sp = new SelectionPath(target, this.getPropValue("doc"))
+    this.sp = new SelectionPath(target as PropsBase<unknown>, this.getPropValue("doc"))
     this.setSelection(target)
   }
 

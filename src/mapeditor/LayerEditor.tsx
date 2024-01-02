@@ -1,6 +1,6 @@
 import "./MapEditor.css"
 
-import { Point, Size } from "josh_js_util"
+import { Bounds, Point, Size } from "josh_js_util"
 import { DialogContext, Spacer } from "josh_react_util"
 import React, { MouseEvent, useContext, useEffect, useRef, useState } from "react"
 
@@ -21,6 +21,7 @@ import {
 } from "../model/gamemap"
 import { Tile } from "../model/tile"
 import { PlayTest } from "../preview/PlayTest"
+import { strokeBounds } from "../util"
 import { ActorLayerMouseHandler, ActorLayerToolbar, drawActorlayer } from "./ActorEditor"
 import { MouseHandler } from "./editorbase"
 import { ShareMapDialog } from "./ShareMapDialog"
@@ -68,6 +69,20 @@ function drawGridLayer(
   ctx.stroke()
    */
   ctx.restore()
+}
+
+function drawTileLayerBounds(
+  canvas: HTMLCanvasElement,
+  ctx: CanvasRenderingContext2D,
+  doc: GameDoc,
+  selectedLayer1: TileLayer,
+  scale: number,
+) {
+  const size = selectedLayer1.getPropValue("size")
+  const tilesize = doc.getPropValue("tileSize")
+  const fsize = size.scale(tilesize.w).scale(scale)
+  strokeBounds(ctx, Bounds.fromPointSize(new Point(0, 0), fsize), "orange", 5)
+  strokeBounds(ctx, Bounds.fromPointSize(new Point(0, 0), fsize), "white", 1)
 }
 
 export function LayerEditor(props: {
@@ -120,6 +135,9 @@ export function LayerEditor(props: {
       })
       if (grid) {
         drawGridLayer(canvas, ctx, doc, scale, grid, tileSize)
+      }
+      if (layer instanceof TileLayer) {
+        drawTileLayerBounds(canvas, ctx, doc, layer as TileLayer, scale)
       }
       if (handler)
         handler.drawOverlay({

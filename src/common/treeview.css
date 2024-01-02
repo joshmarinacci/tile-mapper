@@ -6,6 +6,27 @@
   --section-header-background: #909191;
   --section-header-background-hover: #dcdede;
 }
+.tree-root {
+  border: 0px solid red;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.tree-object {
+  border: 0px solid blue;
+  list-style: none;
+}
+.tree-object > header {
+  border: 0px solid red;
+  display: flex;
+  flex-direction: row;
+  background-color: var(--section-header-background);
+  align-items: center;
+}
+.tree-object.selected > header {
+  background-color: #999999;
+}
+/*
 .tree-wrapper > * {
   margin: 0;
 }
@@ -80,3 +101,4 @@
 .tree-item .section button:hover {
   background-color: var(--section-header-background-hover);
 }
+*/

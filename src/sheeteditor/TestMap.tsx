@@ -7,7 +7,7 @@ import { ICON_CACHE } from "../iconcache"
 import { DocContext } from "../model/contexts"
 import { Tile } from "../model/tile"
 
-export function TestMap(props: { tile: Tile | null; mapArray: ArrayGrid<Tile> }) {
+export function TestMap(props: { tile: Tile | undefined; mapArray: ArrayGrid<Tile> }) {
   const doc = useContext(DocContext)
   const tileSize = doc.getPropValue("tileSize")
   const { tile, mapArray } = props

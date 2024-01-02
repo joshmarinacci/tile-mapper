@@ -2,7 +2,7 @@ import "./TileSheetEditor.css"
 
 import { ArrayGrid } from "josh_js_util"
 import { VBox } from "josh_react_util"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useState } from "react"
 
 import { Pane } from "../common/common-components"
 import { ImageEditorCanvas } from "../imageeditor/ImageEditorCanvas"
@@ -15,16 +15,15 @@ import { TileListView } from "./TileListView"
 
 export function TileSheetEditor(props: { sheet: Sheet }) {
   const { sheet } = props
-  const state = useContext(StateContext)
-  const tile = sheet.getPropValue("selectedTile")
+  const [selectedTile, setSelectedTile] = useState<Tile | undefined>(undefined)
   const [maparray] = useState(() => new ArrayGrid<Tile>(20, 20))
-
-  useEffect(() => {
-    const tiles = sheet.getPropValue("tiles")
-    sheet.setPropValue("selectedTile", tiles.length > 0 ? tiles[0] : undefined)
-  }, [sheet])
-  useWatchProp(sheet, "selectedTile")
-
+  const state = useContext(StateContext)
+  useWatchProp(state, "selection", () => {
+    const start = state.getSelectionPath().start()
+    if (start instanceof Tile) {
+      setSelectedTile(start)
+    }
+  })
   return (
     <>
       <div className={"tool-column"}>
@@ -33,32 +32,30 @@ export function TileSheetEditor(props: { sheet: Sheet }) {
             <TileListView
               editable={true}
               sheet={sheet}
-              tile={tile}
-              setTile={(tile) => {
-                if (tile) {
-                  sheet.setPropValue("selectedTile", tile)
-                  state.setSelectionTarget(tile as unknown as PropsBase<unknown>)
-                }
+              tile={selectedTile}
+              setSelectedTile={(tile) => {
+                setSelectedTile(tile)
+                state.setSelectionTarget(tile as unknown as PropsBase<unknown>)
               }}
             />
           </Pane>
         )}
-        {tile && (
+        {
           <Pane collapsable={true} title={"Scratch"}>
-            <TestMap tile={tile} mapArray={maparray} />
+            <TestMap tile={selectedTile} mapArray={maparray} />
           </Pane>
-        )}
+        }
       </div>
       <div className={"editor-view"}>
         <VBox>
-          {tile && (
+          {selectedTile && (
             <ImageEditorCanvas
-              image={tile.getPropValue("data")}
-              layer={tile.getPropValue("data").layers()[0]}
-              frame={tile.getPropValue("data").frames()[0]}
+              image={(selectedTile as Tile).getPropValue("data")}
+              layer={(selectedTile as Tile).getPropValue("data").layers()[0]}
+              frame={(selectedTile as Tile).getPropValue("data").frames()[0]}
             />
           )}
-          {!tile && <div>no tile selected</div>}
+          {!(selectedTile as Tile) && <div>no tile selected</div>}
         </VBox>
       </div>
     </>

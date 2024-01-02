@@ -3,7 +3,14 @@ import { make_doc_from_json } from "../io/json"
 import Icons from "../resources/icons.json"
 import StdFont from "../resources/std_font.json"
 import { GameAction, GameActionDefs } from "./action"
-import { Actor, ActorDefs } from "./actor"
+import {
+  Actor,
+  ActorDefs,
+  ActorPhysicsSettings,
+  ActorPhysicsSettingsDefs,
+  ViewSettings,
+  ViewSettingsDef,
+} from "./actor"
 import { ClassRegistry, setGlobalClassRegistry } from "./base"
 import { Camera, CameraDefs } from "./camera"
 import { GameTest, TestDefs } from "./datamodel"
@@ -13,6 +20,8 @@ import {
   ActorInstanceDefs,
   ActorLayer,
   ActorLayerDefs,
+  ColorMapLayer,
+  ColorMapLayerDefs,
   GameMap,
   GameMapDefs,
   TileLayer,
@@ -34,6 +43,7 @@ export function get_class_registry() {
   registry.register("Camera", Camera, CameraDefs)
   registry.register("GameTest", GameTest, TestDefs)
   registry.register("TileLayer", TileLayer, TileLayerDefs)
+  registry.register("ColorMapLayer", ColorMapLayer, ColorMapLayerDefs)
   registry.register("ActorInstance", ActorInstance, ActorInstanceDefs)
   registry.register("ActorLayer", ActorLayer, ActorLayerDefs)
   registry.register("Map", GameMap, GameMapDefs)
@@ -47,6 +57,8 @@ export function get_class_registry() {
   registry.register("Sheet", Sheet, SheetDefs)
   registry.register("SoundFX", SoundFX, SoundFXDefs)
   registry.register("GameAction", GameAction, GameActionDefs)
+  registry.register("ViewSettings", ViewSettings, ViewSettingsDef)
+  registry.register("ActorPhysicsSettings", ActorPhysicsSettings, ActorPhysicsSettingsDefs)
   setGlobalClassRegistry(registry)
 
   const ICONS_DOC = make_doc_from_json(Icons, registry)

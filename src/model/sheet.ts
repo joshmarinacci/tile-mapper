@@ -11,6 +11,7 @@ type SheetType = {
   selectedTile: Tile | undefined
   showNames: boolean
   showGrid: boolean
+  showBlocking: boolean
   locked: boolean
   viewMode: "list" | "grid"
 }
@@ -18,7 +19,7 @@ const TileArrayDef: PropDef<Tile[]> = {
   type: "array",
   editable: false,
   hidden: true,
-  expandable: false,
+  expandable: true,
   watchChildren: true,
   default: () => [],
   format: (v) => "list of tiles",
@@ -42,8 +43,9 @@ export const SheetDefs: DefList<SheetType> = {
     watchChildren: false,
     skipPersisting: true,
   },
-  showNames: TransientBooleanDef,
+  showNames: TransientBooleanDef.copy().withDefault(() => false),
   showGrid: TransientBooleanDef,
+  showBlocking: TransientBooleanDef.copy().withDefault(() => false),
   locked: TransientBooleanDef,
   viewMode: StringDef.withDefault(() => "list").withHidden(true),
 }
@@ -73,5 +75,13 @@ export class Sheet extends PropsBase<SheetType> {
     const tile = new Tile({ size: size, gridPosition: new Point(-1, -1) })
     this.addTile(tile)
     return tile
+  }
+
+  hasTiles() {
+    return this.getPropValue("tiles").length > 0
+  }
+
+  firstTile() {
+    return this.getPropValue("tiles")[0]
   }
 }

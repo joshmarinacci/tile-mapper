@@ -34,3 +34,9 @@
 .prop-sheet input[type="checkbox"] {
   justify-self: start;
 }
+
+.prop-sheet .prop-sheet-contents.sub-object {
+  border: 1px solid black;
+  background-color: #cccccc;
+  min-width: 10rem;
+}
