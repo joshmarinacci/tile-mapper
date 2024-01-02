@@ -53,4 +53,8 @@ export enum Icons {
   QuestionMark = "question-mark",
   Undo = "undo",
   Redo = "redo",
+  FlipLeftRight = "flip-left-right",
+  FlipTopBottom = "flip-top-bottom",
+  Rot90CW = "rot-90-cw",
+  Rot90CCW = "rot-90-ccw",
 }

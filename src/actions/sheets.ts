@@ -68,6 +68,7 @@ function flipTileAroundVertical(value: Tile) {
 export const FlipTileAroundVerticalAction: SimpleMenuAction = {
   type: "simple",
   title: "flip left / right",
+  icon: Icons.FlipLeftRight,
   perform: async (state) => {
     const sel = state.getSelectionPath().start()
     if (sel instanceof Tile) {
@@ -90,6 +91,7 @@ function flipTileAroundHorizontal(value: Tile) {
 export const FlipTileAroundHorizontalAction: SimpleMenuAction = {
   type: "simple",
   title: "flip top / bottom",
+  icon: Icons.FlipTopBottom,
   perform: async (state) => {
     const sel = state.getSelectionPath().start()
     if (sel instanceof Tile) {
@@ -112,7 +114,7 @@ export function rotateTile90Clock(value: Tile) {
 export const RotateTile90ClockAction: SimpleMenuAction = {
   type: "simple",
   title: "rotate 90 clock",
-  icon: Icons.Checkerboard,
+  icon: Icons.Rot90CW,
   perform: async (state) => {
     const sel = state.getSelectionPath().start()
     if (sel instanceof Tile) {
@@ -134,7 +136,7 @@ export function rotateTile90CounterClock(value: Tile) {
 export const RotateTile90CounterClockAction: SimpleMenuAction = {
   type: "simple",
   title: "rotate 90 counter clock",
-  icon: Icons.Checkerboard,
+  icon: Icons.Rot90CCW,
   perform: async (state) => {
     const sel = state.getSelectionPath().start()
     if (sel instanceof Tile) {
@@ -150,6 +152,12 @@ export const AddTileToSheetAction: SimpleMenuAction = {
     const sel = state.getSelectionPath()
     if (sel.start() instanceof Sheet) {
       const sheet = sel.start() as unknown as Sheet
+      const tile = sheet.addNewTile()
+      state.setSelectionTarget(tile)
+      return
+    }
+    if (sel.parent().start() instanceof Sheet) {
+      const sheet = sel.parent().start() as unknown as Sheet
       const tile = sheet.addNewTile()
       state.setSelectionTarget(tile)
     }

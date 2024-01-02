@@ -197,11 +197,13 @@ export function TileGridView(props: {
     const pt = toModel(e)
     const tile = model.getAt(pt)
     setDown(false)
+    const offset = new Point(e.clientX, e.clientY)
     if (tile) {
       pm.show_at(
         <TilePopupMenu value={tile} grid={model} sheet={options.sheet} />,
         e.target,
-        "left",
+        "inside-top-left",
+        offset,
       )
     }
   }
