@@ -4,6 +4,7 @@ import { canvas_to_blob, forceDownloadBlob } from "josh_web_util"
 import { canvas_to_bmp, ImagePalette, sheet_to_canvas } from "../common/common"
 import { Icons } from "../common/icons"
 import { PropsBase, removeFromList } from "../model/base"
+import { AreaChange } from "../model/image"
 import { Sheet } from "../model/sheet"
 import { Tile } from "../model/tile"
 import { SimpleMenuAction } from "./actions"
@@ -57,22 +58,26 @@ function cloneAndRemap<T>(
   return data2
 }
 
-export function flipTileAroundVertical(value: Tile) {
-  value.setPropValue(
-    "data",
-    cloneAndRemap(value.getPropValue("data"), (n: Point, data: ArrayGrid<number>) =>
-      data.get_at(data.w - 1 - n.x, n.y),
-    ),
-  )
+function flipTileAroundVertical(value: Tile) {
+  const image = value.getPropValue("data")
+  const surf = image.getPixelSurface(image.layers()[0], image.frames()[0])
+  const old_data = surf.cloneData()
+  const new_data = cloneAndRemap(old_data, (n, data) => {
+    return data.get_at(data.w - 1 - n.x, n.y)
+  })
+  surf.setAllData(new_data)
+  image.appendHistory(new AreaChange(surf, old_data, new_data, "v-flip"))
 }
 
-export function flipTileAroundHorizontal(value: Tile) {
-  value.setPropValue(
-    "data",
-    cloneAndRemap(value.getPropValue("data"), (n: Point, data: ArrayGrid<number>) =>
-      data.get_at(n.x, data.h - 1 - n.y),
-    ),
-  )
+function flipTileAroundHorizontal(value: Tile) {
+  const image = value.getPropValue("data")
+  const surf = image.getPixelSurface(image.layers()[0], image.frames()[0])
+  const old_data = surf.cloneData()
+  const new_data = cloneAndRemap(old_data, (n, data) => {
+    return data.get_at(n.x, data.h - 1 - n.y)
+  })
+  surf.setAllData(new_data)
+  image.appendHistory(new AreaChange(surf, old_data, new_data, "h-flip"))
 }
 
 export function rotateTile90Clock(value: Tile) {
@@ -91,6 +96,27 @@ export function rotateTile90CounterClock(value: Tile) {
       data.get_at(data.h - 1 - n.y, n.x),
     ),
   )
+}
+
+export const FlipTileAroundVerticalAction: SimpleMenuAction = {
+  type: "simple",
+  title: "flip left / right",
+  perform: async (state) => {
+    const sel = state.getSelectionPath().start()
+    if (sel instanceof Tile) {
+      flipTileAroundVertical(sel as Tile)
+    }
+  },
+}
+export const FlipTileAroundHorizontalAction: SimpleMenuAction = {
+  type: "simple",
+  title: "flip top / bottom",
+  perform: async (state) => {
+    const sel = state.getSelectionPath().start()
+    if (sel instanceof Tile) {
+      flipTileAroundHorizontal(sel as Tile)
+    }
+  },
 }
 
 export const AddTileToSheetAction: SimpleMenuAction = {

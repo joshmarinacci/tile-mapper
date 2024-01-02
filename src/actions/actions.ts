@@ -41,6 +41,8 @@ import {
   DeleteSheetAction,
   DuplicateSelectedTileAction,
   ExportSheetToPNG,
+  FlipTileAroundHorizontalAction,
+  FlipTileAroundVerticalAction,
 } from "./sheets"
 
 export type Shortcut = {
@@ -204,6 +206,8 @@ export function calculate_context_actions<T>(obj: PropsBase<T>) {
   }
   if (obj instanceof Tile) {
     actions.push(DuplicateSelectedTileAction)
+    actions.push(FlipTileAroundVerticalAction)
+    actions.push(FlipTileAroundHorizontalAction)
     actions.push(DeleteSelectedTileAction)
   }
   if (obj instanceof GameMap) {
