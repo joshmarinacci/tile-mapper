@@ -11,6 +11,7 @@ type SheetType = {
   selectedTile: Tile | undefined
   showNames: boolean
   showGrid: boolean
+  showBlocking: boolean
   locked: boolean
   viewMode: "list" | "grid"
 }
@@ -42,8 +43,9 @@ export const SheetDefs: DefList<SheetType> = {
     watchChildren: false,
     skipPersisting: true,
   },
-  showNames: TransientBooleanDef,
+  showNames: TransientBooleanDef.copy().withDefault(() => false),
   showGrid: TransientBooleanDef,
+  showBlocking: TransientBooleanDef.copy().withDefault(() => false),
   locked: TransientBooleanDef,
   viewMode: StringDef.withDefault(() => "list").withHidden(true),
 }

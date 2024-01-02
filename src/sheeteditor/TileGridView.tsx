@@ -8,7 +8,7 @@ import { useWatchAllProps } from "../model/base"
 import { DocContext } from "../model/contexts"
 import { Sheet } from "../model/sheet"
 import { Tile } from "../model/tile"
-import { drawTextWithBackground, strokeBounds } from "../util"
+import { drawTextWithBackground, fillBounds, strokeBounds } from "../util"
 import { TilePopupMenu } from "./TilePopupMenu"
 
 export class SparseGridModel<T extends Tile> {
@@ -116,6 +116,7 @@ export function TileGridView(props: {
     palette: ImagePalette
     showGrid: boolean
     showNames: boolean
+    showBlocking: boolean
     locked: boolean
   }
 }) {
@@ -160,6 +161,9 @@ export function TileGridView(props: {
         }
         if (value === props.selected) {
           strokeBounds(ctx, bounds.grow(-1).add(new Point(0.5, 0.5)), "orange", 3)
+        }
+        if (options.showBlocking && value.getPropValue("blocking")) {
+          fillBounds(ctx, bounds.grow(-2), "rgba(255,0,0,0.5)")
         }
       }
       if (props.selected && down) {

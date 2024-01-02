@@ -34,6 +34,7 @@ type TilePreviewOptions = {
   sheet: Sheet
   showNames: boolean
   showGrid: boolean
+  showBlocking: boolean
   scale: number
   palette: ImagePalette
 } & ListViewOptions
@@ -56,9 +57,13 @@ export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (
       ) as CanvasPattern
       ctx.fillRect(0, 0, canvas.width, canvas.height)
       drawEditableSprite(ctx, 1, value, options.palette)
+      if (options.showBlocking && value.getPropValue("blocking")) {
+        ctx.fillStyle = "rgba(255,0,0,0.5)"
+        ctx.fillRect(0, 0, value.width() * options.scale, value.height() * options.scale)
+      }
     }
   }
-  useEffect(() => redraw(), [value])
+  useEffect(() => redraw(), [value, options])
   useWatchProp(value, "data", () => redraw())
   useWatchProp(value, "name")
   const pm = useContext(PopupContext)
@@ -71,7 +76,7 @@ export const TilePreviewRenderer: ListViewRenderer<Tile, TilePreviewOptions> = (
     <div className={"tile-preview-wrapper"} onContextMenu={showPopup}>
       <canvas
         ref={ref}
-        className={toClass({ "tile-preview": true, selected })}
+        className={toClass({ "tile-preview": true, selected, blocking: options.showBlocking })}
         style={{
           width: `${value.width() * options.scale}px`,
           height: `${value.height() * options.scale}px`,
@@ -111,6 +116,7 @@ export function TileListView(props: { sheet: Sheet; editable: boolean }) {
   const { sheet, editable } = props
   const showNames = sheet.getPropValue("showNames")
   const showGrid = sheet.getPropValue("showGrid")
+  const showBlocking = sheet.getPropValue("showBlocking")
   const locked = sheet.getPropValue("locked")
   const view = sheet.getPropValue("viewMode")
   const [scale, setScale] = useState(4)
@@ -118,6 +124,7 @@ export function TileListView(props: { sheet: Sheet; editable: boolean }) {
   const use_grid_view = () => sheet.setPropValue("viewMode", "grid")
   const use_list_view = () => sheet.setPropValue("viewMode", "list")
   useWatchProp(sheet, "showGrid")
+  useWatchProp(sheet, "showBlocking")
   useWatchProp(sheet, "showNames")
   useWatchProp(sheet, "viewMode")
   useWatchProp(sheet, "locked")
@@ -147,6 +154,7 @@ export function TileListView(props: { sheet: Sheet; editable: boolean }) {
         <DropdownButton icon={Icons.Gear}>
           <CheckToggleButton target={sheet} prop={"showNames"} text={"show names"} />
           <CheckToggleButton target={sheet} prop={"showGrid"} text={"show grid"} />
+          <CheckToggleButton target={sheet} prop={"showBlocking"} text={"show blocking"} />
           <ToggleButton
             onClick={() => setScale(1)}
             icon={Icons.Blank}
@@ -197,7 +205,7 @@ export function TileListView(props: { sheet: Sheet; editable: boolean }) {
           setSelected={setTile}
           renderer={TilePreviewRenderer}
           data={tiles}
-          options={{ showNames, scale, sheet, showGrid, palette: doc.palette() }}
+          options={{ showNames, scale, sheet, showGrid, showBlocking, palette: doc.palette() }}
           direction={ListViewDirection.HorizontalWrap}
         />
       )}
@@ -207,7 +215,15 @@ export function TileListView(props: { sheet: Sheet; editable: boolean }) {
           setSelected={setTile}
           data={tiles}
           sheet={sheet}
-          options={{ showNames, scale, sheet, showGrid, palette: doc.palette(), locked }}
+          options={{
+            showNames,
+            scale,
+            sheet,
+            showGrid,
+            showBlocking,
+            palette: doc.palette(),
+            locked,
+          }}
         />
       )}
     </div>
