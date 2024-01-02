@@ -12,6 +12,7 @@ import { Sheet } from "../model/sheet"
 import { SoundFX } from "../model/soundfx"
 import { Tile } from "../model/tile"
 import { GlobalState } from "../state"
+import { DeleteActorAction, DeleteImageAction } from "./actor-actions"
 import {
   AddActorLayerToMapAction,
   AddColorLayerToMapAction,
@@ -106,29 +107,6 @@ export class ActionRegistry {
   }
 }
 
-export const DeleteActorAction: SimpleMenuAction = {
-  type: "simple",
-  title: "delete actor",
-  perform: async (state) => {
-    const sel = state.getPropValue("selection")
-    if (sel instanceof Actor) {
-      removeFromList(state.getPropValue("doc"), "actors", sel as Actor)
-      state.clearSelection()
-    }
-  },
-}
-export const DeleteImageAction: SimpleMenuAction = {
-  type: "simple",
-  title: "delete image",
-  icon: Icons.Trashcan,
-  perform: async (state) => {
-    const sel = state.getPropValue("selection")
-    if (sel instanceof SImage) {
-      removeFromList(state.getPropValue("doc"), "canvases", sel as SImage)
-      state.clearSelection()
-    }
-  },
-}
 export const DeletePixelFontAction: SimpleMenuAction = {
   type: "simple",
   title: "delete font",
@@ -144,7 +122,7 @@ export const DeletePixelFontAction: SimpleMenuAction = {
 export const DeleteParticleFXAction: SimpleMenuAction = {
   type: "simple",
   title: "delete particle effect",
-  icon: Icons.Actor,
+  icon: Icons.Trashcan,
   perform: async (state) => {
     const sel = state.getPropValue("selection")
     if (sel instanceof ParticleFX) {
@@ -156,7 +134,7 @@ export const DeleteParticleFXAction: SimpleMenuAction = {
 export const DeleteSoundFXAction: SimpleMenuAction = {
   type: "simple",
   title: "delete sound effect",
-  icon: Icons.Actor,
+  icon: Icons.Trashcan,
   perform: async (state) => {
     const sel = state.getPropValue("selection")
     if (sel instanceof SoundFX) {

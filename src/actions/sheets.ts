@@ -12,6 +12,7 @@ import { SimpleMenuAction } from "./actions"
 export const DeleteSheetAction: SimpleMenuAction = {
   type: "simple",
   title: "delete sheet",
+  icon: Icons.Trashcan,
   perform: async (state) => {
     const sel = state.getPropValue("selection")
     if (sel instanceof Sheet) {
@@ -36,10 +37,6 @@ export const export_bmp = (sheet: Sheet, palette: ImagePalette) => {
   const rawData = canvas_to_bmp(canvas, palette)
   const blob = new Blob([rawData.data], { type: "image/bmp" })
   forceDownloadBlob(`${sheet.getPropValue("name")}.bmp`, blob)
-}
-
-export function deleteTile(sheet: Sheet, tile: Tile) {
-  sheet.removeTile(tile)
 }
 
 export function duplicate_tile(sheet: Sheet, tile: Tile): Tile {

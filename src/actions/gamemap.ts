@@ -151,6 +151,7 @@ export const MoveMapLayerDownAction: SimpleMenuAction = {
 export const DeleteMapAction: SimpleMenuAction = {
   type: "simple",
   title: "delete map",
+  icon: Icons.Trashcan,
   perform: async (state) => {
     const sel = state.getPropValue("selection")
     if (sel instanceof GameMap) {
