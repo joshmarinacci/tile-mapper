@@ -1,18 +1,20 @@
 import { DialogContext, Spacer } from "josh_react_util"
 import React, { useContext, useState } from "react"
 
+import { docToJSON } from "../io/json"
+import { get_class_registry } from "../model"
 import { DocContext } from "../model/contexts"
-import { GameDoc } from "../model/gamedoc"
 
-export function ShareMapDialog(props: { doc: GameDoc }) {
+export function ShareMapDialog() {
   const [src, setSrc] = useState("")
+  const [error, setError] = useState<string | undefined>(undefined)
   const doc = useContext(DocContext)
   const dm = useContext(DialogContext)
   const dismiss = () => {
     dm.hide()
   }
   const get_url = async () => {
-    const json_obj = doc.toJSON()
+    const json_obj = docToJSON(get_class_registry(), doc)
     // const formData = new FormData()
     // formData.append("file", props.blob)
     console.log("sharing", json_obj)
@@ -27,6 +29,10 @@ export function ShareMapDialog(props: { doc: GameDoc }) {
     })
     const json = await res.json()
     console.log("got back the response", json)
+    if (json.error) {
+      console.log("got back an error")
+      setError(json.error)
+    }
 
     // const json_obj = doc.toJSON()
     // // const formData = new FormData()
@@ -42,7 +48,7 @@ export function ShareMapDialog(props: { doc: GameDoc }) {
     //     body: JSON.stringify(json_obj),
     // })
     // const json = await res.json()
-    // console.log("got back the response",json)
+    console.log("got back the response", json)
     const url = base + json.shareURL
     console.log("final url is", url)
     // // const share_url = 'https://share.retrogami.dev/public/?app=https://api.retrogami.dev/public/460351.json'
@@ -56,6 +62,7 @@ export function ShareMapDialog(props: { doc: GameDoc }) {
       <section className={"vbox"}>
         <button onClick={get_url}>get url</button>
         <input type={"text"} readOnly={true} value={src} />
+        {error && <div>ERROR:{error}</div>}
       </section>
       <footer>
         <Spacer />

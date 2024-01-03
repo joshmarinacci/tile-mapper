@@ -198,7 +198,7 @@ export function LayerEditor(props: {
   if (!layer) return <div>select a map</div>
 
   async function share_map() {
-    dm.show(<ShareMapDialog doc={doc} />)
+    dm.show(<ShareMapDialog />)
   }
 
   return (
