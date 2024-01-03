@@ -41,7 +41,7 @@ export function drawTextRun(
   text: string,
   font: PixelFont,
   scale: number,
-  black: string,
+  color: string,
 ) {
   const glyphs = font.getPropValue("glyphs")
   let x = 0
@@ -52,7 +52,7 @@ export function drawTextRun(
     const left = glyph.getPropValue("left")
     const right = glyph.getPropValue("right")
     const size = glyph.getPropValue("size")
-    drawGlyph(ctx, glyph, new Point(x - left, 0), black, scale)
+    drawGlyph(ctx, glyph, new Point(x - left, 0), color, scale)
     x += size.w - left - right + SPACE
   }
 }
