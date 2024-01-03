@@ -13,6 +13,9 @@ export function ShareMapDialog() {
   const dismiss = () => {
     dm.hide()
   }
+  const show_preview = () => {
+    window.open(src, "_blank")
+  }
   const get_url = async () => {
     const json_obj = docToJSON(get_class_registry(), doc)
     // const formData = new FormData()
@@ -62,6 +65,7 @@ export function ShareMapDialog() {
       <section className={"vbox"}>
         <button onClick={get_url}>get url</button>
         <input type={"text"} readOnly={true} value={src} />
+        {src && <button onClick={show_preview}>view</button>}
         {error && <div>ERROR:{error}</div>}
       </section>
       <footer>
