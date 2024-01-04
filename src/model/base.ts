@@ -306,6 +306,14 @@ export class PropDefBuilder<T> implements PropDef<T> {
     return this
   }
 
+  withIntegerSettings(settings: IntegerSettings) {
+    this.settings = settings
+    return this
+  }
+  withFloatSettings(settings: FloatSettings) {
+    this.settings = settings
+    return this
+  }
   withSettings(settings: Settings) {
     this.settings = settings
     return this

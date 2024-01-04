@@ -6,8 +6,12 @@ import React, { MouseEvent, useContext, useState } from "react"
 import { calculate_context_actions } from "../actions/actions"
 import {
   AddActorToDocButton,
+  AddCanvasToDocButton,
+  AddFontToDocButton,
   AddMapToDocButton,
+  AddParticleFXToDocButton,
   AddSheetToDocButton,
+  AddSoundFXToDocButton,
 } from "../actions/reactactions"
 import { Actor } from "../model/actor"
 import { PropsBase, useWatchProp } from "../model/base"
@@ -148,6 +152,10 @@ function TreeItemView<T>(props: { obj: PropsBase<T> }) {
     items.push(<AddActorToDocButton />)
     items.push(<AddSheetToDocButton />)
     items.push(<AddMapToDocButton />)
+    items.push(<AddCanvasToDocButton />)
+    items.push(<AddFontToDocButton />)
+    items.push(<AddParticleFXToDocButton />)
+    items.push(<AddSoundFXToDocButton />)
     pm.show_at(<MenuList>{items}</MenuList>, e.target, "right")
   }
   useWatchProp(obj, "name" as keyof T)

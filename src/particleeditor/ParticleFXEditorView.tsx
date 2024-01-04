@@ -1,114 +1,162 @@
 import { Point, toRadians } from "josh_js_util"
-import React, { useEffect, useRef, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import {
   AnimationLayer,
   AnimationManager,
   Camera,
+  Canvas,
   GameContext,
+  ImageCache,
   ParticleAnim,
 } from "retrogami-engine"
 
-import { IconButton, ToggleButton } from "../common/common-components"
+import { ToggleButton } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { useWatchAllProps } from "../model/base"
+import { ImageSnapshotContext } from "../model/contexts"
 import { ParticleFX } from "../model/particlefx"
 
 class AnimationProxy {
   private anims: AnimationManager
   private layer: AnimationLayer
   private canvas: HTMLCanvasElement
-  private timer: NodeJS.Timer
   private camera: Camera
   private t: number
-  private particleAnim: ParticleAnim | undefined
+  private particleAnim: ParticleAnim
+  private fx: ParticleFX
+  private image: HTMLCanvasElement
+  private playing = false
+  private timer: NodeJS.Timer
+  private start_time: number
+
   constructor() {
     this.anims = new AnimationManager()
     this.layer = new AnimationLayer(this.anims)
     this.camera = new Camera()
-    this.t = 0
-  }
-  resetParticles(params: ParticleFX) {
-    if (this.particleAnim) {
-      this.particleAnim.stop()
-    }
-    this.particleAnim = this.anims.particles({
-      position: new Point(50, 50),
-      color: params.getPropValue("color"),
-      rate: params.getPropValue("rate"),
-      size: params.getPropValue("size"),
-      maxAge: params.getPropValue("maxAge"),
-      duration: params.getPropValue("duration"),
-      maxParticles: params.getPropValue("maxParticles"),
-      angle: toRadians(params.getPropValue("angle")),
-      angleSpread: toRadians(params.getPropValue("angleSpread")),
-      velocity: params.getPropValue("velocity"),
-      velocitySpread: params.getPropValue("velocitySpread"),
-      infinite: params.getPropValue("infinite"),
+    this.particleAnim = new ParticleAnim({
+      source: new Point(0, 0),
     })
+    this.t = 0
+    this.fx = new ParticleFX()
   }
+
   draw() {
     const ctx = this.canvas.getContext("2d") as CanvasRenderingContext2D
     ctx.fillStyle = "white"
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
-    // console.log('drawing at',t,particleAnim.particles.length)
-    // if(particleAnim.particles.length > 0) {
-    //     console.log(particleAnim.particles[0].position, camera.viewport)
-    // }
-    // particleAnim.update(props.step)
-    // particleAnim.draw(ctx,camera,5)
-    this.anims.update(this.t)
+    // console.log("updating anims",this.t, `duration = ${this.fx.getPropValue('duration')}`)
     const gc: GameContext = {
       scale: 3,
       ctx: ctx,
       camera: this.camera,
+      anim: this.anims,
+      canvas: this.canvas,
+      ic: new ImageCache(),
     }
-    this.layer.drawSelf(gc)
-    // console.log("anim count", this.anims.runningAnimationCount())
-    if (this.particleAnim) {
-      console.log(this.particleAnim.isRunning(), this.particleAnim.currentParticleCount())
+    if (this.fx.getPropValue("image")) {
+      const ref = this.fx.getPropValue("image")
+      gc.ic.addImage(ref, ref, this.image as Canvas)
     }
-  }
-
-  setCanvas(current: HTMLCanvasElement) {
-    this.canvas = current
+    if (this.playing) {
+      this.anims.update(this.t)
+      this.layer.drawSelf(gc)
+    } else {
+      while (this.t < this.fx.getPropValue("duration")) {
+        this.t += 0.01
+        this.anims.update(this.t)
+        this.layer.drawSelf(gc)
+      }
+    }
   }
 
   start() {
-    this.t = Date.now()
+    this.start_time = Date.now() / 1000
+    this.t = 0
     this.timer = setInterval(() => {
-      this.t = Date.now()
+      this.t = Date.now() / 1000 - this.start_time
       this.draw()
-    }, 30)
+    }, 16)
   }
 
   stop() {
     clearInterval(this.timer)
   }
+  reset(current: HTMLCanvasElement, fx: ParticleFX, image: HTMLCanvasElement) {
+    this.canvas = current
+    this.t = 0
+    this.fx = fx
+    this.image = image
+    console.log("reseting particles")
+    if (this.particleAnim) {
+      this.anims.reset()
+    }
+    this.particleAnim = this.anims.particles({
+      source: fx.getPropValue("source"),
+      angle: toRadians(fx.getPropValue("angle")),
+      angleSpread: toRadians(fx.getPropValue("angleSpread")),
+
+      duration: fx.getPropValue("duration"),
+      infinite: fx.getPropValue("infinite"),
+
+      image: fx.getPropValue("image"),
+      color: fx.getPropValue("color"),
+      size: fx.getPropValue("size"),
+
+      maxAge: fx.getPropValue("maxAge"),
+      fadeAge: fx.getPropValue("fadeAge"),
+
+      maxParticles: fx.getPropValue("maxParticles"),
+      initParticles: fx.getPropValue("initParticles"),
+
+      rate: fx.getPropValue("rate"),
+      velocity: fx.getPropValue("velocity"),
+      velocitySpread: fx.getPropValue("velocitySpread"),
+    })
+  }
+
+  setPlaying(playing: boolean) {
+    this.playing = playing
+    if (this.playing) {
+      this.start()
+    } else {
+      this.stop()
+    }
+  }
 }
+
 const ANIM_PROXY = new AnimationProxy()
 
-function ParticleSimView(props: { playing: boolean; step: number; fx: ParticleFX }) {
+function ParticleSimView(props: { playing: boolean; fx: ParticleFX }) {
+  const { fx, playing } = props
   const ref = useRef<HTMLCanvasElement>(null)
+  const isc = useContext(ImageSnapshotContext)
   useEffect(() => {
-    return () => {
-      ANIM_PROXY.stop()
-    }
-  }, [props.fx])
-  useWatchAllProps(props.fx, () => {
-    console.log("fx changed")
+    ANIM_PROXY.setPlaying(playing)
+  }, [playing])
+  const reset = () => {
     if (ref.current) {
-      ANIM_PROXY.setCanvas(ref.current)
-      ANIM_PROXY.resetParticles(props.fx)
-      ANIM_PROXY.stop()
-      ANIM_PROXY.start()
+      ANIM_PROXY.reset(ref.current, props.fx, isc.getSnapshotCanvas(props.fx.getPropValue("image")))
+      ANIM_PROXY.setPlaying(props.playing)
+      ANIM_PROXY.draw()
     }
-  })
-  return <canvas ref={ref} width={512} height={512}></canvas>
+  }
+  useEffect(reset, [props.fx])
+  useWatchAllProps(props.fx, reset)
+  return (
+    <canvas
+      ref={ref}
+      width={512}
+      height={512}
+      style={{
+        border: "5px solid red",
+      }}
+    ></canvas>
+  )
 }
 
 export function ParticleFXEditorView(props: { fx: ParticleFX }) {
   const [playing, setPlaying] = useState(false)
-  const [step, setStep] = useState(0)
+  // const [step, setStep] = useState(0)
   return (
     <>
       <div className={"vbox tool-column"}>particle tools</div>
@@ -120,9 +168,9 @@ export function ParticleFXEditorView(props: { fx: ParticleFX }) {
             selected={playing}
             selectedIcon={Icons.Pause}
           />
-          <IconButton onClick={() => setStep(step + 1)} icon={Icons.Step} />
+          {/*<IconButton onClick={() => setStep(step + 1)} icon={Icons.Step} />*/}
         </div>
-        <ParticleSimView playing={playing} step={step} fx={props.fx} />
+        <ParticleSimView playing={playing} fx={props.fx} />
       </div>
     </>
   )

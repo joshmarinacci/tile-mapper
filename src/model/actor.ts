@@ -4,7 +4,7 @@ import { GameAction, GameActionListDef } from "./action"
 import { DefList, PropDefBuilder, PropsBase, PropValues, restoreClassFromJSON, UUID } from "./base"
 import { BooleanDef, BoundsDef, NameDef, StringDef } from "./datamodel"
 
-const RefDef = new PropDefBuilder({
+export const RefDef = new PropDefBuilder({
   type: "reference",
   default: () => null,
   toJSON: (r, v: UUID | undefined) => v,

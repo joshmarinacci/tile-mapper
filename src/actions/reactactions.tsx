@@ -201,7 +201,7 @@ export function AddParticleFXToDocButton() {
   const perform = () => {
     const fx = new ParticleFX({ name: "unnamed" })
     appendToList(doc, "assets", fx)
-    state.setSelection(fx)
+    state.setSelectionTarget(fx)
   }
   return <button onClick={perform}> Add Particle Effect </button>
 }
