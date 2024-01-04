@@ -105,7 +105,14 @@ export const ParticleFXDefs: DefList<ParticleFXType> = {
       stepSize: 10,
     }),
 
-  velocity: FloatDef.copy().withDefault(() => 20.0),
+  velocity: FloatDef.copy()
+    .withDefault(() => 20.0)
+    .withFloatSettings({
+      type: "float",
+      min: 0,
+      max: 300,
+      stepSize: 10,
+    }),
   velocitySpread: FloatDef.copy(),
 }
 
