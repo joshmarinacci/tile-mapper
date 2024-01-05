@@ -23,7 +23,7 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-simple-code-editor": "^0.13.1",
-    "retrogami-engine": "^0.0.35",
+    "retrogami-engine": "^0.0.38",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },

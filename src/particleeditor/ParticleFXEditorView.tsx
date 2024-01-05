@@ -8,6 +8,7 @@ import {
   GameContext,
   ImageCache,
   ParticleAnim,
+  StandardDrawingSurface,
 } from "retrogami-engine"
 
 import { ToggleButton } from "../common/common-components"
@@ -44,7 +45,7 @@ class AnimationProxy {
     const ctx = this.canvas.getContext("2d") as CanvasRenderingContext2D
     ctx.fillStyle = "white"
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height)
-    // console.log("updating anims",this.t, `duration = ${this.fx.getPropValue('duration')}`)
+    // console.log("updating anims",this.t, `duration = ${this.fx.getPropValue('duration')} playing=${this.playing}`)
     const gc: GameContext = {
       scale: 3,
       ctx: ctx,
@@ -53,18 +54,19 @@ class AnimationProxy {
       canvas: this.canvas,
       ic: new ImageCache(),
     }
+    gc.surf = new StandardDrawingSurface(gc, ctx, this.t)
     if (this.fx.getPropValue("image")) {
       const ref = this.fx.getPropValue("image")
       gc.ic.addImage(ref, ref, this.image as Canvas)
     }
     if (this.playing) {
       this.anims.update(this.t)
-      this.layer.drawSelf(gc)
+      this.layer.drawSelf(gc.surf)
     } else {
       while (this.t < this.fx.getPropValue("duration")) {
         this.t += 0.01
         this.anims.update(this.t)
-        this.layer.drawSelf(gc)
+        this.layer.drawSelf(gc.surf)
       }
     }
   }
@@ -86,9 +88,10 @@ class AnimationProxy {
     this.t = 0
     this.fx = fx
     this.image = image
-    console.log("reseting particles")
+    console.log("resetting particles")
     if (this.particleAnim) {
       this.anims.reset()
+      this.anims.update(0)
     }
     this.particleAnim = this.anims.particles({
       source: fx.getPropValue("source"),
