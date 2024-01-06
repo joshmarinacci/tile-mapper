@@ -11,7 +11,7 @@ import {
   Metadata,
   savePNGJSON,
 } from "../io/json"
-import { saveLocalDoc } from "../io/local"
+import { JoshDBDocumentStorage } from "../io/local"
 import { readMetadata } from "../io/vendor"
 import { get_class_registry } from "../model"
 import { GameDoc } from "../model/gamedoc"
@@ -78,7 +78,8 @@ export const SaveLocalStorageAction: SimpleMenuAction = {
   },
   perform: async (state) => {
     state.getPropValue("toaster").fireMessage("saving")
-    await saveLocalDoc(state)
+    const db = new JoshDBDocumentStorage()
+    await db.saveLocalDoc(state)
     state.getPropValue("toaster").fireMessage("saved")
   },
 }

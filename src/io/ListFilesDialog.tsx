@@ -5,10 +5,9 @@ import { IconButton } from "../common/common-components"
 import { Icons } from "../common/icons"
 import { ListView, ListViewDirection, ListViewOptions, ListViewRenderer } from "../common/ListView"
 import { ImageSnapshotContext } from "../model/contexts"
-import { Sheet } from "../model/sheet"
-import { Tile } from "../model/tile"
 import { GlobalState } from "../state"
-import { deleteLocalDoc, JSONDocReference, listLocalDocs, loadLocalDoc } from "./local"
+import { JoshDBDocumentStorage } from "./local"
+import { JSONDocReference } from "./storage"
 
 type FileItemOptions = {
   deleteFile: (file: JSONDocReference) => Promise<void>
@@ -36,11 +35,12 @@ export const FileItemRenderer: ListViewRenderer<JSONDocReference, FileItemOption
 }
 export function ListFilesDialog(props: { state: GlobalState }) {
   const { state } = props
+  const [store] = useState(() => new JoshDBDocumentStorage())
   const dm = useContext(DialogContext)
   const [files, setFiles] = useState<JSONDocReference[]>([])
   const [selected, setSelected] = useState<JSONDocReference | undefined>()
   useEffect(() => {
-    listLocalDocs(props.state).then((files: JSONDocReference[]) => {
+    store.listLocalDocs(props.state).then((files: JSONDocReference[]) => {
       // const f2 = files.filter((f) => f.kind === TILE_MAPPER_DOCUMENT)
       setFiles(files)
     })
@@ -48,7 +48,7 @@ export function ListFilesDialog(props: { state: GlobalState }) {
   const cancel = () => dm.hide()
   const isc = useContext(ImageSnapshotContext)
   const load = async (file: JSONDocReference) => {
-    const doc = await loadLocalDoc(state, file.uuid, isc)
+    const doc = await store.loadLocalDoc(state, file.uuid, isc)
     state.setPropValue("doc", doc)
     state.setSelection(doc)
     state.setSelectionTarget(doc)
@@ -56,7 +56,8 @@ export function ListFilesDialog(props: { state: GlobalState }) {
   }
   const opts: FileItemOptions = {
     deleteFile: async (file): Promise<void> => {
-      const new_list = await deleteLocalDoc(state, file.uuid)
+      await store.deleteLocalDoc(state, file.uuid)
+      const new_list = await store.listLocalDocs(state)
       setFiles(new_list)
     },
   }
