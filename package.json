@@ -14,6 +14,7 @@
     "@wokwi/bmp-ts": "^3.0.0",
     "crc-32": "^1.2.2",
     "dbobject_api_ts": "^0.0.12",
+    "idb": "^8.0.0",
     "indent.js": "^0.3.5",
     "josh_js_util": "^0.1.25",
     "josh_react_util": "^1.0.23",

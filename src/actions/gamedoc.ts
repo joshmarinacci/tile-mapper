@@ -2,6 +2,7 @@ import { forceDownloadBlob } from "josh_web_util"
 
 import { canvas_to_bmp, sheet_to_canvas } from "../common/common"
 import { Icons } from "../common/icons"
+import { IndexeddbDocumentStorage } from "../io/indexeddb"
 import {
   docToJSON,
   fileToJson,
@@ -11,7 +12,6 @@ import {
   Metadata,
   savePNGJSON,
 } from "../io/json"
-import { JoshDBDocumentStorage } from "../io/local"
 import { readMetadata } from "../io/vendor"
 import { get_class_registry } from "../model"
 import { GameDoc } from "../model/gamedoc"
@@ -78,7 +78,8 @@ export const SaveLocalStorageAction: SimpleMenuAction = {
   },
   perform: async (state) => {
     state.getPropValue("toaster").fireMessage("saving")
-    const db = new JoshDBDocumentStorage()
+    // const db = new JoshDBDocumentStorage()
+    const db = new IndexeddbDocumentStorage()
     await db.saveLocalDoc(state)
     state.getPropValue("toaster").fireMessage("saved")
   },

@@ -6,6 +6,7 @@ import { Icons } from "../common/icons"
 import { ListView, ListViewDirection, ListViewOptions, ListViewRenderer } from "../common/ListView"
 import { ImageSnapshotContext } from "../model/contexts"
 import { GlobalState } from "../state"
+import { IndexeddbDocumentStorage } from "./indexeddb"
 import { JoshDBDocumentStorage } from "./local"
 import { JSONDocReference } from "./storage"
 
@@ -35,7 +36,8 @@ export const FileItemRenderer: ListViewRenderer<JSONDocReference, FileItemOption
 }
 export function ListFilesDialog(props: { state: GlobalState }) {
   const { state } = props
-  const [store] = useState(() => new JoshDBDocumentStorage())
+  const [store] = useState(() => new IndexeddbDocumentStorage())
+  // const [store] = useState(() => new JoshDBDocumentStorage())
   const dm = useContext(DialogContext)
   const [files, setFiles] = useState<JSONDocReference[]>([])
   const [selected, setSelected] = useState<JSONDocReference | undefined>()
