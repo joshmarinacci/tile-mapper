@@ -45,7 +45,7 @@ export class GamePlayer extends Observable {
   }
 
   start(canvas: HTMLCanvasElement, json: JsonOut<DocType>, logger: ConsoleInterface) {
-    // log("loading game",json,canvas)
+    console.log("loading game",json,canvas)
     const data: GameData = loadGameData(json as unknown as JSONGameDoc, new HTMLCanvasSource())
     if (data.maps.length < 1) {
       throw new Error("no default map")

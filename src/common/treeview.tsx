@@ -54,7 +54,7 @@ function ListPropView<T, K extends keyof T>(props: { name: K; doc: PropsBase<T> 
   const toggle = () => setOpen(!open)
   return (
     <li className={"tree-object"}>
-      <header onClick={() => toggle()}>
+      <header>
         <button onClick={() => toggle()}>
           {open ? down_arrow_triangle : right_arrow_triangle}
         </button>
@@ -176,7 +176,7 @@ function TreeSection<K extends keyof DocType>(props: { name: K; doc: GameDoc }) 
   const toggle = () => setOpen(!open)
   return (
     <li className={"tree-item"}>
-      <header onClick={() => toggle()}>
+      <header>
         <button onClick={() => toggle()}>
           {open ? down_arrow_triangle : right_arrow_triangle}
         </button>
